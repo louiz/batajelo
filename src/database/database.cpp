@@ -1,4 +1,5 @@
 
+#include "database.hpp"
 
 Database::Database() {}
 
@@ -20,15 +21,17 @@ void Database::connect()
 
 }
 
-Obj Database::query(const char* query)
+void Database::query(std::string& query)
 {
-  Type x;
   MYSQL_RES* result = NULL;
   MYSQL_ROW row = NULL;
+  MYSQL_FIELD* fields;
   unsigned int i = 0;
-  unsigned int num_fields = 0;
+  unsigned int fields_number = 0;
   unsigned int error;
-  error = mysql_query(&this->mysql, query);
+  std::map<std::string, std::string> results;
+
+  error = mysql_query(&this->mysql, query.c_str());
   if (error != 0)
   {
     printf("Couldn't query the database : %d\n", error);
@@ -36,12 +39,14 @@ Obj Database::query(const char* query)
   result = mysql_use_result(&this->mysql);
   if (result)
   {
-    num_fields = mysql_num_fields(result);
+    fields_number = mysql_num_fields(result);
+    fields = mysql_fetch_fields(result);
     while ((row = mysql_fetch_row(result)))
     {
-      for(i = 0; i < num_fields; i++)
+      for(; i < fields_number; i++)
       {
-        printf("[%s] ",  row[i]);
+        fields = mysql_fetch_fields(result);
+        printf("[%s : %s] ",  fields[i].name, row[i]);
       }
     }
     mysql_free_result(result);
@@ -50,7 +55,6 @@ Obj Database::query(const char* query)
   {
     printf("No result found !\n");
   }
-  return x;
 }
 
 void Database::close()
@@ -59,18 +63,12 @@ void Database::close()
     mysql_close(&this->mysql);
 }
 
-Obj queryById(const char *table, const char *fields, const int id)
+void Database::query_by_id(std::string table, std::string fields, std::string join, std::string id)
 {
-  Type x;
-  std::stringstream ss;
   std::string query;
-  std::string* res;
 
   this->connect();
-  ss << "SELECT " << fields << " FROM "
-  << table << " WHERE id = " << id;
-  query = ss.str();
-  x = this->query(query.c_str());
+  query = "SELECT " + fields + " FROM " + table + " " + join + " WHERE id = " + id;
+  this->query(query);
   this->close();
-  return x;
 }

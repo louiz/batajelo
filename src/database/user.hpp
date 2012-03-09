@@ -12,22 +12,20 @@ class User : public Database
 {
 public:
   User();
-  User(std::string login, std::string password, std::string email, std::string last_login);
+  User(std::string _id);
   ~User();
-  std::string&Email() const;
-  const std::string& getLastLogin() const;
-  const std::string& getLogin() const;
-  const std::string& getPassword() const;
-  void setEmail(const std::string& email);
-  void setLastLogin(const std::string& last_login);
-  void setLogin(const std::string& login);
-  void setPassword(const std::string& password);
+  std::string& email(void);
+  std::string& last_login(void);
+  std::string& login(void);
+  std::string& id(void);
+  std::string& password(void);
   void print();
 private:
-  std::string login;
-  std::string password;
-  std::string email;
-  std::string last_login;
+  std::string _email;
+  std::string _last_login;
+  std::string _login;
+  std::string _id;
+  std::string _password;
 };
 
 #endif

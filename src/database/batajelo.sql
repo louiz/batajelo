@@ -7,37 +7,36 @@ CREATE SCHEMA IF NOT EXISTS `batajelo` DEFAULT CHARACTER SET utf8 ;
 USE `batajelo` ;
 
 -- -----------------------------------------------------
--- Table `batajelo`.`Setting`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `batajelo`.`Setting` ;
-
-CREATE  TABLE IF NOT EXISTS `batajelo`.`Setting` (
-  `id` INT UNSIGNED NOT NULL ,
-  `mail` VARCHAR(60) NULL ,
-  PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `mail_UNIQUE` (`mail` ASC) )
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `batajelo`.`User`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `batajelo`.`User` ;
 
 CREATE  TABLE IF NOT EXISTS `batajelo`.`User` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `setting_id` INT UNSIGNED NULL ,
   `login` VARCHAR(20) NOT NULL ,
   `password` VARCHAR(15) NOT NULL ,
   `last_login` DATETIME NULL ,
   PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `login_UNIQUE` (`login` ASC) ,
-  INDEX `setting` (`setting_id` ASC) ,
-  CONSTRAINT `setting`
-    FOREIGN KEY (`setting_id` )
-    REFERENCES `batajelo`.`Setting` (`id` )
-    ON DELETE SET NULL
-    ON UPDATE CASCADE)
+  UNIQUE INDEX `login_UNIQUE` (`login` ASC) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `batajelo`.`User_Setting`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `batajelo`.`User_Setting` ;
+
+CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Setting` (
+  `user_id` INT UNSIGNED NOT NULL ,
+  `email` VARCHAR(60) NULL ,
+  PRIMARY KEY (`user_id`) ,
+  UNIQUE INDEX `mail_UNIQUE` (`email` ASC) ,
+  INDEX `user_setting_user` (`user_id` ASC) ,
+  CONSTRAINT `user_setting_user`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `batajelo`.`User` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 

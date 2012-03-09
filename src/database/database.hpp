@@ -14,6 +14,8 @@
 // exit
 #include <stdio.h>
 #include <stdlib.h>
+//map
+#include <map>
 
 #ifndef __DATABASE_HPP__
 # define __DATABASE_HPP__
@@ -26,17 +28,16 @@
 # define DB_UNIX_SOCKET NULL
 # define DB_CLIENT_FLAG 0
 
-template <class Obj>
 class Database
 {
 public:
   Database();
   ~Database();
-  Obj queryById(const char*, const char*, const int);
+  void query_by_id(std::string, std::string, std::string, std::string);
 private:
   MYSQL mysql;
   void connect();
-  Obj query(const char*);
+  void query(std::string&);
   void close();
 };
 

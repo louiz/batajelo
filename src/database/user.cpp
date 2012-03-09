@@ -2,65 +2,49 @@
 
 User::User() {}
 
-User::User(std::string login, std::string password, std::string email, std::string last_login):
-login(login), password(password), email(email), last_login(last_login) {}
+User::User(std::string id): _id(id)
+{
+  // get_class_name for first param ?
+  std::string table = "user";
+  std::string fields = "user.login, user.password, user.last_login, user_setting.email";
+  std::string join = "INNER JOIN user_setting ON user_setting.user_id = user.id";
+  this->query_by_id(table, fields, join, this->_id);
+}
 
 User::~User() {}
 
-const std::string& User::getEmail() const
+std::string& User::email(void)
 {
-  return this->email;
+  return this->_email;
 }
 
-const std::string& User::getLastLogin() const
+std::string& User::last_login(void)
 {
-  return this->last_login;
+  return this->_last_login;
 }
 
-const std::string&  User::getLogin() const
+std::string& User::login(void)
 {
-  return this->login;
+  return this->_login;
 }
 
-const std::string& User::getPassword() const
+std::string& User::password(void)
 {
-  return this->password;
-}
-
-void User::setEmail(const std::string& email)
-{
-  this->email = email;
-}
-
-void User::setLastLogin(const std::string& last_login)
-{
-  this->last_login = last_login;
-}
-
-
-void User::setLogin(const std::string& login)
-{
-  this->login = login;
-}
-
-void User::setPassword(const std::string& Password)
-{
-  this->password = password;
+  return this->_password;
 }
 
 void User::print()
 {
-  std::cout << "email : " <<  this->getEmail() << std::endl;
-  std::cout << "login : " <<  this->getLogin() << std::endl;
-  std::cout << "password : " <<  this->getPassword() << std::endl;
-  std::cout << "last_login : " <<  this->getLastLogin() << std::endl;
+  std::cout << "email : " <<  this->email() << std::endl;
+  std::cout << "login : " <<  this->login() << std::endl;
+  std::cout << "password : " <<  this->password() << std::endl;
+  std::cout << "last_login : " <<  this->last_login() << std::endl;
 }
-
 
 int main()
 {
-  User  a;
-  a.queryById("user", "user.login, user.password, user.last_login", 1);
-  a.print();
+  std::string id = "1";
+  User user(id);
+ // user.print();
   return 0;
 }
