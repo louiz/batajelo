@@ -15,8 +15,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef __DB_HPP__
-# define __DB_HPP__
+#ifndef __DATABASE_HPP__
+# define __DATABASE_HPP__
 
 # define DB_HOST "localhost"
 # define DB_USER "admin"
@@ -26,32 +26,20 @@
 # define DB_UNIX_SOCKET NULL
 # define DB_CLIENT_FLAG 0
 
+template <class Obj>
 class Database
 {
 public:
   Database();
   ~Database();
-  void queryById(const char*, const char*, const int);
+  Obj queryById(const char*, const char*, const int);
 private:
   MYSQL mysql;
   void connect();
-  void query(const char*);
+  Obj query(const char*);
   void close();
 };
 
-/*
-class User
-{
-public:
-    User(int id);
-    ~User();
-private:
-    std::string login;
-    std::string password;
-    std::string last_login;
-
-}
-*/
 #endif
 
 

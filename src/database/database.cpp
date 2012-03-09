@@ -1,4 +1,4 @@
-#include "database.hpp"
+
 
 Database::Database() {}
 
@@ -20,14 +20,14 @@ void Database::connect()
 
 }
 
-void Database::query(const char* query)
+Obj Database::query(const char* query)
 {
+  Type x;
   MYSQL_RES* result = NULL;
   MYSQL_ROW row = NULL;
   unsigned int i = 0;
   unsigned int num_fields = 0;
   unsigned int error;
-
   error = mysql_query(&this->mysql, query);
   if (error != 0)
   {
@@ -50,6 +50,7 @@ void Database::query(const char* query)
   {
     printf("No result found !\n");
   }
+  return x;
 }
 
 void Database::close()
@@ -58,22 +59,18 @@ void Database::close()
     mysql_close(&this->mysql);
 }
 
-void Database::queryById(const char *table, const char *fields, const int id)
+Obj queryById(const char *table, const char *fields, const int id)
 {
+  Type x;
   std::stringstream ss;
   std::string query;
+  std::string* res;
 
   this->connect();
   ss << "SELECT " << fields << " FROM "
   << table << " WHERE id = " << id;
   query = ss.str();
-  this->query(query.c_str());
+  x = this->query(query.c_str());
   this->close();
-}
-
-int main()
-{
-  Database db;
-  db.queryById("user", "user.login, user.password, user.last_login", 1);
-  return 0;
+  return x;
 }
