@@ -1,7 +1,10 @@
 // Database Implementation, Objects of the tables...
 
+#ifdef WIN32
 //socket mysql_real_connect
-#include <winsock.h>
+# include <winsock.h>
+#endif /* WIN32 */
+
 //mysql methods
 #include <mysql.h>
 //cout
