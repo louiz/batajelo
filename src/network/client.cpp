@@ -7,8 +7,11 @@ Client::Client(short port): port(port)
 
 Client::~Client()
 {
-  std::cout << "Closing connection" << std::endl;
-  this->socket->close();
+  if (this->socket->is_open())
+    {
+      std::cout << "Closing connection" << std::endl;
+      this->socket->close();
+    }
   delete this->socket;
 }
 
@@ -69,9 +72,9 @@ void	Client::send_handler(const boost::system::error_code& error,
 
 }
 
-int main (int ac, char **av)
-{
-  Client client(7878);
-  client.connect(boost::bind(&Client::send_message, &client));
-  client.poll();
-}
+// int main (int ac, char **av)
+// {
+//   Client client(7878);
+//   client.connect(boost::bind(&Client::send_message, &client));
+//   client.poll();
+// }
