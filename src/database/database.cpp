@@ -23,13 +23,14 @@ void Database::connect()
 
 void Database::query(std::string& query)
 {
+  map_row row;
   MYSQL_RES* result = NULL;
-  MYSQL_ROW row = NULL;
+  MYSQL_ROW mysql_row = NULL;
   MYSQL_FIELD* fields;
-  unsigned int i = 0;
+  unsigned int row_id = 0;
+  unsigned int field_id = 0;
   unsigned int fields_number = 0;
   unsigned int error;
-  std::map<std::string, std::string> results;
 
   error = mysql_query(&this->mysql, query.c_str());
   if (error != 0)
@@ -41,13 +42,11 @@ void Database::query(std::string& query)
   {
     fields_number = mysql_num_fields(result);
     fields = mysql_fetch_fields(result);
-    while ((row = mysql_fetch_row(result)))
+    while ((mysql_row = mysql_fetch_row(result)))
     {
-      for(; i < fields_number; i++)
-      {
-        fields = mysql_fetch_fields(result);
-        printf("[%s : %s] ",  fields[i].name, row[i]);
-      }
+      for(; field_id < fields_number; field_id++)
+        row.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
+      this->results.push_back(std::make_pair(row_id++, row));
     }
     mysql_free_result(result);
   }
@@ -71,4 +70,22 @@ void Database::query_by_id(std::string table, std::string fields, std::string jo
   query = "SELECT " + fields + " FROM " + table + " " + join + " WHERE id = " + id;
   this->query(query);
   this->close();
+}
+
+
+void Database::print()
+{
+  std::vector<std::pair<int, map_row> >::iterator it;
+  map_row::iterator m;
+
+  std::cout << "myvector contains:";
+  for (it = this->results.begin() ; it != this->results.end(); it++ )
+  {
+      std::cout << it->first;
+      map_row a = it->second;
+      for (m = a.begin(); m != a.end(); m++)
+      {
+        std::cout << m->first << " -> " << m->second << std::endl;
+      }
+  }
 }

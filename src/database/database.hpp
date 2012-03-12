@@ -16,6 +16,9 @@
 #include <stdlib.h>
 //map
 #include <map>
+//vector
+#include <vector>
+
 
 #ifndef __DATABASE_HPP__
 # define __DATABASE_HPP__
@@ -28,17 +31,23 @@
 # define DB_UNIX_SOCKET NULL
 # define DB_CLIENT_FLAG 0
 
+typedef std::map<std::string, std::string> map_row;
+
 class Database
 {
 public:
   Database();
   ~Database();
   void query_by_id(std::string, std::string, std::string, std::string);
+  void print();
+
+  std::vector<std::pair<int, map_row> > results;
 private:
-  MYSQL mysql;
   void connect();
   void query(std::string&);
   void close();
+
+  MYSQL mysql;
 };
 
 #endif
