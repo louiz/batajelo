@@ -40,14 +40,13 @@ public:
   ~Database();
   void query_by_id(std::string, std::string, std::string, std::string);
   void print();
-
   std::vector<std::pair<int, map_row> > results;
 private:
   void connect();
   void query(std::string&);
   void close();
 
-  MYSQL mysql;
+  MYSQL *mysql;
 };
 
 #endif

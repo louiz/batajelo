@@ -1,24 +1,24 @@
 
 #include "database.hpp"
 
-Database::Database() {}
+Database::Database() {this->mysql = NULL;}
 
 Database::~Database() {}
 
 void Database::connect()
 {
-  if (mysql_init(&mysql) == NULL)
+  if (this->mysql == NULL)
   {
-    std::cout << "Could'nt init a mysql connection." << std::endl;
+    this->mysql = mysql_init(NULL);
+    if (this->mysql == NULL)
+      std::cout << "Could'nt init a mysql connection." << std::endl;
   }
-
-  if (!mysql_real_connect(&this->mysql, DB_HOST, DB_USER, DB_PASSWORD,
+  if (!mysql_real_connect(this->mysql, DB_HOST, DB_USER, DB_PASSWORD,
                           DB_DATABASE, DB_PORT, DB_UNIX_SOCKET, DB_CLIENT_FLAG))
   {
     std::cout << "Couldn't connect to the database." << std::endl;
     exit -1;
   }
-
 }
 
 void Database::query(std::string& query)
@@ -32,12 +32,12 @@ void Database::query(std::string& query)
   unsigned int fields_number = 0;
   unsigned int error;
 
-  error = mysql_query(&this->mysql, query.c_str());
+  error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
   {
     printf("Couldn't query the database : %d\n", error);
   }
-  result = mysql_use_result(&this->mysql);
+  result = mysql_use_result(this->mysql);
   if (result)
   {
     fields_number = mysql_num_fields(result);
@@ -58,14 +58,13 @@ void Database::query(std::string& query)
 
 void Database::close()
 {
-  if (&this->mysql != NULL)
-    mysql_close(&this->mysql);
+  if (this->mysql != NULL)
+    mysql_close(this->mysql);
 }
 
 void Database::query_by_id(std::string table, std::string fields, std::string join, std::string id)
 {
   std::string query;
-
   this->connect();
   query = "SELECT " + fields + " FROM " + table + " " + join + " WHERE id = " + id;
   this->query(query);
@@ -78,10 +77,9 @@ void Database::print()
   std::vector<std::pair<int, map_row> >::iterator it;
   map_row::iterator m;
 
-  std::cout << "myvector contains:";
   for (it = this->results.begin() ; it != this->results.end(); it++ )
   {
-      std::cout << it->first;
+      std::cout << it->first << ":" << std::endl;
       map_row a = it->second;
       for (m = a.begin(); m != a.end(); m++)
       {
