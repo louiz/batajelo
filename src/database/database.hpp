@@ -1,4 +1,4 @@
-// Database Implementation, Objects of the tables...
+// Database Implementation
 
 #ifdef WIN32
 //socket mysql_real_connect
@@ -9,16 +9,12 @@
 #include <mysql.h>
 //cout
 #include <iostream>
-//stringstream
-#include <sstream>
-// exit
-#include <stdio.h>
-#include <stdlib.h>
-//map
-#include <map>
 //vector
 #include <vector>
+//map
+#include <map>
 
+#include "db_object.hpp"
 
 #ifndef __DATABASE_HPP__
 # define __DATABASE_HPP__
@@ -31,22 +27,20 @@
 # define DB_UNIX_SOCKET NULL
 # define DB_CLIENT_FLAG 0
 
-typedef std::map<std::string, std::string> map_row;
-
 class Database
 {
 public:
   Database();
   ~Database();
-  void query_by_id(std::string, std::string, std::string, std::string);
-  void print();
-  std::vector<std::pair<int, map_row> > results;
+  DbObject get_object_by_id(const std::string&, const std::string&);
+  std::vector<DbObject> get_objects_by_id(const std::string&, const std::string&);
+  void update(std::map<std::string, std::string>);
+  void insert();
 private:
   void connect();
-  void query(std::string&);
+  DbObject query_object(std::string const&, bool);
   void close();
 
   MYSQL *mysql;
 };
-
 #endif
