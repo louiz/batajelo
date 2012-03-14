@@ -61,12 +61,12 @@ std::string Config::get(const std::string& option, const std::string& def)
 }
 
 
-int main(int argc, char *argv[])
-{
-  (void)argc;
-  (void)argv;
-  Config::read_conf("./batajelo.conf");
-  std::string res = Config::get("port", "12");
-  std::cout << res << std::endl;
-  return 0;
-}
+// int main(int argc, char *argv[])
+// {
+//   (void)argc;
+//   (void)argv;
+//   Config::read_conf("./batajelo.conf");
+//   std::string res = Config::get("port", "12");
+//   std::cout << res << std::endl;
+//   return 0;
+// }

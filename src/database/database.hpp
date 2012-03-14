@@ -50,6 +50,3 @@ private:
 };
 
 #endif
-
-
-

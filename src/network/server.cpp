@@ -10,7 +10,6 @@ Server::Server(short port):
 Server::~Server()
 {
   std::cout << "closing socket" << std::endl;
-  // this->socket->close();
   delete this->acceptor;
 }
 
