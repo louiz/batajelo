@@ -13,14 +13,14 @@
 #define WHERE\
   __FILE__ << ":" << __LINE__
 
-#define log_debug\
-  Logger::inst()->stream(debug_lvl) << "[DEBUG]:" << WHERE << ":\t\t"
-#define log_info\
-  Logger::inst()->stream(info_lvl) << "[INFO]:" << WHERE << ":\t\t"
-#define log_warning\
-  Logger::inst()->stream(warning_lvl) << "[WARNING]:" << WHERE << ":\t\t"
-#define log_error\
-  Logger::inst()->stream(error_lvl) << "[ERROR]:" << WHERE << ":\t\t"
+#define log_debug(text)\
+  Logger::inst()->stream(debug_lvl) << "[DEBUG]:" << WHERE << ":\t\t" << text << std::endl;
+#define log_info(text)\
+  Logger::inst()->stream(info_lvl) << "[INFO]:" << WHERE << ":\t\t" << text << std::endl;
+#define log_warning(text)\
+  Logger::inst()->stream(warning_lvl) << "[WARNING]:" << WHERE << ":\t\t" << text << std::endl;
+#define log_error(text)\
+  Logger::inst()->stream(error_lvl) << "[ERROR]:" << WHERE << ":\t\t" << text << std::endl;
 
 struct nullstream: public std::ostream
 {

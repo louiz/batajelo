@@ -36,9 +36,9 @@ Logger::~Logger()
 // {
 //   Config::read_conf("../config/batajelo.conf");
 //   int i;
-//   Config::get("log_file", "") == "" ? 2 : 1;
-//   log_debug << "some debug information " << i << std::endl;
-//   log_info << "some information" << std::endl;
-//   log_error << "some error" << std::endl;
+//   i = Config::get("log_file", "") == "" ? 0 : 1;
+//   log_debug("Some debug information: " << i);
+//   log_info("some information");
+//   log_error("some error");
 //   return 0;
 // }
