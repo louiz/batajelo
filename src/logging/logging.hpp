@@ -10,6 +10,18 @@
 #define warning_lvl 2
 #define error_lvl 3
 
+#define WHERE\
+  __FILE__ << ":" << __LINE__
+
+#define log_debug\
+  Logger::inst()->stream(debug_lvl) << "[DEBUG]:" << WHERE << ":\t\t"
+#define log_info\
+  Logger::inst()->stream(info_lvl) << "[INFO]:" << WHERE << ":\t\t"
+#define log_warning\
+  Logger::inst()->stream(warning_lvl) << "[WARNING]:" << WHERE << ":\t\t"
+#define log_error\
+  Logger::inst()->stream(error_lvl) << "[ERROR]:" << WHERE << ":\t\t"
+
 struct nullstream: public std::ostream
 {
   nullstream():
