@@ -1,15 +1,16 @@
 #include "game.hpp"
+#include "../logging/logging.hpp"
 
 #include <unistd.h>
 
 Game::Game()
 {
-  std::cout << "Launching game" << std::endl;
+  log_info << "Launching game" << std::endl;
 }
 
 Game::~Game()
 {
-  std::cout << "End." << std::endl;
+  log_info << "End." << std::endl;
 }
 
 void Game::on_login_form_validated(const std::string& login,
@@ -24,13 +25,13 @@ void Game::on_login_form_validated(const std::string& login,
 
 void Game::on_connection_failed(const std::string& host, const short& port)
 {
-  std::cout << "Connection to remote " << host << ":" << port << " failed" << std::endl;
+  log_debug << "Connection to remote " << host << ":" << port << " failed" << std::endl;
 }
 
 
 void Game::on_connection_success(const std::string& login, const std::string& password)
 {
-  std::cout << "Login in..." << std::endl;
+  log_debug << "Login in..." << std::endl;
   this->authenticate(login, password);
 }
 
@@ -41,7 +42,7 @@ void Game::authenticate(const std::string& login, const std::string& password)
 
 void Game::on_authenticate(const std::string& result)
 {
-  std::cout << "on_authenticate " << result << std::endl;
+  log_debug << "on_authenticate " << result << std::endl;
 }
 
 void Game::run()
@@ -57,7 +58,7 @@ void Game::run()
 // Simulate a login flow
 int main(int argc, char** argv)
 {
-  std::cout << "coucou" << std::endl;
+  Config::read_conf("../config/batajelo.conf");
   Game game;
 
   game.on_login_form_validated("test", "coucou", "127.0.0.1", 7878);

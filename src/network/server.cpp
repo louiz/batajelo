@@ -9,7 +9,7 @@ Server::Server(short port):
 
 Server::~Server()
 {
-  std::cout << "closing socket" << std::endl;
+  log_debug << "closing socket" << std::endl;
   delete this->acceptor;
 }
 
@@ -33,7 +33,7 @@ void Server::accept(void)
   error = this->acceptor->listen(512, error);
   if (error)
     {
-      std::cout << "Error on listen() [" << error << "]. Exiting." << std::endl;
+      log_error << "Error on listen() [" << error << "]. Exiting." << std::endl;
       return;
     }
   this->install_accept_handler();

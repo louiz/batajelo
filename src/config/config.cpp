@@ -60,7 +60,6 @@ std::string Config::get(const std::string& option, const std::string& def)
   return it->second;
 }
 
-
 // int main(int argc, char *argv[])
 // {
 //   (void)argc;
