@@ -17,12 +17,15 @@ class Config
 public:
   ~Config(){};
   static std::string get(const std::string&, const std::string&);
+  static void set(const std::string&, const std::string&);
   static bool read_conf(const std::string&);
   static Config* instance;
 
 private:
   Config(){};
   Config(const Config &){};
+  void save_to_file();
+  std::string filename;
 
   std::map<std::string, std::string> values;
 };

@@ -16,6 +16,7 @@ bool Config::read_conf(const std::string& filename)
 	  instance = 0;
 	  return false;
 	}
+      instance->filename = filename;
 
       std::string line;
       size_t pos;
@@ -60,12 +61,43 @@ std::string Config::get(const std::string& option, const std::string& def)
   return it->second;
 }
 
+void Config::set(const std::string& option, const std::string& value)
+{
+  if (instance == 0)
+    {
+      std::cerr << "Error: Config::read_conf() has never been called" << std::endl;
+      return ;
+    }
+  instance->values[option] = value;
+  instance->save_to_file();
+}
+
+void Config::save_to_file()
+{
+  std::ofstream file(this->filename.data());
+  if (file.fail())
+    {
+      std::cerr << "Could not save config file." << std::endl;
+      return ;
+    }
+  std::map<std::string, std::string>::iterator it;
+  for (it=this->values.begin(); it != this->values.end(); ++it)
+    {
+      std::cout << it->first <<std::endl;
+      file << it->first << "=" << it->second << std::endl;
+    }
+  file.close();
+}
+
 // int main(int argc, char *argv[])
 // {
 //   (void)argc;
 //   (void)argv;
-//   Config::read_conf("./batajelo.conf");
+//   Config::read_conf("./test.conf");
 //   std::string res = Config::get("port", "12");
 //   std::cout << res << std::endl;
+//   Config::set("log_file", "coucou");
+//   Config::set("foutre", "salut");
+//   Config::set("zizi", "pipi");
 //   return 0;
 // }
