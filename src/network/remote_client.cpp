@@ -10,7 +10,7 @@ RemoteClient::RemoteClient(boost::asio::io_service& io_service):
 
 RemoteClient::~RemoteClient()
 {
-  log_info << "Deleting remote client" << std::endl;
+  log_info("Deleting remote client");
   delete this->socket;
 }
 
@@ -26,7 +26,7 @@ void RemoteClient::install_callbacks()
 
 void RemoteClient::auth_callback(const std::string& arg)
 {
-  log_debug << "auth_callback: " << arg << std::endl;
+  log_debug("auth_callback: " << arg);
   // TODO check login for user, check if it is already logged,
   // set it as logged in the database, and return 0 if it failed and 1
   // if it succeded
@@ -35,7 +35,7 @@ void RemoteClient::auth_callback(const std::string& arg)
 
 void RemoteClient::start(void)
 {
-  log_debug << "Starting RemoteClient " << this->number << std::endl;
+  log_debug("Starting RemoteClient " << this->number);
   CommandHandler::install_read_handler();
   this->install_callbacks();
 }

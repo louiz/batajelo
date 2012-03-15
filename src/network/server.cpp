@@ -9,7 +9,7 @@ Server::Server(short port):
 
 Server::~Server()
 {
-  log_debug << "closing socket" << std::endl;
+  log_debug("closing socket");
   delete this->acceptor;
 }
 
@@ -33,7 +33,7 @@ void Server::accept(void)
   error = this->acceptor->listen(512, error);
   if (error)
     {
-      log_error << "Error on listen() [" << error << "]. Exiting." << std::endl;
+      log_error("Error on listen() [" << error << "]. Exiting.");
       return;
     }
   this->install_accept_handler();
@@ -54,6 +54,7 @@ void Server::run()
 // main de test
 int	main(void)
 {
+  Config::read_conf("../config/batajelo.conf");
   Server server(7878);
   server.run();
   return 0;

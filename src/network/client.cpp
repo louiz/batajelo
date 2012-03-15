@@ -9,7 +9,7 @@ Client::~Client()
 {
   if (this->socket->is_open())
     {
-      log_debug << "Closing connection" << std::endl;
+      log_debug("Closing connection");
       this->socket->close();
     }
   delete this->socket;
@@ -23,7 +23,7 @@ void Client::connect(const std::string& host,
 {
   // TODO use resolve and DNS
   tcp::endpoint endpoint(boost::asio::ip::address::from_string(host), port);
-  log_info << "Connecting" << std::endl;
+  log_info("Connecting");
   this->socket->async_connect(endpoint,
 			     boost::bind(&Client::connect_handler, this,
 					 on_success, on_failure,
@@ -36,13 +36,13 @@ void Client::connect_handler(boost::function< void(void) > on_success,
 {
   if (error)
     {
-      log_info << "Connection failed: " << error << std::endl;
+      log_info("Connection failed: " << error);
       if (on_failure)
 	on_failure();
     }
   else
     {
-      log_info << "Connected." << std::endl;
+      log_info("Connected.");
       this->install_read_handler();
       if (on_success)
 	on_success();

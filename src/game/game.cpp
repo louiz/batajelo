@@ -5,12 +5,12 @@
 
 Game::Game()
 {
-  log_info << "Launching game" << std::endl;
+  log_info("Launching game");
 }
 
 Game::~Game()
 {
-  log_info << "End." << std::endl;
+  log_info("End.");
 }
 
 void Game::on_login_form_validated(const std::string& login,
@@ -25,13 +25,13 @@ void Game::on_login_form_validated(const std::string& login,
 
 void Game::on_connection_failed(const std::string& host, const short& port)
 {
-  log_debug << "Connection to remote " << host << ":" << port << " failed" << std::endl;
+  log_debug("Connection to remote " << host << ":" << port << " failed");
 }
 
 
 void Game::on_connection_success(const std::string& login, const std::string& password)
 {
-  log_debug << "Login in..." << std::endl;
+  log_debug("Login in...");
   this->authenticate(login, password);
 }
 
@@ -42,7 +42,7 @@ void Game::authenticate(const std::string& login, const std::string& password)
 
 void Game::on_authenticate(const std::string& result)
 {
-  log_debug << "on_authenticate " << result << std::endl;
+  log_debug("on_authenticate ");
 }
 
 void Game::run()

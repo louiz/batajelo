@@ -7,21 +7,21 @@ CommandHandler::CommandHandler()
 void CommandHandler::install_callback(const std::string& command,
 				      boost::function< void(std::string) > callback)
 {
-  log_debug << "installing callback for command " << command << std::endl;
+  log_debug("installing callback for command " << command);
   this->callbacks[command] = callback;
 }
 
 void CommandHandler::install_callback_once(const std::string& command,
 				      boost::function< void(std::string) > callback)
 {
-  log_debug << "installing ONCE callback for command " << command << std::endl;
+  log_debug("installing ONCE callback for command " << command);
   this->callbacks_once[command] = callback;
 }
 
 
 boost::function< void(std::string) > CommandHandler::get_callback(const std::string& command)
 {
-  log_debug << "get_callback" << std::endl;
+  log_debug("get_callback");
   std::map<const std::string, boost::function< void(std::string) > >::iterator it;
 
   it = this->callbacks.find(command);
@@ -31,7 +31,7 @@ boost::function< void(std::string) > CommandHandler::get_callback(const std::str
   it = this->callbacks_once.find(command);
   if (it != this->callbacks_once.end())
     {
-      log_debug << "Removing callback for command " << command << std::endl;
+      log_debug("Removing callback for command " << command);
       boost::function< void(std::string) > callback = it->second;
       this->callbacks_once.erase(it);
       return callback;
@@ -41,7 +41,7 @@ boost::function< void(std::string) > CommandHandler::get_callback(const std::str
 
 void CommandHandler::read_handler(const boost::system::error_code& error, std::size_t bytes_transferred)
 {
-  log_debug << "read_handler, size: " << bytes_transferred << " bytes.   error: " << error << std::endl;
+  log_debug("read_handler, size: " << bytes_transferred << " bytes.   error: " << error);
 
   if (error)
     {
@@ -53,7 +53,7 @@ void CommandHandler::read_handler(const boost::system::error_code& error, std::s
   this->data.sgetn(c, bytes_transferred);
 
   c[bytes_transferred] = 0;
-  log_debug << "Received: [" << c << "] " << this->data.size() << std::endl;
+  log_debug("Received: [" << c << "] " << this->data.size());
   // find the . separator
   size_t pos = 0;
   while (c[pos] && c[pos] != '.')
@@ -71,7 +71,7 @@ void CommandHandler::read_handler(const boost::system::error_code& error, std::s
       command = std::string(c, pos);
       size = atoi(std::string(c+pos+1, bytes_transferred-pos-2).data()); // remove the ending :
     }
-  log_debug << command << " . " << size << std::endl;
+  log_debug(command << " . " << size);
 
   // Find out if a callback was registered for that command.
   boost::function< void(std::string) > callback = this->get_callback(command);
@@ -91,15 +91,15 @@ void CommandHandler::binary_read_handler(const boost::system::error_code& error,
 					 // std::size_t size,
 					 boost::function<void(std::string)> callback)
 {
-  log_debug << "binary_read_handler" << bytes_transferred << std::endl;
+  log_debug("binary_read_handler" << bytes_transferred);
   char c[bytes_transferred+1];
   this->data.sgetn(c, bytes_transferred);
   c[bytes_transferred] = 0;
-  log_debug << "[" << c << "]" << std::endl;
+  log_debug("[" << c << "]");
   if (callback)
     callback(c);
   else
-    log_debug << "no callback" << std::endl;
+    log_debug("no callback");
   this->install_read_handler();
 }
 
@@ -136,12 +136,12 @@ void CommandHandler::send(const char* msg)
 	      boost::bind(&CommandHandler::send_handler, this,
 			  boost::asio::placeholders::error,
 			  boost::asio::placeholders::bytes_transferred));
-  log_debug << "Sending [" << msg << "]" << std::endl;
+  log_debug("Sending [" << msg << "]");
 }
 
 void CommandHandler::send_handler(const boost::system::error_code& error,
 				  std::size_t bytes_transferred)
 {
   // TODO check for error
-  log_debug << bytes_transferred << " bytes sent" << std::endl;
+  log_debug(bytes_transferred << " bytes sent");
 }

@@ -3,6 +3,8 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 
+#include "../logging/logging.hpp"
+
 #ifndef __COMMAND_HANDLER_HPP__
 # define __COMMAND_HANDLER_HPP__
 
