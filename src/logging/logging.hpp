@@ -13,8 +13,13 @@
 #define WHERE\
   __FILE__ << ":" << __LINE__
 
-#define log_debug(text)\
+#ifdef DEBUG
+# define log_debug(text)
+#else
+# define log_debug(text)\
   Logger::inst()->stream(debug_lvl) << "[DEBUG]:" << WHERE << ":\t\t" << text << std::endl;
+#endif
+
 #define log_info(text)\
   Logger::inst()->stream(info_lvl) << "[INFO]:" << WHERE << ":\t\t" << text << std::endl;
 #define log_warning(text)\
