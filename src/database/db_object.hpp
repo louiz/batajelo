@@ -2,6 +2,8 @@
 
 //string
 #include <iostream>
+#include <string>
+//map
 #include <map>
 //pritf
 #include <stdio.h>
@@ -14,10 +16,11 @@ class DbObject
 {
 public:
   DbObject();
-  ~DbObject();
+	~DbObject();
   const std::string& get(const std::string&);
   void set(std::string, std::string);
   void print();
+	virtual std::string get_class_name();
 
   std::map<std::string, std::string> values;
 };

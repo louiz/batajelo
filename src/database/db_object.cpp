@@ -1,9 +1,16 @@
 #include "db_object.hpp"
 #include "database.hpp"
+#include "../logging/logging.hpp"
 
 DbObject::DbObject() {}
 
 DbObject::~DbObject() {}
+
+std::string DbObject::get_class_name()
+{
+	return "DbObject";
+}
+
 
 void DbObject::set(std::string field, std::string value)
 {
@@ -19,7 +26,7 @@ const std::string& DbObject::get(const std::string& field)
   if (this->values.find(field) != this->values.end())
     return this->values[field];
   else
-    printf("The field %s is not found", field.c_str());
+    log_error("The field " << field.c_str() << " is not found");
 }
 
 void DbObject::print()
@@ -27,16 +34,7 @@ void DbObject::print()
   std::map<std::string, std::string>::iterator it;
 
   for (it = this->values.begin(); it != this->values.end(); it++)
-    std::cout << it->first << " -> " << it->second << std::endl;
+    log_info(it->first << " -> " << it->second);
 }
 
-int main()
-{
-  Database db;
-  DbObject user = db.get_object_by_id("user", "1");
-  std::cout << user.get("login") << std::endl;
-  user.set("login", "louiz@louiz.org");
-  std::cout << user.get("login") << std::endl;
-//  user.save_to_db();
-  return 0;
-}
+

@@ -1,4 +1,7 @@
 #include "database.hpp"
+#include "../logging/logging.hpp"
+
+Database* Database::instance = 0;
 
 Database::Database()
 {
@@ -7,19 +10,21 @@ Database::Database()
 
 Database::~Database() {}
 
+Database* Database::inst()
+{
+  if (instance == 0)
+		instance = new Database;
+  return instance;
+}
+
 void Database::connect()
 {
-  if (this->mysql == NULL)
-  {
     this->mysql = mysql_init(NULL);
     if (this->mysql == NULL)
-      std::cout << "Could'nt init a mysql connection." << std::endl;
-  }
-  if (!mysql_real_connect(this->mysql, DB_HOST, DB_USER, DB_PASSWORD,
-                          DB_DATABASE, DB_PORT, DB_UNIX_SOCKET, DB_CLIENT_FLAG))
-    std::cout << "Couldn't connect to the database." << std::endl;
-    exit (-1);
-  }
+      log_error("Could'nt init a mysql connection.");
+  if (mysql_real_connect(this->mysql, DB_HOST, DB_USER, DB_PASSWORD,
+                          DB_DATABASE, DB_PORT, DB_UNIX_SOCKET, DB_CLIENT_FLAG) == NULL)
+			log_error("Couldn't connect to the database.");
 }
 
 void Database::close()
@@ -28,7 +33,7 @@ void Database::close()
     mysql_close(this->mysql);
 }
 
-DbObject Database::get_object_by_id(const std::string& table, const std::string& id)
+DbObject* Database::get_object_by_id(const std::string& columns, const std::string& table, const std::string& where)
 {
   MYSQL_RES* result = NULL;
   MYSQL_ROW mysql_row = NULL;
@@ -37,15 +42,13 @@ DbObject Database::get_object_by_id(const std::string& table, const std::string&
   unsigned int field_id = 0;
   unsigned int fields_number = 0;
   unsigned int error;
-  DbObject db_object;
+  DbObject* db_object = new DbObject;
 
-  const std::string query = "SELECT * FROM " + table + " WHERE id = " + id;
+	const std::string query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
   this->connect();
   error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
-  {
-    printf("Couldn't query the database : %d\n", error);
-  }
+		log_error("Couldn't query the database : " << error);
   result = mysql_use_result(this->mysql);
   if (result)
   {
@@ -54,18 +57,19 @@ DbObject Database::get_object_by_id(const std::string& table, const std::string&
     while ((mysql_row = mysql_fetch_row(result)))
     {
       for(; field_id < fields_number; field_id++)
-        db_object.values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
+        db_object->values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
     }
     mysql_free_result(result);
     this->close();
     return db_object;
   }
   else
-    printf("No result found !\n");
+   log_warning("No result found !\n");
 }
 
-std::vector<DbObject> Database::get_objects_by_id(const std::string& table, const std::string& id)
+std::vector<DbObject*> Database::get_objects_by_id(const std::string& columns, const std::string& table, const std::string& where)
 {
+	std::cout << "da_fu";
   MYSQL_RES* result = NULL;
   MYSQL_ROW mysql_row = NULL;
   MYSQL_FIELD* fields;
@@ -73,16 +77,16 @@ std::vector<DbObject> Database::get_objects_by_id(const std::string& table, cons
   unsigned int field_id = 0;
   unsigned int fields_number = 0;
   unsigned int error;
-  DbObject db_object;
-  std::vector<DbObject> db_objects;
+  std::cout << "0";
+  DbObject* db_object = new DbObject;
+  std::cout << "0.5";
+  std::vector<DbObject*> db_objects;
+	const std::string query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
 
-  const std::string query = "SELECT * FROM " + table + " WHERE id = " + id;
   this->connect();
   error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
-  {
-    printf("Couldn't query the database : %d\n", error);
-  }
+		log_error("Couldn't query the database : " << error);
   result = mysql_use_result(this->mysql);
   if (result)
   {
@@ -90,14 +94,45 @@ std::vector<DbObject> Database::get_objects_by_id(const std::string& table, cons
     fields = mysql_fetch_fields(result);
     while ((mysql_row = mysql_fetch_row(result)))
     {
-      for(; field_id < fields_number; field_id++)
-        db_object.values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
-      db_objects.push_back(db_object);
+      for(field_id = 0; field_id < fields_number; field_id++)
+      {
+      	std::cout << "1";
+        db_object->values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
+        std::cout << "2";
+				db_objects.push_back(db_object);
+				db_object->values.clear();
+      }
     }
     mysql_free_result(result);
     this->close();
     return db_objects;
   }
   else
-    printf("No result found !\n");
+		log_warning("No result found !\n");
+}
+
+void Database::update(std::string*& fields)
+{
+	unsigned int error;
+	unsigned int i;
+	std::map<std::string, std::string>::const_iterator it;
+  std::string query = "UPDATE FROM ";
+   //+ this->className();
+
+	for (i = 0; i != sizeof(fields); i++)
+	{
+	/*	it = this->values.find(fields[i]);
+		if (it != this->values.end())
+			query += " SET " + fields[i] + " = " + it->second;
+		else
+			log_error("The field " << fields[i]() << " is not found");*/
+	}
+	query += " WHERE id = ";
+	//+ id;
+
+	this->connect();
+	error = mysql_query(this->mysql, query.c_str());
+  if (error != 0)
+		log_error("Couldn't query the database : " << error);
+
 }

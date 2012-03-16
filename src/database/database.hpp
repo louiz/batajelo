@@ -7,8 +7,9 @@
 
 //mysql methods
 #include <mysql.h>
-//cout
+//cout / string
 #include <iostream>
+#include <string>
 //vector
 #include <vector>
 //map
@@ -30,17 +31,20 @@
 class Database
 {
 public:
-  Database();
   ~Database();
-  DbObject get_object_by_id(const std::string&, const std::string&);
-  std::vector<DbObject> get_objects_by_id(const std::string&, const std::string&);
-  void update(std::map<std::string, std::string>);
+	static Database* inst();
+  DbObject* get_object_by_id(const std::string&, const std::string&, const std::string&);
+  std::vector<DbObject*> get_objects_by_id(const std::string&, const std::string&, const std::string&);
+  void update(std::string*&);
   void insert();
+
 private:
+  Database();
   void connect();
   DbObject query_object(std::string const&, bool);
   void close();
 
+	static Database* instance;
   MYSQL *mysql;
 };
 #endif
