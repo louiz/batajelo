@@ -7,9 +7,13 @@ Database* Database::instance = 0;
 Database::Database()
 {
   this->mysql = NULL;
+  this->connect();
 }
 
-Database::~Database() {}
+Database::~Database()
+{
+  this->close();
+}
 
 Database* Database::inst()
 {
@@ -53,9 +57,9 @@ DbObject* Database::get_object_by_id(const std::string& columns, const std::stri
   unsigned int fields_number = 0;
   unsigned int error;
   DbObject* db_object = new DbObject;
-	const std::string& query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
+  const std::string& query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
 
-	log_debug("Doing query [" << query << "]");
+  log_debug("Doing query [" << query << "]");
   this->connect();
   error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
