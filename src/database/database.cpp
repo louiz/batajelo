@@ -1,5 +1,6 @@
 #include "database.hpp"
 #include "../logging/logging.hpp"
+#include "../config/config.hpp"
 
 Database* Database::instance = 0;
 
@@ -22,9 +23,18 @@ void Database::connect()
     this->mysql = mysql_init(NULL);
     if (this->mysql == NULL)
       log_error("Could'nt init a mysql connection.");
-  if (mysql_real_connect(this->mysql, DB_HOST, DB_USER, DB_PASSWORD,
-                          DB_DATABASE, DB_PORT, DB_UNIX_SOCKET, DB_CLIENT_FLAG) == NULL)
-			log_error("Couldn't connect to the database.");
+    log_debug("Connecting to database using: host:" << Config::get("db_host", "localhost").data() << " user:" << Config::get("db_user", "root").data() << " pass:" << Config::get("db_password", "").data() << " db:" << Config::get("db_database", "batajelo").data());
+    if (mysql_real_connect(this->mysql,
+			   Config::get("db_host", "localhost").data(), Config::get("db_user", "root").data(),
+			   Config::get("db_password", "").data(), Config::get("db_database", "batajelo").data(),
+			   DB_PORT, DB_UNIX_SOCKET, DB_CLIENT_FLAG) == NULL)
+      {
+	log_error("Couldn't connect to the database.");
+      }
+    else
+      {
+      log_debug("Connected to database");
+      }
 }
 
 void Database::close()
@@ -44,7 +54,8 @@ DbObject* Database::get_object_by_id(const std::string& columns, const std::stri
   unsigned int error;
   DbObject* db_object = new DbObject;
 
-	const std::string query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
+  const std::string query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
+  log_debug("Doing query [" << query << "]");
   this->connect();
   error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
