@@ -29,7 +29,7 @@ std::vector<User*> User::get_friends()
 		std::vector<DbObject*> friends_obj = Database::inst()->get_objects_by_id("user.id, user.login, user.password, user.last_login", "user", where);
 		if (friends_obj.size() > 0)
 		{
-			for (objs_it = friends_obj.begin(); objs_it != friends_ids.end(); objs_it++)
+			for (objs_it = friends_obj.begin(); objs_it != friends_obj.end(); objs_it++)
 				friends.push_back(static_cast<User*>(*objs_it));
 		}
 		else

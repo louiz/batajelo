@@ -5,8 +5,6 @@
 #include <string>
 //map
 #include <map>
-//printf
-#include <stdio.h>
 //vector
 #include <vector>
 
