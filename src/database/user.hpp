@@ -11,8 +11,9 @@ class User : public DbObject
 {
 public:
   User();
+  User(DbObject);
   ~User();
-  std::vector<User> get_friends();
+  std::vector<User*> get_friends();
 	virtual std::string get_class_name();
 
   std::map<std::string, std::string> values;

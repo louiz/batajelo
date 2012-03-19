@@ -5,9 +5,10 @@
 #include <string>
 //map
 #include <map>
-//pritf
+//printf
 #include <stdio.h>
-
+//vector
+#include <vector>
 
 #ifndef __DB_OBJECT_HPP__
 # define __DB_OBJECT_HPP__
@@ -20,7 +21,8 @@ public:
   const std::string& get(const std::string&);
   void set(std::string, std::string);
   void print();
-  virtual std::string get_class_name();
+ 	template<typename T>
+ 	void print_vector(std::vector<T*>);
 
   std::map<std::string, std::string> values;
 };

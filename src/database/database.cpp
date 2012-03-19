@@ -53,9 +53,8 @@ DbObject* Database::get_object_by_id(const std::string& columns, const std::stri
   unsigned int fields_number = 0;
   unsigned int error;
   DbObject* db_object = new DbObject;
+	const std::string& query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
 
-  const std::string query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
-  log_debug("Doing query [" << query << "]");
   this->connect();
   error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
@@ -80,7 +79,6 @@ DbObject* Database::get_object_by_id(const std::string& columns, const std::stri
 
 std::vector<DbObject*> Database::get_objects_by_id(const std::string& columns, const std::string& table, const std::string& where)
 {
-	std::cout << "da_fu";
   MYSQL_RES* result = NULL;
   MYSQL_ROW mysql_row = NULL;
   MYSQL_FIELD* fields;
@@ -88,11 +86,8 @@ std::vector<DbObject*> Database::get_objects_by_id(const std::string& columns, c
   unsigned int field_id = 0;
   unsigned int fields_number = 0;
   unsigned int error;
-  std::cout << "0";
-  DbObject* db_object = new DbObject;
-  std::cout << "0.5";
   std::vector<DbObject*> db_objects;
-	const std::string query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
+	const std::string& query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
 
   this->connect();
   error = mysql_query(this->mysql, query.c_str());
@@ -107,11 +102,9 @@ std::vector<DbObject*> Database::get_objects_by_id(const std::string& columns, c
     {
       for(field_id = 0; field_id < fields_number; field_id++)
       {
-      	std::cout << "1";
+				DbObject* db_object = new DbObject;
         db_object->values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
-        std::cout << "2";
 				db_objects.push_back(db_object);
-				db_object->values.clear();
       }
     }
     mysql_free_result(result);

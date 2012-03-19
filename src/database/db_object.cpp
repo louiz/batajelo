@@ -6,12 +6,6 @@ DbObject::DbObject() {}
 
 DbObject::~DbObject() {}
 
-std::string DbObject::get_class_name()
-{
-	return "DbObject";
-}
-
-
 void DbObject::set(std::string field, std::string value)
 {
   std::map<std::string, std::string>::iterator it = this->values.find(field);
@@ -32,9 +26,18 @@ const std::string& DbObject::get(const std::string& field)
 void DbObject::print()
 {
   std::map<std::string, std::string>::iterator it;
+	std::cout << this->values.size();
 
   for (it = this->values.begin(); it != this->values.end(); it++)
     log_info(it->first << " -> " << it->second);
 }
 
+template<typename T> void DbObject::print_vector(std::vector<T*> objs)
+{
+	// WTF, doesnt work :(
+/*	std::vector<T::template>::iterator t_it;
+
+  for (t_it = objs.begin(); it != objs.end(); t_it++)
+		(*t_it).print();*/
+}
 
