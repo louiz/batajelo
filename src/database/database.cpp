@@ -47,72 +47,85 @@ void Database::close()
     mysql_close(this->mysql);
 }
 
-DbObject* Database::get_object_by_id(const std::string& columns, const std::string& table, const std::string& where)
+MYSQL_RES* Database::do_query(const std::string& query) const
 {
-  MYSQL_RES* result = NULL;
-  MYSQL_ROW mysql_row = NULL;
-  MYSQL_FIELD* fields;
-  unsigned int row_id = 0;
-  unsigned int field_id = 0;
-  unsigned int fields_number = 0;
-  unsigned int error;
-  DbObject* db_object = new DbObject;
-  const std::string& query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
 
   log_debug("Doing query [" << query << "]");
-  error = mysql_query(this->mysql, query.c_str());
+  const unsigned int error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
-		log_error("Couldn't query the database : " << error);
-  result = mysql_use_result(this->mysql);
-  if (result)
-  {
-    fields_number = mysql_num_fields(result);
-    fields = mysql_fetch_fields(result);
-    while ((mysql_row = mysql_fetch_row(result)))
     {
-      for(; field_id < fields_number; field_id++)
-        db_object->values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
+      log_error("Couldn't query the database: " << error);
+      return NULL;
     }
-    mysql_free_result(result);
-    return db_object;
-  }
-  else
-   log_warning("No result found !\n");
+  MYSQL_RES* result = mysql_use_result(this->mysql);
+  if (!result)
+    {
+      log_warning("No result found!");
+      return NULL;
+    }
+  return result;
 }
 
-std::vector<DbObject*> Database::get_objects_by_id(const std::string& columns, const std::string& table, const std::string& where)
+DbObject* Database::get_object(const std::string& columns,
+			       const std::string& table,
+			       const std::string& where) const
 {
-  MYSQL_RES* result = NULL;
-  MYSQL_ROW mysql_row = NULL;
-  MYSQL_FIELD* fields;
-  unsigned int row_id = 0;
-  unsigned int field_id = 0;
-  unsigned int fields_number = 0;
-  unsigned int error;
-  std::vector<DbObject*> db_objects;
-	const std::string& query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
+  MYSQL_RES* result = this->do_query("SELECT " + columns + " FROM " + table + " WHERE " + where);
+  if (!result)
+    return NULL;
 
-	log_debug("Doing query [" << query << "]");
-  error = mysql_query(this->mysql, query.c_str());
-  if (error != 0)
-		log_error("Couldn't query the database : " << error);
-  result = mysql_use_result(this->mysql);
-  if (result)
-  {
-    fields_number = mysql_num_fields(result);
-    fields = mysql_fetch_fields(result);
-    while ((mysql_row = mysql_fetch_row(result)))
+  MYSQL_ROW mysql_row = mysql_fetch_row(result);
+  // If there’s no result, we just return NULL
+  if (mysql_row == NULL )
     {
-			DbObject* db_object = new DbObject;
-      for(field_id = 0; field_id < fields_number; field_id++)
-        db_object->values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
-			db_objects.push_back(db_object);
+      log_warning("No row returned");
+      return NULL;
     }
-    mysql_free_result(result);
+  // We can fill the object with the data from the database
+  DbObject* db_object = new DbObject;
+  unsigned int fields_number = mysql_num_fields(result);
+  unsigned int field_id = 0;
+  MYSQL_FIELD* fields = mysql_fetch_fields(result);
+  for (; field_id < fields_number; field_id++)
+    if (mysql_row[field_id])  // if the value is NULL, we don’t append anything
+      db_object->values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
+#ifdef DEBUG
+  // If there are more than one result, we might want to use get_objects instead
+  if (mysql_fetch_row(result) != NULL)
+    log_warning("More than row returned in get_object.");
+#endif
+  mysql_free_result(result);
+
+  return db_object;
+}
+
+std::vector<DbObject*> Database::get_objects(const std::string& columns,
+					     const std::string& table,
+					     const std::string& where) const
+{
+  MYSQL_RES* result = this->do_query("SELECT " + columns + " FROM " + table + " WHERE " + where);
+  std::vector<DbObject*> db_objects;
+
+  // It's OK to return an empty list. We must always check that the vector
+  // is not empty when using this method.
+  if (!result)
     return db_objects;
-  }
-  else
-		log_warning("No result found !\n");
+
+  unsigned int field_id = 0;
+  unsigned int fields_number = mysql_num_fields(result);
+  MYSQL_FIELD* fields = mysql_fetch_fields(result);
+  MYSQL_ROW mysql_row = NULL;
+  while ((mysql_row = mysql_fetch_row(result)))
+    {
+      log_debug("Inserting one object in result vector");
+      DbObject* db_object = new DbObject;
+      for(field_id = 0; field_id < fields_number; field_id++)
+	if (mysql_row[field_id])  // if the value is NULL, we don’t append anything
+	  db_object->values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
+      db_objects.push_back(db_object);
+    }
+  mysql_free_result(result);
+  return db_objects;
 }
 
 void Database::update(std::string*& fields)

@@ -14,13 +14,16 @@ void DbObject::set(std::string field, std::string value)
   this->values.insert(std::make_pair(field, value));
 }
 
-const std::string& DbObject::get(const std::string& field)
+const std::string DbObject::get(const std::string& field) const
 {
- // std::map<std::string, std::string>::const_iterator it = this->values.find(field);
-  if (this->values.find(field) != this->values.end())
-    return this->values[field];
+  std::map<std::string, std::string>::const_iterator it = this->values.find(field);
+  if (it != this->values.end())
+    return it->second;
   else
-    log_error("The field " << field.c_str() << " is not found");
+    {
+      log_error("The field " << field.c_str() << " is not found");
+      return "";
+    }
 }
 
 void DbObject::print()

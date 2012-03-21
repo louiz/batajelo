@@ -16,7 +16,7 @@ class DbObject
 public:
   DbObject();
   ~DbObject();
-  const std::string& get(const std::string&);
+  const std::string get(const std::string&) const;
   void set(std::string, std::string);
   void print();
  	template<typename T>
