@@ -28,11 +28,10 @@ class Database
 {
 public:
   ~Database();
-	static Database* inst();
+  static Database* inst();
   DbObject* get_object(const std::string&, const std::string&, const std::string&) const;
   std::vector<DbObject*> get_objects(const std::string&, const std::string&, const std::string&) const;
   MYSQL_RES* do_query(const std::string&) const;
-
   void update(std::string*&);
   void insert();
 

@@ -6,11 +6,11 @@ DbObject::DbObject() {}
 
 DbObject::~DbObject() {}
 
-void DbObject::set(std::string field, std::string value)
+void DbObject::set(const std::string& field, const std::string& value)
 {
   std::map<std::string, std::string>::iterator it = this->values.find(field);
   if (it != this->values.end())
-   this->values.erase(it);
+    this->values.erase(it);
   this->values.insert(std::make_pair(field, value));
 }
 
@@ -23,6 +23,28 @@ const std::string DbObject::get(const std::string& field) const
     {
       log_error("The field " << field.c_str() << " is not found");
       return "";
+    }
+}
+
+const int DbObject::get_int(const std::string& field) const
+{
+  std::string res = this->get(field);
+  return atoi(res.data());
+}
+
+boost::posix_time::ptime DbObject::get_date(const std::string& field) const
+{
+  std::string res = this->get(field);
+  try
+    {
+      boost::posix_time::ptime d(boost::posix_time::time_from_string(res));
+      return d;
+    }
+  catch (std::exception& e)
+    {
+      log_error("could not get date: " << e.what());
+      boost::posix_time::ptime time;
+      return time;
     }
 }
 
