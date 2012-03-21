@@ -75,7 +75,7 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
   // Find out if a callback was registered for that command.
   boost::function< void(std::string) > callback = this->get_callback(command);
   // We check what we need to read on the socket to have the rest of the binary datas
-  std::size_t length_to_read = this->data.size() >= size ? 0 : size - this->data.size();
+  const std::size_t length_to_read = this->data.size() >= size ? 0 : size - this->data.size();
 
   boost::asio::async_read(*this->socket,
 			  this->data,
