@@ -18,7 +18,6 @@ void CommandHandler::install_callback_once(const std::string& command,
   this->callbacks_once[command] = callback;
 }
 
-
 boost::function< void(std::string) > CommandHandler::get_callback(const std::string& command)
 {
   log_debug("get_callback");
@@ -39,7 +38,7 @@ boost::function< void(std::string) > CommandHandler::get_callback(const std::str
   return 0;
 }
 
-void CommandHandler::read_handler(const boost::system::error_code& error, std::size_t bytes_transferred)
+void CommandHandler::read_handler(const boost::system::error_code& error, const std::size_t bytes_transferred)
 {
   log_debug("read_handler, size: " << bytes_transferred << " bytes.   error: " << error);
 

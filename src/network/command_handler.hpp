@@ -17,7 +17,7 @@ class CommandHandler
 public:
   CommandHandler();
   ~CommandHandler() {}
-  void read_handler(const boost::system::error_code& error, std::size_t bytes_transferred);
+  void read_handler(const boost::system::error_code& error, const std::size_t bytes_transferred);
   void install_read_handler();
 
   void binary_read_handler(const boost::system::error_code&, std::size_t, boost::function<void(std::string)>);
