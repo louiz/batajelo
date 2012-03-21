@@ -60,7 +60,6 @@ DbObject* Database::get_object_by_id(const std::string& columns, const std::stri
   const std::string& query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
 
   log_debug("Doing query [" << query << "]");
-  this->connect();
   error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
 		log_error("Couldn't query the database : " << error);
@@ -75,7 +74,6 @@ DbObject* Database::get_object_by_id(const std::string& columns, const std::stri
         db_object->values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
     }
     mysql_free_result(result);
-    this->close();
     return db_object;
   }
   else
@@ -95,7 +93,6 @@ std::vector<DbObject*> Database::get_objects_by_id(const std::string& columns, c
 	const std::string& query = "SELECT " + columns + " FROM " + table + " WHERE " + where;
 
 	log_debug("Doing query [" << query << "]");
-  this->connect();
   error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
 		log_error("Couldn't query the database : " << error);
@@ -112,7 +109,6 @@ std::vector<DbObject*> Database::get_objects_by_id(const std::string& columns, c
 			db_objects.push_back(db_object);
     }
     mysql_free_result(result);
-    this->close();
     return db_objects;
   }
   else
@@ -138,7 +134,6 @@ void Database::update(std::string*& fields)
 	query += " WHERE id = ";
 	//+ id;
 
-	this->connect();
 	error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
 		log_error("Couldn't query the database : " << error);
