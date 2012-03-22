@@ -86,7 +86,7 @@ private:
   DbObject query_object(std::string const&, bool);
   void close();
 
-	static Database* instance;
+  static Database* instance;
   MYSQL *mysql;
 };
 #endif

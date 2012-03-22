@@ -65,12 +65,13 @@ public:
    * @todo Create a print for vector.
    * @return void
    */
- 	template<typename T>
- 	void print_vector(std::vector<T*>);
+  template<typename T>
+  void print_vector(std::vector<T*>);
   /**@}*/
   /**
    * Database object values.
    */
+
   std::map<std::string, std::string> values;
 };
 
