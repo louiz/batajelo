@@ -50,8 +50,9 @@ std::string Config::get(const std::string& option, const std::string& def)
 {
   if (instance == 0)
     {
-      std::cerr << "Error: Config::read_conf() has never been called" << std::endl;
-      return 0;
+      // We can use a default path, only for testing purpose, to avoid
+      // the boring Config::read_conf() at the start of every test suite
+      Config::read_conf("../batajelo.conf");
     }
 
   std::map<std::string, std::string>::iterator it = instance->values.find(option);
