@@ -50,12 +50,3 @@ void Server::run()
   this->accept();
   this->io_service.run();
 }
-
-// main de test
-int	main(void)
-{
-  Config::read_conf("../config/server.conf");
-  Server server(7878);
-  server.run();
-  return 0;
-}
