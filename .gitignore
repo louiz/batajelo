@@ -1,0 +1,10 @@
+# CODE BLOCKS
+*.cbp
+*.depend
+*.layout
+src/database/bin
+src/database/obj
+# DLL
+src/database/libmysql.dll
+# CONF
+src/config/database.conf

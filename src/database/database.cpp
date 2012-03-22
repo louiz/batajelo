@@ -92,7 +92,7 @@ DbObject* Database::get_object(const std::string& columns,
 #ifdef DEBUG
   // If there are more than one result, we might want to use get_objects instead
   if (mysql_fetch_row(result) != NULL)
-    log_warning("More than row returned in get_object.");
+    log_warning("More than one row returned in get_object.");
 #endif
   mysql_free_result(result);
 
@@ -152,3 +152,7 @@ void Database::update(std::string*& fields)
 		log_error("Couldn't query the database : " << error);
 
 }
+
+ void Database::insert()
+ {
+ }
