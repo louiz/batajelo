@@ -17,7 +17,7 @@
 #include <vector>
 #include <map>
 
-#include "db_object.hpp"
+#include <database/db_object.hpp>
 
 #ifndef __DATABASE_HPP__
 # define __DATABASE_HPP__

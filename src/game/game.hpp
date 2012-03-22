@@ -1,7 +1,7 @@
 // The main class for the game itself
 
 // Network
-#include "client.hpp"
+#include <network/client.hpp>
 
 #ifndef __GAME_HPP__
 # define __GAME_HPP__

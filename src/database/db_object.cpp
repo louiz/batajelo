@@ -1,6 +1,6 @@
-#include "db_object.hpp"
-#include "database.hpp"
-#include "../logging/logging.hpp"
+#include <database/db_object.hpp>
+#include <database/database.hpp>
+#include <logging/logging.hpp>
 
 DbObject::DbObject() {}
 

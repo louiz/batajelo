@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "db_object.hpp"
+#include <database/db_object.hpp>
 
 #ifndef __USER_HPP__
 # define __USER_HPP__

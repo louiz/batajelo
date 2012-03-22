@@ -4,7 +4,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 
-#include "remote_client.hpp"
+#include <network/remote_client.hpp>
 
 #ifndef __SERVER_HPP__
 # define __SERVER_HPP__

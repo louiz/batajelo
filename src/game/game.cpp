@@ -1,5 +1,5 @@
-#include "game.hpp"
-#include "../logging/logging.hpp"
+#include <game/game.hpp>
+#include <logging/logging.hpp>
 
 #include <unistd.h>
 

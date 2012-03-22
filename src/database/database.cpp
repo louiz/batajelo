@@ -1,6 +1,6 @@
-#include "database.hpp"
-#include "../logging/logging.hpp"
-#include "../config/config.hpp"
+#include <database/database.hpp>
+#include <logging/logging.hpp>
+#include <config/config.hpp>
 
 Database* Database::instance = 0;
 

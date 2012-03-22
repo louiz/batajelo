@@ -1,4 +1,4 @@
-#include "client.hpp"
+#include <network/client.hpp>
 
 Client::Client()
 {

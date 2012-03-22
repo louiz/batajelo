@@ -1,7 +1,7 @@
 #include <istream>
 
-#include "server.hpp"
-#include "remote_client.hpp"
+#include <network/server.hpp>
+#include <network/remote_client.hpp>
 
 // main de test
 int	main(void)

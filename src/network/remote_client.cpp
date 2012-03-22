@@ -1,4 +1,4 @@
-#include "remote_client.hpp"
+#include <network/remote_client.hpp>
 
 int RemoteClient::clients_number = 0;
 

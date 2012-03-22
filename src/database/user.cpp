@@ -1,6 +1,6 @@
-#include "user.hpp"
-#include "database.hpp"
-#include "../logging/logging.hpp"
+#include <database/user.hpp>
+#include <database/database.hpp>
+#include <logging/logging.hpp>
 
 User::User() {}
 
