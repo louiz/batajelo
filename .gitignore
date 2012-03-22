@@ -10,3 +10,7 @@ src/database/libmysql.dll
 src/config/database.conf
 # DOXYGEN
 doxygen/Doxyfile
+# emacs
+*~
+# g++
+*.o
