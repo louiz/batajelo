@@ -8,3 +8,5 @@ src/database/obj
 src/database/libmysql.dll
 # CONF
 src/config/database.conf
+# DOXYGEN
+doxygen/Doxyfile
