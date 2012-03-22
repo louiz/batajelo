@@ -44,7 +44,7 @@ public:
   ~Database();
   /**
    * Create a single instance of Database.
-   * @return Database instance
+   * @return Database*
    */
   static Database* inst();
   /**
@@ -52,11 +52,7 @@ public:
    * @param const std::string& columns The database columns to fetch.
    * @param const std::string& table   The database table to query.
    * @param const std::string& where   The where query.
-   * @retval DbObject
-            <ul>
-              <li> NULL = failure </li>
-              <li> DbObject* = success </li>
-            </ul>
+   * @retval DbObject*
   */
   DbObject* get_object(const std::string&, const std::string&, const std::string&) const;
   /**
@@ -64,21 +60,13 @@ public:
    * @param const std::string&  columns
    * @param const std::string&  table
    * @param const std::string&  where
-   * @retval DbObject vector
-              <ul>
-                <li> NULL = failure </li>
-                <li> std::vector<DbObject*> = success </li>
-              </ul>
+   * @return std::vector<DbObject*>
   */
   std::vector<DbObject*> get_objects(const std::string&, const std::string&, const std::string&) const;
   /**
    * Query the database.
    * @param const std::string& query
-   * @retval The query result.
-              <ul>
-                <li> NULL = failure </li>
-                <li> MYSQL_RES* = success </li>
-              </ul>
+   * @return MYSQL_RES*
    */
   MYSQL_RES* do_query(const std::string&) const;
   /**
