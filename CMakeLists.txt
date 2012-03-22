@@ -12,7 +12,7 @@ if(DOXYGEN_FOUND)
     "${PROJECT_SOURCE_DIR}/doxygen/Doxyfile")
   add_custom_target(doc
     ${DOXYGEN_EXECUTABLE}
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doxygen
     COMMENT "Generating API documentation with Doxygen" VERBATIM)
 endif(DOXYGEN_FOUND)
 

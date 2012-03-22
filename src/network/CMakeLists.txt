@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 include(FindBoost)
 find_package(
 	Boost 
-	1.49.0
+	1.48.0
 	REQUIRED system
 )
 
