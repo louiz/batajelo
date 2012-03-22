@@ -6,16 +6,14 @@ bool Config::read_conf(const std::string& filename)
 {
   if (instance == 0)
     {
-      instance = new Config();
       std::ifstream file;
       file.open(filename.data());
       if (!file.is_open())
 	{
 	  std::cerr << "Error: cannot open config file " << filename << std::endl;
-	  delete instance;
-	  instance = 0;
 	  return false;
 	}
+      instance = new Config();
       instance->filename = filename;
 
       std::string line;
