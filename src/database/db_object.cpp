@@ -66,3 +66,7 @@ template<typename T> void DbObject::print_vector(std::vector<T*> objs)
 		(*t_it).print();*/
 }
 
+const std::string DbObject::get_class_name() const
+{
+  return std::string("");
+}

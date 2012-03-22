@@ -60,11 +60,22 @@ MYSQL_RES* Database::do_query(const std::string& query) const
     }
   MYSQL_RES* result = mysql_use_result(this->mysql);
   if (!result)
-    {
-      log_warning("No result found!");
-      return NULL;
-    }
+    return NULL;
   return result;
+}
+
+bool Database::do_update(const std::string& query) const
+{
+  log_debug("Doing update [" << query << "]");
+  const unsigned int error = mysql_query(this->mysql, query.c_str());
+  if (error != 0)
+    {
+      log_error("Couldn't query the database: " << error);
+      return false;
+    }
+  if (mysql_affected_rows(this->mysql) == 0)
+    return false;
+  return true;
 }
 
 DbObject* Database::get_object(const std::string& columns,
@@ -128,31 +139,34 @@ std::vector<DbObject*> Database::get_objects(const std::string& columns,
   return db_objects;
 }
 
-void Database::update(std::string*& fields)
-{
-	unsigned int error;
-	unsigned int i;
-	std::map<std::string, std::string>::const_iterator it;
-  std::string query = "UPDATE FROM ";
-   //+ this->className();
+const bool Database::update(const DbObject* object, const std::string& table_name) const
+  {
+    std::string query = "INSERT INTO " + table_name;
+    std::string fields_str = "(";
+    std::string values_str = "VALUES (";
+    std::string update_str = "ON DUPLICATE KEY UPDATE ";
 
-	for (i = 0; i != sizeof(fields); i++)
-	{
-	/*	it = this->values.find(fields[i]);
-		if (it != this->values.end())
-			query += " SET " + fields[i] + " = " + it->second;
-		else
-			log_error("The field " << fields[i]() << " is not found");*/
-	}
-	query += " WHERE id = ";
-	//+ id;
+    std::map<std::string, std::string>::const_iterator it;
+    // Use this iterator to detect the last element in the vector
+    std::map<std::string, std::string>::const_iterator final_it = object->values.end();
+    --final_it;
 
-	error = mysql_query(this->mysql, query.c_str());
-  if (error != 0)
-		log_error("Couldn't query the database : " << error);
+    // unsigned int i;
+    for (it = object->values.begin(); it != object->values.end(); ++it)
+      {
+  	fields_str += "`" + it->first + "`";
+  	values_str += "'" + it->second + "'";
+  	update_str += "`" + it->first + "`='" + it->second + "'";
+  	if (it != final_it)
+  	  {
+  	    fields_str += ",";
+  	    values_str += ",";
+  	    update_str += ",";
+  	  }
+      }
+    query += fields_str + ") " + values_str + ") " + update_str;
 
-}
-
- void Database::insert()
- {
- }
+    if (this->do_update(query) == false)
+      return false;
+    return true;
+  };

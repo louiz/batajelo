@@ -70,15 +70,12 @@ public:
    */
   MYSQL_RES* do_query(const std::string&) const;
   /**
-   * @todo Update a database object.
-   * @return void
+   * Update a database object (insert it if it doesn’t already exist
+   * or create it if it’s new).
+   * @return bool
    */
-  void update(std::string*&);
-  /**
-   * @todo Insert a database object.
-   * @return void
-   */
-  void insert();
+  bool const update(const DbObject* object, const std::string&) const;
+  bool do_update(const std::string&) const;
 
 private:
   Database();
