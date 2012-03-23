@@ -7,7 +7,7 @@ src/database/obj
 # DLL
 src/database/libmysql.dll
 # CONF
-src/config/database.conf
+src/batajelo.conf
 # DOXYGEN
 doxygen/Doxyfile
 # emacs

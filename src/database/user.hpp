@@ -20,21 +20,21 @@ public:
   User();
   ~User();
   /**
+   * Add  a friend.
+   * @param id The friend id.
+   * @return void
+   */
+  void add_friend(const std::string&);
+  /**
    * Get friends infos.
    * @return std::vector<User*>
    */
   std::vector<User*> get_friends();
-  /**
-   * @todo use this instead of from ?
-   * @return std::string
-   */
-  std::string get_class_name();
+
   /**
    * User values
    */
   std::map<std::string, std::string> values;
-
-  virtual const std::string get_class_name() const;
 
 private:
   User(const DbObject&);

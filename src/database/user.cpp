@@ -6,9 +6,13 @@ User::User() {}
 
 User::~User() {}
 
-const std::string User::get_class_name() const
+void User::add_friend(const std::string& friend_id)
 {
-  return "User";
+  DbObject* friendship = new DbObject();
+  friendship->set("user_id", this->get("id"));
+  friendship->set("friend_id", friend_id);
+  if (Database::inst()->update(friendship, "User_Friend") != true)
+    log_error("Friendship Failed !");
 }
 
 std::vector<User*> User::get_friends()
