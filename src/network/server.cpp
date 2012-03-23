@@ -13,9 +13,6 @@ Server::~Server()
   delete this->acceptor;
 }
 
-// Callback that is called from io_service.run(), from the main (and only) thread.
-// Even if there is data to read on two sockets at the same time, this handler will never be
-// called twice at the same time. No need to use a mutex or lock.
 void Server::install_accept_handler(void)
 {
   RemoteClient* new_client = new RemoteClient(this->io_service);

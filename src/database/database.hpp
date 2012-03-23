@@ -48,39 +48,48 @@ public:
    */
   static Database* inst();
   /**
-   * Get an object of the database.
-   * @param const std::string& columns The database columns to fetch.
-   * @param const std::string& table   The database table to query.
-   * @param const std::string& where   The where query.
-   * @retval DbObject*
+   * Get an object of the database. If the SQL query would return more than one
+   * row, you should use get_objects instead.
+   * If there’s no row, it returns NULL.
+   * @param columns The database columns to fetch.
+   * @param table   The database table to query.
+   * @param where   The where query.
+   * @return DbObject*
   */
   DbObject* get_object(const std::string&, const std::string&, const std::string&) const;
   /**
-   * Get objects of the database.
-   * @param const std::string&  columns
-   * @param const std::string&  table
-   * @param const std::string&  where
+   * Get a list of objects of the database.
+   * If no row matches, the returned vector is empty, otherwise it contains
+   * one or more objects.
+   * @param columns The database columns to fetch.
+   * @param table   The database table to query.
+   * @param where   The where query.
    * @return std::vector<DbObject*>
   */
   std::vector<DbObject*> get_objects(const std::string&, const std::string&, const std::string&) const;
-  /**
-   * Query the database.
-   * @param const std::string& query
-   * @return MYSQL_RES*
-   */
-  MYSQL_RES* do_query(const std::string&) const;
   /**
    * Update a database object (insert it if it doesn’t already exist
    * or create it if it’s new).
    * @return bool
    */
   bool const update(const DbObject* object, const std::string&) const;
-  bool do_update(const std::string&) const;
 
 private:
+  /**
+   * Do a SELECT query on the database and get the results. Returns NULL if an
+   * error occured or if there are no result.
+   * @param query The SQL query.
+   * @return MYSQL_RES*
+   */
+  MYSQL_RES* do_query(const std::string&) const;
+  /**
+   * Do a UPDATE or INSERT query on the database.
+   * Returns false if it failed.
+   * @param query The SQL query.
+   */
+  bool do_update(const std::string&) const;
   Database();
   void connect();
-  DbObject query_object(std::string const&, bool);
   void close();
 
   static Database* instance;
