@@ -4,9 +4,6 @@
 #include <config/config.hpp>
 #include <logging/logging.hpp>
 
-#define DEFAULT_CONF_PATH ../src/config/batajelo.conf
-
-
 #define BOOST_TEST_MODULE database
 #include <boost/test/included/unit_test.hpp>
 

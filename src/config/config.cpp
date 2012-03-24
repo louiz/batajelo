@@ -1,5 +1,7 @@
 #include <config/config.hpp>
 
+#define CONF_DEFAULT_PATH "./batajelo.conf"
+
 Config* Config::instance = 0;
 
 bool Config::read_conf(const std::string& filename)
@@ -50,7 +52,7 @@ std::string Config::get(const std::string& option, const std::string& def)
     {
       // We can use a default path, only for testing purpose, to avoid
       // the boring Config::read_conf() at the start of every test suite
-      Config::read_conf("../batajelo.conf");
+      Config::read_conf(CONF_DEFAULT_PATH);
     }
 
   std::map<std::string, std::string>::iterator it = instance->values.find(option);
@@ -87,16 +89,3 @@ void Config::save_to_file()
     }
   file.close();
 }
-
-// int main(int argc, char *argv[])
-// {
-//   (void)argc;
-//   (void)argv;
-//   Config::read_conf("./test.conf");
-//   std::string res = Config::get("port", "12");
-//   std::cout << res << std::endl;
-//   Config::set("log_file", "coucou");
-//   Config::set("foutre", "salut");
-//   Config::set("zizi", "pipi");
-//   return 0;
-// }
