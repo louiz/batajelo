@@ -1,9 +1,9 @@
-#include <istream>
+#include <config/config.hpp>
+#include <logging/logging.hpp>
+#include <network/remote_client.hpp>
+#include <network/command_handler.hpp>
 
-
-// batajelo_client main 
-int	main(void)
+int main(int argc, char** argv)
 {
-	cout<<"client"<<endl;
-	return EXIT_SUCCESS;
+  return 0;
 }
