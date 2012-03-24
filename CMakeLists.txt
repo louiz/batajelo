@@ -6,7 +6,7 @@ project(batajelo)
 #Variable
 set(batajelo_VERSION_MAJOR 0)
 set(batajelo_VERSION_MINOR 0)
-set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
+set(EXECUTABLE_OUTPUT_PATH bin)
 
 
 #Documentation doxygen
@@ -24,7 +24,7 @@ endif(DOXYGEN_FOUND)
 
 
 #Librairies to include
-find_package(Boost 1.48.0	REQUIRED system date_time)
+find_package(Boost 1.48.0	REQUIRED system date_time COMPONENTS unit_test_framework)
 find_package(Threads)
 
 
@@ -107,18 +107,41 @@ target_link_libraries(
 file(
 	GLOB
 	modules_srcs
-	src/tests/*main.cpp
+	tests/*main.cpp
 )
 
 foreach(module_src ${modules_srcs})
 
-get_filename_component(lib ${module_src} NAME_WE) 
-string(REGEX REPLACE "(.*)_main$" "\\1" lib ${lib})
-add_executable(module_${lib} EXCLUDE_FROM_ALL ${module_src})
+	get_filename_component(lib ${module_src} NAME_WE) 
+	string(REGEX REPLACE "(.*)_main$" "\\1" lib ${lib})
+	
+	add_executable(module_${lib} EXCLUDE_FROM_ALL ${module_src})
 
-target_link_libraries(
-	module_${lib}
-	${lib}
-)
+	target_link_libraries(
+		module_${lib}
+		${lib}
+		)
 
 endforeach(module_src)
+
+#Test
+file(
+	GLOB
+	tests_srcs
+	tests/*test.cpp
+)
+
+foreach(test_src ${tests_srcs})
+
+	get_filename_component(lib ${test_src} NAME_WE) 
+	string(REGEX REPLACE "(.*)_test$" "\\1" lib ${lib})
+
+	add_executable(test_${lib} EXCLUDE_FROM_ALL ${test_src})
+
+	target_link_libraries(
+		test_${lib}
+		${lib}
+		)
+
+
+endforeach(test_src)
