@@ -9,7 +9,7 @@
 
 BOOST_AUTO_TEST_SUITE(database_suite1)
 
-BOOST_AUTO_TEST_CASE(database_test_1)
+BOOST_AUTO_TEST_CASE(empty_user)
 {
   BOOST_TEST_MESSAGE("Testing 0 row result");
   DbObject* user1 = Database::inst()->get_object("*", "User", "id=1");
@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(database_test_1)
   delete user1;
 }
 
-BOOST_AUTO_TEST_CASE(database_test_2)
+BOOST_AUTO_TEST_CASE(update_user)
 {
   User* user = new User();
   user->set("login", "testing");
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(database_test_2)
   BOOST_REQUIRE(user2->get("password") == "new_pass");
 }
 
-BOOST_AUTO_TEST_CASE(database_test_3)
+BOOST_AUTO_TEST_CASE(create_friend)
 {
   User* user2 = new User();
   user2->set("login", "testing2");
@@ -55,6 +55,34 @@ BOOST_AUTO_TEST_CASE(database_test_3)
   BOOST_REQUIRE(friendship != 0);
   BOOST_REQUIRE(friendship->get("user_id") == user->get("id"));
   BOOST_REQUIRE(friendship->get("friend_id") == user2->get("id"));
+}
+
+BOOST_AUTO_TEST_CASE(create_user_achievement)
+{
+  User* user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  BOOST_REQUIRE(user != 0);
+
+  DbObject* achievement = new DbObject();
+  achievement->set("name", "first");
+  achievement->set("difficulty", "EASY");
+  achievement->set("description", "lol");
+  BOOST_REQUIRE(Database::inst()->update(achievement, "Achievement") == true);
+
+  user->add_achievement("1");
+  std::vector<DbObject*> user_achievements = user->get_achievements();
+  BOOST_REQUIRE(user_achievements.size() == 1);
+}
+
+BOOST_AUTO_TEST_CASE(delete_users)
+{
+  BOOST_REQUIRE(Database::inst()->remove("User", "login='testing2' OR login='testing'") == true);
+
+  User* user;
+  user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  BOOST_REQUIRE(user == 0);
+
+  user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing2'"));
+  BOOST_REQUIRE(user == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
