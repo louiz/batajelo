@@ -15,6 +15,8 @@ CREATE  TABLE IF NOT EXISTS `batajelo`.`User` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `login` VARCHAR(20) NOT NULL ,
   `password` VARCHAR(15) NOT NULL ,
+  `is_banned` TINYINT(1) NULL DEFAULT 0 ,
+  `is_online` TINYINT(1) NULL DEFAULT 0 ,
   `last_login` DATETIME NULL ,
   PRIMARY KEY (`id`) ,
   UNIQUE INDEX `login_UNIQUE` (`login` ASC) )
@@ -29,14 +31,13 @@ DROP TABLE IF EXISTS `batajelo`.`User_Setting` ;
 CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Setting` (
   `user_id` INT UNSIGNED NOT NULL ,
   `email` VARCHAR(60) NULL ,
-  PRIMARY KEY (`user_id`) ,
   UNIQUE INDEX `mail_UNIQUE` (`email` ASC) ,
   INDEX `user_setting_user` (`user_id` ASC) ,
   CONSTRAINT `user_setting_user`
     FOREIGN KEY (`user_id` )
     REFERENCES `batajelo`.`User` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -46,7 +47,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `batajelo`.`Request` ;
 
 CREATE  TABLE IF NOT EXISTS `batajelo`.`Request` (
-  `id` INT UNSIGNED NOT NULL ,
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(45) NOT NULL ,
   PRIMARY KEY (`id`) )
 ENGINE = InnoDB;
@@ -58,11 +59,9 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `batajelo`.`User_Request` ;
 
 CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Request` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `request_id` INT UNSIGNED NOT NULL ,
   `sender_id` INT UNSIGNED NOT NULL ,
   `receiver_id` INT UNSIGNED NOT NULL ,
-  `request_id` INT UNSIGNED NOT NULL ,
-  PRIMARY KEY (`id`) ,
   INDEX `request_sender` (`sender_id` ASC) ,
   INDEX `request_receiver` (`receiver_id` ASC) ,
   INDEX `request_request` (`request_id` ASC) ,
@@ -74,13 +73,13 @@ CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Request` (
   CONSTRAINT `request_receiver`
     FOREIGN KEY (`receiver_id` )
     REFERENCES `batajelo`.`User` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `request_request`
     FOREIGN KEY (`request_id` )
     REFERENCES `batajelo`.`Request` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -112,13 +111,13 @@ CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Achievement` (
   CONSTRAINT `achievementUser_user`
     FOREIGN KEY (`user_id` )
     REFERENCES `batajelo`.`User` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `achievementUser_achievement`
     FOREIGN KEY (`achievement_id` )
     REFERENCES `batajelo`.`Achievement` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -166,12 +165,12 @@ CREATE  TABLE IF NOT EXISTS `batajelo`.`Replay` (
     FOREIGN KEY (`mode_id` )
     REFERENCES `batajelo`.`Mode` (`id` )
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON UPDATE CASCADE,
   CONSTRAINT `replay_map`
     FOREIGN KEY (`map_id` )
     REFERENCES `batajelo`.`Map` (`id` )
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON UPDATE RESTRICT)
 ENGINE = InnoDB;
 
 
@@ -188,13 +187,13 @@ CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Replay` (
   CONSTRAINT `replayUser_replay`
     FOREIGN KEY (`replay_id` )
     REFERENCES `batajelo`.`Replay` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `replayUser_user`
     FOREIGN KEY (`user_id` )
     REFERENCES `batajelo`.`User` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -234,10 +233,28 @@ CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Friend` (
   CONSTRAINT `friendship_user`
     FOREIGN KEY (`user_id` )
     REFERENCES `batajelo`.`User` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `friendship_friend`
     FOREIGN KEY (`friend_id` )
+    REFERENCES `batajelo`.`User` (`id` )
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `batajelo`.`User_Ban`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `batajelo`.`User_Ban` ;
+
+CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Ban` (
+  `user_id` INT UNSIGNED NOT NULL ,
+  `ban_start` DATETIME NOT NULL ,
+  `ban_end` DATETIME NOT NULL ,
+  INDEX `ban_user_id` (`user_id` ASC) ,
+  CONSTRAINT `ban_user_id`
+    FOREIGN KEY (`user_id` )
     REFERENCES `batajelo`.`User` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
@@ -248,3 +265,12 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- Data for table `batajelo`.`Request`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `batajelo`;
+INSERT INTO `batajelo`.`Request` (`id`, `name`) VALUES (1, 'friendship');
+
+COMMIT;
