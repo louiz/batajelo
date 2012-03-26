@@ -48,7 +48,7 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
       return;
     }
   // Extract the needed data from the buffer
-  char c[bytes_transferred+1];
+  char *c = new char[bytes_transferred+1];
   this->data.sgetn(c, bytes_transferred);
 
   c[bytes_transferred] = 0;
@@ -91,7 +91,7 @@ void CommandHandler::binary_read_handler(const boost::system::error_code& error,
 					 boost::function<void(std::string)> callback)
 {
   log_debug("binary_read_handler" << bytes_transferred);
-  char c[bytes_transferred+1];
+  char *c = new char[bytes_transferred+1];
   this->data.sgetn(c, bytes_transferred);
   c[bytes_transferred] = 0;
   log_debug("[" << c << "]");
