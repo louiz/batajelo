@@ -74,6 +74,13 @@ public:
    * @return bool
    */
   bool const update(const DbObject* object, const std::string&) const;
+  /**
+   * Remove a database object.
+   * @param query The remove query.
+   * @param where The remove query condition.
+   * @return bool
+   */
+  bool const remove(const std::string&, const std::string&) const;
 
 private:
   /**
@@ -85,10 +92,16 @@ private:
   MYSQL_RES* do_query(const std::string&) const;
   /**
    * Do a UPDATE or INSERT query on the database.
-   * Returns false if it failed.
    * @param query The SQL query.
+   * @return bool
    */
   bool do_update(const std::string&) const;
+  /**
+   * Do a DELETE query on the database.
+   * @param query The SQL query.
+   * @return bool
+   */
+  bool do_remove(const std::string&) const;
   Database();
   void connect();
   void close();

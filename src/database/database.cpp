@@ -78,6 +78,20 @@ bool Database::do_update(const std::string& query) const
   return true;
 }
 
+bool Database::do_remove(const std::string& query) const
+{
+  log_debug("Doing delete [" << query << "]");
+  const unsigned int error = mysql_query(this->mysql, query.c_str());
+  if (error != 0)
+    {
+      log_error("Couldn't query the database: " << error);
+      return false;
+    }
+  if (mysql_affected_rows(this->mysql) == 0)
+    return false;
+  return true;
+}
+
 DbObject* Database::get_object(const std::string& columns,
 			       const std::string& table,
 			       const std::string& where) const
@@ -170,3 +184,13 @@ const bool Database::update(const DbObject* object, const std::string& table_nam
       return false;
     return true;
   };
+
+const bool Database::remove(const std::string& table_name, const std::string& where) const
+{
+  std::string query = "DELETE FROM " + table_name;
+  query += " WHERE " + where;
+
+  if (this->do_remove(query) == false)
+    return false;
+  return true;
+};
