@@ -6,13 +6,28 @@ User::User() {}
 
 User::~User() {}
 
+void User::add_achievement(const std::string& achievement_id)
+{
+  DbObject* user_achievement = new DbObject();
+  user_achievement->set("user_id", this->get("id"));
+  user_achievement->set("achievement_id", achievement_id);
+  if (Database::inst()->update(user_achievement, "user_achievement") != true)
+    log_error("Achievement add Failed !");
+}
+
+std::vector<DbObject*> User::get_achievements()
+{
+  std::vector<DbObject*> user_achievements = Database::inst()->get_objects("achievement_id", "user_achievement", "user_id =" + this->get("id"));
+  return user_achievements;
+}
+
 void User::add_friend(const std::string& friend_id)
 {
   DbObject* friendship = new DbObject();
   friendship->set("user_id", this->get("id"));
   friendship->set("friend_id", friend_id);
-  if (Database::inst()->update(friendship, "User_Friend") != true)
-    log_error("Friendship Failed !");
+  if (Database::inst()->update(friendship, "user_friend") != true)
+    log_error("Friendship add Failed !");
 }
 
 std::vector<User*> User::get_friends()
@@ -41,4 +56,13 @@ std::vector<User*> User::get_friends()
   else
     log_warning("No friends found !");
   return friends;
+}
+
+void User::remove_friend(const std::string& friend_id)
+{
+  DbObject* friendship = new DbObject();
+  friendship->set("user_id", this->get("id"));
+  friendship->set("friend_id", friend_id);
+  if (Database::inst()->update(friendship, "User_Friend") != true)
+    log_error("Friendship not found!");
 }
