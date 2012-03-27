@@ -71,6 +71,7 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
       size = atoi(std::string(c+pos+1, bytes_transferred-pos-2).data()); // remove the ending :
     }
   log_debug(command << " . " << size);
+  delete c;
 
   // Find out if a callback was registered for that command.
   boost::function< void(std::string) > callback = this->get_callback(command);
@@ -99,6 +100,7 @@ void CommandHandler::binary_read_handler(const boost::system::error_code& error,
     callback(c);
   else
     log_debug("no callback");
+  delete c;
   this->install_read_handler();
 }
 
