@@ -4,10 +4,12 @@
 
 Database* Database::instance = 0;
 
-Database::Database()
+Database::Database():
+  mysql(0),
+  connected(false)
 {
-  this->mysql = NULL;
-  this->connect();
+  if (this->init() == 0)
+    exit(1);
 }
 
 Database::~Database()
@@ -15,18 +17,28 @@ Database::~Database()
   this->close();
 }
 
-Database* Database::inst()
-{
-  if (instance == 0)
-		instance = new Database;
-  return instance;
-}
-
-void Database::connect()
+bool Database::init()
 {
   this->mysql = mysql_init(NULL);
   if (this->mysql == NULL)
-    log_error("Could'nt init a mysql connection.");
+    {
+      log_error("Could'nt init a mysql connection.");
+      return false;
+    }
+  return true;
+}
+
+Database* Database::inst()
+{
+  if (instance == 0)
+    instance = new Database;
+  return instance;
+}
+
+bool Database::connect()
+{
+  if (this->connected == true)
+    return true;
   log_debug("Connecting to database using: host:" << Config::get("db_host", "localhost").data() << " user:" << Config::get("db_user", "root").data() << " pass:" << Config::get("db_password", "").data() << " db:" << Config::get("db_database", "batajelo").data());
   if (mysql_real_connect(this->mysql,
 			 Config::get("db_host", "localhost").data(),
@@ -35,11 +47,14 @@ void Database::connect()
 			 Config::get("db_database", "batajelo").data(),
 			 DB_PORT, DB_UNIX_SOCKET, DB_CLIENT_FLAG) == NULL)
     {
-      log_error("Couldn't connect to the database.");
+      log_error("Could'nt connect to the database.");
+      return false;
     }
   else
     {
       log_debug("Connected to database");
+      this->connected = true;
+      return true;
     }
 }
 
@@ -47,15 +62,19 @@ void Database::close()
 {
   if (this->mysql != NULL)
     mysql_close(this->mysql);
+  this->connected = false;
 }
 
-MYSQL_RES* Database::do_query(const std::string& query) const
+MYSQL_RES* Database::do_query(const std::string& query)
 {
+  if (this->connect() == false)
+    return NULL;
   log_debug("Doing query [" << query << "]");
   const unsigned int error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
     {
       log_error("Couldn't query the database: " << error);
+      this->connected = false;
       return NULL;
     }
   MYSQL_RES* result = mysql_use_result(this->mysql);
@@ -64,13 +83,16 @@ MYSQL_RES* Database::do_query(const std::string& query) const
   return result;
 }
 
-bool Database::do_update(const std::string& query) const
+bool Database::do_update(const std::string& query)
 {
+  if (!this->connect())
+    return false;
   log_debug("Doing update [" << query << "]");
   const unsigned int error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
     {
       log_error("Couldn't query the database: " << error);
+      this->connected = false;
       return false;
     }
   if (mysql_affected_rows(this->mysql) == 0)
@@ -78,13 +100,16 @@ bool Database::do_update(const std::string& query) const
   return true;
 }
 
-bool Database::do_remove(const std::string& query) const
+bool Database::do_remove(const std::string& query)
 {
+  if (!this->connect())
+    return false;
   log_debug("Doing delete [" << query << "]");
   const unsigned int error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
     {
       log_error("Couldn't query the database: " << error);
+      this->connected = false;
       return false;
     }
   if (mysql_affected_rows(this->mysql) == 0)
@@ -94,7 +119,7 @@ bool Database::do_remove(const std::string& query) const
 
 DbObject* Database::get_object(const std::string& columns,
 			       const std::string& table,
-			       const std::string& where) const
+			       const std::string& where)
 {
   MYSQL_RES* result = this->do_query("SELECT " + columns + " FROM " + table + " WHERE " + where);
   if (!result)
@@ -127,7 +152,7 @@ DbObject* Database::get_object(const std::string& columns,
 
 std::vector<DbObject*> Database::get_objects(const std::string& columns,
 					     const std::string& table,
-					     const std::string& where) const
+					     const std::string& where)
 {
   MYSQL_RES* result = this->do_query("SELECT " + columns + " FROM " + table + " WHERE " + where);
   std::vector<DbObject*> db_objects;
@@ -153,39 +178,39 @@ std::vector<DbObject*> Database::get_objects(const std::string& columns,
   return db_objects;
 }
 
-const bool Database::update(const DbObject* object, const std::string& table_name) const
-  {
-    std::string query = "INSERT INTO " + table_name;
-    std::string fields_str = "(";
-    std::string values_str = "VALUES (";
-    std::string update_str = "ON DUPLICATE KEY UPDATE ";
+const bool Database::update(const DbObject* object, const std::string& table_name)
+{
+  std::string query = "INSERT INTO " + table_name;
+  std::string fields_str = "(";
+  std::string values_str = "VALUES (";
+  std::string update_str = "ON DUPLICATE KEY UPDATE ";
 
-    std::map<std::string, std::string>::const_iterator it;
-    // Use this iterator to detect the last element in the vector
-    std::map<std::string, std::string>::const_iterator final_it = object->values.end();
-    --final_it;
+  std::map<std::string, std::string>::const_iterator it;
+  // Use this iterator to detect the last element in the vector
+  std::map<std::string, std::string>::const_iterator final_it = object->values.end();
+  --final_it;
 
-    // unsigned int i;
-    for (it = object->values.begin(); it != object->values.end(); ++it)
-      {
-  	fields_str += "`" + it->first + "`";
-  	values_str += "'" + it->second + "'";
-  	update_str += "`" + it->first + "`='" + it->second + "'";
-  	if (it != final_it)
-  	  {
-  	    fields_str += ",";
-  	    values_str += ",";
-  	    update_str += ",";
-  	  }
-      }
-    query += fields_str + ") " + values_str + ") " + update_str;
+  // unsigned int i;
+  for (it = object->values.begin(); it != object->values.end(); ++it)
+    {
+      fields_str += "`" + it->first + "`";
+      values_str += "'" + it->second + "'";
+      update_str += "`" + it->first + "`='" + it->second + "'";
+      if (it != final_it)
+	{
+	  fields_str += ",";
+	  values_str += ",";
+	  update_str += ",";
+	}
+    }
+  query += fields_str + ") " + values_str + ") " + update_str;
 
-    if (this->do_update(query) == false)
-      return false;
-    return true;
-  };
+  if (this->do_update(query) == false)
+    return false;
+  return true;
+};
 
-const bool Database::remove(const std::string& table_name, const std::string& where) const
+const bool Database::remove(const std::string& table_name, const std::string& where)
 {
   std::string query = "DELETE FROM " + table_name;
   query += " WHERE " + where;

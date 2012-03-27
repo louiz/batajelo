@@ -57,7 +57,7 @@ public:
    * @param where   The where query.
    * @return DbObject*
   */
-  DbObject* get_object(const std::string&, const std::string&, const std::string&) const;
+  DbObject* get_object(const std::string&, const std::string&, const std::string&);
   /**
    * Get a list of objects of the database.
    * If no row matches, the returned vector is empty, otherwise it contains
@@ -67,20 +67,20 @@ public:
    * @param where   The where query.
    * @return std::vector<DbObject*>
   */
-  std::vector<DbObject*> get_objects(const std::string&, const std::string&, const std::string&) const;
+  std::vector<DbObject*> get_objects(const std::string&, const std::string&, const std::string&);
   /**
    * Update a database object (insert it if it doesn’t already exist
    * or create it if it’s new).
    * @return bool
    */
-  bool const update(const DbObject* object, const std::string&) const;
+  bool const update(const DbObject* object, const std::string&);
   /**
    * Remove a database object.
    * @param query The remove query.
    * @param where The remove query condition.
    * @return bool
    */
-  bool const remove(const std::string&, const std::string&) const;
+  bool const remove(const std::string&, const std::string&);
 
 private:
   /**
@@ -89,25 +89,35 @@ private:
    * @param query The SQL query.
    * @return MYSQL_RES*
    */
-  MYSQL_RES* do_query(const std::string&) const;
+  MYSQL_RES* do_query(const std::string&);
   /**
    * Do a UPDATE or INSERT query on the database.
    * @param query The SQL query.
    * @return bool
    */
-  bool do_update(const std::string&) const;
+  bool do_update(const std::string&);
   /**
    * Do a DELETE query on the database.
    * @param query The SQL query.
    * @return bool
    */
-  bool do_remove(const std::string&) const;
+  bool do_remove(const std::string&);
   Database();
-  void connect();
+  /**
+   * Try to connect to the database, or just succeed if we are
+   * already connected.
+   * @return false on failure, true on success.
+   */
+  bool connect();
+  /**
+   * Init the mysql connection.
+   */
+  bool init();
   void close();
 
   static Database* instance;
   MYSQL *mysql;
+  bool connected;
 };
 #endif
 /**@}*/
