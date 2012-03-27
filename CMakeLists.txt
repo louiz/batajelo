@@ -45,6 +45,16 @@ add_executable(batajelo_server src/main/batajelo_server.cpp)
 add_executable(batajelo_client src/main/batajelo_client.cpp)
 
 
+target_link_libraries(
+	batajelo_server
+	server
+)
+
+target_link_libraries(
+	batajelo_client
+	server
+)
+
 #Library build
 file(
 	GLOB

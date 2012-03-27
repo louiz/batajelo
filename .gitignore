@@ -1,3 +1,7 @@
+#gtags
+GPATH
+GRTAGS
+GTAGS
 # CODE BLOCKS
 *.cbp
 *.depend
@@ -14,3 +18,4 @@ doxygen/Doxyfile
 *~
 # g++
 *.o
+*.a
