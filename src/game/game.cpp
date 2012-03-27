@@ -3,6 +3,11 @@
 
 #include <unistd.h>
 
+static const char* auth_messages[] = {"Success",
+				      "Unknown error",
+				      "User does not exist",
+				      "Invalid password",
+                                      "User already logged from an other location"};
 Game::Game()
 {
   log_info("Launching game");
@@ -37,12 +42,15 @@ void Game::on_connection_success(const std::string& login, const std::string& pa
 
 void Game::authenticate(const std::string& login, const std::string& password)
 {
-  this->client.request_answer("AUTH", login.data(), boost::bind(&Game::on_authenticate, this, _1));
+  // TODO send a password hash, and do not use that stupid separator.
+  this->client.request_answer("AUTH", std::string(login + '*' + password).data(), boost::bind(&Game::on_authenticate, this, _1));
 }
 
 void Game::on_authenticate(const std::string& result)
 {
-  log_debug("on_authenticate ");
+  int res = atoi(result.data());
+  log_debug("on_authenticate :" << res << "." <<  ((res > 4) ? "Unknown error" : auth_messages[res]));
+  // TODO some UI stuf, etc.
 }
 
 void Game::run()
@@ -58,10 +66,10 @@ void Game::run()
 // Simulate a login flow
 int main(int argc, char** argv)
 {
-  Config::read_conf("../config/batajelo.conf");
+  Config::read_conf("../../batajelo.conf");
   Game game;
 
-  game.on_login_form_validated("test", "coucou", "127.0.0.1", 7878);
+  game.on_login_form_validated("testing", "new_pass", "127.0.0.1", 7878);
   game.run();
   return 0;
 }

@@ -44,6 +44,8 @@ public:
    */
   void poll(void);
 
+  virtual void on_connection_closed() {}
+
 private:
   void connect_handler(boost::function< void(void) >,
 		       boost::function< void(void) >,

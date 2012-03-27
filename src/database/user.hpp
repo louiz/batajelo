@@ -9,10 +9,10 @@
 
 #include <vector>
 
-#include <database/db_object.hpp>
-
 #ifndef __USER_HPP__
 # define __USER_HPP__
+
+#include <database/db_object.hpp>
 
 class User: public DbObject
 {
@@ -47,11 +47,6 @@ public:
    * @return void
    */
   void remove_friend(const std::string&);
-
-  /**
-   * User values
-   */
-  std::map<std::string, std::string> values;
 
 private:
   User(const DbObject&);

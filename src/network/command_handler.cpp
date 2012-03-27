@@ -40,11 +40,13 @@ boost::function< void(std::string) > CommandHandler::get_callback(const std::str
 
 void CommandHandler::read_handler(const boost::system::error_code& error, const std::size_t bytes_transferred)
 {
-  log_debug("read_handler, size: " << bytes_transferred << " bytes.   error: " << error);
-
+  log_debug("read_handler, size: " << bytes_transferred << " bytes.");
+  if (error)
+    log_debug("Read error: " << error);
   if (error)
     {
       // TODO check more precisely for errors
+      this->on_connection_closed();
       return;
     }
   // Extract the needed data from the buffer

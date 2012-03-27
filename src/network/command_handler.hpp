@@ -75,6 +75,10 @@ protected:
   /**
    * A buffer keeping the data that is read on the socket.
    */
+  /**
+   * What happens when a read error occurs.
+   */
+  virtual void on_connection_closed() = 0;
   boost::asio::streambuf data;
   tcp::socket* socket;
 
