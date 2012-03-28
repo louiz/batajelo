@@ -6,7 +6,7 @@ project(batajelo)
 set(batajelo_VERSION_MAJOR 0)
 set(batajelo_VERSION_MINOR 0)
 set(EXECUTABLE_OUTPUT_PATH bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY output_lib)
+set(LIBRARY_OUTPUT_PATH output_lib)
 
 
 #Documentation doxygen
