@@ -8,6 +8,16 @@ set(batajelo_VERSION_MINOR 0)
 set(EXECUTABLE_OUTPUT_PATH bin)
 set(LIBRARY_OUTPUT_PATH output_lib)
 
+if(${CMAKE_BUILD_TYPE} MATCHES "debug")
+	message("debug")
+	add_definitions(-g3 -W -Wall -pedantic)
+	set(DEFINE_DEBUG 1)
+else(${CMAKE_BUILD_TYPE} MATCHES "debug")
+	message("release")
+	add_definitions(-O3)
+	set(DEFINE_DEBUG 0)
+endif(${CMAKE_BUILD_TYPE} MATCHES "debug")
+configure_file("${PROJECT_SOURCE_DIR}/src/constant.hpp.in" "${PROJECT_SOURCE_DIR}/src/constant.hpp")
 
 #Documentation doxygen
 find_package(Doxygen)

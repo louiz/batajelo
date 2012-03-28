@@ -44,11 +44,24 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 		# message(${MYSQL_CFLAGS})
 
 	else(MYSQL_CONFIG)
-		message(FATAL_ERROR "mysql_config not found !")
+		if(mysql_FIND_REQUIRED)
+			message(FATAL_ERROR "mysql_config not found !")
+		elseif(mysql_FIND_REQUIRED)
+			message("mysql_config not found !")
+		endif(mysql_FIND_REQUIRED)
 	endif(MYSQL_CONFIG)
 
 else(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	
+	if(NOT MYSQL_INCLUDE_DIR)
+		message("plz, add to CMakeCache.txt: MYSQL_INCLUDE_DIR:FILEPATH=/rep/to/includedir")
+	endif(NOT MYSQL_INCLUDE_DIR)
+
+	if(NOT MYSQL_LIBRARY_DIRS)
+		message("plz, add to CMakeCache.txt: MYSQL_LIBRARY_DIRS:FILEPATH=/rep/to/libdir")
+	endif(NOT MYSQL_LIBRARY_DIRS)
+
+	set(MYSQL_LIBRARIES mysqlclient_r mysqlclient pthread z m rt	ssl	crypto dl)
+	set(MYSQL_CFLAGS "-fPIC -pipe -fstack-protector --param=ssp-buffer-size=4 -D_FORTIFY_SOURCE=2 -fno-strict-aliasing -DBIG_JOINS=1 -fomit-frame-pointer -g")
 
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
