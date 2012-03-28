@@ -17,7 +17,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	if(MYSQL_CONFIG)
 		if(NOT MYSQL_INCLUDE_DIR)
 			execute_process(COMMAND "mysql_config" "--include" OUTPUT_VARIABLE MYSQL_INCLUDE_DIR)
-			string(REGEX REPLACE "^-I(.*[a-z0-9A-Z]).*" "\\1" MYSQL_INCLUDE_DIR ${MYSQL_INCLUDE_DIR})
+			string(REGEX REPLACE "^-I(.*[a-zA-Z]).*" "\\1" MYSQL_INCLUDE_DIR ${MYSQL_INCLUDE_DIR})
 		endif(NOT MYSQL_INCLUDE_DIR)
 		
 		if(NOT MYSQL_LIBRARY_DIRS)
@@ -27,12 +27,12 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 		
 		if(NOT MYSQL_LIBRARIES)
 			execute_process(COMMAND "mysql_config" "--libs" OUTPUT_VARIABLE LIBS_AND_DIR)
-			string(REGEX REPLACE ".*lib (.*[a-z]).*" "\\1" MYSQL_LIBRARIES ${LIBS_AND_DIR})
+			string(REGEX REPLACE ".*lib (.*[a-zA-Z]).*" "\\1" MYSQL_LIBRARIES ${LIBS_AND_DIR})
 		endif(NOT MYSQL_LIBRARIES)
 
 		if(NOT MYSQL_CFLAGS)
 			execute_process(COMMAND "mysql_config" "--cflags" OUTPUT_VARIABLE MYSQL_CFLAGS)
-			string(REGEX REPLACE "^-I.*mysql (.*[a-z]).*" "\\1" MYSQL_CFLAGS ${MYSQL_CFLAGS})
+			string(REGEX REPLACE "^-I.*mysql (.*[a-z0-9A-Z]).*" "\\1" MYSQL_CFLAGS ${MYSQL_CFLAGS})
 		endif(NOT MYSQL_CFLAGS)
 
 		separate_arguments(MYSQL_LIBRARIES)
