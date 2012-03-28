@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 2.6)
 
 project(batajelo)
 
-
 #Variable
 set(batajelo_VERSION_MAJOR 0)
 set(batajelo_VERSION_MINOR 0)
 set(EXECUTABLE_OUTPUT_PATH bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY output_lib)
 
 
 #Documentation doxygen
@@ -24,21 +24,19 @@ endif(DOXYGEN_FOUND)
 
 
 #Librairies to include
-find_package(Boost 1.48.0	REQUIRED system date_time COMPONENTS unit_test_framework)
-find_package(Threads)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+find_package(Boost 1.48.0 COMPONENTS system date_time unit_test_framework REQUIRED)
+find_package(mysql REQUIRED)
+find_package(Threads REQUIRED)
 
 
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${MYSQL_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIR})
+include_directories(${MYSQL_INCLUDE_DIR})
 include_directories("src/")
-
 
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${MYSQL_LIBRARY_DIRS})
 
-set(mysql_libs mysqlclient_r mysqlclient pthread z m rt	ssl	crypto dl)
-
-set(mysql_cflags "-fPIC -pipe -fstack-protector --param=ssp-buffer-size=4 -D_FORTIFY_SOURCE=2 -fno-strict-aliasing -DBIG_JOINS=1 -fomit-frame-pointer -g")
 
 #Principal build
 add_executable(batajelo_server src/main/batajelo_server.cpp)
@@ -104,13 +102,13 @@ file(
 	src/database/*.[ch]pp
 )
 add_library(database STATIC ${source_database})
-set_target_properties(database PROPERTIES COMPILE_FLAGS ${mysql_cflags})
+set_target_properties(database PROPERTIES COMPILE_FLAGS ${MYSQL_CFLAGS})
 
 target_link_libraries(
 	database
 	logging
 	config
-	${mysql_libs}
+	${MYSQL_LIBRARIES}
 )
 
 #Module build
@@ -125,10 +123,10 @@ foreach(module_src ${modules_srcs})
 	get_filename_component(lib ${module_src} NAME_WE) 
 	string(REGEX REPLACE "(.*)_main$" "\\1" lib ${lib})
 	
-	add_executable(module_${lib} EXCLUDE_FROM_ALL ${module_src})
+	add_executable(${lib}_main  EXCLUDE_FROM_ALL ${module_src})
 
 	target_link_libraries(
-		module_${lib}
+		${lib}_main
 		${lib}
 		)
 
@@ -146,10 +144,10 @@ foreach(test_src ${tests_srcs})
 	get_filename_component(lib ${test_src} NAME_WE) 
 	string(REGEX REPLACE "(.*)_test$" "\\1" lib ${lib})
 
-	add_executable(test_${lib} EXCLUDE_FROM_ALL ${test_src})
+	add_executable(${lib}_test  EXCLUDE_FROM_ALL ${test_src})
 
 	target_link_libraries(
-		test_${lib}
+		${lib}_test
 		${lib}
 		)
 
