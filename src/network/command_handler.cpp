@@ -54,7 +54,6 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
   this->data.sgetn(c, bytes_transferred);
 
   c[bytes_transferred] = 0;
-  log_debug("Received: [" << c << "] " << this->data.size());
   // find the . separator
   size_t pos = 0;
   while (c[pos] && c[pos] != '.')
@@ -142,7 +141,7 @@ void CommandHandler::send(const char* msg, boost::function< void(void) > on_sent
 			  boost::asio::placeholders::error,
 			  boost::asio::placeholders::bytes_transferred,
 			  on_sent));
-  log_debug("Sending [" << msg << "]");
+  log_debug("Sending [" << strlen(msg) << "] bytes");
 }
 
 void CommandHandler::send_handler(const boost::system::error_code& error,
