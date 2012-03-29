@@ -19,10 +19,12 @@
 #ifndef __COMMAND_HANDLER_HPP__
 # define __COMMAND_HANDLER_HPP__
 
+#include <network/transfer_sender.hpp>
 using boost::asio::ip::tcp;
 
 class CommandHandler
 {
+  friend void TransferSender::send_next_chunk();
 public:
   CommandHandler();
   ~CommandHandler() {}
@@ -40,10 +42,10 @@ public:
    */
   void binary_read_handler(const boost::system::error_code&, std::size_t, boost::function<void(std::string)>);
   /**
-   * Sends a commad, and use install_callback_once to wait for the answer
+   * Sends a command, and use install_callback_once to wait for the answer
    * and call that callback to handle it.
    */
-  void request_answer(const char*, const char*, boost::function< void(const std::string&) >);
+  void request_answer(const char*, const char*, boost::function< void(const std::string&) > on_answer = 0);
 
 protected:
   /**
@@ -67,11 +69,11 @@ protected:
   /**
    * Send the given data on the socket.
    */
-  void send(const char*);
+  void send(const char*, boost::function< void(void) > on_send = 0);
   /**
    * @todo Check if the data was correctly sent on the socket
    */
-  void send_handler(const boost::system::error_code&, std::size_t);
+  void send_handler(const boost::system::error_code&, std::size_t, boost::function< void(void) > on_sent);
   /**
    * A buffer keeping the data that is read on the socket.
    */
@@ -79,6 +81,7 @@ protected:
    * What happens when a read error occurs.
    */
   virtual void on_connection_closed() = 0;
+
   boost::asio::streambuf data;
   tcp::socket* socket;
 

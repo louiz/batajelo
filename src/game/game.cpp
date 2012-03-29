@@ -46,10 +46,17 @@ void Game::authenticate(const std::string& login, const std::string& password)
   this->client.request_answer("AUTH", std::string(login + '*' + password).data(), boost::bind(&Game::on_authenticate, this, _1));
 }
 
+void Game::request_file(const std::string& filename)
+{
+  this->client.request_answer("TRANSFER", filename.data());
+}
+
 void Game::on_authenticate(const std::string& result)
 {
   int res = atoi(result.data());
   log_debug("on_authenticate :" << res << "." <<  ((res > 4) ? "Unknown error" : auth_messages[res]));
+  if (res == 0)
+    this->request_file("file.txt");
   // TODO some UI stuf, etc.
 }
 

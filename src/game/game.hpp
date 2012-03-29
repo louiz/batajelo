@@ -17,6 +17,12 @@ public:
   void on_connection_success(const std::string&, const std::string&);
   void authenticate(const std::string&, const std::string&);
   void on_authenticate(const std::string&);
+  /**
+   * Sends a request for a file transfer.
+   * @param filename The file that we want to receive.
+   */
+  void request_file(const std::string&);
+
   void run();
 
 private:

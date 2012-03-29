@@ -9,13 +9,12 @@
  * @class Logger
  */
 
-
-#include <config/config.hpp>
-
 #include <iostream>
 
 #ifndef __LOGGING_HPP__
 # define __LOGGING_HPP__
+
+#include <config/config.hpp>
 
 #define debug_lvl 0
 #define info_lvl 1

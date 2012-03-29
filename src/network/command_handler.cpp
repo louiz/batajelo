@@ -128,23 +128,29 @@ void CommandHandler::request_answer(const char* command, const char* data,
   ssize << strlen(data);
   msg += std::string(".") + std::string(ssize.str()) + std::string(":") + std::string(data);
 
-  this->install_callback_once(command, on_answer);
+  // We may want to send a command that do not require an answer.
+  if (on_answer)
+    this->install_callback_once(command, on_answer);
   this->send(msg.data());
 }
 
-void CommandHandler::send(const char* msg)
+void CommandHandler::send(const char* msg, boost::function< void(void) > on_sent)
 {
   async_write(*this->socket,
 	      boost::asio::buffer(msg, strlen(msg)),
 	      boost::bind(&CommandHandler::send_handler, this,
 			  boost::asio::placeholders::error,
-			  boost::asio::placeholders::bytes_transferred));
+			  boost::asio::placeholders::bytes_transferred,
+			  on_sent));
   log_debug("Sending [" << msg << "]");
 }
 
 void CommandHandler::send_handler(const boost::system::error_code& error,
-				  std::size_t bytes_transferred)
+				  std::size_t bytes_transferred,
+				  boost::function< void(void) > on_sent)
 {
   // TODO check for error
   log_debug(bytes_transferred << " bytes sent");
+  if (on_sent)
+    on_sent();
 }
