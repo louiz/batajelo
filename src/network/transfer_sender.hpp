@@ -2,6 +2,18 @@
  *  @{
  */
 
+/**
+ * Represent an outgoing file transfert. The file is sent by chunks, each in a
+ * different message. The transfer has an ID that is used in the message's
+ * command name, that way the receiver just needs to add a callback on that
+ * ID to receive all the chunks for that specific file. Every chunk is sent as
+ * soon as the previous one was correctly sent on the socket.
+ * Two entities (e.g. one client with one server) can have any number of
+ * simultaneous file transfers, without any confilct or delay. And a server
+ * can send files to any number of clients.
+ * @class TransferSender
+ */
+
 #include <iostream>
 #include <fstream>
 #include <string>
