@@ -45,7 +45,7 @@ include_directories(${MYSQL_INCLUDE_DIR})
 include_directories("src/")
 
 link_directories(${Boost_LIBRARY_DIRS})
-link_directories(${MYSQL_LIBRARY_DIRS})
+link_directories(${MYSQL_LIB_DIR})
 
 
 #Principal build
