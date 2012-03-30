@@ -34,12 +34,13 @@ User* RemoteClient::get_user()
 
 void RemoteClient::install_callbacks()
 {
-  this->install_callback("AUTH", boost::bind(&RemoteClient::auth_callback, this, _1));
-  this->install_callback("TRANSFER", boost::bind(&RemoteClient::transfer_callback, this, _1));
+  this->install_callback("AUTH", boost::bind(&RemoteClient::auth_callback, this, _1, _2));
+  this->install_callback("TRANSFER", boost::bind(&RemoteClient::transfer_callback, this, _1, _2));
 }
 
-void RemoteClient::auth_callback(const std::string& arg)
+void RemoteClient::auth_callback(const char* carg, int)
 {
+  std::string arg(carg);
   std::string res("AUTH.");
   bool success = false;
   log_debug("auth_callback: " << arg);
@@ -83,9 +84,9 @@ void RemoteClient::auth_callback(const std::string& arg)
     this->on_auth_success();
 }
 
-void RemoteClient::transfer_callback(const std::string& filename)
+void RemoteClient::transfer_callback(const char* filename, int length)
 {
-  this->send_file(filename);
+  this->send_file(std::string(filename, length));
 }
 
 void RemoteClient::on_auth_success()
@@ -117,7 +118,7 @@ void RemoteClient::on_connection_closed()
   this->server->remove_client(this);
 }
 
-void RemoteClient::on_transfer_ended(TransferSender* transfer)
+void RemoteClient::on_transfer_ended(const TransferSender* transfer)
 {
   log_debug("on_transfer_ended");
   std::vector<TransferSender*>::iterator it;

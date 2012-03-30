@@ -5,23 +5,23 @@ CommandHandler::CommandHandler()
 }
 
 void CommandHandler::install_callback(const std::string& command,
-				      boost::function< void(std::string) > callback)
+				      t_read_callback callback)
 {
   log_debug("installing callback for command " << command);
   this->callbacks[command] = callback;
 }
 
 void CommandHandler::install_callback_once(const std::string& command,
-				      boost::function< void(std::string) > callback)
+				      t_read_callback callback)
 {
   log_debug("installing ONCE callback for command " << command);
   this->callbacks_once[command] = callback;
 }
 
-boost::function< void(std::string) > CommandHandler::get_callback(const std::string& command)
+t_read_callback CommandHandler::get_callback(const std::string& command)
 {
   log_debug("get_callback");
-  std::map<const std::string, boost::function< void(std::string) > >::iterator it;
+  std::map<const std::string, t_read_callback >::iterator it;
 
   it = this->callbacks.find(command);
   if (it != this->callbacks.end())
@@ -31,7 +31,7 @@ boost::function< void(std::string) > CommandHandler::get_callback(const std::str
   if (it != this->callbacks_once.end())
     {
       log_debug("Removing callback for command " << command);
-      boost::function< void(std::string) > callback = it->second;
+      t_read_callback callback = it->second;
       this->callbacks_once.erase(it);
       return callback;
     }
@@ -72,13 +72,14 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
       size = atoi(std::string(c+pos+1, bytes_transferred-pos-2).data()); // remove the ending :
     }
   log_debug(command << " . " << size);
-  delete c;
+  delete[] c;
 
   // Find out if a callback was registered for that command.
-  boost::function< void(std::string) > callback = this->get_callback(command);
+  t_read_callback callback = this->get_callback(command);
   // We check what we need to read on the socket to have the rest of the binary datas
   const std::size_t length_to_read = this->data.size() >= size ? 0 : size - this->data.size();
 
+  log_debug("length to read on the socket: " << length_to_read);
   boost::asio::async_read(*this->socket,
 			  this->data,
 			  boost::asio::transfer_at_least(length_to_read),
@@ -90,18 +91,18 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
 void CommandHandler::binary_read_handler(const boost::system::error_code& error,
 					 std::size_t bytes_transferred,
 					 // std::size_t size,
-					 boost::function<void(std::string)> callback)
+					 t_read_callback callback)
 {
-  log_debug("binary_read_handler" << bytes_transferred);
+  log_debug("binary_read_handler " << bytes_transferred);
   char *c = new char[bytes_transferred+1];
   this->data.sgetn(c, bytes_transferred);
+
   c[bytes_transferred] = 0;
-  log_debug("[" << c << "]");
   if (callback)
-    callback(c);
+    callback(c, bytes_transferred);
   else
     log_debug("no callback");
-  delete c;
+  delete[] c;
   this->install_read_handler();
 }
 
@@ -119,7 +120,7 @@ void CommandHandler::install_read_handler(void)
 // Send a command and add a callback to be called when the answer to
 // this command will be received
 void CommandHandler::request_answer(const char* command, const char* data,
-				    boost::function< void(const std::string&) > on_answer)
+				    t_read_callback on_answer)
 {
   std::string msg(command);
 
@@ -133,15 +134,17 @@ void CommandHandler::request_answer(const char* command, const char* data,
   this->send(msg.data());
 }
 
-void CommandHandler::send(const char* msg, boost::function< void(void) > on_sent)
+void CommandHandler::send(const char* msg, boost::function< void(void) > on_sent, int length)
 {
+  if (length == 0)
+    length = strlen(msg);
   async_write(*this->socket,
-	      boost::asio::buffer(msg, strlen(msg)),
+	      boost::asio::buffer(msg, length),
 	      boost::bind(&CommandHandler::send_handler, this,
 			  boost::asio::placeholders::error,
 			  boost::asio::placeholders::bytes_transferred,
 			  on_sent));
-  log_debug("Sending [" << strlen(msg) << "] bytes");
+  log_debug("Sending [" << length << "] bytes");
 }
 
 void CommandHandler::send_handler(const boost::system::error_code& error,
@@ -149,6 +152,8 @@ void CommandHandler::send_handler(const boost::system::error_code& error,
 				  boost::function< void(void) > on_sent)
 {
   // TODO check for error
+  if (error)
+    exit(1);
   log_debug(bytes_transferred << " bytes sent");
   if (on_sent)
     on_sent();

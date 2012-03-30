@@ -56,7 +56,7 @@ void Game::on_authenticate(const std::string& result)
   int res = atoi(result.data());
   log_debug("on_authenticate :" << res << "." <<  ((res > 4) ? "Unknown error" : auth_messages[res]));
   if (res == 0)
-    this->request_file("file.txt");
+    this->request_file("file.bin");
   // TODO some UI stuf, etc.
 }
 

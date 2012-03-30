@@ -3,7 +3,7 @@
  */
 
 /**
- * Represent an outgoing file transfert. The file is sent by chunks, each in a
+ * Represent an outgoing file transfer. The file is sent by chunks, each in a
  * different message. The transfer has an ID that is used in the message's
  * command name, that way the receiver just needs to add a callback on that
  * ID to receive all the chunks for that specific file. Every chunk is sent as
@@ -49,7 +49,7 @@ private:
   std::ifstream file;
 
   int length;
-  unsigned long int id;
+  std::string id;
 };
 
 #endif // __TRANSFER_SENDER_HPP__

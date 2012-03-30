@@ -56,7 +56,7 @@ public:
    * Removes the TransferSender from the list.
    * @param transfer The TransferSender to remove from the list.
    */
-  void on_transfer_ended(TransferSender*);
+  void on_transfer_ended(const TransferSender*);
   /**
    * Called when the client is successfully authenticated.
    * For example, checks if there are news to send, or offline messages, etc
@@ -73,8 +73,8 @@ private:
    */
   void install_callbacks();
   void install_read_handler(void);
-  void auth_callback(const std::string&);
-  void transfer_callback(const std::string&);
+  void auth_callback(const char*, int);
+  void transfer_callback(const char*, int);
   const unsigned long int number;
   /**
    * A pointer to the server, to call its method when the RemoteClient

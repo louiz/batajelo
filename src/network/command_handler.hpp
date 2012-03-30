@@ -20,7 +20,10 @@
 # define __COMMAND_HANDLER_HPP__
 
 #include <network/transfer_sender.hpp>
+
 using boost::asio::ip::tcp;
+
+typedef boost::function<void(const char*, int)> t_read_callback;
 
 class CommandHandler
 {
@@ -40,36 +43,36 @@ public:
    * Read the arguments after a command (can read 0 bytes too) and pass that
    * to the callback that was associated with this command.
    */
-  void binary_read_handler(const boost::system::error_code&, std::size_t, boost::function<void(std::string)>);
+  void binary_read_handler(const boost::system::error_code&, std::size_t, t_read_callback);
   /**
    * Sends a command, and use install_callback_once to wait for the answer
    * and call that callback to handle it.
    */
-  void request_answer(const char*, const char*, boost::function< void(const std::string&) > on_answer = 0);
-
-protected:
+  void request_answer(const char*, const char*, t_read_callback on_answer = 0);
   /**
    * Install a new callback associated with a command. This callback will
    * be called upon receiving that command.
    */
-  void install_callback(const std::string&, boost::function< void(std::string) >);
+  void install_callback(const std::string&, t_read_callback);
   /**
    * Install a new callback associated with a command. This callback will
    * be called upon receiving that command, but only once. This is used
    * for example if you send a command waiting for and answer, you install
    * a callback that will handle that answer, and only this one.
    */
-  void install_callback_once(const std::string&, boost::function< void(std::string) >);
+  void install_callback_once(const std::string&, t_read_callback);
+
+protected:
   /**
    * Returns the callback associated with the passed command name.
    * Returns 0 if nothing was found, in that case the execution of the
    * return value cause a failure.
    */
-  boost::function< void(std::string) > get_callback(const std::string&);
+  t_read_callback get_callback(const std::string&);
   /**
    * Send the given data on the socket.
    */
-  void send(const char*, boost::function< void(void) > on_send = 0);
+  void send(const char*, boost::function< void(void) > on_send = 0, int length = 0);
   /**
    * @todo Check if the data was correctly sent on the socket
    */
@@ -89,8 +92,8 @@ private:
   CommandHandler(const CommandHandler&);
   CommandHandler& operator=(const CommandHandler&);
 
-  std::map<const std::string, boost::function< void(std::string) > > callbacks;
-  std::map<const std::string, boost::function< void(std::string) > > callbacks_once;
+  std::map<const std::string, t_read_callback > callbacks;
+  std::map<const std::string, t_read_callback > callbacks_once;
 };
 
 #endif // __COMMAND_HANDLER_HPP__
