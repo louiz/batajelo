@@ -71,16 +71,18 @@ public:
   /**
    * Update a database object (insert it if it doesn’t already exist
    * or create it if it’s new).
+   * @param object The database object
+   * @param table The database table
    * @return bool
    */
-  bool const update(const DbObject* object, const std::string&);
+  const bool update(const DbObject*, const std::string&);
   /**
    * Remove a database object.
-   * @param query The remove query.
-   * @param where The remove query condition.
+   * @param object The database object
+   * @param table The database table
    * @return bool
    */
-  bool const remove(const std::string&, const std::string&);
+  const bool remove(const DbObject*, const std::string&);
 
 private:
   /**

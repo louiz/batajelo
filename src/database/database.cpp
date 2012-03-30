@@ -210,10 +210,21 @@ const bool Database::update(const DbObject* object, const std::string& table_nam
   return true;
 };
 
-const bool Database::remove(const std::string& table_name, const std::string& where)
+const bool Database::remove(const DbObject* object, const std::string& table_name)
 {
-  std::string query = "DELETE FROM " + table_name;
-  query += " WHERE " + where;
+  std::string query = "DELETE FROM " + table_name + " WHERE ";
+  std::map<std::string, std::string>::const_iterator it;
+  // Use this iterator to detect the last element in the vector
+  std::map<std::string, std::string>::const_iterator final_it = object->values.end();
+  --final_it;
+
+  for (it = object->values.begin(); it != object->values.end(); ++it)
+  {
+    query += "`" + it->first + "`=";
+    query += "'" + it->second + "'";
+    if (it != final_it)
+      query += " AND ";
+  }
 
   if (this->do_remove(query) == false)
     return false;
