@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(create_friend)
   where += " AND request_id =";
   where += Config::get("request_friendship", "1").data();
   FriendRequest request;
-  request.crate(user, user2);
+  request.create(user, user2);
   DbObject* friendship_pending = Database::inst()->get_object("*", "User_Request", where);
   BOOST_REQUIRE(friendship_pending != 0);
 
