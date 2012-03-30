@@ -72,8 +72,6 @@ public:
    * Database object values.
    */
   std::map<std::string, std::string> values;
-
-  virtual const std::string get_class_name() const;
 };
 
 #endif
