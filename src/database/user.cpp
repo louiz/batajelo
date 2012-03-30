@@ -21,15 +21,6 @@ std::vector<DbObject*> User::get_achievements()
   return user_achievements;
 }
 
-void User::add_friend(const std::string& friend_id)
-{
-  DbObject* friendship = new DbObject();
-  friendship->set("user_id", this->get("id"));
-  friendship->set("friend_id", friend_id);
-  if (Database::inst()->update(friendship, "user_friend") != true)
-    log_error("Friendship add Failed !");
-}
-
 std::vector<User*> User::get_friends()
 {
   std::vector<DbObject*>::iterator objs_it;

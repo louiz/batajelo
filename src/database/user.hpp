@@ -31,12 +31,6 @@ public:
    */
   std::vector<DbObject*> get_achievements();
   /**
-   * Add a friend.
-   * @param id The friend id.
-   * @return void
-   */
-  void add_friend(const std::string&);
-  /**
    * Get friends infos.
    * @return std::vector<User*>
    */
