@@ -112,7 +112,7 @@ file(
 	src/database/*.[ch]pp
 )
 add_library(database STATIC ${source_database})
-set_target_properties(database PROPERTIES COMPILE_FLAGS ${MYSQL_CFLAGS})
+set_target_properties(database PROPERTIES COMPILE_FLAGS ${MYSQL_CXXFLAGS})
 
 target_link_libraries(
 	database
