@@ -65,6 +65,7 @@ CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Request` (
   INDEX `request_sender` (`sender_id` ASC) ,
   INDEX `request_receiver` (`receiver_id` ASC) ,
   INDEX `request_request` (`request_id` ASC) ,
+  PRIMARY KEY (`request_id`, `sender_id`, `receiver_id`) ,
   CONSTRAINT `request_sender`
     FOREIGN KEY (`sender_id` )
     REFERENCES `batajelo`.`User` (`id` )
@@ -108,6 +109,7 @@ CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Achievement` (
   `achievement_id` INT UNSIGNED NOT NULL ,
   INDEX `achievementUser_user` (`user_id` ASC) ,
   INDEX `achievementUser_achievement` (`achievement_id` ASC) ,
+  PRIMARY KEY (`user_id`, `achievement_id`) ,
   CONSTRAINT `achievementUser_user`
     FOREIGN KEY (`user_id` )
     REFERENCES `batajelo`.`User` (`id` )
@@ -184,6 +186,7 @@ CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Replay` (
   `user_id` INT UNSIGNED NOT NULL ,
   INDEX `replayUser_replay` (`replay_id` ASC) ,
   INDEX `replayUser_user` (`user_id` ASC) ,
+  PRIMARY KEY (`replay_id`, `user_id`) ,
   CONSTRAINT `replayUser_replay`
     FOREIGN KEY (`replay_id` )
     REFERENCES `batajelo`.`Replay` (`id` )
@@ -207,6 +210,7 @@ CREATE  TABLE IF NOT EXISTS `batajelo`.`Map_Mode` (
   `mode_id` INT UNSIGNED NOT NULL ,
   INDEX `mapMode_map` (`map_id` ASC) ,
   INDEX `mapMode_mode` (`mode_id` ASC) ,
+  PRIMARY KEY (`map_id`, `mode_id`) ,
   CONSTRAINT `mapMode_map`
     FOREIGN KEY (`map_id` )
     REFERENCES `batajelo`.`Map` (`id` )
@@ -230,6 +234,7 @@ CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Friend` (
   `friend_id` INT UNSIGNED NOT NULL ,
   INDEX `friendship_user` (`user_id` ASC) ,
   INDEX `friendship_friend` (`friend_id` ASC) ,
+  PRIMARY KEY (`user_id`, `friend_id`) ,
   CONSTRAINT `friendship_user`
     FOREIGN KEY (`user_id` )
     REFERENCES `batajelo`.`User` (`id` )
