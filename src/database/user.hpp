@@ -35,13 +35,23 @@ public:
    * @return std::vector<User*>
    */
   std::vector<User*> get_friends();
-    /**
+  /**
    * Remove a friend.
    * @param id The friend id.
    * @return void
    */
   void remove_friend(const std::string&);
-
+  /**
+   * Link a User to a Replay
+   * @param replay_id The Replay id.
+   * @return void
+   */
+  void add_replay(const std::string&);
+  /**
+   * Get Replays of a User
+   * @return std::vector<DbObject*>
+   */
+  std::vector<DbObject*> get_replays();
 private:
   User(const DbObject&);
 };

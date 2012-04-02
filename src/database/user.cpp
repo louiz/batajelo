@@ -30,19 +30,19 @@ std::vector<User*> User::get_friends()
   if (friends_ids.size() > 0)
     {
       for (objs_it = friends_ids.begin(); objs_it != friends_ids.end(); objs_it++)
-	{
-	  where += (*objs_it)->get("id");
-	  where += (objs_it != friends_ids.end() - 1) ? ", " : ")";
-	}
+        {
+          where += (*objs_it)->get("id");
+          where += (objs_it != friends_ids.end() - 1) ? ", " : ")";
+        }
       friends_ids.clear();
       std::vector<DbObject*> friends_obj = Database::inst()->get_objects("user.id, user.login, user.password, user.last_login", "user", where);
       if (friends_obj.size() > 0)
-	{
-	  for (objs_it = friends_obj.begin(); objs_it != friends_obj.end(); objs_it++)
-	    friends.push_back(static_cast<User*>(*objs_it));
-	}
+        {
+          for (objs_it = friends_obj.begin(); objs_it != friends_obj.end(); objs_it++)
+            friends.push_back(static_cast<User*>(*objs_it));
+        }
       else
-	log_warning("No friends Infos found !");
+        log_warning("No friends Infos found !");
     }
   else
     log_warning("No friends found !");
@@ -57,3 +57,24 @@ void User::remove_friend(const std::string& friend_id)
   if (Database::inst()->update(friendship, "User_Friend") != true)
     log_error("Friendship not found!");
 }
+
+void User::add_replay(const std::string& replay_id)
+{
+  DbObject* user_replay = new DbObject();
+  user_replay->set("replay_id", replay_id);
+  user_replay->set("user_id", this->get("id"));
+  if (Database::inst()->update(user_replay, "user_replay") != true)
+    log_error("User_Replay add Failed !");
+}
+
+std::vector<DbObject*> User::get_replays()
+{
+  const std::string where = "user_replay INNER JOIN replay ON user_replay.replay_id = replay.id";
+  std::vector<DbObject*> replays = Database::inst()->get_objects("replay_id, name", where, "user_id=" + this->get("id"));
+  if (replays.size() == 0)
+    {
+	    log_warning("No Replays found !");
+    }
+  return replays;
+}
+
