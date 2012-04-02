@@ -8,6 +8,12 @@
 #define BOOST_TEST_MODULE database
 #include <boost/test/included/unit_test.hpp>
 
+/* HOW TO USE THE TESTS
+  Before launching the tests, you need to execute the data/test.sql script
+  It will insert some required values for testing in the database
+  Then you are ready to launch the tests !
+*/
+
 BOOST_AUTO_TEST_SUITE(database_suite1)
 
 BOOST_AUTO_TEST_CASE(empty_user)
@@ -38,7 +44,7 @@ BOOST_AUTO_TEST_CASE(update_user)
   BOOST_REQUIRE(user2->get("password") == "new_pass");
 }
 
-BOOST_AUTO_TEST_CASE(create_friend)
+BOOST_AUTO_TEST_CASE(add_friend)
 {
   User* user2 = new User();
   user2->set("login", "testing2");
@@ -70,23 +76,39 @@ BOOST_AUTO_TEST_CASE(create_friend)
   BOOST_REQUIRE(friendship->get("friend_id") == user2->get("id"));
 }
 
-BOOST_AUTO_TEST_CASE(create_user_achievement)
+BOOST_AUTO_TEST_CASE(add_user_achievement)
 {
   User* user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
   BOOST_REQUIRE(user != 0);
 
-  DbObject* achievement = new DbObject();
-  achievement->set("name", "first");
-  achievement->set("difficulty", "EASY");
-  achievement->set("description", "lol");
-  BOOST_REQUIRE(Database::inst()->update(achievement, "Achievement") == true);
-
-  achievement = Database::inst()->get_object("id", "Achievement", "name='first'");
-  BOOST_REQUIRE(achievement != 0);
-
-  user->add_achievement(achievement->get("id"));
+  user->add_achievement("1");
   std::vector<DbObject*> user_achievements = user->get_achievements();
   BOOST_REQUIRE(user_achievements.size() == 1);
+}
+
+BOOST_AUTO_TEST_CASE(add_and_get_replays)
+{
+  User* user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  User* user2 = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing2'"));
+  BOOST_REQUIRE(user != 0);
+  BOOST_REQUIRE(user2 != 0);
+
+  DbObject* replay = Database::inst()->get_object("id", "Replay", "name='test'");
+  BOOST_REQUIRE(replay != 0);
+
+  user->add_replay(replay->get("id"));
+  DbObject* user_replay = Database::inst()->get_object("user_id, replay_id", "user_replay", "replay_id=" + replay->get("id") + " AND user_id=" + user->get("id"));
+  BOOST_REQUIRE(user_replay != 0);
+
+  user2->add_replay(replay->get("id"));
+  DbObject* user_replay2 = Database::inst()->get_object("user_id, replay_id", "user_replay", "replay_id=" + replay->get("id") + " AND user_id=" + user2->get("id"));
+  BOOST_REQUIRE(user_replay2 != 0);
+
+  std::vector<DbObject*> replays = user->get_replays();
+  BOOST_REQUIRE(replays.size() == 1);
+
+  std::vector<DbObject*> replays2 = user2->get_replays();
+  BOOST_REQUIRE(replays.size() == 1);
 }
 
 BOOST_AUTO_TEST_CASE(delete_users)
