@@ -1,7 +1,7 @@
 #include <logging/logging.hpp>
 #include <gui/menu/button.hpp>
 
-Button::Button(sf::RenderWindow* win, unsigned int x, unsigned int y, unsigned int width, unsigned int height, const std::string& text, t_button_callback callback):
+Button::Button(sf::RenderWindow* win, unsigned int x, unsigned int y, unsigned int width, unsigned int height, const sf::String& text, t_button_callback callback):
   Widget(win, x, y, width, height),
   callback(callback),
   color(0)
@@ -19,13 +19,13 @@ void Button::draw() const
 
 void Button::update(const sf::Time dt)
 {
-  if (this->selected && this->color < 1)
+  if (this->hovered && this->color < 1)
     {
       this->color += dt.asSeconds() * FADE_SPEED;
       if (this->color > 1)
 	this->color = 1;
     }
-  else if (!this->selected && this->color > 0)
+  else if (!this->hovered && this->color > 0)
     {
       this->color -= dt.asSeconds() * FADE_SPEED;
       if (this->color < 0)
@@ -59,7 +59,7 @@ void Button::draw_text() const
   this->win->draw(this->text);
 }
 
-void Button::on_mouse_button_event(sf::Event event)
+void Button::on_mouse_button_event(const sf::Event& event)
 {
   if (event.mouseButton.button == 0)
     this->callback();

@@ -38,13 +38,15 @@ void Menu::update(const sf::Time dt)
   this->current_page->update(dt);
 }
 
-void Menu::handle_event(const sf::Event event)
+void Menu::handle_event(const sf::Event& event)
 {
   if ((event.type == sf::Event::MouseButtonPressed) ||
       (event.type == sf::Event::MouseButtonPressed))
     this->current_page->on_mouse_button_event(event);
-  if (event.type == sf::Event::MouseMoved)
+  else if (event.type == sf::Event::MouseMoved)
     this->current_page->on_mouse_moved(event);
+  else if (event.type == sf::Event::TextEntered)
+    this->current_page->on_text_entered(event);
 }
 
 void Menu::go_to_next_page()

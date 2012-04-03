@@ -7,7 +7,8 @@ Widget::Widget(sf::RenderWindow* win, unsigned int x, unsigned int y, unsigned w
   width(width),
   height(height),
   win(win),
-  selected(false)
+  selected(false),
+  hovered(false)
 {
   log_debug("Creating widget :" << x << ":" << y << " (" << width << ", " << height << ")");
 }
@@ -20,6 +21,15 @@ bool Widget::contains(unsigned int x, unsigned int y)
   return false;
 }
 
+void Widget::set_hovered(const bool hovered)
+{
+  if (hovered != this->hovered)
+    {
+      log_debug("Widget is now hovered: " << hovered);
+      this->hovered = hovered;
+    }
+}
+
 void Widget::set_selected(const bool selected)
 {
   if (selected != this->selected)
@@ -27,4 +37,9 @@ void Widget::set_selected(const bool selected)
       log_debug("Widget is now selected: " << selected);
       this->selected = selected;
     }
+}
+
+bool Widget::get_selected() const
+{
+  return this->selected;
 }

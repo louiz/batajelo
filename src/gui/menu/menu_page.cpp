@@ -34,9 +34,20 @@ void MenuPage::add_widget(Widget* widget)
   this->widgets.push_back(widget);
 }
 
-void MenuPage::on_mouse_button_event(const sf::Event event)
+void MenuPage::on_mouse_button_event(const sf::Event& event)
 {
   log_debug("MenuPage::on_mouse_button_event");
+  if (event.mouseButton.button == 0)
+    {
+      std::vector<Widget*>::const_iterator it;
+      for (it = this->widgets.begin(); it < this->widgets.end(); ++it)
+	{
+	  if ((*it)->contains(event.mouseButton.x, event.mouseButton.y) == true)
+	    (*it)->set_selected(true);
+	  else
+	    (*it)->set_selected(false);
+	}
+    }
   std::vector<Widget*>::const_iterator it;
   for (it = this->widgets.begin(); it < this->widgets.end(); ++it)
     {
@@ -45,17 +56,26 @@ void MenuPage::on_mouse_button_event(const sf::Event event)
     }
 }
 
-void MenuPage::on_mouse_moved(const sf::Event event)
+void MenuPage::on_mouse_moved(const sf::Event& event)
 {
   std::vector<Widget*>::const_iterator it;
   for (it = this->widgets.begin(); it < this->widgets.end(); ++it)
     {
       if ((*it)->contains(event.mouseMove.x, event.mouseMove.y) == true)
-	(*it)->set_selected(true);
+	(*it)->set_hovered(true);
       else
-	(*it)->set_selected(false);
+	(*it)->set_hovered(false);
     }
+}
 
+void MenuPage::on_text_entered(const sf::Event& event)
+{
+  std::vector<Widget*>::const_iterator it;
+  for (it = this->widgets.begin(); it < this->widgets.end(); ++it)
+    {
+      if ((*it)->get_selected())
+	(*it)->on_text_entered(event);
+    }
 }
 
 void MenuPage::reset_state_light()
@@ -63,7 +83,7 @@ void MenuPage::reset_state_light()
   std::vector<Widget*>::const_iterator it;
   for (it = this->widgets.begin(); it < this->widgets.end(); ++it)
     {
-      (*it)->set_selected(false);
+      (*it)->set_hovered(false);
       (*it)->reset_light();
     }
 }

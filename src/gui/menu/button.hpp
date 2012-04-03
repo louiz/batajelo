@@ -14,7 +14,7 @@ class Button: public Widget
 public:
   Button(sf::RenderWindow*,
 	 unsigned int, unsigned int, unsigned int, unsigned int,
-	 const std::string&, t_button_callback);
+	 const sf::String&, t_button_callback);
   ~Button() {}
   virtual void draw() const;
   virtual void update(const sf::Time);
@@ -22,7 +22,7 @@ public:
   virtual void reset_heavy();
   void draw_shape() const;
   void draw_text() const;
-  virtual void on_mouse_button_event(const sf::Event);
+  virtual void on_mouse_button_event(const sf::Event&);
   void set_text(const std::string&);
   void update_position();
 

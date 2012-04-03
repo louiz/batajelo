@@ -16,7 +16,7 @@ public:
   void set_current_page(MenuPage*);
   void draw() const;
   void update(const sf::Time);
-  void handle_event(const sf::Event);
+  void handle_event(const sf::Event&);
 
   void go_to_next_page();
   void go_to_previous_page();

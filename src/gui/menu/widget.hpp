@@ -24,14 +24,16 @@ public:
    */
   virtual void reset_heavy() = 0;
 
-  virtual void on_mouse_button_event(const sf::Event) {};
+  virtual void on_mouse_button_event(const sf::Event&) {};
+  virtual void on_mouse_moved(const sf::Event&) {};
+  virtual void on_text_entered(const sf::Event&) {};
   virtual void on_mouse_enter() {};
   virtual void on_mouse_leave() {};
-  virtual void on_mouse_moved(const sf::Event) {};
-
   bool contains(unsigned int, unsigned int);
 
+  void set_hovered(const bool);
   void set_selected(const bool);
+  bool get_selected() const;
 
 protected:
   /**
@@ -54,6 +56,7 @@ protected:
   sf::RenderWindow* win;
 
   bool selected;
+  bool hovered;
 private:
   Widget(const Widget&);
   Widget& operator=(const Widget&);
