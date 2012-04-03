@@ -38,14 +38,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package(Boost 1.48.0 COMPONENTS system date_time unit_test_framework REQUIRED)
 find_package(mysql REQUIRED)
 find_package(Threads REQUIRED)
+find_package(SFML 2 REQUIRED system window graphics audio)
 
 
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${MYSQL_INCLUDE_DIR})
+include_directories(${SFML_INCLUDE_DIR})
 include_directories("src/")
 
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${MYSQL_LIB_DIR})
+link_directories(${SFML_LIBRARIES})
 
 
 #Principal build
@@ -89,6 +92,24 @@ target_link_libraries(
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 )
+
+
+file(
+    GLOB
+    source_gui
+    src/gui/menu/*
+)
+add_library(gui STATIC ${source_gui})
+
+target_Link_libraries(
+	gui
+	logging
+	config
+	${SFML_LIBRARIES}
+	${Boost_LIBRARIES}
+	${CMAKE_THREAD_LIBS_INIT}
+)
+
 
 file(
 	GLOB
