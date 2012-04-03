@@ -3,7 +3,8 @@
 
 Button::Button(sf::RenderWindow* win, unsigned int x, unsigned int y, unsigned int width, unsigned int height, const std::string& text, t_button_callback callback):
   Widget(win, x, y, width, height),
-  callback(callback)
+  callback(callback),
+  color(0)
 {
   this->text.setCharacterSize(42);
   this->text.setColor(sf::Color::Red);
@@ -16,11 +17,38 @@ void Button::draw() const
   this->draw_text();
 }
 
+void Button::update(const sf::Time dt)
+{
+  if (this->selected && this->color < 1)
+    {
+      this->color += dt.asSeconds() * FADE_SPEED;
+      if (this->color > 1)
+	this->color = 1;
+    }
+  else if (!this->selected && this->color > 0)
+    {
+      this->color -= dt.asSeconds() * FADE_SPEED;
+      if (this->color < 0)
+	this->color = 0;
+    }
+}
+
+void Button::reset_light()
+{
+  this->color = 0;
+}
+
+void Button::reset_heavy()
+{
+
+}
+
 void Button::draw_shape() const
 {
   sf::RectangleShape rectangle;
   rectangle.setSize(sf::Vector2f(this->width, this->height));
   rectangle.setOutlineColor(sf::Color::Red);
+  rectangle.setFillColor(sf::Color(100*this->color, 0, 80*this->color));
   rectangle.setOutlineThickness(3);
   rectangle.setPosition(this->x, this->y);
   this->win->draw(rectangle);

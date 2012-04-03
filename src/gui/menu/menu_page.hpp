@@ -14,8 +14,13 @@ public:
   MenuPage(Menu*, sf::RenderWindow*);
   ~MenuPage() {}
   void draw() const;
+  void update(const sf::Time);
   void add_widget(Widget*);
-  void on_mouse_button_event(sf::Event);
+  void on_mouse_button_event(const sf::Event);
+  void on_mouse_moved(const sf::Event);
+
+  void reset_state_heavy();
+  void reset_state_light();
 
 protected:
   std::vector<Widget*> widgets;

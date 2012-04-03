@@ -33,20 +33,48 @@ void Menu::draw() const
   this->current_page->draw();
 }
 
-void Menu::handle_event(sf::Event event)
+void Menu::update(const sf::Time dt)
 {
-  if (event.type == sf::Event::MouseButtonPressed)
+  this->current_page->update(dt);
+}
+
+void Menu::handle_event(const sf::Event event)
+{
+  if ((event.type == sf::Event::MouseButtonPressed) ||
+      (event.type == sf::Event::MouseButtonPressed))
     this->current_page->on_mouse_button_event(event);
+  if (event.type == sf::Event::MouseMoved)
+    this->current_page->on_mouse_moved(event);
 }
 
 void Menu::go_to_next_page()
 {
   log_debug("go_to_next_page");
+  this->reset_pages_state_light();
   this->set_current_page(this->pages[1]);
 }
 
 void Menu::go_to_previous_page()
 {
   log_debug("go_to_previous_page");
+  this->reset_pages_state_light();
   this->set_current_page(this->pages[0]);
+}
+
+void Menu::reset_pages_state_light()
+{
+  std::vector<MenuPage*>::const_iterator it;
+  for (it = this->pages.begin(); it < this->pages.end(); ++it)
+    {
+      (*it)->reset_state_light();
+    }
+}
+
+void Menu::reset_pages_state_heavy()
+{
+  std::vector<MenuPage*>::const_iterator it;
+  for (it = this->pages.begin(); it < this->pages.end(); ++it)
+    {
+      (*it)->reset_state_heavy();
+    }
 }

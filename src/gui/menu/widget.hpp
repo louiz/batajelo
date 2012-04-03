@@ -1,5 +1,5 @@
-
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 
 #ifndef __WIDGET_HPP__
 # define __WIDGET_HPP__
@@ -7,11 +7,31 @@
 class Widget
 {
 public:
-  Widget(sf::RenderWindow*, unsigned int x, unsigned int y, unsigned width, unsigned height);
+  Widget(sf::RenderWindow*,
+	 unsigned int, unsigned int, unsigned int, unsigned int);
   ~Widget() {}
+
   virtual void draw() const = 0;
-  virtual void on_mouse_button_event(sf::Event) = 0;
+  virtual void update(const sf::Time) = 0;
+  /**
+   * Reset only the temporary states of the widget (for
+   * example fade out effects, or its position, etc)
+   */
+  virtual void reset_light() = 0;
+  /**
+   * Reset all states of the widgets. For example if a content
+   * was added since its creation, we remove it.
+   */
+  virtual void reset_heavy() = 0;
+
+  virtual void on_mouse_button_event(const sf::Event) {};
+  virtual void on_mouse_enter() {};
+  virtual void on_mouse_leave() {};
+  virtual void on_mouse_moved(const sf::Event) {};
+
   bool contains(unsigned int, unsigned int);
+
+  void set_selected(const bool);
 
 protected:
   /**
@@ -33,11 +53,10 @@ protected:
 
   sf::RenderWindow* win;
 
+  bool selected;
 private:
   Widget(const Widget&);
   Widget& operator=(const Widget&);
-  bool selected;
 };
-
 
 #endif // __WIDGET_HPP__
