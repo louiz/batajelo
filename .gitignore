@@ -6,6 +6,7 @@ GTAGS
 *.cbp
 *.depend
 *.layout
+src/database/batajelo.conf
 src/database/bin
 src/database/obj
 # DLL
