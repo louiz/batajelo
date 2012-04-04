@@ -1,6 +1,9 @@
 #include <database/user.hpp>
 #include <database/database.hpp>
 #include <logging/logging.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <iostream>
+#include <sstream>
 
 User::User() {}
 
@@ -78,3 +81,82 @@ std::vector<DbObject*> User::get_replays()
   return replays;
 }
 
+void User::add_ban(const long hours)
+{
+  if (this->get_int("is_banned") == 1)
+    {
+      log_error("User is already banned ! ")
+    }
+  else
+    {
+      boost::posix_time::ptime current_time = boost::posix_time::second_clock::local_time();
+      boost::posix_time::ptime unban_time = current_time + boost::posix_time::hours(hours);
+      std::string ban_start = to_iso_extended_string(current_time).replace(10, 1, " ");
+      std::string ban_end = to_iso_extended_string(unban_time).replace(10, 1, " ");
+
+      DbObject* ban = new DbObject();
+      ban->set("user_id", this->get("id"));
+      ban->set("ban_start", ban_start);
+      ban->set("ban_end", ban_end);
+      if (Database::inst()->update(ban, "user_ban") != true)
+        {
+          log_error("Couldn't insert the ban.");
+        }
+
+      DbObject* user = new DbObject();
+      user->set("is_banned", "1");
+      user->set("id", this->get("id"));
+      if (Database::inst()->update(user, "user") != true)
+        {
+          log_error("Couldn't update the user.");
+        }
+    }
+}
+
+void User::update_ban(const long hours)
+{
+  if (this->get_int("is_banned") == 0)
+    {
+      log_error("User is not banned ! ")
+    }
+  else
+    {
+      DbObject* user_ban = Database::inst()->get_object("id, user_id, ban_start, ban_end", "user_ban", "user_id=" + this->get("id"));
+      boost::posix_time::ptime last_unban_time(boost::posix_time::time_from_string(user_ban->get("ban_end")));
+      boost::posix_time::ptime unban_time = last_unban_time + boost::posix_time::hours(hours);
+      boost::posix_time::ptime current_time = boost::posix_time::second_clock::local_time();
+
+      if (unban_time < current_time)
+        {
+          log_error("The new ban time is already passed, use delete_ban to remove the ban !")
+        }
+      else
+        {
+          std::string ban_end = to_iso_extended_string(unban_time).replace(10, 1, " ");
+          user_ban->set("ban_end", ban_end);
+          if (Database::inst()->update(user_ban, "user_ban") != true)
+          {
+            log_error("Couldn't update the ban.")
+          }
+        }
+
+    }
+}
+
+void User::remove_ban()
+{
+  if (this->get_int("is_banned") == 0)
+    {
+      log_error("User is not banned.")
+    }
+  else
+    {
+      DbObject* user = new DbObject();
+      user->set("id", this->get("id"));
+      user->set("is_banned", "0");
+      if (Database::inst()->update(user, "user") != true)
+        {
+          log_error("Couldn't update the user.")
+        }
+    }
+}

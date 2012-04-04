@@ -52,6 +52,23 @@ public:
    * @return std::vector<DbObject*>
    */
   std::vector<DbObject*> get_replays();
+  /**
+   * Ban a User
+   * @param hours The ban length in hours
+   * @return void
+   */
+  void add_ban(const long);
+  /**
+   * Updte a ban.
+   * @param hours The ban length in hours.
+   * @return void
+   */
+  void update_ban(const long);
+  /**
+   * Remove a ban.
+   * @return void
+   */
+  void remove_ban();
 private:
   User(const DbObject&);
 };
