@@ -111,6 +111,28 @@ BOOST_AUTO_TEST_CASE(add_and_get_replays)
   BOOST_REQUIRE(replays.size() == 1);
 }
 
+BOOST_AUTO_TEST_CASE(add_update_remove_ban)
+{
+  User* user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  user->add_ban(24);
+  DbObject* user_infos = Database::inst()->get_object("*", "user", "id=" + user->get("id"));
+  BOOST_REQUIRE(user_infos->get_int("is_banned") == 1);
+
+  user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  DbObject* user_ban = Database::inst()->get_object("*", "user_ban", "user_id=" + user->get("id"));
+  boost::posix_time::ptime last_unban_time(boost::posix_time::time_from_string(user_ban->get("ban_end")));
+  BOOST_REQUIRE(user_ban != 0);
+
+  user->update_ban(24);
+  user_ban = Database::inst()->get_object("*", "user_ban", "user_id=" + user->get("id"));
+  boost::posix_time::ptime unban_time(boost::posix_time::time_from_string(user_ban->get("ban_end")));
+  BOOST_REQUIRE(last_unban_time + boost::posix_time::hours(24) == unban_time);
+
+  user->remove_ban();
+  user_infos = Database::inst()->get_object("*", "user", "id=" + user->get("id"));
+  BOOST_REQUIRE(user_infos->get_int("is_banned") == 0);
+}
+
 BOOST_AUTO_TEST_CASE(delete_users)
 {
   User* user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
