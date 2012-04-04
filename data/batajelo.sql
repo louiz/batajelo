@@ -254,15 +254,17 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `batajelo`.`User_Ban` ;
 
 CREATE  TABLE IF NOT EXISTS `batajelo`.`User_Ban` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `user_id` INT UNSIGNED NOT NULL ,
   `ban_start` DATETIME NOT NULL ,
   `ban_end` DATETIME NOT NULL ,
   INDEX `ban_user_id` (`user_id` ASC) ,
+  PRIMARY KEY (`id`) ,
   CONSTRAINT `ban_user_id`
     FOREIGN KEY (`user_id` )
     REFERENCES `batajelo`.`User` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
