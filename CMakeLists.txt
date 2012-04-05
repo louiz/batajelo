@@ -93,7 +93,6 @@ target_link_libraries(
 	${CMAKE_THREAD_LIBS_INIT}
 )
 
-
 file(
     GLOB
     source_gui
@@ -117,11 +116,27 @@ file(
 	src/network/remote_client.*
 	src/network/command_handler.*
 	src/network/server.*
+	src/network/transfer_sender.*
 )
 add_library(server STATIC ${source_server})
 
 target_link_libraries(
 	server
+	logging
+	config
+)
+
+file(
+	GLOB
+	source_client
+	src/network/client.*
+	src/network/command_handler.*
+	src/network/transfer_receiver.*
+)
+add_library(client STATIC ${source_client})
+
+target_link_libraries(
+	client
 	logging
 	config
 )
