@@ -75,14 +75,14 @@ public:
    * @param table The database table
    * @return bool
    */
-  const bool update(const DbObject*, const std::string&);
+  bool update(const DbObject*, const std::string&);
   /**
    * Remove a database object.
    * @param object The database object
    * @param table The database table
    * @return bool
    */
-  const bool remove(const DbObject*, const std::string&);
+  bool remove(const DbObject*, const std::string&);
 
 private:
   /**

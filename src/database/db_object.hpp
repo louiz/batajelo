@@ -37,7 +37,7 @@ public:
    * @param std::string& field
    * @return const int
    */
-  const int get_int(const std::string&) const;
+  int get_int(const std::string&) const;
   /**
    * Get the date field value.
    * @param std::string& field The field

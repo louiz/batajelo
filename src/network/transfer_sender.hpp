@@ -44,8 +44,8 @@ private:
   TransferSender(const TransferSender&);
   TransferSender& operator=(const TransferSender&);
 
-  const std::string filename;
   RemoteClient* client;
+  const std::string filename;
   std::ifstream file;
 
   int length;

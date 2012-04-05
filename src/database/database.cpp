@@ -178,7 +178,7 @@ std::vector<DbObject*> Database::get_objects(const std::string& columns,
   return db_objects;
 }
 
-const bool Database::update(const DbObject* object, const std::string& table_name)
+bool Database::update(const DbObject* object, const std::string& table_name)
 {
   std::string query = "INSERT INTO " + table_name;
   std::string fields_str = "(";
@@ -210,7 +210,7 @@ const bool Database::update(const DbObject* object, const std::string& table_nam
   return true;
 };
 
-const bool Database::remove(const DbObject* object, const std::string& table_name)
+bool Database::remove(const DbObject* object, const std::string& table_name)
 {
   std::string query = "DELETE FROM " + table_name + " WHERE ";
   std::map<std::string, std::string>::const_iterator it;
