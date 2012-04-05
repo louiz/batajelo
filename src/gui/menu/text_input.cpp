@@ -3,11 +3,19 @@
 
 TextInput::TextInput(sf::RenderWindow* win,
 		     unsigned int x, unsigned int y, unsigned int width, unsigned int height):
-  Widget(win, x, y, width, height)
+  Widget(win, x, y, width, height),
+  cursor_pos(0),
+  cursor_state(0)
 {
   this->text.setCharacterSize(30);
   this->text.setColor(sf::Color::Green);
-  this->text.setPosition(this->x, this->y);
+  this->update_text_position();
+}
+
+void TextInput::update_text_position()
+{
+  this->text.setString(this->string);
+  this->center_text(this->text, 10);
 }
 
 void TextInput::draw() const
@@ -18,6 +26,9 @@ void TextInput::draw() const
 
 void TextInput::update(const sf::Time dt)
 {
+  this->cursor_state += dt.asSeconds() * CURSOR_BLINK_SPEED;
+  if (this->cursor_state > CURSOR_VISIBLE_TIME)
+    this->cursor_state -= (CURSOR_VISIBLE_TIME + CURSOR_INVISBLE_TIME);
 }
 
 void TextInput::reset_light()
@@ -49,13 +60,33 @@ void TextInput::draw_shape() const
 
 void TextInput::draw_text() const
 {
-  sf::Text t = this->text;
-  t.setString(this->string);
-  this->win->draw(t);
+  this->win->draw(this->text);
 }
 
 void TextInput::on_text_entered(const sf::Event& event)
 {
   if (event.text.unicode >= 32)
-    this->string += event.text.unicode;
+    {
+      this->string += event.text.unicode;
+    }
+  else
+    {
+      log_debug(event.text.unicode);
+      switch (event.text.unicode)
+	{
+	case 8:
+	  this->delete_char();
+	default:
+	  break ;
+	}
+    }
+  this->update_text_position();
+}
+
+void TextInput::delete_char()
+{
+  log_debug("delete_char");
+  if (this->string.getSize())
+    this->string.erase(this->string.getSize()-1);
+  this->cursor_pos -= 1;
 }

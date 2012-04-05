@@ -47,6 +47,8 @@ void Menu::handle_event(const sf::Event& event)
     this->current_page->on_mouse_moved(event);
   else if (event.type == sf::Event::TextEntered)
     this->current_page->on_text_entered(event);
+  else if (event.type == sf::Event::KeyPressed)
+    this->current_page->on_key_pressed(event);
 }
 
 void Menu::go_to_next_page()

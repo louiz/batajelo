@@ -27,6 +27,7 @@ public:
   virtual void on_mouse_button_event(const sf::Event&) {};
   virtual void on_mouse_moved(const sf::Event&) {};
   virtual void on_text_entered(const sf::Event&) {};
+  virtual void on_key_pressed(const sf::Event&) {};
   virtual void on_mouse_enter() {};
   virtual void on_mouse_leave() {};
   bool contains(unsigned int, unsigned int);
@@ -36,6 +37,12 @@ public:
   bool get_selected() const;
 
 protected:
+  /**
+   * Takes a text object and set its position to be centered
+   * in the widget.
+   */
+  void center_text(sf::Text&, int x = -1, int y = -1);
+
   /**
    * The upper position of the widget
    */

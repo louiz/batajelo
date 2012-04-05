@@ -19,6 +19,7 @@ public:
   void on_mouse_button_event(const sf::Event&);
   void on_mouse_moved(const sf::Event&);
   void on_text_entered(const sf::Event&);
+  void on_key_pressed(const sf::Event&);
 
   void reset_state_heavy();
   void reset_state_light();

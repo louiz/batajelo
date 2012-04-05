@@ -43,3 +43,18 @@ bool Widget::get_selected() const
 {
   return this->selected;
 }
+
+void Widget::center_text(sf::Text& text, int x, int y)
+{				// this sucks
+  sf::FloatRect rect = text.getGlobalBounds();
+  if (x == -1)
+    x = this->x + this->width/2 - rect.width/2;
+  else
+    x += this->x;
+  if (y == -1)
+    y = this->y + this->height/2 - rect.height/2;
+  else
+    y += this->y;
+  text.setPosition(x, y);
+  log_debug(rect.height << " " << rect.width);
+}

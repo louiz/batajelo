@@ -88,6 +88,15 @@ void MenuPage::reset_state_light()
     }
 }
 
+void MenuPage::on_key_pressed(const sf::Event& event)
+{
+  std::vector<Widget*>::const_iterator it;
+  for (it = this->widgets.begin(); it < this->widgets.end(); ++it)
+    {
+      (*it)->on_key_pressed(event);
+    }
+}
+
 void MenuPage::reset_state_heavy()
 {
   std::vector<Widget*>::const_iterator it;

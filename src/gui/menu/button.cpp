@@ -74,6 +74,7 @@ void Button::set_text(const std::string& text)
 void Button::update_position()
 {
   // TODO, find a way to center the text.
-  this->text.setPosition((this->x + this->width/2) - (this->text.getCharacterSize() / 2),
-			 (this->y + this->height / 2) - (this->text.getCharacterSize() / 2));
+  this->center_text(this->text);
+  // this->text.setPosition((this->x + this->width/2) - (this->text.getCharacterSize() / 2),
+  // 			 (this->y + this->height / 2) - (this->text.getCharacterSize() / 2));
 }
