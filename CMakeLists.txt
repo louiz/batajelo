@@ -138,6 +138,8 @@ file(
 )
 add_library(client STATIC ${source_client})
 
+add_library(network STATIC ${source_server} ${source_client})
+
 target_link_libraries(
 	client
 	logging
@@ -183,9 +185,9 @@ file(
 
 foreach(module_src ${modules_srcs})
 
-	get_filename_component(lib ${module_src} NAME_WE) 
+	get_filename_component(lib ${module_src} NAME_WE)
 	string(REGEX REPLACE "(.*)_main$" "\\1" lib ${lib})
-	
+
 	add_executable(${lib}_main  EXCLUDE_FROM_ALL ${module_src})
 
 	target_link_libraries(
@@ -204,7 +206,7 @@ file(
 
 foreach(test_src ${tests_srcs})
 
-	get_filename_component(lib ${test_src} NAME_WE) 
+	get_filename_component(lib ${test_src} NAME_WE)
 	string(REGEX REPLACE "(.*)_test$" "\\1" lib ${lib})
 
 	add_executable(${lib}_test  EXCLUDE_FROM_ALL ${test_src})
