@@ -117,6 +117,7 @@ file(
 	src/network/command_handler.*
 	src/network/server.*
 	src/network/transfer_sender.*
+	src/network/command.*
 )
 add_library(server STATIC ${source_server})
 
@@ -124,6 +125,7 @@ target_link_libraries(
 	server
 	logging
 	config
+	database
 )
 
 file(
@@ -132,10 +134,25 @@ file(
 	src/network/client.*
 	src/network/command_handler.*
 	src/network/transfer_receiver.*
+	src/network/command.*
 )
 add_library(client STATIC ${source_client})
 
 target_link_libraries(
+	client
+	logging
+	config
+)
+
+file(
+	GLOB
+	source_game
+	src/game/*.[ch]pp
+)
+add_library(game STATIC ${source_game})
+
+target_link_libraries(
+	game
 	client
 	logging
 	config

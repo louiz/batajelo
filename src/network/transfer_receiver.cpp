@@ -7,13 +7,13 @@ TransferReceiver::TransferReceiver(Client* client,
 				   int length):
   client(client),
   id(sid),
-  filename(filename),
+  filename(FILES_TO_RECEIVE_DIRECTORY + filename),
   length(length),
   received_length(0)
 {
   std::string command_name("TRANSFER_");
   command_name += sid;
-  this->client->install_callback_once(command_name, boost::bind(&TransferReceiver::get_next_chunk, this, _1, _2));
+  this->client->install_callback(command_name, boost::bind(&TransferReceiver::get_next_chunk, this, _1));
   this->file.open(this->filename.data(), std::ofstream::binary);
 }
 
@@ -23,29 +23,26 @@ TransferReceiver::~TransferReceiver()
   this->file.close();
 }
 
-void TransferReceiver::get_next_chunk(const char* data, int length)
+void TransferReceiver::get_next_chunk(Command* received_command)
 {
-  log_debug("coucou");
   if (!this->file.good())
     {
       log_warning("Could not write data to file " << this->filename << ". Stopping transfer");
+      this->stop();
       return ;
     }
-  if (length == 0)
-    {
-      // file transfer is over.
-      this->client->on_transfer_ended(this);
-    }
+  if (received_command->body_size == 0)
+    this->stop();
   else
-    {
-      log_debug("Writing " << length << " bytes to file");
-      this->file.write(data, length);
+    this->file.write(received_command->body, received_command->body_size);
+}
 
-      std::ostringstream sid;
-      sid << this->id;
-      std::string command_name("TRANSFER_");
-      command_name += sid.str();
-      // transfer is not over yet, add the callback again to get the next chunk.
-      this->client->install_callback_once(command_name, boost::bind(&TransferReceiver::get_next_chunk, this, _1, _2));
-    }
+void TransferReceiver::stop()
+{
+  std::ostringstream sid;
+  sid << this->id;
+  std::string command_name("TRANSFER_");
+  command_name += sid.str();
+  this->client->remove_callback(command_name);
+  this->client->on_transfer_ended(this);
 }

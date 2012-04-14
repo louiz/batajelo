@@ -1,11 +1,10 @@
 // The main class for the game itself
 
-// Network
-#include <network/client.hpp>
-
 #ifndef __GAME_HPP__
 # define __GAME_HPP__
 
+#include <network/client.hpp>
+#include <network/command.hpp>
 class Game
 {
 public:
@@ -16,7 +15,7 @@ public:
   void on_connection_failed(const std::string&, const short&);
   void on_connection_success(const std::string&, const std::string&);
   void authenticate(const std::string&, const std::string&);
-  void on_authenticate(const std::string&);
+  void on_authenticate(Command*);
   /**
    * Sends a request for a file transfer.
    * @param filename The file that we want to receive.

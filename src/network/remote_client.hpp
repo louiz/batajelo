@@ -19,6 +19,7 @@
 
 #include <database/user.hpp>
 #include <network/command_handler.hpp>
+#include <network/command.hpp>
 #include <network/transfer_sender.hpp>
 
 class Server;
@@ -73,8 +74,8 @@ private:
    */
   void install_callbacks();
   void install_read_handler(void);
-  void auth_callback(const char*, int);
-  void transfer_callback(const char*, int);
+  void auth_callback(Command*);
+  void transfer_callback(Command*);
   const unsigned long int number;
   /**
    * A pointer to the server, to call its method when the RemoteClient

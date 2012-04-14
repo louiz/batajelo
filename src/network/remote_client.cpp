@@ -34,19 +34,21 @@ User* RemoteClient::get_user()
 
 void RemoteClient::install_callbacks()
 {
-  this->install_callback("AUTH", boost::bind(&RemoteClient::auth_callback, this, _1, _2));
-  this->install_callback("TRANSFER", boost::bind(&RemoteClient::transfer_callback, this, _1, _2));
+  this->install_callback("AUTH", boost::bind(&RemoteClient::auth_callback, this, _1));
+  this->install_callback("TRANSFER", boost::bind(&RemoteClient::transfer_callback, this, _1));
 }
 
-void RemoteClient::auth_callback(const char* carg, int)
+void RemoteClient::auth_callback(Command* received_command)
 {
-  std::string arg(carg);
-  std::string res("AUTH.");
+  Command* command = new Command();
+  std::string arg(received_command->body, received_command->body_size);
+  std::string name("AUTH");
+  std::string body;
   bool success = false;
   log_debug("auth_callback: " << arg);
   size_t pos = arg.find('*');
   if (pos == std::string::npos)
-    res += "1:1";
+    body = "1";
   else
     {
       std::string login = arg.substr(0, pos);
@@ -57,36 +59,38 @@ void RemoteClient::auth_callback(const char* carg, int)
       if (user == 0)
   	{
   	  log_info("Authentication: User " << login << " does not exist in database.");
-  	  res += "1:2";
+  	  body = "2";
   	}
       else if (user->get("password") != password)
   	{
   	  log_info("Authentication: Invalid password for user " << login);
-  	  res += "1:3";
+  	  body = "3";
   	  delete user;
   	}
-      else if (this->server->find_client_by_login(login) != 0)
-  	{
-  	  log_info("Authentication: user already logged in from an other location: " << login);
-  	  res += "1:4";
-  	  delete user;
-  	}
+      // else if (this->server->find_client_by_login(login) != 0)
+      // 	{
+      // 	  log_info("Authentication: user already logged in from an other location: " << login);
+      // 	  body = "4";
+      // 	  delete user;
+      // 	}
       else
   	{
   	  log_info("Authentication: succes for user " << login);
-  	  res += "1:0";
+  	  body = "0";
   	  this->user = static_cast<User*>(user);
 	  success = true;
   	}
     }
-  this->send(res.data());
+  command->set_name(name);
+  command->set_body(body.c_str());
+  this->send(command);
   if (success)
     this->on_auth_success();
 }
 
-void RemoteClient::transfer_callback(const char* filename, int length)
+void RemoteClient::transfer_callback(Command* received_command)
 {
-  this->send_file(std::string(filename, length));
+  this->send_file(std::string(received_command->body, received_command->body_size));
 }
 
 void RemoteClient::on_auth_success()
@@ -103,7 +107,9 @@ void RemoteClient::start()
 
 void RemoteClient::send_file(const std::string& filename)
 {
+  log_debug("Avant creation du transfert");
   TransferSender* sender = new TransferSender(this, filename);
+  log_debug("Apres creation du transfert");
   if (sender->start() == true)
     {
       this->senders.push_back(sender);

@@ -17,9 +17,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <boost/asio.hpp>
 
 #ifndef __TRANSFER_SENDER_HPP__
 # define __TRANSFER_SENDER_HPP__
+
+#define FILES_TO_SEND_DIRECTORY std::string("./send/")
 
 #include <logging/logging.hpp>
 

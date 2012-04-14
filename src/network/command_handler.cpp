@@ -18,9 +18,19 @@ void CommandHandler::install_callback_once(const std::string& command,
   this->callbacks_once[command] = callback;
 }
 
+void CommandHandler::remove_callback(const std::string& command)
+{
+  std::map<const std::string, t_read_callback >::iterator it;
+
+  it = this->callbacks.find(command);
+  if (it != this->callbacks.end())
+    this->callbacks.erase(it);
+  else
+    log_warning("Could not remove callback: " << command);
+}
+
 t_read_callback CommandHandler::get_callback(const std::string& command)
 {
-  log_debug("get_callback");
   std::map<const std::string, t_read_callback >::iterator it;
 
   it = this->callbacks.find(command);
@@ -59,50 +69,58 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
   while (c[pos] && c[pos] != '.')
     pos++;
 
-  std::string command;
+  std::string command_name;
   std::size_t size;
   if (pos == bytes_transferred)
     {  // no . was found
-      command = std::string(c, pos-1);
+      command_name = std::string(c, pos-1);
       size = 0;
     }
   else
     {
-      command = std::string(c, pos);
+      command_name = std::string(c, pos);
       size = atoi(std::string(c+pos+1, bytes_transferred-pos-2).data()); // remove the ending :
     }
-  log_debug(command << " . " << size);
+  log_debug(command_name << " . " << size);
+  Command* command = new Command;
+  command->set_name(command_name);
+
   delete[] c;
 
   // Find out if a callback was registered for that command.
-  t_read_callback callback = this->get_callback(command);
+  t_read_callback callback = this->get_callback(command_name);
   // We check what we need to read on the socket to have the rest of the binary datas
   const std::size_t length_to_read = this->data.size() >= size ? 0 : size - this->data.size();
 
-  log_debug("length to read on the socket: " << length_to_read);
   boost::asio::async_read(*this->socket,
 			  this->data,
 			  boost::asio::transfer_at_least(length_to_read),
 			  boost::bind(&CommandHandler::binary_read_handler, this,
 				      boost::asio::placeholders::error,
+				      command,
 				      size, callback));
 }
 
 void CommandHandler::binary_read_handler(const boost::system::error_code& error,
+					 Command* command,
 					 std::size_t bytes_transferred,
-					 // std::size_t size,
 					 t_read_callback callback)
 {
+  if (error)
+    {
+      log_error("binary_read_handler failed: "<< error);
+      exit(1);
+    }
   log_debug("binary_read_handler " << bytes_transferred);
-  char *c = new char[bytes_transferred+1];
-  this->data.sgetn(c, bytes_transferred);
+  command->body = new char[bytes_transferred];
+  this->data.sgetn(command->body, bytes_transferred);
+  command->set_body_size(bytes_transferred);
 
-  c[bytes_transferred] = 0;
   if (callback)
-    callback(c, bytes_transferred);
+    callback(command);
   else
     log_debug("no callback");
-  delete[] c;
+  delete command;
   this->install_read_handler();
 }
 
@@ -119,42 +137,38 @@ void CommandHandler::install_read_handler(void)
 
 // Send a command and add a callback to be called when the answer to
 // this command will be received
-void CommandHandler::request_answer(const char* command, const char* data,
-				    t_read_callback on_answer)
+void CommandHandler::request_answer(Command* command, t_read_callback on_answer)
 {
-  std::string msg(command);
-
-  std::ostringstream ssize;
-  ssize << strlen(data);
-  msg += std::string(".") + std::string(ssize.str()) + std::string(":") + std::string(data);
-
   // We may want to send a command that do not require an answer.
   if (on_answer)
-    this->install_callback_once(command, on_answer);
-  this->send(msg.data());
+    this->install_callback_once(command->get_name(), on_answer);
+  this->send(command);
 }
 
-void CommandHandler::send(const char* msg, boost::function< void(void) > on_sent, int length)
+void CommandHandler::send(Command* command, boost::function< void(void) > on_sent)
 {
-  if (length == 0)
-    length = strlen(msg);
+  command->pack();
+  std::vector<boost::asio::const_buffer> buffs;
+  buffs.push_back(boost::asio::buffer(command->header.data(), command->header.length()));
+  buffs.push_back(boost::asio::buffer(command->body, command->body_size));
   async_write(*this->socket,
-	      boost::asio::buffer(msg, length),
-	      boost::bind(&CommandHandler::send_handler, this,
-			  boost::asio::placeholders::error,
-			  boost::asio::placeholders::bytes_transferred,
-			  on_sent));
-  log_debug("Sending [" << length << "] bytes");
+	      buffs,
+  	      boost::bind(&CommandHandler::send_handler, this,
+  			  boost::asio::placeholders::error,
+  			  boost::asio::placeholders::bytes_transferred,
+  			  on_sent, command));
 }
 
 void CommandHandler::send_handler(const boost::system::error_code& error,
 				  std::size_t bytes_transferred,
-				  boost::function< void(void) > on_sent)
+				  boost::function< void(void) > on_sent, Command* command)
 {
+  assert(bytes_transferred == command->header.length() + command->body_size);
+  delete command;
+
   // TODO check for error
   if (error)
     exit(1);
-  log_debug(bytes_transferred << " bytes sent");
   if (on_sent)
     on_sent();
 }

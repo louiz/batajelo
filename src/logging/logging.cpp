@@ -30,15 +30,3 @@ Logger::~Logger()
   delete this->_stream;
   delete this->null_stream;
 }
-
-// Usage example
-// int main(int argc, char *argv[])
-// {
-//   Config::read_conf("../config/batajelo.conf");
-//   int i;
-//   i = Config::get("log_file", "") == "" ? 0 : 1;
-//   log_debug("Some debug information: " << i);
-//   log_info("some information");
-//   log_error("some error");
-//   return 0;
-// }

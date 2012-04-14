@@ -20,6 +20,7 @@
 # define __CLIENT_HPP__
 
 #include <network/command_handler.hpp>
+#include <network/command.hpp>
 #include <network/transfer_receiver.hpp>
 
 using boost::asio::ip::tcp;
@@ -63,7 +64,7 @@ private:
    * Called when the server initiate a file transfer with us.
    * Install the temporary callback to receive each file chunk.
    */
-  void transfer_init_callback(const char*, int);
+  void transfer_init_callback(Command*);
 
   std::vector<TransferReceiver*> receivers;
   boost::asio::io_service io_service;

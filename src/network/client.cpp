@@ -53,12 +53,12 @@ void Client::connect_handler(boost::function< void(void) > on_success,
 
 void Client::install_callbacks()
 {
-  this->install_callback("TRANSFER", boost::bind(&Client::transfer_init_callback, this, _1, _2));
+  this->install_callback("TRANSFER", boost::bind(&Client::transfer_init_callback, this, _1));
 }
 
-void Client::transfer_init_callback(const char* carg, int length)
+void Client::transfer_init_callback(Command* received_command)
 {
-  std::string arg(carg, length);
+  std::string arg(received_command->body, received_command->body_size);
   std::vector<std::string> args;
   boost::split(args, arg, boost::is_any_of("|"));
   if (args.size() != 3)
@@ -79,7 +79,7 @@ void Client::on_transfer_ended(const TransferReceiver* receiver)
     if (*it == receiver)
       this->receivers.erase(it);
   delete receiver;
-
+  exit(0);
 }
 
 void Client::poll(void)

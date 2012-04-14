@@ -38,6 +38,11 @@ void Server::accept(void)
 
 void Server::handle_accept(RemoteClient* client, const boost::system::error_code& error)
 {
+  if (error)
+    {
+      log_error("handle_accept failed: "<< error);
+      exit(1);
+    }
   client->start();
   this->clients.push_back(client);
   this->install_accept_handler();
@@ -64,14 +69,5 @@ RemoteClient* Server::find_client_by_login(const std::string& login)
   for (it = this->clients.begin(); it < this->clients.end(); ++it)
     if ((*it)->get_user() && (*it)->get_user()->get("login") == login)
       return *it;
-  return 0;
-}
-
-int main(int argc, char *argv[])
-{
-  if (!Config::read_conf("../../batajelo.conf"))
-    return 1;
-  Server s(7878);
-  s.run();
   return 0;
 }

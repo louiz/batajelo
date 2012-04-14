@@ -14,16 +14,16 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 
-#include <logging/logging.hpp>
-
 #ifndef __COMMAND_HANDLER_HPP__
 # define __COMMAND_HANDLER_HPP__
 
+#include <logging/logging.hpp>
 #include <network/transfer_sender.hpp>
+#include <network/command.hpp>
 
 using boost::asio::ip::tcp;
 
-typedef boost::function<void(const char*, int)> t_read_callback;
+typedef boost::function<void(Command*)> t_read_callback;
 
 class CommandHandler
 {
@@ -43,12 +43,12 @@ public:
    * Read the arguments after a command (can read 0 bytes too) and pass that
    * to the callback that was associated with this command.
    */
-  void binary_read_handler(const boost::system::error_code&, std::size_t, t_read_callback);
+  void binary_read_handler(const boost::system::error_code&, Command*, std::size_t, t_read_callback);
   /**
    * Sends a command, and use install_callback_once to wait for the answer
    * and call that callback to handle it.
    */
-  void request_answer(const char*, const char*, t_read_callback on_answer = 0);
+  void request_answer(Command*, t_read_callback on_answer = 0);
   /**
    * Install a new callback associated with a command. This callback will
    * be called upon receiving that command.
@@ -62,6 +62,15 @@ public:
    */
   void install_callback_once(const std::string&, t_read_callback);
 
+  /**
+   * Remove a callback that has been installed.
+   */
+  void remove_callback(const std::string&);
+  /**
+   * Send the given command on the socket.
+   */
+  void send(Command* command, boost::function< void(void) > on_sent = 0);
+
 protected:
   /**
    * Returns the callback associated with the passed command name.
@@ -70,13 +79,9 @@ protected:
    */
   t_read_callback get_callback(const std::string&);
   /**
-   * Send the given data on the socket.
-   */
-  void send(const char*, boost::function< void(void) > on_send = 0, int length = 0);
-  /**
    * @todo Check if the data was correctly sent on the socket
    */
-  void send_handler(const boost::system::error_code&, std::size_t, boost::function< void(void) > on_sent);
+  void send_handler(const boost::system::error_code&, std::size_t, boost::function< void(void) >, Command*);
   /**
    * A buffer keeping the data that is read on the socket.
    */

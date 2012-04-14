@@ -43,16 +43,24 @@ void Game::on_connection_success(const std::string& login, const std::string& pa
 void Game::authenticate(const std::string& login, const std::string& password)
 {
   // TODO send a password hash, and do not use that stupid separator.
-  this->client.request_answer("AUTH", std::string(login + '*' + password).data(), boost::bind(&Game::on_authenticate, this, _1));
+  Command* command = new Command;
+  command->set_name("AUTH");
+  std::string body = login + '*' + password;
+  command->set_body(body.data(), body.size());
+  this->client.request_answer(command, boost::bind(&Game::on_authenticate, this, _1));
 }
 
 void Game::request_file(const std::string& filename)
 {
-  this->client.request_answer("TRANSFER", filename.data());
+  Command* command = new Command;
+  command->set_name("TRANSFER");
+  command->set_body(filename.data(), filename.size());
+  this->client.send(command);
 }
 
-void Game::on_authenticate(const std::string& result)
+void Game::on_authenticate(Command* received_command)
 {
+  std::string result(received_command->body, received_command->body_size);
   int res = atoi(result.data());
   log_debug("on_authenticate :" << res << "." <<  ((res > 4) ? "Unknown error" : auth_messages[res]));
   if (res == 0)
@@ -67,16 +75,4 @@ void Game::run()
       this->client.poll();
       usleep(10000);		// replace with game logic
     }
-}
-
-// Test main
-// Simulate a login flow
-int main(int argc, char** argv)
-{
-  Config::read_conf("../../batajelo.conf");
-  Game game;
-
-  game.on_login_form_validated("testing", "new_pass", "127.0.0.1", 7878);
-  game.run();
-  return 0;
 }

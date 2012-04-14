@@ -58,8 +58,9 @@
 /**
  * Juste a structure representing a stream doing nothing with its input.
  */
-struct nullstream: public std::ostream
+class nullstream: public std::ostream
 {
+public:
   nullstream():
     std::ostream(0)
   { }

@@ -208,7 +208,7 @@ bool Database::update(const DbObject* object, const std::string& table_name)
   if (this->do_update(query) == false)
     return false;
   return true;
-};
+}
 
 bool Database::remove(const DbObject* object, const std::string& table_name)
 {
@@ -229,4 +229,4 @@ bool Database::remove(const DbObject* object, const std::string& table_name)
   if (this->do_remove(query) == false)
     return false;
   return true;
-};
+}
