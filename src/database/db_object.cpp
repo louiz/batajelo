@@ -26,7 +26,7 @@ const std::string DbObject::get(const std::string& field) const
     }
 }
 
-const int DbObject::get_int(const std::string& field) const
+int DbObject::get_int(const std::string& field) const
 {
   std::string res = this->get(field);
   return atoi(res.data());
