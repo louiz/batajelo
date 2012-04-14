@@ -1,6 +1,7 @@
 #include <network/command_handler.hpp>
 
-CommandHandler::CommandHandler()
+CommandHandler::CommandHandler():
+  writing(false)
 {
 }
 
@@ -135,8 +136,6 @@ void CommandHandler::install_read_handler(void)
 					    boost::asio::placeholders::bytes_transferred));
 }
 
-// Send a command and add a callback to be called when the answer to
-// this command will be received
 void CommandHandler::request_answer(Command* command, t_read_callback on_answer)
 {
   // We may want to send a command that do not require an answer.
@@ -147,6 +146,29 @@ void CommandHandler::request_answer(Command* command, t_read_callback on_answer)
 
 void CommandHandler::send(Command* command, boost::function< void(void) > on_sent)
 {
+  if (on_sent)
+    command->callback = on_sent;
+  this->commands_to_send.push_front(command);
+  this->check_commands_to_send();
+}
+
+bool CommandHandler::check_commands_to_send()
+{
+  log_debug("Length of the queue: " << this->commands_to_send.size());
+  // log_debug("check_commands_to_send");
+  if (this->writing || this->commands_to_send.empty())
+    {
+      // log_debug("not sending: this->writing=" << this->writing << " queue empty" << this->commands_to_send.empty());
+      return false;
+    }
+  this->actually_send(this->commands_to_send.back());
+  this->commands_to_send.pop_back();
+  return true;
+}
+
+void CommandHandler::actually_send(Command* command)
+{
+  this->writing = true;
   command->pack();
   std::vector<boost::asio::const_buffer> buffs;
   buffs.push_back(boost::asio::buffer(command->header.data(), command->header.length()));
@@ -156,19 +178,23 @@ void CommandHandler::send(Command* command, boost::function< void(void) > on_sen
   	      boost::bind(&CommandHandler::send_handler, this,
   			  boost::asio::placeholders::error,
   			  boost::asio::placeholders::bytes_transferred,
-  			  on_sent, command));
+  			  command));
 }
 
 void CommandHandler::send_handler(const boost::system::error_code& error,
 				  std::size_t bytes_transferred,
-				  boost::function< void(void) > on_sent, Command* command)
+				  Command* command)
 {
+  this->writing = false;
   assert(bytes_transferred == command->header.length() + command->body_size);
+
+  if (command->callback)
+    command->callback();
   delete command;
 
   // TODO check for error
   if (error)
     exit(1);
-  if (on_sent)
-    on_sent();
+
+  this->check_commands_to_send();
 }

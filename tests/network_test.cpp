@@ -19,6 +19,8 @@ BOOST_AUTO_TEST_CASE(command_consistency_test)
   BOOST_REQUIRE(command->header == std::string("FAKE_COMMAND.15:"));
   BOOST_REQUIRE(command->body_size == 15);
   BOOST_REQUIRE(strncmp(command->body, "coucou les amis", 15) == 0);
+
+  delete command;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

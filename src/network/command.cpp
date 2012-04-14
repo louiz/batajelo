@@ -2,7 +2,8 @@
 
 Command::Command():
   body(0),
-  body_size(0)
+  body_size(0),
+  callback(0)
 {
 }
 

@@ -28,6 +28,8 @@
 #include <fstream>
 #include <sstream>
 
+#include <boost/function.hpp>
+
 #ifndef __COMMAND_HPP__
 # define __COMMAND_HPP__
 
@@ -66,6 +68,10 @@ public:
   std::string header;
   std::string name;
   size_t body_size;
+  /**
+   * If not 0, will be called from the send_handler.
+   */
+  boost::function< void(void) > callback;
 
 private:
   Command(const Command&);

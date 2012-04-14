@@ -24,6 +24,7 @@
 using boost::asio::ip::tcp;
 
 typedef boost::function<void(Command*)> t_read_callback;
+typedef std::deque<Command*> command_queue;
 
 class CommandHandler
 {
@@ -61,13 +62,15 @@ public:
    * a callback that will handle that answer, and only this one.
    */
   void install_callback_once(const std::string&, t_read_callback);
-
   /**
    * Remove a callback that has been installed.
    */
   void remove_callback(const std::string&);
   /**
-   * Send the given command on the socket.
+   * Add the given command to the commands_to_send queue, then
+   * calls check_commands_to_send. Which may send the next available
+   * command, if there's no async_write() call already running.
+   * It does not necessarily actually send the command on the socket.
    */
   void send(Command* command, boost::function< void(void) > on_sent = 0);
 
@@ -81,16 +84,27 @@ protected:
   /**
    * @todo Check if the data was correctly sent on the socket
    */
-  void send_handler(const boost::system::error_code&, std::size_t, boost::function< void(void) >, Command*);
+  void send_handler(const boost::system::error_code&, std::size_t, Command*);
+  /**
+   * Actually sends the command on the socket, calling async_write.
+   */
+  void actually_send(Command*);
+  /**
+   * Checks if there's something to send on the socket. We first check if
+   * the writing boolean is false, and then we pop the next available command
+   * from the queue (if any) and we send it using async_write.
+   * @returns true if a command was sent, false otherwise.
+   */
+  bool check_commands_to_send();
   /**
    * A buffer keeping the data that is read on the socket.
    */
+  boost::asio::streambuf data;
   /**
    * What happens when a read error occurs.
    */
   virtual void on_connection_closed() = 0;
 
-  boost::asio::streambuf data;
   tcp::socket* socket;
 
 private:
@@ -99,6 +113,18 @@ private:
 
   std::map<const std::string, t_read_callback > callbacks;
   std::map<const std::string, t_read_callback > callbacks_once;
+  /**
+   * A queue of messages. If there's not async_write running, we pop one
+   * from it and we send it.
+   */
+  command_queue commands_to_send;
+
+  /**
+   * Tells us if we are waiting for an async_write to finish or note.
+   * This must be set to true when calling async_write(), to false
+   * in the write handler. It is used by check_commands_to_send.
+   */
+  bool writing;
 };
 
 #endif // __COMMAND_HANDLER_HPP__
