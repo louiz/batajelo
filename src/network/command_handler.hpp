@@ -49,7 +49,7 @@ public:
    * Sends a command, and use install_callback_once to wait for the answer
    * and call that callback to handle it.
    */
-  void request_answer(Command*, t_read_callback on_answer = 0);
+  void request_answer(Command*, t_read_callback on_answer, std::string name = "");
   /**
    * Install a new callback associated with a command. This callback will
    * be called upon receiving that command.
@@ -120,7 +120,7 @@ private:
   command_queue commands_to_send;
 
   /**
-   * Tells us if we are waiting for an async_write to finish or note.
+   * Tells us if we are waiting for an async_write to finish or not.
    * This must be set to true when calling async_write(), to false
    * in the write handler. It is used by check_commands_to_send.
    */

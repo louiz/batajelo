@@ -136,11 +136,11 @@ void CommandHandler::install_read_handler(void)
 					    boost::asio::placeholders::bytes_transferred));
 }
 
-void CommandHandler::request_answer(Command* command, t_read_callback on_answer)
+void CommandHandler::request_answer(Command* command, t_read_callback on_answer, std::string name)
 {
-  // We may want to send a command that do not require an answer.
-  if (on_answer)
-    this->install_callback_once(command->get_name(), on_answer);
+  if (name.size() == 0)
+    name = command->get_name();
+  this->install_callback_once(name, on_answer);
   this->send(command);
 }
 
