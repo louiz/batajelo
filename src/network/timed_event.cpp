@@ -1,7 +1,7 @@
 #include <network/timed_event.hpp>
 #include <network/timed_event_handler.hpp>
 
-TimedEvent::TimedEvent(const TimedEventHandler* handler,
+TimedEvent::TimedEvent(TimedEventHandler* handler,
 		       boost::asio::deadline_timer* timer,
 		       const t_timed_callback callback):
   handler(handler),
@@ -11,10 +11,13 @@ TimedEvent::TimedEvent(const TimedEventHandler* handler,
   this->timer->async_wait(boost::bind(&TimedEvent::on_expires, this, _1));
 }
 
-void TimedEvent::on_expires(const boost::system::error_code& e)
+void TimedEvent::on_expires(const boost::system::error_code& error)
 {
+  if (error)
+    return ;
   log_debug("on_timeout");
   this->callback();
+  this->handler->remove_event(this);
 }
 
 TimedEvent::~TimedEvent()

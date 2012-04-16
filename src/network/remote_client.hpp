@@ -22,13 +22,14 @@
 #include <network/command.hpp>
 #include <network/timed_event_handler.hpp>
 #include <network/timed_event.hpp>
+#include <network/ping_handler.hpp>
 #include <network/transfer_sender.hpp>
 
 class Server;
 
 using boost::asio::ip::tcp;
 
-class RemoteClient: public CommandHandler, public TimedEventHandler
+class RemoteClient: public CommandHandler, public TimedEventHandler, public PingHandler
 {
 public:
   RemoteClient(boost::asio::io_service&, Server*);
@@ -55,6 +56,14 @@ public:
    * @param filename The file to send.
    */
   void send_file(const std::string&);
+  /**
+   * Sends a ping request to the remote client.
+   */
+  void send_ping();
+  /**
+   * Called when we receive the response to our ping.
+   */
+  void on_pong(Command*);
   /**
    * To be called whenever a file transfer ends.
    * Removes the TransferSender from the list.

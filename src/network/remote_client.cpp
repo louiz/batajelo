@@ -102,13 +102,13 @@ void RemoteClient::start()
 {
   log_debug("Starting RemoteClient " << this->number);
   this->install_callbacks();
+  this->install_timed_event(boost::bind(&RemoteClient::send_ping, this), 2);
+  CommandHandler::install_read_handler();
 }
 
 void RemoteClient::send_file(const std::string& filename)
 {
-  log_debug("Avant creation du transfert");
   TransferSender* sender = new TransferSender(this, filename);
-  log_debug("Apres creation du transfert");
   if (sender->start() == true)
     {
       this->senders.push_back(sender);
@@ -116,6 +116,21 @@ void RemoteClient::send_file(const std::string& filename)
     }
   else
     delete sender;
+}
+
+void RemoteClient::send_ping()
+{
+  Command* command = new Command;
+  command->set_name("PING");
+  this->request_answer(command, boost::bind(&RemoteClient::on_pong, this, _1), "PONG");
+  this->ping_sent();
+}
+
+void RemoteClient::on_pong(Command*)
+{
+  this->pong_received();
+  log_debug("Current ping: " << this->get_latency() << "micro seconds.");
+  this->install_timed_event(boost::bind(&RemoteClient::send_ping, this), 2);
 }
 
 void RemoteClient::on_connection_closed()

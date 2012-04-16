@@ -120,6 +120,7 @@ file(
 	src/network/command.*
 	src/network/timed_event.*
 	src/network/timed_event_handler.*
+	src/network/ping_handler.*
 )
 add_library(server STATIC ${source_server})
 
@@ -139,6 +140,7 @@ file(
 	src/network/command.*
 	src/network/timed_event.*
 	src/network/timed_event_handler.*
+	src/network/ping_handler.*
 )
 add_library(client STATIC ${source_client})
 

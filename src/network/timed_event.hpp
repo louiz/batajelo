@@ -25,7 +25,7 @@ class TimedEventHandler;
 class TimedEvent
 {
 public:
-  TimedEvent(const TimedEventHandler*,
+  TimedEvent(TimedEventHandler*,
 	     boost::asio::deadline_timer*,
 	     const t_timed_callback);
   ~TimedEvent();
@@ -36,7 +36,7 @@ private:
   TimedEvent(const TimedEvent&);
   TimedEvent& operator=(const TimedEvent&);
 
-  const TimedEventHandler* handler;
+  TimedEventHandler* handler;
   boost::asio::deadline_timer* timer;
   const t_timed_callback callback;
 };

@@ -69,6 +69,10 @@ private:
    * Install the temporary callback to receive each file chunk.
    */
   void transfer_init_callback(Command*);
+  /**
+   * Called when the server sends us a PING request. Sends a PONG back.
+   */
+  void ping_callback(Command*);
 
   std::vector<TransferReceiver*> receivers;
   boost::asio::io_service io_service;

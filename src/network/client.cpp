@@ -44,8 +44,8 @@ void Client::connect_handler(boost::function< void(void) > on_success,
   else
     {
       log_info("Connected.");
-      this->install_read_handler();
       this->install_callbacks();
+      this->install_read_handler();
       if (on_success)
 	on_success();
     }
@@ -54,6 +54,7 @@ void Client::connect_handler(boost::function< void(void) > on_success,
 void Client::install_callbacks()
 {
   this->install_callback("TRANSFER", boost::bind(&Client::transfer_init_callback, this, _1));
+  this->install_callback("PING", boost::bind(&Client::ping_callback, this, _1));
 }
 
 void Client::transfer_init_callback(Command* received_command)
@@ -69,6 +70,15 @@ void Client::transfer_init_callback(Command* received_command)
   log_debug("Starting file transfer reception: " << arg);
   TransferReceiver* receiver = new TransferReceiver(this, args[0], args[1], atoi(args[2].data()));
   this->receivers.push_back(receiver);
+}
+
+void Client::ping_callback(Command*)
+{
+  log_debug("Received PING");
+
+  Command* command = new Command;
+  command->set_name("PONG");
+  this->send(command);
 }
 
 boost::asio::io_service& Client::get_io_service()
