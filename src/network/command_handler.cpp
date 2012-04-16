@@ -125,7 +125,6 @@ void CommandHandler::binary_read_handler(const boost::system::error_code& error,
   this->install_read_handler();
 }
 
-// Set a callback to be called whenever there’s something to read on the socket.
 void CommandHandler::install_read_handler(void)
 {
   boost::asio::async_read_until(*this->socket,
@@ -155,12 +154,8 @@ void CommandHandler::send(Command* command, boost::function< void(void) > on_sen
 bool CommandHandler::check_commands_to_send()
 {
   log_debug("Length of the queue: " << this->commands_to_send.size());
-  // log_debug("check_commands_to_send");
   if (this->writing || this->commands_to_send.empty())
-    {
-      // log_debug("not sending: this->writing=" << this->writing << " queue empty" << this->commands_to_send.empty());
-      return false;
-    }
+    return false;
   this->actually_send(this->commands_to_send.back());
   this->commands_to_send.pop_back();
   return true;

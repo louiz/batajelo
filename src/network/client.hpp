@@ -20,12 +20,14 @@
 # define __CLIENT_HPP__
 
 #include <network/command_handler.hpp>
+#include <network/timed_event_handler.hpp>
 #include <network/command.hpp>
+#include <network/timed_event.hpp>
 #include <network/transfer_receiver.hpp>
 
 using boost::asio::ip::tcp;
 
-class Client: public CommandHandler
+class Client: public CommandHandler, public TimedEventHandler
 {
 public:
   Client();
@@ -51,6 +53,8 @@ public:
   void poll(void);
 
   virtual void on_connection_closed() {}
+  virtual boost::asio::io_service& get_io_service();
+
   /**
    * Called when a file transfer is finished.
    */

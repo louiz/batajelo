@@ -43,13 +43,14 @@ public:
    */
   RemoteClient* find_client_by_login(const std::string&);
 
+  boost::asio::io_service io_service;
+
 private:
   void install_accept_handler(void);
   void handle_accept(RemoteClient*, const boost::system::error_code&);
   void accept(void);
 
   std::vector<RemoteClient*> clients;
-  boost::asio::io_service io_service;
   tcp::acceptor* acceptor;
   short port;
 };

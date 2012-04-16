@@ -71,6 +71,11 @@ void Client::transfer_init_callback(Command* received_command)
   this->receivers.push_back(receiver);
 }
 
+boost::asio::io_service& Client::get_io_service()
+{
+  return this->io_service;
+}
+
 void Client::on_transfer_ended(const TransferReceiver* receiver)
 {
   log_debug("on_transfer_ended");

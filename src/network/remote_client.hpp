@@ -20,13 +20,15 @@
 #include <database/user.hpp>
 #include <network/command_handler.hpp>
 #include <network/command.hpp>
+#include <network/timed_event_handler.hpp>
+#include <network/timed_event.hpp>
 #include <network/transfer_sender.hpp>
 
 class Server;
 
 using boost::asio::ip::tcp;
 
-class RemoteClient: public CommandHandler
+class RemoteClient: public CommandHandler, public TimedEventHandler
 {
 public:
   RemoteClient(boost::asio::io_service&, Server*);
@@ -47,6 +49,7 @@ public:
 
   virtual void on_connection_closed();
 
+  virtual boost::asio::io_service& get_io_service();
   /**
    * Sends a file to the remote client.
    * @param filename The file to send.

@@ -101,7 +101,6 @@ void RemoteClient::on_auth_success()
 void RemoteClient::start()
 {
   log_debug("Starting RemoteClient " << this->number);
-  CommandHandler::install_read_handler();
   this->install_callbacks();
 }
 
@@ -122,6 +121,11 @@ void RemoteClient::send_file(const std::string& filename)
 void RemoteClient::on_connection_closed()
 {
   this->server->remove_client(this);
+}
+
+boost::asio::io_service& RemoteClient::get_io_service()
+{
+  return this->server->io_service;
 }
 
 void RemoteClient::on_transfer_ended(const TransferSender* transfer)

@@ -118,6 +118,8 @@ file(
 	src/network/server.*
 	src/network/transfer_sender.*
 	src/network/command.*
+	src/network/timed_event.*
+	src/network/timed_event_handler.*
 )
 add_library(server STATIC ${source_server})
 
@@ -135,6 +137,8 @@ file(
 	src/network/command_handler.*
 	src/network/transfer_receiver.*
 	src/network/command.*
+	src/network/timed_event.*
+	src/network/timed_event_handler.*
 )
 add_library(client STATIC ${source_client})
 

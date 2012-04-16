@@ -1,6 +1,5 @@
 #include <game/game.hpp>
 #include <logging/logging.hpp>
-
 #include <unistd.h>
 
 static const char* auth_messages[] = {"Success",

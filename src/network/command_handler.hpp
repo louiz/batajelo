@@ -118,7 +118,6 @@ private:
    * from it and we send it.
    */
   command_queue commands_to_send;
-
   /**
    * Tells us if we are waiting for an async_write to finish or not.
    * This must be set to true when calling async_write(), to false
