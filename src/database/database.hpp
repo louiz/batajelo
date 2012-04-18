@@ -7,7 +7,7 @@
  * @class Database
  */
 
-#ifdef WIN32
+#ifdef _WIN32
 # include <winsock.h>
 #endif /* WIN32 */
 
