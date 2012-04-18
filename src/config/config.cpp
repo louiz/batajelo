@@ -25,7 +25,7 @@ bool Config::read_conf(const std::string& filename)
       while (file.good())
 	{
 	  std::getline(file, line);
-	  if (line[0] == '#')
+	  if (line == "" || line[0] == '#')
 	    continue ;
 	  pos = line.find('=');
 	  if (pos == std::string::npos)
