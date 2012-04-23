@@ -22,12 +22,12 @@ configure_file("${PROJECT_SOURCE_DIR}/src/constant.hpp.in" "${PROJECT_SOURCE_DIR
 
 
 if(NOT DEFINED BUILD_SERVER)
-	set(BUILD_SERVER, true)
+	set(BUILD_SERVER true CACHE BOOL "build the server")
 	message("You can make BUILD_SERVER to false in CMakeCache.txt, if you only want to build the client")
 endif(NOT DEFINED BUILD_SERVER)
 
 if(NOT DEFINED BUILD_CLIENT)
-	set(BUILD_CLIENT, true)
+	set(BUILD_CLIENT true CACHE BOOL "build the client")
 	message("You can make BUILD_CLIENT to false in CMakeCache.txt, if you only want to build the server")
 endif(NOT DEFINED BUILD_CLIENT)
 
