@@ -19,6 +19,19 @@ else(${CMAKE_BUILD_TYPE} MATCHES "debug")
 endif(${CMAKE_BUILD_TYPE} MATCHES "debug")
 configure_file("${PROJECT_SOURCE_DIR}/src/constant.hpp.in" "${PROJECT_SOURCE_DIR}/src/constant.hpp")
 
+
+
+if(NOT DEFINED BUILD_SERVER)
+	set(BUILD_SERVER, true)
+	message("You can make BUILD_SERVER to false in CMakeCache.txt, if you only want to build the client")
+endif(NOT DEFINED BUILD_SERVER)
+
+if(NOT DEFINED BUILD_CLIENT)
+	set(BUILD_CLIENT, true)
+	message("You can make BUILD_CLIENT to false in CMakeCache.txt, if you only want to build the server")
+endif(NOT DEFINED BUILD_CLIENT)
+
+
 #Documentation doxygen
 find_package(Doxygen)
 
@@ -36,37 +49,49 @@ endif(DOXYGEN_FOUND)
 #Librairies to include
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package(Boost 1.48.0 COMPONENTS system date_time unit_test_framework REQUIRED)
-find_package(mysql REQUIRED)
 find_package(Threads REQUIRED)
-find_package(SFML 2 REQUIRED system window graphics audio)
+
 
 
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(${MYSQL_INCLUDE_DIR})
-include_directories(${SFML_INCLUDE_DIR})
 include_directories("src/")
 
 link_directories(${Boost_LIBRARY_DIRS})
-link_directories(${MYSQL_LIB_DIR})
-link_directories(${SFML_LIBRARIES})
 
+if(BUILD_CLIENT)
+	find_package(SFML 2 REQUIRED system window graphics audio)
+	include_directories(${SFML_INCLUDE_DIR})
+	link_directories(${SFML_LIBRARIES})
+endif(BUILD_CLIENT)
+
+if(BUILD_SERVER)
+	find_package(mysql REQUIRED)
+	include_directories(${MYSQL_INCLUDE_DIR})
+	link_directories(${MYSQL_LIB_DIR})
+endif(BUILD_SERVER)
 
 #Principal build
-add_executable(batajelo_server src/main/batajelo_server.cpp)
-add_executable(batajelo_client src/main/batajelo_client.cpp)
+
+if(BUILD_CLIENT)
+	add_executable(batajelo_client src/main/batajelo_client.cpp)
+	target_link_libraries(
+		batajelo_client
+		server
+		)
+endif(BUILD_CLIENT)
+
+if(BUILD_SERVER)
+	add_executable(batajelo_server src/main/batajelo_server.cpp)
+	target_link_libraries(
+		batajelo_server
+		server
+		)
+endif(BUILD_SERVER)
 
 
-target_link_libraries(
-	batajelo_server
-	server
-)
-
-target_link_libraries(
-	batajelo_client
-	server
-)
 
 #Library build
+
 file(
 	GLOB
 	source_logging
@@ -93,94 +118,103 @@ target_link_libraries(
 	${CMAKE_THREAD_LIBS_INIT}
 )
 
-file(
+
+if(BUILD_CLIENT)
+	file(
     GLOB
     source_gui
     src/gui/menu/*
-)
-add_library(gui STATIC ${source_gui})
+		)
+	add_library(gui STATIC ${source_gui})
 
-target_Link_libraries(
-	gui
-	logging
-	config
-	${SFML_LIBRARIES}
-	${Boost_LIBRARIES}
-	${CMAKE_THREAD_LIBS_INIT}
-)
-
-
-file(
-	GLOB
-	source_server
-	src/network/remote_client.*
-	src/network/command_handler.*
-	src/network/server.*
-	src/network/transfer_sender.*
-	src/network/command.*
-	src/network/timed_event.*
-	src/network/timed_event_handler.*
-	src/network/ping_handler.*
-)
-add_library(server STATIC ${source_server})
-
-target_link_libraries(
-	server
-	logging
-	config
-	database
-)
-
-file(
-	GLOB
-	source_client
-	src/network/client.*
-	src/network/command_handler.*
-	src/network/transfer_receiver.*
-	src/network/command.*
-	src/network/timed_event.*
-	src/network/timed_event_handler.*
-	src/network/ping_handler.*
-)
-add_library(client STATIC ${source_client})
-
-add_library(network STATIC ${source_server} ${source_client})
-
-target_link_libraries(
-	client
-	logging
-	config
-)
-
-file(
-	GLOB
-	source_game
-	src/game/*.[ch]pp
-)
-add_library(game STATIC ${source_game})
-
-target_link_libraries(
-	game
-	client
-	logging
-	config
-)
+	target_Link_libraries(
+		gui
+		logging
+		config
+		${SFML_LIBRARIES}
+		${Boost_LIBRARIES}
+		${CMAKE_THREAD_LIBS_INIT}
+		)
 
 
-file(
-	GLOB
-	source_database
-	src/database/*.[ch]pp
-)
-add_library(database STATIC ${source_database})
-set_target_properties(database PROPERTIES COMPILE_FLAGS ${MYSQL_CXXFLAGS})
+	file(
+		GLOB
+		source_client
+		src/network/client.*
+		src/network/command_handler.*
+		src/network/transfer_receiver.*
+		src/network/command.*
+		src/network/timed_event.*
+		src/network/timed_event_handler.*
+		src/network/ping_handler.*
+		)
+	add_library(client STATIC ${source_client})
 
-target_link_libraries(
-	database
-	logging
-	config
-	${MYSQL_LIBRARIES}
-)
+	add_library(network STATIC ${source_server} ${source_client})
+
+	target_link_libraries(
+		client
+		logging
+		config
+		)
+
+	
+	file(
+		GLOB
+		source_game
+		src/game/*.[ch]pp
+		)
+	add_library(game STATIC ${source_game})
+
+	target_link_libraries(
+		game
+		client
+		logging
+		config
+		)
+
+endif(BUILD_CLIENT)
+
+if(BUILD_SERVER)
+
+	file(
+		GLOB
+		source_server
+		src/network/remote_client.*
+		src/network/command_handler.*
+		src/network/server.*
+		src/network/transfer_sender.*
+		src/network/command.*
+		src/network/timed_event.*
+		src/network/timed_event_handler.*
+		src/network/ping_handler.*
+		)
+	add_library(server STATIC ${source_server})
+
+	target_link_libraries(
+		server
+		logging
+		config
+		database
+		)
+
+	
+	file(
+		GLOB
+		source_database
+		src/database/*.[ch]pp
+		)
+	add_library(database STATIC ${source_database})
+	set_target_properties(database PROPERTIES COMPILE_FLAGS ${MYSQL_CXXFLAGS})
+
+	target_link_libraries(
+		database
+		logging
+		config
+		${MYSQL_LIBRARIES}
+		)
+
+endif(BUILD_SERVER)
 
 #Module build
 file(
@@ -194,13 +228,14 @@ foreach(module_src ${modules_srcs})
 	get_filename_component(lib ${module_src} NAME_WE)
 	string(REGEX REPLACE "(.*)_main$" "\\1" lib ${lib})
 
+	if(TARGET ${lib})
 	add_executable(${lib}_main  EXCLUDE_FROM_ALL ${module_src})
 
 	target_link_libraries(
 		${lib}_main
 		${lib}
 		)
-
+	endif(TARGET ${lib})
 endforeach(module_src)
 
 #Test
@@ -215,12 +250,13 @@ foreach(test_src ${tests_srcs})
 	get_filename_component(lib ${test_src} NAME_WE)
 	string(REGEX REPLACE "(.*)_test$" "\\1" lib ${lib})
 
-	add_executable(${lib}_test  EXCLUDE_FROM_ALL ${test_src})
+	if(TARGET ${lib})
+		add_executable(${lib}_test  EXCLUDE_FROM_ALL ${test_src})
 
-	target_link_libraries(
-		${lib}_test
-		${lib}
-		)
-
+		target_link_libraries(
+			${lib}_test
+			${lib}
+			)
+	endif(TARGET ${lib})
 
 endforeach(test_src)
