@@ -20,6 +20,7 @@
 # define __CLIENT_HPP__
 
 #include <network/command_handler.hpp>
+#include <network/ping_handler.hpp>
 #include <network/timed_event_handler.hpp>
 #include <network/command.hpp>
 #include <network/timed_event.hpp>
@@ -27,7 +28,7 @@
 
 using boost::asio::ip::tcp;
 
-class Client: public CommandHandler, public TimedEventHandler
+class Client: public CommandHandler, public TimedEventHandler, public PingHandler
 {
 public:
   Client();

@@ -8,7 +8,7 @@
  * Just call PingHandler::ping_sent() when you are sending the ping request,
  * and PingHandler::pong_received() when you receive the answer. Afterward, you
  * can retrieve the current latency using PingHandler::get_latency().
- * @class CommandHandler
+ * @class PingHandler
  */
 
 #include <boost/date_time/posix_time/posix_time.hpp>
