@@ -101,6 +101,7 @@ add_library(logging STATIC ${source_logging})
 
 target_link_libraries(
 	logging
+	config
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 )
@@ -120,21 +121,23 @@ target_link_libraries(
 
 
 if(BUILD_CLIENT)
-	file(
+file(
 	GLOB
 	source_gui
 	src/gui/menu/*.[hc]pp
+	src/gui/camera/*.[hc]pp
     	)
-	add_library(gui STATIC ${source_gui})
+add_library(gui STATIC ${source_gui})
 
-	target_Link_libraries(
-		gui
-		logging
-		config
-		${SFML_LIBRARIES}
-		${Boost_LIBRARIES}
-		${CMAKE_THREAD_LIBS_INIT}
-		)
+target_Link_libraries(
+	gui
+	logging
+	config
+	world
+	${SFML_LIBRARIES}
+	${Boost_LIBRARIES}
+	${CMAKE_THREAD_LIBS_INIT}
+	)
 
 file(
     GLOB
