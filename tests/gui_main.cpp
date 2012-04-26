@@ -1,12 +1,14 @@
-#include <gui/menu/menu.hpp>
-#include <gui/menu/widget.hpp>
+#include <gui/camera/camera.hpp>
+#include <world/world.hpp>
 
 int main()
 {
   // Create the main window
   sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(800, 600), "Menu coucou");
 
-  Menu* menu = new Menu(window);
+  World* world = new World;
+  world->load_test();
+  Camera* camera = new Camera(world);
 
   sf::Clock clock;
 
@@ -17,13 +19,13 @@ int main()
 	{
 	  if (event.type == sf::Event::Closed)
 	    window->close();
-	  menu->handle_event(event);
+	  camera->handle_event(event);
 	}
       sf::Time dt = clock.restart();
-      menu->update(dt);
-      menu->draw();
+      camera->update(dt);
+      window->clear();
+      camera->draw(window);
       window->display();
     }
- 
   return EXIT_SUCCESS;
 }
