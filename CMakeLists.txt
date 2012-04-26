@@ -4,7 +4,7 @@ project(batajelo)
 
 #Variable
 set(batajelo_VERSION_MAJOR 0)
-set(batajelo_VERSION_MINOR 0)
+set(batajelo_VERSION_MINOR 1)
 set(EXECUTABLE_OUTPUT_PATH bin)
 set(LIBRARY_OUTPUT_PATH output_lib)
 
@@ -139,7 +139,7 @@ if(BUILD_CLIENT)
 file(
     GLOB
     source_world
-    src/gui/world/*.[hc]pp
+    src/world/*.[hc]pp
 )
 add_library(world STATIC ${source_world})
 
