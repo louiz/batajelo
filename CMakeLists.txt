@@ -121,10 +121,10 @@ target_link_libraries(
 
 if(BUILD_CLIENT)
 	file(
-    GLOB
-    source_gui
-    src/gui/menu/*
-		)
+	GLOB
+	source_gui
+	src/gui/menu/*.[hc]pp
+    	)
 	add_library(gui STATIC ${source_gui})
 
 	target_Link_libraries(
@@ -135,6 +135,21 @@ if(BUILD_CLIENT)
 		${Boost_LIBRARIES}
 		${CMAKE_THREAD_LIBS_INIT}
 		)
+
+file(
+    GLOB
+    source_world
+    src/gui/world/*.[hc]pp
+)
+add_library(world STATIC ${source_world})
+
+target_Link_libraries(
+	world
+	logging
+	${SFML_LIBRARIES}
+	${Boost_LIBRARIES}
+	${CMAKE_THREAD_LIBS_INIT}
+)
 
 
 	file(
@@ -158,7 +173,7 @@ if(BUILD_CLIENT)
 		config
 		)
 
-	
+
 	file(
 		GLOB
 		source_game
@@ -198,7 +213,7 @@ if(BUILD_SERVER)
 		database
 		)
 
-	
+
 	file(
 		GLOB
 		source_database
