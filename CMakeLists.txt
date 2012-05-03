@@ -48,7 +48,7 @@ endif(DOXYGEN_FOUND)
 
 #Librairies to include
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-find_package(Boost 1.48.0 COMPONENTS system date_time unit_test_framework REQUIRED)
+find_package(Boost 1.47.0 COMPONENTS system date_time unit_test_framework REQUIRED)
 find_package(Threads REQUIRED)
 
 
