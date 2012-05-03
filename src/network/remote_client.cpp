@@ -3,28 +3,19 @@
 #include <database/database.hpp>
 #include <database/db_object.hpp>
 
-unsigned long int RemoteClient::clients_number = 0;
-
 RemoteClient::RemoteClient(boost::asio::io_service& io_service,
 			   Server* server):
-  number(RemoteClient::clients_number++),
-  server(0),
+  InterfaceRemoteClient(io_service),
+  server(server),
   user(0)
 {
-  this->socket = new tcp::socket(io_service);
-  this->server = server;
 }
 
 RemoteClient::~RemoteClient()
 {
   log_info("Deleting remote client " << this->number);
-  delete this->socket;
-  delete this->user;
-}
-
-tcp::socket& RemoteClient::get_socket(void)
-{
-  return *this->socket;
+  if (this->user != 0)
+    delete this->user;
 }
 
 User* RemoteClient::get_user()
@@ -98,14 +89,6 @@ void RemoteClient::on_auth_success()
   log_debug("on_auth_success");
 }
 
-void RemoteClient::start()
-{
-  log_debug("Starting RemoteClient " << this->number);
-  this->install_callbacks();
-  this->install_timed_event(boost::bind(&RemoteClient::send_ping, this), 2);
-  CommandHandler::install_read_handler();
-}
-
 void RemoteClient::send_file(const std::string& filename)
 {
   TransferSender* sender = new TransferSender(this, filename);
@@ -116,21 +99,6 @@ void RemoteClient::send_file(const std::string& filename)
     }
   else
     delete sender;
-}
-
-void RemoteClient::send_ping()
-{
-  Command* command = new Command;
-  command->set_name("PING");
-  this->request_answer(command, boost::bind(&RemoteClient::on_pong, this, _1), "PONG");
-  this->ping_sent();
-}
-
-void RemoteClient::on_pong(Command*)
-{
-  this->pong_received();
-  log_debug("Current ping: " << this->get_latency() << "micro seconds.");
-  this->install_timed_event(boost::bind(&RemoteClient::send_ping, this), 2);
 }
 
 void RemoteClient::on_connection_closed()

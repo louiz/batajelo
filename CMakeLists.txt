@@ -199,6 +199,7 @@ if(BUILD_SERVER)
 		GLOB
 		source_server
 		src/network/remote_client.*
+		src/network/interface_remote_client.*
 		src/network/command_handler.*
 		src/network/server.*
 		src/network/transfer_sender.*

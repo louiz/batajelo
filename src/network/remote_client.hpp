@@ -16,38 +16,19 @@
 #ifndef __REMOTE_CLIENT_HPP__
 # define __REMOTE_CLIENT_HPP__
 
-
-#include <database/user.hpp>
-#include <network/command_handler.hpp>
-#include <network/command.hpp>
-#include <network/timed_event_handler.hpp>
-#include <network/timed_event.hpp>
-#include <network/ping_handler.hpp>
+#include <network/interface_remote_client.hpp>
 #include <network/transfer_sender.hpp>
+#include <database/user.hpp>
 
 class Server;
 
 using boost::asio::ip::tcp;
 
-class RemoteClient: public CommandHandler, public TimedEventHandler, public PingHandler
+class RemoteClient: public InterfaceRemoteClient
 {
 public:
   RemoteClient(boost::asio::io_service&, Server*);
   ~RemoteClient();
-  /**
-   * starts the client (install the read handler, etc)
-   */
-  void start();
-  /**
-   * @return tcp::socket&
-   */
-  tcp::socket& get_socket(void);
-  /**
-   * The number of clients is incremented each time
-   * a new client is accepted.
-   */
-  static unsigned long int clients_number;
-
   virtual void on_connection_closed();
 
   virtual boost::asio::io_service& get_io_service();
@@ -75,7 +56,10 @@ public:
    * For example, checks if there are news to send, or offline messages, etc
    */
   void on_auth_success();
-
+  /**
+   * Return a pointer on the user associated with this client.
+   * If it's not null, the client is actually authenticated as this user.
+   */
   User* get_user();
 
 private:
@@ -88,7 +72,6 @@ private:
   void install_read_handler(void);
   void auth_callback(Command*);
   void transfer_callback(Command*);
-  const unsigned long int number;
   /**
    * A pointer to the server, to call its method when the RemoteClient
    * has to be deleted.
