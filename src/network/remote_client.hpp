@@ -3,10 +3,8 @@
  */
 
 /**
- * Represents one single remote client. It is kept in a list, by the Server
- * object. Using the CommandHandler interface, it executes callbacks
- * upon receiving command from the client, and sends commands when
- * we need to communicate something to it.
+ * Represents one single remote client connected to the main server (the one
+ * doing authentication, history, chat, etc).
  * @class RemoteClient
  */
 

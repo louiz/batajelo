@@ -7,7 +7,7 @@
  * object. Using the CommandHandler interface, it executes callbacks
  * upon receiving command from the client, and sends commands when
  * we need to communicate something to it.
- * The derived class must install its own callback, install a transfer handler
+ * The derived classes must install their own callback, install a transfer handler
  * in it or not, etc.
  * @class InterfaceRemoteClient
  */

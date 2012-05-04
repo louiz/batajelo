@@ -3,8 +3,13 @@
  */
 
 /**
- * The server handling clients authentication, serving menus, history, players’
- * informations, etc
+ * The Server is the part doing the accept on a socket and spawning one
+ * "remote client" each time, and adding them to a list. Each client will
+ * then read and write on their own socket.
+ * The server is specified using the type of the remote client. Either this is
+ * a RemoteClient and we then do authentication, we handle a database, friends,
+ * chat, statistics, history etc. Or this is a GameRemoteClient and we just handle
+ * one single game.
  * @class Server
  */
 
