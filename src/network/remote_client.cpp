@@ -1,10 +1,9 @@
 #include <network/remote_client.hpp>
-#include <network/server.hpp>
 #include <database/database.hpp>
 #include <database/db_object.hpp>
 
 RemoteClient::RemoteClient(boost::asio::io_service& io_service,
-			   Server* server):
+			   Server<RemoteClient>* server):
   InterfaceRemoteClient(io_service),
   server(server),
   user(0)

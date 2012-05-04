@@ -24,8 +24,6 @@
 #include <network/timed_event.hpp>
 #include <network/ping_handler.hpp>
 
-class Server;
-
 using boost::asio::ip::tcp;
 
 class InterfaceRemoteClient: public CommandHandler, public TimedEventHandler, public PingHandler

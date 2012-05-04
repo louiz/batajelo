@@ -18,16 +18,15 @@
 
 #include <network/interface_remote_client.hpp>
 #include <network/transfer_sender.hpp>
+#include <network/server.hpp>
 #include <database/user.hpp>
-
-class Server;
 
 using boost::asio::ip::tcp;
 
 class RemoteClient: public InterfaceRemoteClient
 {
 public:
-  RemoteClient(boost::asio::io_service&, Server*);
+  RemoteClient(boost::asio::io_service&, Server<RemoteClient>*);
   ~RemoteClient();
   virtual void on_connection_closed();
 
@@ -76,7 +75,7 @@ private:
    * A pointer to the server, to call its method when the RemoteClient
    * has to be deleted.
    */
-  Server* server;
+  Server<RemoteClient>* server;
   User* user;
   /**
    * A list of all the current file transfers with tha client.
