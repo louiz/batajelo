@@ -198,9 +198,10 @@ if(BUILD_SERVER)
 	file(
 		GLOB
 		source_server
-		src/network/remote_client.*
-		src/network/interface_remote_client.*
 		src/network/command_handler.*
+		src/network/interface_remote_client.*
+		src/network/remote_client.*
+		src/network/remote_game_client.*
 		src/network/server.*
 		src/network/transfer_sender.*
 		src/network/command.*
@@ -215,6 +216,9 @@ if(BUILD_SERVER)
 		logging
 		config
 		database
+		${SFML_LIBRARIES}
+		${Boost_LIBRARIES}
+		${CMAKE_THREAD_LIBS_INIT}
 		)
 
 

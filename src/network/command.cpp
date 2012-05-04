@@ -26,7 +26,7 @@ void Command::set_name(const std::string name)
   this->name = name;
 }
 
-inline void Command::set_body_size(int size)
+void Command::set_body_size(int size)
 {
   this->body_size = size;
 }

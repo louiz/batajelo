@@ -31,7 +31,7 @@ class CommandHandler
   friend void TransferSender::send_next_chunk();
 public:
   CommandHandler();
-  virtual ~CommandHandler() {}
+  virtual ~CommandHandler();
 
   void install_read_handler();
   /**

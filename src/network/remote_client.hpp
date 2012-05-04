@@ -65,8 +65,7 @@ private:
    * It is executed whenever that command is received.
    * See CommandHandler for details
    */
-  void install_callbacks();
-  void install_read_handler(void);
+  virtual void install_callbacks();
   void auth_callback(Command*);
   void transfer_callback(Command*);
   /**
@@ -76,7 +75,7 @@ private:
   Server<RemoteClient>* server;
   User* user;
   /**
-   * A list of all the current file transfers with tha client.
+   * A list of all the current file transfers with the client.
    */
   std::vector<TransferSender*> senders;
 };

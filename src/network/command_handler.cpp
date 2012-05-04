@@ -1,7 +1,12 @@
 #include <network/command_handler.hpp>
+#include <network/command.hpp>
 
 CommandHandler::CommandHandler():
   writing(false)
+{
+}
+
+CommandHandler::~CommandHandler()
 {
 }
 
