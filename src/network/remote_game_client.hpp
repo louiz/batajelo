@@ -24,7 +24,6 @@ public:
   RemoteGameClient(boost::asio::io_service&, Server<RemoteGameClient>*);
   ~RemoteGameClient();
   virtual void on_connection_closed();
-
   virtual boost::asio::io_service& get_io_service();
 
 private:
@@ -34,7 +33,6 @@ private:
    * See CommandHandler for details
    */
   virtual void install_callbacks();
-  void install_read_handler(void);
   void move_callback(Command*);
   /**
    * A pointer to the server, to call its method when the RemoteGameClient

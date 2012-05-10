@@ -159,6 +159,8 @@ target_Link_libraries(
 		GLOB
 		source_client
 		src/network/client.*
+		src/network/game_client.*
+		src/network/interface_client.*
 		src/network/command_handler.*
 		src/network/transfer_receiver.*
 		src/network/command.*
