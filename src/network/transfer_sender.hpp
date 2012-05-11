@@ -50,11 +50,9 @@ private:
   RemoteClient* client;
   const std::string filename;
   std::ifstream file;
-
   int length;
   std::string id;
 };
 
 #endif // __TRANSFER_SENDER_HPP__
-
 /**@}*/

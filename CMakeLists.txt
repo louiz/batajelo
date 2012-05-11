@@ -48,7 +48,7 @@ endif(DOXYGEN_FOUND)
 
 #Librairies to include
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-find_package(Boost 1.47.0 COMPONENTS system date_time unit_test_framework REQUIRED)
+find_package(Boost 1.47.0 COMPONENTS serialization system date_time unit_test_framework REQUIRED)
 find_package(Threads REQUIRED)
 
 
@@ -191,6 +191,8 @@ target_Link_libraries(
 		client
 		logging
 		config
+		gui
+		world
 		)
 
 endif(BUILD_CLIENT)
@@ -217,6 +219,7 @@ if(BUILD_SERVER)
 		server
 		logging
 		config
+		game
 		database
 		${SFML_LIBRARIES}
 		${Boost_LIBRARIES}

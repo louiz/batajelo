@@ -1,11 +1,14 @@
 #include <world/entity.hpp>
 
+unsigned short Entity::current_id = 0;
+
 Entity::Entity():
   x(0),
   y(0),
   width(20),
   height(20),
-  selected(false)
+  selected(false),
+  id(++Entity::current_id)
 {
 }
 

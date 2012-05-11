@@ -33,7 +33,7 @@ private:
    * See CommandHandler for details
    */
   virtual void install_callbacks();
-  void move_callback(Command*);
+  void action_callback(Command*);
   /**
    * A pointer to the server, to call its method when the RemoteGameClient
    * has to be deleted.

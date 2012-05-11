@@ -4,15 +4,22 @@
 #include <logging/logging.hpp>
 
 class Camera;
+class World;
 
 class Entity
 {
   friend class Camera;
+  friend class World;
+
 public:
   Entity();
   ~Entity();
   bool is_selected() const;
   bool contains(unsigned int, unsigned int) const;
+
+  unsigned short get_id() const { return this->id; }
+
+  static unsigned short current_id;
 
 private:
   Entity(const Entity&);
@@ -31,6 +38,8 @@ private:
    * Whether or not the entity is selected.
    */
   bool selected;
+
+  unsigned short id;
 };
 
 #endif // __ENTITY_HPP__

@@ -39,22 +39,14 @@ void Camera::handle_event(const sf::Event& event)
 {
   if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == 0)
     {
-      Entity* entity;
-      while ((entity = this->world->get_next_entity()))
-	{
-	  if (entity->contains(event.mouseButton.x, event.mouseButton.y))
-	    entity->selected = true;
-	  else
-	    entity->selected = false;
-	}
+      this->world->handle_event(actions::Select, event.mouseButton.x, event.mouseButton.y);
     }
   else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == 1)
     {
-      
+      this->world->handle_event(actions::Move, event.mouseButton.x, event.mouseButton.y);
     }
 }
 
 void Camera::update(const sf::Time& dt)
 {
-
 }

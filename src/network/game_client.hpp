@@ -23,6 +23,10 @@ public:
    */
   virtual void install_callbacks();
   virtual void on_connection_closed();
+  /**
+   * Takes a serialized Action object and send it to the server.
+   */
+  void send_action(const std::string& data);
 
 private:
   void connect_handler(boost::function< void(void) >,

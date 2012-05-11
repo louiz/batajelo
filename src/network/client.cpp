@@ -37,9 +37,11 @@ void Client::on_transfer_ended(const TransferReceiver* receiver)
     if (*it == receiver)
       this->receivers.erase(it);
   delete receiver;
+
   exit(0);
 }
 
 void Client::on_connection_closed()
 {
+
 }
