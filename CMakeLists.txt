@@ -192,6 +192,7 @@ target_Link_libraries(
 		client
 		logging
 		config
+		gui
 		world
 		)
 
