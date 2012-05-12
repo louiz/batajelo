@@ -13,11 +13,11 @@ public:
   int x;
   int y;
 
-  virtual void serialize(boost::archive::text_oarchive & ar, const unsigned int)
+  virtual void serialize(oarchive & ar, const unsigned int)
   {
     ar & this->y & this->x;
   }
-  virtual void serialize(boost::archive::text_iarchive & ar, const unsigned int)
+  virtual void serialize(iarchive & ar, const unsigned int)
   {
     ar & this->y & this->x;
   }
@@ -28,14 +28,14 @@ class MyDerive: public MyBase
 public:
   int a;
 
-  virtual void serialize(boost::archive::text_iarchive & ar, const unsigned int a)
+  virtual void serialize(iarchive & ar, const unsigned int a)
   {
     // The doc says not to do that, but for reasons that do not matter, and
     // that's the only way I've found, so...
     MyBase::serialize(ar, a);
     ar & this->a;
   }
-  virtual void serialize(boost::archive::text_oarchive & ar, const unsigned int)
+  virtual void serialize(oarchive & ar, const unsigned int)
   {
     MyBase::serialize(ar, a);
     ar & this->a;
