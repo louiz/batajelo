@@ -20,8 +20,9 @@
 #ifndef __WORLD_HPP__
 # define __WORLD_HPP__
 
-#include <world/entity.hpp>
 #include <game/action.hpp>
+#include <world/entity.hpp>
+#include <network/command.hpp>
 
 class World
 {
@@ -51,22 +52,19 @@ public:
    * If an action is generated with this event, generate_action() is called.
    */
   void handle_event(actions::Type type, unsigned int x, unsigned y);
-  /**
-   * Create an action and put it in a list which will be sent by the client asap.
-   * When the action is sent, it is removed from the list.
-   * Note that these action are never executed directly on the world. We wait
-   * for actions to be retrieved from the turn_handler (which contains actions
-   * received from the server) and execute then only when it's time to.
-   */
-  void generate_action(const Action*);
 
-  /**
-   * Returns the next pending action to be sent on the network.
-   * Returns NULL if there's no pending action.
-   */
-  const Action* get_pending_action();
+  void generate_command(const char* name, const std::string& archive);
+  Command* get_pending_command();
 
   void load_test();
+
+  /**
+   * All the try_* methods are called ONLY by the server. It checks if the
+   * action can be done etc, and it generate actions to be executed on the
+   * server, and possibly on one or more clients.
+   * (I think they should all be const.)
+   */
+  void try_move(Command*);
 
 private:
   World(const World&);
@@ -87,7 +85,7 @@ private:
    * The server may generate actions too, in case of a game versus an IA or
    * something like that.
    */
-  std::queue<const Action*> actions_queue;
+  std::queue<Command*> commands_queue;
 };
 
 #endif // __WORLD_HPP__

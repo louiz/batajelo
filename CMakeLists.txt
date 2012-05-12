@@ -150,7 +150,22 @@ add_library(world STATIC ${source_world})
 target_Link_libraries(
 	world
 	logging
+	serialization
 	${SFML_LIBRARIES}
+	${Boost_LIBRARIES}
+	${CMAKE_THREAD_LIBS_INIT}
+)
+
+file(
+    GLOB
+    source_serialization
+    src/serialization/*.[hc]pp
+)
+add_library(serialization STATIC ${source_serialization})
+
+target_Link_libraries(
+	serialization
+	logging
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 )
@@ -189,6 +204,7 @@ target_Link_libraries(
 
 	target_link_libraries(
 		game
+		serialization
 		client
 		logging
 		config

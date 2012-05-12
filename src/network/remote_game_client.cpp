@@ -1,6 +1,7 @@
 #include <network/remote_game_client.hpp>
 #include <network/game_server.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <world/world.hpp>
 
 RemoteGameClient::RemoteGameClient(boost::asio::io_service& io_service,
 			   Server<RemoteGameClient>* server):

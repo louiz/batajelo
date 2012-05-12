@@ -1,4 +1,6 @@
 #include <world/world.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <game/event.hpp>
 
 World::World()
 {
@@ -56,30 +58,41 @@ void World::handle_event(actions::Type type, unsigned int x, unsigned y)
     }
   else if (type == actions::Move)
     {
-      Action* action = new Action(actions::Move);
+      MoveEvent event;
       Entity* entity;
       while ((entity = this->get_next_entity()))
 	{
 	  if (entity->is_selected())
-	    action->actors_ids.push_back(entity->get_id());
+	    event.actors_ids.push_back(entity->get_id());
 	}
-      action->x = x;
-      action->y = y;
-      this->generate_action(action);
+      event.x = x;
+      event.y = y;
+      this->generate_command("MOVE", event.to_string());
     }
 }
 
-void World::generate_action(const Action* action)
+void World::generate_command(const char* name, const std::string& archive)
 {
-  this->actions_queue.push(action);
-  log_debug(this->actions_queue.size());
+  Command* command = new Command;
+  command->set_name(name);
+  command->set_body(archive.data(), archive.length());
+  this->commands_queue.push(command);
+  log_debug(this->commands_queue.size());
 }
 
-const Action* World::get_pending_action()
+Command* World::get_pending_command()
 {
-  if (this->actions_queue.size() == 0)
+  if (this->commands_queue.empty())
     return 0;
-  const Action* action = this->actions_queue.front();
-  this->actions_queue.pop();
-  return action;
+  Command* command = this->commands_queue.front();
+  this->commands_queue.pop();
+  return command;
+}
+
+void World::try_move(Command* command)
+{
+  MoveEvent event;
+  event.from_string(std::string(command->body, command->body_size));
+
+  
 }

@@ -9,9 +9,6 @@
  */
 
 #include <boost/function.hpp>
-#include <boost/serialization/base_object.hpp>
-#include <boost/serialization/vector.hpp>
-#include <vector>
 
 #ifndef __ACTION_HPP__
 # define __ACTION_HPP__
@@ -33,28 +30,10 @@ namespace actions
 
 class Action
 {
-  friend class boost::serialization::access;
 public:
-  Action(actions::Type type);
-  Action():type(actions::None) {};
+  Action();
   ~Action();
   void execute() const;
-
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int)
-  {
-    ar & this->type;
-    ar & this->x;
-    ar & this->y;
-    ar & this->actors_ids;
-    ar & this->targets_ids;
-  }
-
-  actions::Type type;
-  std::vector<unsigned short> actors_ids;
-  std::vector<unsigned short> targets_ids;
-  unsigned int x;
-  unsigned int y;
 
 private:
   Action(const Action&);
