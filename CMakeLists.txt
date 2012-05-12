@@ -138,6 +138,7 @@ target_Link_libraries(
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	)
+endif(BUILD_CLIENT)
 
 file(
     GLOB
@@ -191,11 +192,8 @@ target_Link_libraries(
 		client
 		logging
 		config
-		gui
 		world
 		)
-
-endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
 
