@@ -16,6 +16,7 @@
 #include <world/world.hpp>
 #include <game/turn_handler.hpp>
 #include <network/server.hpp>
+#include <network/remote_game_client.hpp>
 
 class GameServer: public TurnHandler, public Server<RemoteGameClient>
 {
