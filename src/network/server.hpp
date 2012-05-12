@@ -20,6 +20,8 @@
 #ifndef __SERVER_HPP__
 # define __SERVER_HPP__
 
+#include <logging/logging.hpp>
+
 using boost::asio::ip::tcp;
 
 template <class T>
