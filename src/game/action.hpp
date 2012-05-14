@@ -9,6 +9,7 @@
  */
 
 #include <boost/function.hpp>
+#include <vector>
 
 #ifndef __ACTION_HPP__
 # define __ACTION_HPP__

@@ -16,11 +16,13 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <istream>
+#include <vector>
 
 #ifndef __SERVER_HPP__
 # define __SERVER_HPP__
 
 #include <logging/logging.hpp>
+#include <network/command.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -60,6 +62,7 @@ public:
     for (it = this->clients.begin(); it < this->clients.end(); ++it)
       if (*it == client)
 	this->clients.erase(it);
+    this->on_client_left(client);
     delete client;
   }
   /**
@@ -75,6 +78,71 @@ public:
     return 0;
   }
 
+  /**
+   * Called after a client just connected to us.
+   */
+  virtual void on_new_client(T* client)
+  {
+  }
+  /**
+   * Called after the client has been disconnected.
+   * Must NOT try to send anything to it, and should not assume
+   * it's still in the clients' list.
+   */
+  virtual void on_client_left(T* client)
+  {
+  }
+
+  /**
+   * Sends a command to the list of the given remote clients (using their id).
+   */
+  void send_to_list_of_clients(Command* command,
+			       std::vector<unsigned long int> ids)
+  {
+    typename std::vector<unsigned long int>::iterator it;
+    for (it = ids.begin(); it < ids.end(); ++it)
+      {
+	this->send_to_client(new Command(*command), *it);
+      }
+    // delete the command ourself, because we made a copy for each
+    // client, and the original is still there and will not be deleted
+    // by a client sending it (because it will not be sent).
+    delete command;
+  }
+
+  /**
+   * Sends a command to all clients.
+   */
+  void send_to_all_clients(Command* command)
+  {
+    typename std::vector<T*>::iterator it;
+    for (it = this->clients.begin(); it < this->clients.end(); ++it)
+      {
+	(*it)->send(new Command(*command));
+      }
+    delete command;
+  }
+
+  /**
+   * Sends a command to a client specified by its id.
+   */
+  void send_to_client(Command* command, unsigned long int id)
+  {
+    typename std::vector<T*>::iterator it;
+    for (it = this->clients.begin(); it < this->clients.end(); ++it)
+      {
+    	if ((*it)->number == id)
+	  {
+	    (*it)->send(command);
+	    return ;
+	  }
+      }
+    // The command MUST be sent by now. If the corresponding client
+    // was not in the list, something was wrong before calling this
+    // function.
+    assert(false);
+  }
+
   boost::asio::io_service io_service;
 
 private:
@@ -83,7 +151,8 @@ private:
     T* new_client = new T(this->io_service, this);
 
     this->acceptor->async_accept(new_client->get_socket(),
-				 boost::bind(&Server<T>::handle_accept, this, new_client,
+				 boost::bind(&Server<T>::handle_accept,
+					     this, new_client,
 					     boost::asio::placeholders::error));
   }
 
@@ -96,6 +165,7 @@ private:
       }
   client->start();
   this->clients.push_back(client);
+  this->on_new_client(client);
   this->install_accept_handler();
   }
 

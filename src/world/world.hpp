@@ -22,6 +22,7 @@
 
 #include <game/action.hpp>
 #include <world/entity.hpp>
+#include <world/occupant.hpp>
 #include <network/command.hpp>
 
 class World
@@ -59,12 +60,38 @@ public:
   void load_test();
 
   /**
+   * Called whenever we receive a new_occupant message from the server.
+   */
+  void new_occupant_callback(Command* command);
+  /**
+   * Actually instert a occupant in the occupants list.
+   */
+  void add_new_occupant(Occupant*);
+
+  /**
+   * Called whenever we receive a occupant_left message from the server.
+   */
+  void occupant_left_callback(Command* command);
+  /**
+   * Actually remove the occupant from the occupants list.
+   */
+  void remove_occupant(Occupant*);
+
+  /**
    * All the try_* methods are called ONLY by the server. It checks if the
    * action can be done etc, and it generate actions to be executed on the
    * server, and possibly on one or more clients.
    * (I think they should all be const.)
    */
   void try_move(Command*);
+
+  /**
+   * The list of other occupants of the game, when a new client connects to
+   * the server, we had it to the list, when it disconnects we remove it.
+   * Each occupant object contains an id corresponding to the
+   * RemoteGameClient object stored in the server.
+   */
+  std::vector<Occupant*> occupants;
 
 private:
   World(const World&);

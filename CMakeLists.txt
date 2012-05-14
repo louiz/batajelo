@@ -222,6 +222,7 @@ if(BUILD_SERVER)
 		src/network/remote_client.*
 		src/network/remote_game_client.*
 		src/network/server.*
+		src/network/game_server.*
 		src/network/transfer_sender.*
 		src/network/command.*
 		src/network/timed_event.*

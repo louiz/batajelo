@@ -93,6 +93,47 @@ void World::try_move(Command* command)
 {
   MoveEvent event;
   event.from_string(std::string(command->body, command->body_size));
+}
 
-  
+void World::new_occupant_callback(Command* command)
+{
+  log_debug("new_occupant_callback");
+  Occupant* occupant = new Occupant;
+
+  std::string data(command->body, command->body_size);
+  occupant->from_string(data);
+  log_debug("occupant: " << occupant->name << " " << occupant->number);
+  this->add_new_occupant(occupant);
+}
+
+void World::occupant_left_callback(Command* command)
+{
+  Occupant occupant;
+  occupant.from_string(std::string(command->body, command->body_size));
+  log_debug("Occupant to remove: " << occupant.number);
+  this->remove_occupant(&occupant);
+}
+
+void World::remove_occupant(Occupant* occupant)
+{
+  std::vector<Occupant*>::iterator it;
+  Occupant* occupant_to_remove;
+
+  for (it = this->occupants.begin(); it < this->occupants.end(); ++it)
+    {
+      if ((*it)->number == occupant->number)
+	{
+	  occupant_to_remove = (*it);
+	  this->occupants.erase(it);
+	  delete occupant_to_remove;
+	  return ;
+	}
+    }
+  assert(false);
+}
+
+void World::add_new_occupant(Occupant* occupant)
+{
+  log_debug("Adding no occupant to the world:" << occupant->name << " " << occupant->number);
+  this->occupants.push_back(occupant);
 }

@@ -1,6 +1,8 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/base_object.hpp>
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include <iostream>
 #include <sstream>

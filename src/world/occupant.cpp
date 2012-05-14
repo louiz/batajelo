@@ -8,6 +8,8 @@ Occupant::Occupant(unsigned long int number, const std::string& name):
 
 Occupant::Occupant()
 {
-
 }
 
+Occupant::~Occupant()
+{
+}

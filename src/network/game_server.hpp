@@ -21,9 +21,12 @@
 class GameServer: public TurnHandler, public Server<RemoteGameClient>
 {
 public:
-  GameServer(short port):Server<RemoteGameClient>(port) { this->world = new World; }
-  ~GameServer() {} ;
-  World* get_world() const { return this->world; }
+  GameServer(short port);
+  ~GameServer();
+  World* get_world() const;
+
+  virtual void on_new_client(RemoteGameClient*);
+  virtual void on_client_left(RemoteGameClient*);
 
 private:
   GameServer(const GameServer&);

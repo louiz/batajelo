@@ -52,12 +52,23 @@ public:
    * a new client is accepted.
    */
   static unsigned long int clients_number;
+  /**
+   * Returns the client number (aka id).
+   */
+  unsigned long int get_number() { return this->number; }
+  /**
+   * Returns the client number (aka id).
+   */
+  unsigned long int get_id() { return this->get_number(); }
 
   virtual void on_connection_closed() = 0;
 
   virtual boost::asio::io_service& get_io_service() = 0;
 
 protected:
+  /**
+   * The client number (aka id).
+   */
   const unsigned long int number;
   /**
    * Creates the default callbacks associated with a network command.

@@ -8,7 +8,6 @@
  * @class Occupant
  */
 
-
 #ifndef __OCCUPANT_HPP__
 # define __OCCUPANT_HPP__
 
@@ -24,15 +23,15 @@ public:
 
   virtual void serialize(oarchive & ar, const unsigned int)
   {
-    ar & this->number && this->name;
+    ar & this->number & this->name & this->team;
   }
   virtual void serialize(iarchive & ar, const unsigned int)
   {
-    ar & this->number && this->name;
+    ar & this->number & this->name & this->team;
   }
 
-protected:
   unsigned long int number;
+  unsigned int team;
   std::string name;
 
 private:

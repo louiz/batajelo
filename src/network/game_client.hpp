@@ -6,6 +6,8 @@
  * @class GameClient
  */
 
+#include <vector>
+
 #ifndef __GAME_CLIENT_HPP__
 # define __GAME_CLIENT_HPP__
 
@@ -23,10 +25,8 @@ public:
    */
   virtual void install_callbacks();
   virtual void on_connection_closed();
-  /**
-   * Takes a serialized Action object and send it to the server.
-   */
-  void send_action(const std::string& data);
+
+  void new_client_callback(Command*);
 
 private:
   void connect_handler(boost::function< void(void) >,

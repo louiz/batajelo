@@ -32,7 +32,13 @@ private:
    * The top position
    */
   unsigned int y;
+  /**
+   * The width
+   */
   unsigned int width;
+  /**
+   * The height
+   */
   unsigned int height;
   /**
    * Whether or not the entity is selected.
