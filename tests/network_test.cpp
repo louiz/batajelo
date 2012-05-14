@@ -23,4 +23,20 @@ BOOST_AUTO_TEST_CASE(command_consistency_test)
   delete command;
 }
 
+BOOST_AUTO_TEST_CASE(command_copy_test)
+{
+  Command* command = new Command;
+  command->set_body("coucou les amis");
+  command->set_name("FAKE_COMMAND");
+  command->pack();
+
+  Command* command2 = new Command(*command);
+  BOOST_REQUIRE(command2->header == std::string("FAKE_COMMAND.15:"));
+  BOOST_REQUIRE(command2->body_size == 15);
+  BOOST_REQUIRE(strncmp(command2->body, "coucou les amis", 15) == 0);
+
+  delete command;
+  delete command2;
+}
+
 BOOST_AUTO_TEST_SUITE_END()

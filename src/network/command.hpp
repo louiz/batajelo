@@ -39,6 +39,7 @@ class Command
 {
 public:
   Command();
+  Command(const Command&);
   ~Command();
   /**
    * Sets the body of the message. A char* will be new[]ed using the size, and
@@ -74,7 +75,6 @@ public:
   boost::function< void(void) > callback;
 
 private:
-  Command(const Command&);
   Command& operator=(const Command&);
 };
 

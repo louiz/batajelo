@@ -7,6 +7,14 @@ Command::Command():
 {
 }
 
+Command::Command(const Command& command)
+{
+  this->callback = command.callback;
+  this->header = command.header;
+  this->name = command.name;
+  this->set_body(command.body, command.body_size);
+}
+
 Command::~Command()
 {
   delete[] this->body;
