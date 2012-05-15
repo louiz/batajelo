@@ -42,6 +42,19 @@ void GameServer::on_new_client(RemoteGameClient* new_client)
 	  new_client->send(command);
 	}
     }
+
+  // Spawn a new unit for each new player.
+  // Only for tests, TODO: remove that.
+  Entity* new_entity = this->world->create_entity(0);
+  command = new Command();
+  new_entity->y = rand() % 200;
+  new_entity->x = rand() % 200;
+
+  command->set_name("NEW_ENTITY");
+  command->set_body(new_entity->to_string().c_str());
+  log_debug(new_entity->to_string());
+  this->send_to_all_clients(command);
+  this->world->insert_entity(new_entity);
 }
 
 void GameServer::on_client_left(RemoteGameClient* client)

@@ -31,6 +31,10 @@ public:
   World();
   ~World();
   /**
+   * Init the world by reading the Mod files.
+   */
+  void init();
+  /**
    * returns a pointer to the next entity of the world. If it returns NULL,
    * this means that the list is over and the next call will restart from the
    * beginning of the list.
@@ -53,7 +57,10 @@ public:
    * If an action is generated with this event, generate_action() is called.
    */
   void handle_event(actions::Type type, unsigned int x, unsigned y);
-
+  /**
+   * Create an entity based on the given model.
+   */
+  Entity* create_entity(unsigned int type);
   void generate_command(const char* name, const std::string& archive);
   Command* get_pending_command();
 
@@ -67,7 +74,6 @@ public:
    * Actually instert a occupant in the occupants list.
    */
   void add_new_occupant(Occupant*);
-
   /**
    * Called whenever we receive a occupant_left message from the server.
    */
@@ -76,6 +82,10 @@ public:
    * Actually remove the occupant from the occupants list.
    */
   void remove_occupant(Occupant*);
+  /**
+   * Called when a new unit has to be inserted in the world.
+   */
+  void new_entity_callback(Command* command);
 
   /**
    * All the try_* methods are called ONLY by the server. It checks if the
@@ -96,9 +106,17 @@ public:
 private:
   World(const World&);
   World& operator=(const World&);
-
   /**
-   * The liste of all existing entities in the world.
+   * The list of all models for the entities in the world.
+   * That list is created by loading a Mod file. To spawn a unit
+   * in the world, we take the entity type in that list, and copy
+   * it into a new unit. This list order is important, each
+   * entity model is uniq, and that list does not change once the game
+   * is started.
+   */
+  std::vector<Entity*> entity_models;
+  /**
+   * The list of all existing entities in the world.
    */
   std::list<Entity*> entities;
   /**

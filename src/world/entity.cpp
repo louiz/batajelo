@@ -1,6 +1,7 @@
 #include <world/entity.hpp>
 
 unsigned short Entity::current_id = 0;
+unsigned short Entity::current_type_id = 0;
 
 Entity::Entity():
   x(0),
@@ -8,8 +9,20 @@ Entity::Entity():
   width(20),
   height(20),
   selected(false),
+  type_id(++Entity::current_type_id)
+{
+}
+
+Entity::Entity(const Entity& e):
   id(++Entity::current_id)
 {
+  this->y = e.y;
+  this->x = e.x;
+  this->width = e.width;
+  this->height = e.height;
+  this->selected = e.selected;
+  this->type_id = e.type_id;
+  log_debug("Creating new unit of id: " << this->id);
 }
 
 Entity::~Entity()

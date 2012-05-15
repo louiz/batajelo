@@ -5,21 +5,13 @@
 World::World()
 {
   this->entities_iterator = this->entities.begin();
-  this->load_test();
+  this->init();
 }
 
 World::~World()
 {
 }
 
-void World::load_test()
-{
-  Entity* unit = new Entity;
-  this->insert_entity(unit);
-  unit = new Entity();
-  unit->x = 40;
-  this->insert_entity(unit);
-}
 
 Entity* World::get_next_entity()
 {
@@ -136,4 +128,28 @@ void World::add_new_occupant(Occupant* occupant)
 {
   log_debug("Adding no occupant to the world:" << occupant->name << " " << occupant->number);
   this->occupants.push_back(occupant);
+}
+
+void World::new_entity_callback(Command* command)
+{
+  Entity* new_entity = new Entity;
+  std::string data(command->body, command->body_size);
+  log_debug("New_Entity: " << data);
+  new_entity->from_string(data);
+  this->insert_entity(new_entity);
+}
+
+void World::init()
+{
+  log_debug("Init world");
+  // TODO, load these units from the Mod file.
+  Entity* unit = new Entity;
+  this->entity_models.push_back(unit);
+}
+
+Entity* World::create_entity(unsigned int type)
+{
+  const Entity* model = this->entity_models[type];
+  Entity* new_entity = new Entity(*model);
+  return new_entity;
 }

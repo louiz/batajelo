@@ -21,7 +21,8 @@ int main()
 		      boost::bind(&World::new_occupant_callback, world, _1));
   c->install_callback("OCCUPANT_LEFT",
 		      boost::bind(&World::occupant_left_callback, world, _1));
-  // c->
+  c->install_callback("NEW_ENTITY",
+		      boost::bind(&World::new_entity_callback, world, _1));
 
   // c->connect("88.190.23.192", 7879);
   c->connect("127.0.0.1", 7879);
