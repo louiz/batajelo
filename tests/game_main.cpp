@@ -3,6 +3,7 @@
 #include <network/game_client.hpp>
 #include <game/game.hpp>
 #include <world/world.hpp>
+#include <world/time.hpp>
 #include <gui/camera/camera.hpp>
 #include <game/turn_handler.hpp>
 #include <network/command.hpp>
@@ -27,10 +28,12 @@ int main()
   // c->connect("88.190.23.192", 7879);
   c->connect("127.0.0.1", 7879);
 
-  sf::Clock clock;
   sf::Clock fps_clock;
 
-  sf::Time dt;
+  Time time1 = boost::posix_time::microsec_clock::universal_time();
+  Time time2;
+  Duration dt;
+
 
   while (window->isOpen())
     {
@@ -55,7 +58,9 @@ int main()
       c->poll();
 
       // Get the elapsed time
-      dt = clock.restart();
+      time2 = boost::posix_time::microsec_clock::universal_time();
+      dt = time2 - time1;
+      time1 = time2;
 
       // // Update everything, based on the elapsed time
       camera->update(dt);

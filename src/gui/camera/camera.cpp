@@ -47,6 +47,6 @@ void Camera::handle_event(const sf::Event& event)
     }
 }
 
-void Camera::update(const sf::Time& dt)
+void Camera::update(const Duration& dt)
 {
 }

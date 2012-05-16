@@ -23,6 +23,7 @@
 
 #include <logging/logging.hpp>
 #include <network/command.hpp>
+#include <world/time.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -44,13 +45,37 @@ public:
     delete this->acceptor;
   }
   /**
-   * Starts the main loop.
-   * @return void
+   * Starts the server
    */
-  void run(void)
+  void start()
   {
     this->accept();
+  }
+  /**
+   * Starts the main loop, blocking.
+   */
+  void run()
+  {
     this->io_service.run();
+  }
+  /**
+   * Run the network loop once, non-blocking.
+   * The timeout simulates a timeout argument, as it could be used
+   * on select() to say that it does not need to return immediately but
+   * can wait a little bit for events before returning.
+   * Boost::asio doesn't provide such a feature, so we try to emulate that
+   * here we a loop and a short sleep.
+   */
+  void poll(long timeout = 0)
+  {
+    this->io_service.poll();
+    if (timeout == 0)
+      return ;
+    for (timeout *= 2; timeout > 0; timeout--)
+      {
+	usleep(500);
+	this->io_service.poll();
+      }
   }
   /**
    * To be called by the a RemoteClient instance, to delete itself from

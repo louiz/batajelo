@@ -22,6 +22,7 @@
 
 #include <game/action.hpp>
 #include <world/entity.hpp>
+#include <world/time.hpp>
 #include <world/occupant.hpp>
 #include <network/command.hpp>
 

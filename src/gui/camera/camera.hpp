@@ -17,6 +17,7 @@
 
 #include <logging/logging.hpp>
 #include <world/world.hpp>
+#include <world/time.hpp>
 
 class Camera
 {
@@ -40,7 +41,7 @@ public:
    * Update the camera position or other stuff according to previous
    * input etc.
    */
-  void update(const sf::Time& dt);
+  void update(const Duration& dt);
 
 private:
   Camera(const Camera&);

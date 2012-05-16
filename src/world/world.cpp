@@ -145,6 +145,7 @@ void World::init()
   // TODO, load these units from the Mod file.
   Entity* unit = new Entity;
   this->entity_models.push_back(unit);
+  log_debug("Done.");
 }
 
 Entity* World::create_entity(unsigned int type)
