@@ -20,3 +20,5 @@ doxygen/Doxyfile
 # g++
 *.o
 *.a
+#CMAKE
+CMakeCache.txt
