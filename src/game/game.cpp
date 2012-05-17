@@ -1,19 +1,15 @@
 #include <game/game.hpp>
 #include <logging/logging.hpp>
-#include <unistd.h>
 
-static const char* auth_messages[] = {"Success",
-				      "Unknown error",
-				      "User does not exist",
-				      "Invalid password",
-                                      "User already logged from an other location"};
 Game::Game()
 {
+	this->ui = new Ui(this);
   log_info("Launching game");
 }
 
 Game::~Game()
 {
+	delete this->ui;
   log_info("End.");
 }
 
@@ -46,7 +42,7 @@ void Game::authenticate(const std::string& login, const std::string& password)
   command->set_name("AUTH");
   std::string body = login + '*' + password;
   command->set_body(body.data(), body.size());
-  this->client.request_answer(command, boost::bind(&Game::on_authenticate, this, _1));
+  this->client.request_answer(command, boost::bind(&Ui::on_authenticate, this->ui, _1));
 }
 
 void Game::request_file(const std::string& filename)
@@ -57,23 +53,16 @@ void Game::request_file(const std::string& filename)
   this->client.send(command);
 }
 
-void Game::on_authenticate(Command* received_command)
-{
-  std::string result(received_command->body, received_command->body_size);
-  int res = atoi(result.data());
-  log_debug("on_authenticate :" << res << "." <<  ((res > 4) ? "Unknown error" : auth_messages[res]));
-  if (res == 0)
-    {
-      this->request_file("file.bin");
-      // TODO, install timed events.
-    }
-}
-
 void Game::run()
 {
-  while (true)
-    {
-      this->client.poll();
-      usleep(10000);		// replace with game logic
-    }
+	while (this->ui->run() == true)
+	{
+		this->client.poll();
+		this->ui->handleEvent();
+		this->ui->update();
+		this->ui->clear();
+		this->ui->draw_background();
+		this->ui->display_ui();
+		this->ui->display_background();
+	}
 }

@@ -1,10 +1,13 @@
 // The main class for the game itself
 
+
 #ifndef __GAME_HPP__
 # define __GAME_HPP__
 
 #include <network/client.hpp>
 #include <network/command.hpp>
+#include <ui/ui.hpp>
+
 class Game
 {
 public:
@@ -26,6 +29,7 @@ public:
 
 private:
   Client client;
+	Ui ui;
   Game(const Game&);
   Game& operator=(const Game&);
 };
