@@ -45,7 +45,7 @@ void RemoteClient::auth_callback(Command* received_command)
       std::string password = arg.substr(pos+1);
       log_debug(login << ":" << password);
       DbObject* user = Database::inst()->get_object("*", "User",
-						    std::string("`login`='" + login + "'"));
+						    std::string("`login`='" + login + "' AND `password`='" + password + "'"));
       if (user == 0)
   	{
   	  log_info("Authentication: User " << login << " does not exist in database.");
