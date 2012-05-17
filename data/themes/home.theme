@@ -1,0 +1,34 @@
+Window
+{
+	BackgroundColor: #FFFFFF99;
+}
+
+Box#box_connect Label
+{
+	FontSize: 20;
+	Color: #0F17F4FF;
+}
+
+Box#box_connect Entry
+{
+	FontSize: 20;
+	Color: #0F17F499;
+	BackgroundColor: #FFFFFF99;
+}
+
+Box#box_settings Label
+{
+	FontSize: 20;
+	Color: #0F17F4FF;
+}
+
+Button#button_connect
+{
+	Color: #0F17F499;
+	BackgroundColor: #FFFFFF99;
+}
+
+Button:PRELIGHT#button_connect
+{
+	BackgroundColor: #F0E517FF;
+}
