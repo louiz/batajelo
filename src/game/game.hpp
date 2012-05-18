@@ -6,7 +6,7 @@
 
 #include <network/client.hpp>
 #include <network/command.hpp>
-#include <ui/ui.hpp>
+#include <gui/ui.hpp>
 
 class Game
 {

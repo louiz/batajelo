@@ -13,7 +13,7 @@
 #ifndef __UI_HPP__
 # define __UI_HPP__
 
-#include <ui/page.hpp>
+#include <gui/page.hpp>
 #include <network/command.hpp>
 
 class Game;
