@@ -29,7 +29,7 @@ public:
 
 private:
   Client client;
-	Ui ui;
+  Ui* ui;
   Game(const Game&);
   Game& operator=(const Game&);
 };
