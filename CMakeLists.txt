@@ -60,8 +60,12 @@ link_directories(${Boost_LIBRARY_DIRS})
 
 if(BUILD_CLIENT)
 	find_package(SFML 2 REQUIRED system window graphics audio)
+	find_package(SFGUI REQUIRED)
 	include_directories(${SFML_INCLUDE_DIR})
 	link_directories(${SFML_LIBRARIES})
+
+	include_directories(${SFGUI_INCLUDE_DIR})
+	link_directories(${SFGUI_LIBRARY})
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
@@ -135,6 +139,7 @@ target_Link_libraries(
 	config
 	world
 	${SFML_LIBRARIES}
+	${SFGUI_LIBRARY}
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	)
@@ -152,6 +157,7 @@ target_Link_libraries(
 	logging
 	serialization
 	${SFML_LIBRARIES}
+	${SFGUI_LIBRARY}
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 )
@@ -194,7 +200,6 @@ target_Link_libraries(
 		config
 		)
 
-
 	file(
 		GLOB
 		source_game
@@ -230,7 +235,6 @@ if(BUILD_SERVER)
 		src/network/ping_handler.*
 		)
 	add_library(server STATIC ${source_server})
-
 	target_link_libraries(
 		server
 		logging
