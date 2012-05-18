@@ -217,6 +217,19 @@ target_Link_libraries(
 		world
 		)
 
+	add_library(game_client STATIC ${source_game})
+
+	target_link_libraries(
+		game_client
+		game
+		)
+
+	add_library(menu_client STATIC ${source_game})
+	target_link_libraries(
+		menu_client
+		game
+		)
+
 if(BUILD_SERVER)
 
 	file(
@@ -242,6 +255,20 @@ if(BUILD_SERVER)
 		game
 		database
 		${SFML_LIBRARIES}
+		${SFGUI_LIBRARY}
+		${Boost_LIBRARIES}
+		${CMAKE_THREAD_LIBS_INIT}
+		)
+
+	add_library(game_server STATIC ${source_server})
+	target_link_libraries(
+		game_server
+		logging
+		config
+		game
+		database
+		${SFML_LIBRARIES}
+		${SFGUI_LIBRARY}
 		${Boost_LIBRARIES}
 		${CMAKE_THREAD_LIBS_INIT}
 		)
