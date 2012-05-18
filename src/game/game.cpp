@@ -3,13 +3,13 @@
 
 Game::Game()
 {
-	this->ui = new Ui(this);
+  this->ui = new Ui(this);
   log_info("Launching game");
 }
 
 Game::~Game()
 {
-	delete this->ui;
+  delete this->ui;
   log_info("End.");
 }
 
@@ -19,8 +19,8 @@ void Game::on_login_form_validated(const std::string& login,
 				   const short& port)
 {
   this->client.connect(host, port,
-			boost::bind(&Game::on_connection_success, this, login, password),
-			boost::bind(&Game::on_connection_failed, this, host, port));
+		       boost::bind(&Game::on_connection_success, this, login, password),
+		       boost::bind(&Game::on_connection_failed, this, host, port));
 }
 
 void Game::on_connection_failed(const std::string& host, const short& port)
