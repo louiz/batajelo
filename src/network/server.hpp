@@ -86,7 +86,10 @@ public:
     typename std::vector<T*>::iterator it;
     for (it = this->clients.begin(); it < this->clients.end(); ++it)
       if (*it == client)
-	this->clients.erase(it);
+	{
+	  this->clients.erase(it);
+	  break ;
+	}
     this->on_client_left(client);
     delete client;
   }
