@@ -35,10 +35,11 @@ void Client::on_transfer_ended(const TransferReceiver* receiver)
   std::vector<TransferReceiver*>::iterator it;
   for (it = this->receivers.begin(); it < this->receivers.end(); ++it)
     if (*it == receiver)
-      this->receivers.erase(it);
+      {
+	this->receivers.erase(it);
+	break ;
+      }
   delete receiver;
-
-  exit(0);
 }
 
 void Client::on_connection_closed()

@@ -116,6 +116,9 @@ void RemoteClient::on_transfer_ended(const TransferSender* transfer)
   std::vector<TransferSender*>::iterator it;
   for (it = this->senders.begin(); it < this->senders.end(); ++it)
     if (*it == transfer)
-      this->senders.erase(it);
+      {
+	this->senders.erase(it);
+	break ;
+      }
   delete transfer;
 }
