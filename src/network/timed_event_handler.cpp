@@ -34,6 +34,7 @@ void TimedEventHandler::remove_event(TimedEvent* event)
 	  (*it)->cancel();
 	  delete (*it);
 	  this->events.erase(it);
+	  return ;
 	}
     }
 
