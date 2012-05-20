@@ -154,6 +154,7 @@ add_library(world STATIC ${source_world})
 
 target_Link_libraries(
 	world
+	game
 	logging
 	serialization
 	${SFML_LIBRARIES}

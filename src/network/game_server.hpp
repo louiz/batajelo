@@ -14,7 +14,6 @@
 # define __GAME_SERVER_HPP__
 
 #include <world/world.hpp>
-#include <game/turn_handler.hpp>
 #include <network/server.hpp>
 #include <network/remote_game_client.hpp>
 
@@ -27,6 +26,11 @@ public:
 
   virtual void on_new_client(RemoteGameClient*);
   virtual void on_client_left(RemoteGameClient*);
+
+  void tick();
+  void pause_game();
+  void unpause_game();
+  void start_game();
 
 private:
   GameServer(const GameServer&);

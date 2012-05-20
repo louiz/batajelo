@@ -48,9 +48,10 @@ public:
   /**
    * Check for data on the sockets (to send or write), and execute the
    * appropriate handlers. Does nothing if there’s nothing to read or write.
-   * This is non-blocking.
+   * This is non-blocking, but can wait a little bit, polling, if timeout
+   * is not 0.
    */
-  void poll(void);
+  void poll(long timeout = 0);
 
   virtual void on_connection_closed() = 0;
   virtual boost::asio::io_service& get_io_service();

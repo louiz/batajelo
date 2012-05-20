@@ -24,6 +24,7 @@ void GameServer::on_new_client(RemoteGameClient* new_client)
 
   Occupant* occupant = new Occupant(new_client->get_number(), "coucou");
   this->world->add_new_occupant(occupant);
+  log_debug("There are now " << this->world->occupants.size() << " occupants");
 
   command->set_body(occupant->to_string().c_str());
   this->send_to_all_clients(command);
@@ -54,7 +55,28 @@ void GameServer::on_new_client(RemoteGameClient* new_client)
   command->set_body(new_entity->to_string().c_str());
   log_debug(new_entity->to_string());
   this->send_to_all_clients(command);
+  Entity* entity;
+  while ((entity = this->world->get_next_entity()))
+    {
+      command = new Command();
+      command->set_name("NEW_ENTITY");
+      command->set_body(entity->to_string().c_str());
+      new_client->send(command);
+    }
   this->world->insert_entity(new_entity);
+
+  // Finally send a START command to the new player, used to synchronize the
+  // start of the game with others.
+  Event* start_event = new Event;
+  Command* start_command = new Command;
+  start_command->set_name("START");
+  start_command->set_body(start_event->to_string().c_str());
+  this->send_to_all_clients(start_command);
+
+  this->world->install_start_action(start_event, 1);
+
+  // TODO remove that.
+  this->start_game();
 }
 
 void GameServer::on_client_left(RemoteGameClient* client)
@@ -77,4 +99,25 @@ void GameServer::on_client_left(RemoteGameClient* client)
 	}
     }
   assert(false);
+}
+
+void GameServer::tick()
+{
+  this->world->tick();
+  // this->turn_handler->tick();
+}
+
+void GameServer::pause_game()
+{
+  this->world->pause();
+}
+
+void GameServer::unpause_game()
+{
+  this->world->unpause();
+}
+
+void GameServer::start_game()
+{
+  this->world->start();
 }

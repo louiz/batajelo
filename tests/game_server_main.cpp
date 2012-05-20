@@ -28,9 +28,9 @@ int main()
       time1 = time2;
       long i = get_number_of_updates(dt);
       for (; i > 0; --i)
-  	{
+	{
 	  s.tick();
-  	}
+	}
       s.poll(10);
     }
   return 0;

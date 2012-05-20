@@ -31,6 +31,7 @@ BOOST_AUTO_TEST_CASE(command_copy_test)
   command->pack();
 
   Command* command2 = new Command(*command);
+  command2->pack();
   BOOST_REQUIRE(command2->header == std::string("FAKE_COMMAND.15:"));
   BOOST_REQUIRE(command2->body_size == 15);
   BOOST_REQUIRE(strncmp(command2->body, "coucou les amis", 15) == 0);

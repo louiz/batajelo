@@ -2,30 +2,42 @@
 
 TurnHandler::TurnHandler():
   current_turn(0),
-  turn_advancement(0)
+  turn_advancement(0),
+  paused(true)
 {
 }
 
 TurnHandler::~TurnHandler()
 {
-  std::deque<std::vector<const Action*> >::iterator turn_it;
-  std::vector<const Action*>::iterator action_it;
-  for (turn_it = this->turns.begin(); turn_it < this->turns.end(); ++turn_it)
-    {
-      for (action_it = (*turn_it).begin(); action_it < (*turn_it).end(); ++action_it)
-	{
-	  delete (*action_it);
-	}
-    }
+  this->turns.clear();
 }
 
 void TurnHandler::tick()
 {
+  if (this->paused == true)
+    {
+      // we check if next turn is validated, to unpause.
+      if (this->is_next_turn_validated() == false)
+	return ;
+      this->unpause();
+      this->turn_advancement = 0;
+      this->next_turn();
+      return ;
+    }
   this->turn_advancement += 1;
   if (this->turn_advancement == TURN_TIME)
     {
-      this->turn_advancement = 0;
-      this->next_turn();
+      if (this->is_next_turn_validated() == false)
+	{
+	  log_debug("Next turn is not validated");
+	  this->pause();
+	  return ;
+	}
+      else
+	{
+	  this->turn_advancement = 0;
+	  this->next_turn();
+	}
     }
 }
 
@@ -36,20 +48,15 @@ void TurnHandler::next_turn()
   // if the deque is empty, no action has to be taken.
   if (this->turns.empty())
     return ;
-  // remove the empty vector of the previous turn
+  // remove the previous (now empty) turn.
   this->turns.pop_front();
-  // we execute the actions one by one, then delete them and remove them from the turn.
-  std::vector<const Action*>::iterator it;
-  log_debug("Turn number " << this->current_turn << ": " << this->turns[0].size() << " actions to execute");
-  for (it = this->turns[0].begin(); it < this->turns[0].end(); ++it)
-    {
-      (*it)->execute();
-      delete (*it);
-    }
-  this->turns[0].clear();
+  if (this->turns.empty())
+    return ;
+  log_debug("Turn number " << this->current_turn << ": ");
+  this->turns[0].execute();
 }
 
-bool TurnHandler::insert_action(const Action* action, unsigned long turn)
+bool TurnHandler::insert_action(Action* action, const unsigned long turn)
 {
   if (turn <= this->current_turn)
     {
@@ -57,10 +64,64 @@ bool TurnHandler::insert_action(const Action* action, unsigned long turn)
       delete action;
       return false;
     }
-  if (this->turns.size() < turn - this->current_turn)
+  if (this->turns.size() < turn - this->current_turn + 1)
     {
-      this->turns.resize(turn - this->current_turn + 1);
+      Turn dummy;
+      log_debug("Resizing to " << turn - this->current_turn + 1);
+      this->turns.resize(turn - this->current_turn + 1, dummy);
     }
-  this->turns[turn - this->current_turn].push_back(action);
+  log_debug("Inserting  into " << turn - this->current_turn);
+  this->turns[turn - this->current_turn].insert(action);
   return true;
+}
+
+void TurnHandler::pause()
+{
+  assert(this->paused == false);
+  log_debug("pausing turnhandler");
+  this->paused = true;
+}
+
+void TurnHandler::unpause()
+{
+  assert(this->paused == true);
+  log_debug("unpausing turnhandler");
+  this->paused = false;
+}
+
+bool TurnHandler::is_next_turn_validated() const
+{
+  if (this->turns.size() < 2)
+    // No action is in the next turn, so it's ok to go to it.
+    return true;
+
+  return this->turns[1].is_validated();
+}
+
+Turn* TurnHandler::get_turn(const unsigned int number)
+{
+  assert(number > this->current_turn);
+  if (this->turns.size() <= number - this->current_turn)
+    return 0;
+  return &this->turns[number - this->current_turn];
+}
+
+bool TurnHandler::validate_action(const unsigned int id, const unsigned long int by)
+{
+  std::deque<Turn>::iterator it;
+  Action* action;
+
+  for (it = this->turns.begin(); it < this->turns.end(); ++it)
+    {
+      (*it).reset_action_iterator();
+      while ((action = (*it).get_next_action()) != 0)
+	{
+	  if (action->get_id() == id)
+	    {
+	      action->validate(by);
+	      return true;
+	    }
+	}
+    }
+  return false;
 }

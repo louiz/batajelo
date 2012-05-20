@@ -24,6 +24,11 @@ int main()
 		      boost::bind(&World::occupant_left_callback, world, _1));
   c->install_callback("NEW_ENTITY",
 		      boost::bind(&World::new_entity_callback, world, _1));
+  c->install_callback("START",
+		      boost::bind(&World::handle_start_command, world, _1));
+  c->install_callback("OK",
+		      boost::bind(&World::ok_callback, world, _1));
+
 
   // c->connect("88.190.23.192", 7879);
   c->connect("127.0.0.1", 7879);
@@ -37,9 +42,6 @@ int main()
 
   while (window->isOpen())
     {
-      // Network poll
-      c->poll();
-
       // Check for user events
       sf::Event event;
       while (window->pollEvent(event))
@@ -51,16 +53,22 @@ int main()
       Command* command;
       while ((command = world->get_pending_command()))
       	{
+	  log_debug("PENDING COMMAND!");
       	  c->send(command);
       	}
 
-      // twice?
-      c->poll();
+      c->poll(10);
 
       // Get the elapsed time
       time2 = boost::posix_time::microsec_clock::universal_time();
-      dt = time2 - time1;
+      dt += time2 - time1;
       time1 = time2;
+
+      long i = get_number_of_updates(dt);
+      for (; i > 0; --i)
+	{
+	  world->tick();
+	}
 
       // // Update everything, based on the elapsed time
       camera->update(dt);

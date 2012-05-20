@@ -37,7 +37,11 @@ public:
   }
   virtual void serialize(iarchive & ar, const unsigned int)
   {
-    ar & x & y & width & height & selected & id & type_id;
+   ar & x & y & width & height & selected & id & type_id;
+  }
+
+  virtual void tick()
+  {
   }
 
 private:
@@ -71,7 +75,6 @@ public:
    * A uniq id for the entity type.
    */
   unsigned short type_id;
-
 };
 
 #endif // __ENTITY_HPP__

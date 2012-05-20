@@ -20,10 +20,12 @@
 #ifndef __WORLD_HPP__
 # define __WORLD_HPP__
 
-#include <game/action.hpp>
+#include <world/occupant.hpp>
 #include <world/entity.hpp>
 #include <world/time.hpp>
-#include <world/occupant.hpp>
+#include <game/action.hpp>
+#include <game/event.hpp>
+#include <game/turn_handler.hpp>
 #include <network/command.hpp>
 
 class World
@@ -35,6 +37,16 @@ public:
    * Init the world by reading the Mod files.
    */
   void init();
+  /**
+   * Start the world and it's turn_handler.
+   * Before this method is called, tick() will do nothing.
+   */
+  void start();
+  /**
+   * Advance the world by the smallest step possible. Updates every entity,
+   * timer, occupant, turn_handler etc it contains.
+   */
+  void tick();
   /**
    * returns a pointer to the next entity of the world. If it returns NULL,
    * this means that the list is over and the next call will restart from the
@@ -65,12 +77,19 @@ public:
   void generate_command(const char* name, const std::string& archive);
   Command* get_pending_command();
 
+  void pause();
+  void unpause();
+
   void load_test();
+
+  void install_start_action(Event*, unsigned int);
+
+  void validate_action(const unsigned int id, const unsigned long int by);
 
   /**
    * Called whenever we receive a new_occupant message from the server.
    */
-  void new_occupant_callback(Command* command);
+  void new_occupant_callback(Command*);
   /**
    * Actually instert a occupant in the occupants list.
    */
@@ -78,7 +97,7 @@ public:
   /**
    * Called whenever we receive a occupant_left message from the server.
    */
-  void occupant_left_callback(Command* command);
+  void occupant_left_callback(Command*);
   /**
    * Actually remove the occupant from the occupants list.
    */
@@ -86,8 +105,13 @@ public:
   /**
    * Called when a new unit has to be inserted in the world.
    */
-  void new_entity_callback(Command* command);
+  void new_entity_callback(Command*);
 
+  /**
+   * When we receive the command from the server telling us that
+   * it is ready to start the game.
+   */
+  void handle_start_command(Command*);
   /**
    * All the try_* methods are called ONLY by the server. It checks if the
    * action can be done etc, and it generate actions to be executed on the
@@ -96,9 +120,11 @@ public:
    */
   void try_move(Command*);
 
+  void ok_callback(Command*);
+
   /**
-   * The list of other occupants of the game, when a new client connects to
-   * the server, we had it to the list, when it disconnects we remove it.
+   * the list of other occupants of the game, when a new client connects to
+   * the server, we add it to the list, when it disconnects we remove it.
    * Each occupant object contains an id corresponding to the
    * RemoteGameClient object stored in the server.
    */
@@ -132,6 +158,11 @@ private:
    * something like that.
    */
   std::queue<Command*> commands_queue;
+  /**
+   *
+   */
+  TurnHandler* turn_handler;
+  bool started;
 };
 
 #endif // __WORLD_HPP__

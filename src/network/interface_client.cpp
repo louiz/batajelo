@@ -67,8 +67,15 @@ boost::asio::io_service& InterfaceClient::get_io_service()
   return this->io_service;
 }
 
-void InterfaceClient::poll(void)
+void InterfaceClient::poll(long timeout)
 {
   this->io_service.poll();
+  if (timeout == 0)
+    return ;
+  for (timeout *= 2; timeout > 0; timeout--)
+    {
+      usleep(500);
+      this->io_service.poll();
+    }
 }
 

@@ -15,6 +15,7 @@
 # define __ACTION_HPP__
 
 #include <logging/logging.hpp>
+#include <game/event.hpp>
 
 namespace actions
 {
@@ -29,16 +30,46 @@ namespace actions
     };
 }
 
+typedef boost::function< void(const Event*) > t_action_callback;
+
 class Action
 {
 public:
-  Action();
+  Action(t_action_callback, const Event*, unsigned int);
   ~Action();
   void execute() const;
+  /**
+   * Returns true if the action is validated. This
+   * means that the number of ready_clients is the same
+   * as the validations_needed.
+   */
+  bool is_validated() const;
+  /**
+   * Validate the action for one client (given its id).
+   */
+  void validate(const unsigned long int);
+  unsigned long int get_id() const;
 
 private:
   Action(const Action&);
   Action& operator=(const Action&);
+  /**
+   * The list of the clients' IDs that confirmed this action.
+   * When we want to execute the action, we check that it
+   * has been confirmed by EVERY other client, if not, we pause the game.
+   */
+  std::vector<unsigned long int> ready_clients;
+  /**
+   * The number of validation needed for this action to be totally
+   * validated (and therefore executed).
+   */
+  unsigned int validations_needed;
+
+  /**
+   * The structure passed to the callback when we execute the action.
+   */
+  const Event* event;
+  t_action_callback callback;
 };
 
 #endif // __ACTION_HPP__

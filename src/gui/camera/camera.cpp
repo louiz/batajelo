@@ -45,6 +45,10 @@ void Camera::handle_event(const sf::Event& event)
     {
       this->world->handle_event(actions::Move, event.mouseButton.x, event.mouseButton.y);
     }
+  else if (event.type == sf::Event::KeyPressed && event.key.code == 57)
+    {
+      this->world->start();
+    }
 }
 
 void Camera::update(const Duration& dt)
