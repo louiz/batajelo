@@ -22,3 +22,14 @@ doxygen/Doxyfile
 *.a
 #CMAKE
 CMakeCache.txt
+*.vcxproj
+*.sln
+*.suo
+*.sdf
+*.dir
+output_lib
+Debug
+Win32
+ipch
+CMakeFiles
+bin
