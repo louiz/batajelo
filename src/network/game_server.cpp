@@ -104,7 +104,6 @@ void GameServer::on_client_left(RemoteGameClient* client)
 void GameServer::tick()
 {
   this->world->tick();
-  // this->turn_handler->tick();
 }
 
 void GameServer::pause_game()
@@ -120,4 +119,14 @@ void GameServer::unpause_game()
 void GameServer::start_game()
 {
   this->world->start();
+}
+
+void GameServer::send_pending_commands()
+{
+  Command* command;
+  while ((command = this->world->get_pending_command()))
+    {
+      log_debug("PENDING COMMAND!");
+      this->send_to_all_clients(command);
+    }
 }

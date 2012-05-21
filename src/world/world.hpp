@@ -86,6 +86,7 @@ public:
 
   void validate_action(const unsigned int id, const unsigned long int by);
 
+  void confirm_action(const unsigned long int id);
   /**
    * Called whenever we receive a new_occupant message from the server.
    */
@@ -112,15 +113,15 @@ public:
    * it is ready to start the game.
    */
   void handle_start_command(Command*);
-  /**
-   * All the try_* methods are called ONLY by the server. It checks if the
-   * action can be done etc, and it generate actions to be executed on the
-   * server, and possibly on one or more clients.
-   * (I think they should all be const.)
-   */
-  void try_move(Command*);
+
+  void confirm_initial_turn();
+
+  void move_callback(Command*);
 
   void ok_callback(Command*);
+  void path_callback(Command*);
+  void do_path(Event*);
+  Entity* get_entity_by_id(unsigned short id);
 
   /**
    * the list of other occupants of the game, when a new client connects to

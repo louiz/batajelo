@@ -3,6 +3,7 @@
 
 #include <logging/logging.hpp>
 #include <serialization/serializable.hpp>
+#include <world/path.hpp>
 
 class Camera;
 class World;
@@ -40,9 +41,12 @@ public:
    ar & x & y & width & height & selected & id & type_id;
   }
 
-  virtual void tick()
-  {
-  }
+  virtual void tick();
+  void follow_path();
+  void update_health();
+
+  void set_path(const Path& path);
+  void cancel_path();
 
 private:
   Entity& operator=(const Entity&);
@@ -75,6 +79,13 @@ public:
    * A uniq id for the entity type.
    */
   unsigned short type_id;
+  /**
+   * The path to follow. If it is 0, the entity is not moving.
+   */
+  Path* path;
+
+  unsigned health;
+
 };
 
 #endif // __ENTITY_HPP__

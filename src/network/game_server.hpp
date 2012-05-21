@@ -31,6 +31,7 @@ public:
   void pause_game();
   void unpause_game();
   void start_game();
+  void send_pending_commands();
 
 private:
   GameServer(const GameServer&);

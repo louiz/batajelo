@@ -94,7 +94,6 @@ bool TurnHandler::is_next_turn_validated() const
   if (this->turns.size() < 2)
     // No action is in the next turn, so it's ok to go to it.
     return true;
-
   return this->turns[1].is_validated();
 }
 
@@ -124,4 +123,9 @@ bool TurnHandler::validate_action(const unsigned int id, const unsigned long int
 	}
     }
   return false;
+}
+
+unsigned long TurnHandler::get_current_turn()
+{
+  return this->current_turn;
 }

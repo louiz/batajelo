@@ -28,6 +28,8 @@ int main()
 		      boost::bind(&World::handle_start_command, world, _1));
   c->install_callback("OK",
 		      boost::bind(&World::ok_callback, world, _1));
+  c->install_callback("PATH",
+		      boost::bind(&World::path_callback, world, _1));
 
 
   // c->connect("88.190.23.192", 7879);

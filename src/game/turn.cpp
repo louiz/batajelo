@@ -42,7 +42,6 @@ Action* Turn::get_next_action()
 {
   if (this->actions_iterator == this->actions.end())
     {
-      log_debug("coucou, end");
       this->actions_iterator = this->actions.begin();
       return 0;
     }

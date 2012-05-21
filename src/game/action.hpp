@@ -30,12 +30,12 @@ namespace actions
     };
 }
 
-typedef boost::function< void(const Event*) > t_action_callback;
+typedef boost::function< void(Event*) > t_action_callback;
 
 class Action
 {
 public:
-  Action(t_action_callback, const Event*, unsigned int);
+  Action(t_action_callback, Event*, unsigned int);
   ~Action();
   void execute() const;
   /**
@@ -58,6 +58,7 @@ private:
    * When we want to execute the action, we check that it
    * has been confirmed by EVERY other client, if not, we pause the game.
    */
+public:
   std::vector<unsigned long int> ready_clients;
   /**
    * The number of validation needed for this action to be totally
@@ -68,7 +69,7 @@ private:
   /**
    * The structure passed to the callback when we execute the action.
    */
-  const Event* event;
+  Event* event;
   t_action_callback callback;
 };
 

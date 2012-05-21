@@ -1,6 +1,7 @@
-#include <world/world.hpp>
+#include <boost/bind.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <game/event.hpp>
+#include <world/world.hpp>
 
 World::World():
   started(false)
@@ -49,19 +50,21 @@ void World::handle_event(actions::Type type, unsigned int x, unsigned y)
 	    entity->selected = false;
 	}
     }
-  // else if (type == actions::Move)
-  //   {
-  //     MoveEvent event;
-  //     Entity* entity;
-  //     while ((entity = this->get_next_entity()))
-  // 	{
-  // 	  if (entity->is_selected())
-  // 	    event.actors_ids.push_back(entity->get_id());
-  // 	}
-  //     event.x = x;
-  //     event.y = y;
-  //     this->generate_command("MOVE", event.to_string());
-  //   }
+  else if (type == actions::Move)
+    {
+      MoveEvent event;
+      Entity* entity;
+      while ((entity = this->get_next_entity()))
+  	{
+  	  if (entity->is_selected())
+  	    event.actors_ids.push_back(entity->get_id());
+  	}
+      if (event.actors_ids.size() == 0)
+	return ;
+      event.x = x;
+      event.y = y;
+      this->generate_command("MOVE", event.to_string());
+    }
 }
 
 void World::generate_command(const char* name, const std::string& archive)
@@ -80,12 +83,6 @@ Command* World::get_pending_command()
   Command* command = this->commands_queue.front();
   this->commands_queue.pop();
   return command;
-}
-
-void World::try_move(Command* command)
-{
-  // MoveEvent event;
-  // event.from_string(std::string(command->body, command->body_size));
 }
 
 void World::new_occupant_callback(Command* command)
@@ -135,8 +132,8 @@ void World::remove_occupant(Occupant* occupant)
 
 void World::add_new_occupant(Occupant* occupant)
 {
-  log_debug("Adding no occupant to the world:" << occupant->name << " " << occupant->number);
   this->occupants.push_back(occupant);
+  log_debug("Adding new occupant to the world:" << occupant->name << " " << occupant->number);
 }
 
 void World::new_entity_callback(Command* command)
@@ -185,6 +182,12 @@ void World::tick()
   if (this->started == false)
     return ;
   this->turn_handler->tick();
+  Entity* entity;
+  this->reset_entity_iterator();
+  while ((entity = this->get_next_entity()))
+    {
+      entity->tick();
+    }
 }
 
 void World::start()
@@ -192,6 +195,11 @@ void World::start()
   log_debug("start");
   if (this->started == true)
     return;
+  this->started = true;
+}
+
+void World::confirm_initial_turn()
+{
   Turn* turn = this->turn_handler->get_turn(1);
 
   turn->reset_action_iterator();
@@ -200,7 +208,6 @@ void World::start()
   Event* ok_event;
   while ((action = turn->get_next_action()))
     {
-      log_debug("action!");
       if (action->is_validated() == false)
 	{
 	  ok_event = new Event(action->get_id());
@@ -208,7 +215,6 @@ void World::start()
 	  delete ok_event;
 	}
     }
-  this->started = true;
 }
 
 void World::ok_callback(Command* command)
@@ -217,15 +223,62 @@ void World::ok_callback(Command* command)
   this->validate_action(ok_event.get_id(), ok_event.client_id);
 }
 
+void World::move_callback(Command* command)
+{
+  // TODO, do an actuall path finding, and other stuff, and
+  // generate a PathEvent, instead of a MoveEvent.
+  MoveEvent event(command);
+  PathEvent* path_event = new PathEvent(event);
+  unsigned long current_turn = this->turn_handler->get_current_turn();
+  log_debug("Currently at: " << current_turn);
+  log_debug("move_callback: " << path_event->to_string());
+  path_event->turn = current_turn + 3;
+  this->generate_command("PATH", path_event->to_string());
+  Action* action = new Action(boost::bind(&World::do_path, this, _1), path_event, this->occupants.size());
+  this->turn_handler->insert_action(action, path_event->turn);
+}
+
+void World::path_callback(Command* command)
+{
+  PathEvent* e = new PathEvent(command);
+  log_debug("Must move unit " << e->actors_ids[0] << "to " << e->x << ":" << e->y << " on turn " << e->turn);
+  Action* action = new Action(boost::bind(&World::do_path, this, _1), e, this->occupants.size());
+  this->turn_handler->insert_action(action, e->turn);
+  this->confirm_action(e->get_id());
+}
+
+void World::confirm_action(const unsigned long int id)
+{
+  Event ok_event(id);
+  this->generate_command("OK", ok_event.to_string());
+}
+
+void World::do_path(Event* event)
+{
+  PathEvent* path_event = static_cast<PathEvent*>(event);
+  log_debug("DOING PATH");
+  Path path(path_event->x, path_event->y);
+  unsigned short entity_id = path_event->actors_ids[0];
+  Entity* entity = this->get_entity_by_id(entity_id);
+  entity->set_path(path);
+}
+
 void World::validate_action(const unsigned int id, const unsigned long int by)
 {
   log_debug("Action " << id << " validated by " << by);
   bool ret = this->turn_handler->validate_action(id, by);
 }
 
+Entity* World::get_entity_by_id(unsigned short id)
+{
+  // Should use something like this->entities[id], to optimize.
+  // Entities should be placed directly in a vector, for fast access.
+  Entity* entity;
+  this->reset_entity_iterator();
+  while ((entity = this->get_next_entity()))
+    {
+      if (entity->get_id() == id)
+	return entity;
+    }
 
-
-
-
-
-
+}

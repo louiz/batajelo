@@ -87,7 +87,7 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
       command_name = std::string(c, pos);
       size = atoi(std::string(c+pos+1, bytes_transferred-pos-2).data()); // remove the ending :
     }
-  log_debug(command_name << " . " << size);
+  log_debug("Received : " << command_name << " . " << size);
   Command* command = new Command;
   command->set_name(command_name);
 
@@ -152,6 +152,7 @@ void CommandHandler::send(Command* command, boost::function< void(void) > on_sen
 {
   if (on_sent)
     command->callback = on_sent;
+  log_debug("Sending command: " << command->get_name());
   this->commands_to_send.push_front(command);
   this->check_commands_to_send();
 }

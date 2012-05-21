@@ -31,6 +31,7 @@ int main()
 	{
 	  s.tick();
 	}
+      s.send_pending_commands();
       s.poll(10);
     }
   return 0;

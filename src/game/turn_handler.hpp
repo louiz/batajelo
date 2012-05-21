@@ -61,6 +61,11 @@ public:
    */
   bool validate_action(const unsigned int id, const unsigned long int by);
 
+  /**
+   * Returns the turn we are currently at.
+   */
+  unsigned long get_current_turn();
+
 private:
   TurnHandler(const TurnHandler&);
   TurnHandler& operator=(const TurnHandler&);

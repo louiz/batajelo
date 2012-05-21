@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_SUITE(turn_handler_suite1)
 
 static int global_a = 0;
 
-void coucou(const Event* event)
+void coucou(Event* event)
 {
   (void)event;
   global_a++;

@@ -14,6 +14,11 @@ Camera::~Camera()
 
 void Camera::draw(sf::RenderWindow* win)
 {
+  sf::Vector2<float> size(300, 300);
+  sf::RectangleShape rectangle(size);
+  rectangle.setPosition(50, 50);
+  rectangle.setFillColor(sf::Color::Green);
+  win->draw(rectangle);
   Entity* entity;
   while ((entity = this->world->get_next_entity()))
     {
@@ -33,6 +38,11 @@ void Camera::draw_entity(sf::RenderWindow* win, const Entity* entity)
   circle.setOutlineThickness(5);
   circle.setPosition(entity->x, entity->y);
   win->draw(circle);
+  std::ostringstream os;
+  os << entity->health;
+  sf::Text health_text(os.str());
+  health_text.setPosition(entity->x - 5, entity->y - 40);
+  win->draw(health_text);
 }
 
 void Camera::handle_event(const sf::Event& event)
@@ -47,6 +57,7 @@ void Camera::handle_event(const sf::Event& event)
     }
   else if (event.type == sf::Event::KeyPressed && event.key.code == 57)
     {
+      this->world->confirm_initial_turn();
       this->world->start();
     }
 }

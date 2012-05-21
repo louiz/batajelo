@@ -49,7 +49,6 @@ void InterfaceClient::connect_handler(boost::function< void(void) > on_success,
       this->install_read_handler();
       if (on_success)
 	on_success();
-      
     }
 }
 

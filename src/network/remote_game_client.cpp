@@ -24,6 +24,7 @@ void RemoteGameClient::install_callbacks()
   World* world = static_cast<GameServer*>(this->server)->get_world();
 
   this->install_callback("OK", boost::bind(&RemoteGameClient::ok_callback, this, _1));
+  this->install_callback("MOVE", boost::bind(&World::move_callback, world, _1));
   // this->install_callback("MOVE", boost::bind(&World::try_move, world, _1));
 }
 

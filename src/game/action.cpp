@@ -1,6 +1,6 @@
 #include <game/action.hpp>
 
-Action::Action(t_action_callback callback, const Event* event, unsigned int validations_needed):
+Action::Action(t_action_callback callback, Event* event, unsigned int validations_needed):
   validations_needed(validations_needed),
   event(event),
   callback(callback)
@@ -23,6 +23,7 @@ bool Action::is_validated() const
 {
   assert(this->ready_clients.size() <= this->validations_needed);
 
+  // log_debug("Action::is_validated(). Validation needed: " << this->validations_needed << ". Validation done: " << this->ready_clients.size());
   if (this->ready_clients.size() == this->validations_needed)
     return true;
   return false;
