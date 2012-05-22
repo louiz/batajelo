@@ -48,8 +48,8 @@ void GameServer::on_new_client(RemoteGameClient* new_client)
   // Only for tests, TODO: remove that.
   Entity* new_entity = this->world->create_entity(0);
   command = new Command();
-  new_entity->y = rand() % 200;
-  new_entity->x = rand() % 200;
+  new_entity->y = rand() % 200 + 450;
+  new_entity->x = rand() % 200 + 450;
 
   command->set_name("NEW_ENTITY");
   command->set_body(new_entity->to_string().c_str());
