@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(serialization_test1)
   MyBase b;
   a.y = 11;
   a.x = 22;
-  b.from_string(a.to_string());
+  BOOST_REQUIRE(b.from_string(a.to_string()) == true);
   BOOST_REQUIRE(a.y == b.y);
   BOOST_REQUIRE(a.x == b.x);
 }
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(serialization_test2)
   c.x = 33;
   c.y = 44;
   c.a = 55;
-  a.from_string(c.to_string());
+  BOOST_REQUIRE(a.from_string(c.to_string()) == true);
   BOOST_REQUIRE(a.y == c.y);
   BOOST_REQUIRE(a.x == c.x);
 }
@@ -76,6 +76,12 @@ BOOST_AUTO_TEST_CASE(serialization_test3)
   BOOST_REQUIRE(a.y == c.y);
   BOOST_REQUIRE(a.x == c.x);
   BOOST_REQUIRE(a.a == c.a);
+}
+
+BOOST_AUTO_TEST_CASE(serialization_test4)
+{
+  MyBase a;
+  BOOST_REQUIRE(false == a.from_string("un anus"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -27,11 +27,15 @@ public:
     archive << *this;
     return oss.str();
   }
-  void from_string(const std::string& data)
+  bool from_string(const std::string& data)
   {
     std::istringstream iss(data);
     iarchive archive(iss, boost::archive::no_header);
-    archive >> *this;
+    try
+      archive >> *this;
+    catch (const std::exception& e)
+      return false;
+    return true;
   }
 
   virtual void serialize(oarchive & ar, const unsigned int) = 0;
