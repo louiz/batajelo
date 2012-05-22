@@ -35,7 +35,13 @@ boost::asio::io_service& RemoteGameClient::get_io_service()
 
 void RemoteGameClient::ok_callback(Command* command)
 {
+  // todo replace that Event struct by just an int.
   Event ok_event(command);
+  if (ok_event.is_valid() == false)
+    {
+      log_warning("Invalid data for OK command");
+      return ;
+    }
   World* world = static_cast<GameServer*>(this->server)->get_world();
 
   this->send_ok(ok_event.get_id(), this->get_number());

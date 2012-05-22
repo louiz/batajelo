@@ -36,11 +36,16 @@ public:
   {
     return this->id;
   }
+  bool is_valid() const
+  {
+    return this->valid;
+  }
 
 private:
   Event(const Event&);
   Event& operator=(const Event&);
 
+  bool valid;
   unsigned long int id;
 };
 
