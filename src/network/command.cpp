@@ -41,7 +41,17 @@ void Command::set_body_size(int size)
 
 void Command::pack()
 {
+  assert(this->name.size() > 0);
+
   std::ostringstream slength;
   slength << this->body_size;
-  this->header = std::string(this->name) + "." + slength.str() + ":";
+  // . separator is ommited if name is 1 char long or body size is 0
+  if ((this->name.size() == 1) || (this->body_size == 0))
+    this->header = std::string(this->name);
+  else
+    this->header = std::string(this->name) + ".";
+  if (this->body_size > 0) // body size is ommited if it's 0
+    this->header += slength.str() + ":";
+  else
+    this->header += ":";
 }
