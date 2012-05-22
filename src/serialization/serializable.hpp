@@ -32,9 +32,13 @@ public:
     std::istringstream iss(data);
     iarchive archive(iss, boost::archive::no_header);
     try
-      archive >> *this;
+      {
+	archive >> *this;
+      }
     catch (const std::exception& e)
-      return false;
+      {
+	return false;
+      }
     return true;
   }
 
