@@ -225,7 +225,7 @@ void World::confirm_initial_turn()
   Event* ok_event;
   while ((action = turn->get_next_action()))
     {
-      if (action->is_validated() == false)
+      if (action->is_completely_validated() == false)
 	{
 	  ok_event = new Event(action->get_id());
 	  this->generate_command("OK", ok_event->to_string());

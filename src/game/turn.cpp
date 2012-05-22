@@ -32,7 +32,7 @@ bool Turn::is_validated() const
   std::vector<Action*>::const_iterator it;
   for (it = this->actions.begin(); it < this->actions.end(); ++it)
     {
-      if ((*it)->is_validated() == false)
+      if ((*it)->is_completely_validated() == false)
   	return false;
     }
   return true;

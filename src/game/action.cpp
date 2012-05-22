@@ -1,7 +1,10 @@
 #include <game/action.hpp>
 
-Action::Action(t_action_callback callback, Event* event, unsigned int validations_needed):
+Action::Action(t_action_callback callback,
+	       Event* event,
+	       unsigned int validations_needed):
   validations_needed(validations_needed),
+  completely_validated(false),
   event(event),
   callback(callback)
 {
@@ -23,7 +26,6 @@ bool Action::is_validated() const
 {
   assert(this->ready_clients.size() <= this->validations_needed);
 
-  // log_debug("Action::is_validated(). Validation needed: " << this->validations_needed << ". Validation done: " << this->ready_clients.size());
   if (this->ready_clients.size() == this->validations_needed)
     return true;
   return false;
@@ -37,9 +39,22 @@ void Action::validate(const unsigned long int id)
     assert((*it) != id);
   // end debug.
   this->ready_clients.push_back(id);
+  if (this->is_validated() == true)
+    this->validate_completely();
 }
 
 unsigned long int Action::get_id() const
 {
   return this->event->get_id();
+}
+
+void Action::validate_completely()
+{
+  assert(this->completely_validated == false);
+  this->completely_validated = true;
+}
+
+bool Action::is_completely_validated() const
+{
+  return this->completely_validated;
 }
