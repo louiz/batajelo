@@ -84,7 +84,8 @@ public:
 
   void install_start_action(Event*, unsigned int);
 
-  void validate_action(const unsigned int id, const unsigned long int by);
+  bool validate_action(const unsigned int id, const unsigned long int by);
+  void completely_validate_action(const unsigned int id);
 
   void confirm_action(const unsigned long int id);
   /**

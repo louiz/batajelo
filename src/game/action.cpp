@@ -24,6 +24,7 @@ void Action::execute() const
 
 bool Action::is_validated() const
 {
+  log_debug("Action::is_validated(). Validation needed: " << this->validations_needed << ". Validation done: " << this->ready_clients.size());
   assert(this->ready_clients.size() <= this->validations_needed);
 
   if (this->ready_clients.size() == this->validations_needed)
@@ -31,7 +32,7 @@ bool Action::is_validated() const
   return false;
 }
 
-void Action::validate(const unsigned long int id)
+bool Action::validate(const unsigned long int id)
 {
   // debug:
   std::vector<unsigned long int>::const_iterator it;
@@ -40,7 +41,11 @@ void Action::validate(const unsigned long int id)
   // end debug.
   this->ready_clients.push_back(id);
   if (this->is_validated() == true)
-    this->validate_completely();
+    {
+      this->validate_completely();
+      return true;
+    }
+  return false;
 }
 
 unsigned long int Action::get_id() const
@@ -50,6 +55,7 @@ unsigned long int Action::get_id() const
 
 void Action::validate_completely()
 {
+  log_debug("Action becomes completely_validated: " << this->get_id());
   assert(this->completely_validated == false);
   this->completely_validated = true;
 }

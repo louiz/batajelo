@@ -44,8 +44,8 @@ void RemoteGameClient::ok_callback(Command* command)
     }
   World* world = static_cast<GameServer*>(this->server)->get_world();
 
-  this->send_ok(ok_event.get_id(), this->get_number());
-  world->validate_action(ok_event.get_id(), this->get_number());
+  if (world->validate_action(ok_event.get_id(), this->get_number()) == true)
+    this->send_ok(ok_event.get_id(), this->get_number());
 }
 
 void RemoteGameClient::send_ok(const unsigned int id, const unsigned long int by)

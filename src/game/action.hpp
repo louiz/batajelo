@@ -40,8 +40,10 @@ public:
   void execute() const;
   /**
    * Validate the action for one client (given its id).
+   * Returns true if the action becomes completely validated, false
+   * otherwise.
    */
-  void validate(const unsigned long int);
+  bool validate(const unsigned long int);
   /**
    * Validate completely the action. Just turns the completed boolean
    * to true.

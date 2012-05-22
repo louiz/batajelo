@@ -242,7 +242,7 @@ void World::ok_callback(Command* command)
       log_warning("Invalid data for OK command");
       return ;
     }
-  this->validate_action(ok_event.get_id(), ok_event.client_id);
+  this->completely_validate_action(ok_event.get_id());
 }
 
 void World::move_callback(Command* command)
@@ -295,10 +295,16 @@ void World::do_path(Event* event)
   entity->set_path(path);
 }
 
-void World::validate_action(const unsigned int id, const unsigned long int by)
+bool World::validate_action(const unsigned int id, const unsigned long int by)
 {
   log_debug("Action " << id << " validated by " << by);
-  bool ret = this->turn_handler->validate_action(id, by);
+  return this->turn_handler->validate_action(id, by);
+}
+
+void World::completely_validate_action(const unsigned int id)
+{
+  log_debug("Action " << id << " completely validated.");
+  return this->turn_handler->completely_validate_action(id);
 }
 
 Entity* World::get_entity_by_id(unsigned short id)

@@ -117,13 +117,32 @@ bool TurnHandler::validate_action(const unsigned int id, const unsigned long int
 	{
 	  if (action->get_id() == id)
 	    {
-	      action->validate(by);
-	      return true;
+	      return action->validate(by);
 	    }
 	}
     }
+  // Action was not found, so it did'nt became completely validated
   return false;
 }
+
+void TurnHandler::completely_validate_action(const unsigned int id)
+{
+  std::deque<Turn>::iterator it;
+  Action* action;
+
+  for (it = this->turns.begin(); it < this->turns.end(); ++it)
+    {
+      (*it).reset_action_iterator();
+      while ((action = (*it).get_next_action()) != 0)
+	{
+	  if (action->get_id() == id)
+	    {
+	      action->validate_completely();
+	    }
+	}
+    }
+}
+
 
 unsigned long TurnHandler::get_current_turn()
 {

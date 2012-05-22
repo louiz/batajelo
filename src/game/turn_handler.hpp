@@ -57,9 +57,10 @@ public:
   Turn* get_turn(const unsigned int);
   /**
    * Search the action by its id, and validate it.
-   * Returns false if the action is not found.
+   * Returns true if the action becomes completely validated, false otherwise.
    */
   bool validate_action(const unsigned int id, const unsigned long int by);
+  void completely_validate_action(const unsigned int id);
 
   /**
    * Returns the turn we are currently at.
