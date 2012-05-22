@@ -58,8 +58,8 @@ public:
    * it will set the header correctly, using the body size etc.
    */
   void pack();
-  void set_name(const std::string);
-  std::string get_name() { return this->name; }
+  void set_name(char name);
+  char get_name() { return this->name; }
   /**
    * Use this member to manually set the body. For example you can pass it to
    * a ostream::get() method after having manually new[]ed it. This avoid
@@ -67,7 +67,7 @@ public:
    */
   char* body;
   std::string header;
-  std::string name;
+  char name;
   size_t body_size;
   /**
    * If not 0, will be called from the send_handler.

@@ -10,43 +10,43 @@ CommandHandler::~CommandHandler()
 {
 }
 
-void CommandHandler::install_callback(const std::string& command,
+void CommandHandler::install_callback(const char name,
 				      t_read_callback callback)
 {
-  log_debug("installing callback for command " << command);
-  this->callbacks[command] = callback;
+  log_debug("installing callback for command " << name);
+  this->callbacks[name] = callback;
 }
 
-void CommandHandler::install_callback_once(const std::string& command,
+void CommandHandler::install_callback_once(const char name,
 				      t_read_callback callback)
 {
-  log_debug("installing ONCE callback for command " << command);
-  this->callbacks_once[command] = callback;
+  log_debug("installing ONCE callback for command " << name);
+  this->callbacks_once[name] = callback;
 }
 
-void CommandHandler::remove_callback(const std::string& command)
+void CommandHandler::remove_callback(const char name)
 {
-  std::map<const std::string, t_read_callback >::iterator it;
+  std::map<const char, t_read_callback >::iterator it;
 
-  it = this->callbacks.find(command);
+  it = this->callbacks.find(name);
   if (it != this->callbacks.end())
     this->callbacks.erase(it);
   else
-    log_warning("Could not remove callback: " << command);
+    log_warning("Could not remove callback: " << name);
 }
 
-t_read_callback CommandHandler::get_callback(const std::string& command)
+t_read_callback CommandHandler::get_callback(const char name)
 {
   std::map<const std::string, t_read_callback >::iterator it;
 
-  it = this->callbacks.find(command);
+  it = this->callbacks.find(name);
   if (it != this->callbacks.end())
     return it->second;
 
-  it = this->callbacks_once.find(command);
+  it = this->callbacks_once.find(name);
   if (it != this->callbacks_once.end())
     {
-      log_debug("Removing callback for command " << command);
+      log_debug("Removing callback for command " << name);
       t_read_callback callback = it->second;
       this->callbacks_once.erase(it);
       return callback;
@@ -58,36 +58,30 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
 {
   log_debug("read_handler, size: " << bytes_transferred << " bytes.");
   if (error)
-    log_debug("Read error: " << error);
-  if (error)
     {
+      log_info("Read error: " << error);
       // TODO check more precisely for errors
       this->on_connection_closed();
       return;
+    }
+  if (bytes_transferred <= 1)
+    {
+      log_warning("read_handler: data received is too short to contain a command name and a size. Ignoring");
+      return ;
     }
   // Extract the needed data from the buffer
   char *c = new char[bytes_transferred+1];
   this->data.sgetn(c, bytes_transferred);
 
   c[bytes_transferred] = 0;
-  // find the . separator
-  size_t pos = 0;
-  while (c[pos] && c[pos] != '.')
-    pos++;
 
-  std::string command_name;
-  std::size_t size;
-  if (pos == bytes_transferred)
-    {  // no . was found
-      command_name = std::string(c, pos-1);
-      size = 0;
-    }
-  else
-    {
-      command_name = std::string(c, pos);
-      size = atoi(std::string(c+pos+1, bytes_transferred-pos-2).data()); // remove the ending :
-    }
-  log_debug("Received : " << command_name << " . " << size);
+  char command_name = c[0];
+  // remove the ending : and the first char, to get the size argument.
+  // If the data for the size is empty or invalid (not a number), atoi
+  // returns 0, and that's how much we want to read in that case.
+  std::size_t size = atoi(std::string(c+1, bytes_transferred-2).data());
+
+  log_debug("Received command: " << command_name << size);
   Command* command = new Command;
   command->set_name(command_name);
 
@@ -140,9 +134,9 @@ void CommandHandler::install_read_handler(void)
 					    boost::asio::placeholders::bytes_transferred));
 }
 
-void CommandHandler::request_answer(Command* command, t_read_callback on_answer, std::string name)
+void CommandHandler::request_answer(Command* command, t_read_callback on_answer, char name)
 {
-  if (name.size() == 0)
+  if (name == '\0')
     name = command->get_name();
   this->install_callback_once(name, on_answer);
   this->send(command);
@@ -187,15 +181,13 @@ void CommandHandler::send_handler(const boost::system::error_code& error,
 				  Command* command)
 {
   this->writing = false;
+  // TODO, actually just disconnect in these cases.
   assert(bytes_transferred == command->header.length() + command->body_size);
+  assert(!error);
 
   if (command->callback)
     command->callback();
   delete command;
-
-  // TODO check for error
-  if (error)
-    exit(1);
 
   this->check_commands_to_send();
 }
