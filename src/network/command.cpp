@@ -45,8 +45,8 @@ void Command::pack()
 
   std::ostringstream slength;
   slength << this->body_size;
-  // . separator is ommited if name is 1 char long or body size is 0
-  if ((this->name.size() == 1) || (this->body_size == 0))
+  // . separator is ommited if name is 1 char long
+  if ((this->name.size() == 1))
     this->header = std::string(this->name);
   else
     this->header = std::string(this->name) + ".";

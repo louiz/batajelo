@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(command_consistency_test3)
   command->set_name("GUGU");
   command->pack();
 
-  BOOST_REQUIRE(command->header == std::string("GUGU:"));
+  BOOST_REQUIRE(command->header == std::string("GUGU.:"));
   BOOST_REQUIRE(command->body_size == 0);
   BOOST_REQUIRE(strncmp(command->body, "", 0) == 0);
 
