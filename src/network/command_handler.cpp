@@ -58,18 +58,22 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
 {
   log_debug("read_handler, size: " << bytes_transferred << " bytes.");
   if (error)
-    log_debug("Read error: " << error);
-  if (error)
     {
-      // TODO check more precisely for errors
+      log_debug("Read error: " << error);
       this->on_connection_closed();
       return;
     }
+  if (bytes_transferred <= 1)
+    {
+      log_warning("Not enough data received for a command header to be valid.");
+      return ;
+    }
+
   // Extract the needed data from the buffer
   char *c = new char[bytes_transferred+1];
   this->data.sgetn(c, bytes_transferred);
-
   c[bytes_transferred] = 0;
+
   // find the . separator
   size_t pos = 0;
   while (c[pos] && c[pos] != '.')
@@ -78,9 +82,9 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
   std::string command_name;
   std::size_t size;
   if (pos == bytes_transferred)
-    {  // no . was found
-      command_name = std::string(c, pos-1);
-      size = 0;
+    {  // no '.' was found, the command name is assumed to 1 char long.
+      command_name = std::string(1, c[0]);
+      size = atoi(std::string(c+1, bytes_transferred-2).data());;
     }
   else
     {
