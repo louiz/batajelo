@@ -312,5 +312,5 @@ Entity* World::get_entity_by_id(unsigned short id)
       if (entity->get_id() == id)
 	return entity;
     }
-
+  return 0;
 }

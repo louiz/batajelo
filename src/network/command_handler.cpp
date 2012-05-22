@@ -18,7 +18,7 @@ void CommandHandler::install_callback(const std::string& command,
 }
 
 void CommandHandler::install_callback_once(const std::string& command,
-				      t_read_callback callback)
+					   t_read_callback callback)
 {
   log_debug("installing ONCE callback for command " << command);
   this->callbacks_once[command] = callback;
