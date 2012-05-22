@@ -29,7 +29,7 @@ void Command::set_body(const char* body, int size)
   this->set_body_size(size);
 }
 
-void Command::set_name(char name)
+void Command::set_name(const std::string name)
 {
   this->name = name;
 }
@@ -43,5 +43,5 @@ void Command::pack()
 {
   std::ostringstream slength;
   slength << this->body_size;
-  this->header = std::string(1, this->name) + slength.str() + ":";
+  this->header = std::string(this->name) + "." + slength.str() + ":";
 }

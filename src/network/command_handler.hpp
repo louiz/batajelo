@@ -36,8 +36,8 @@ public:
   void install_read_handler();
   /**
    * called when there's something to read on the socket. Reads the command
-   * name, the size of the arguments, and then calls binary_read_handler to
-   * read the arguments of the commad, if any.
+   * the size of the arguments, and then calls binary_read_handler to read
+   * the arguments of the commad, if any.
    */
   void read_handler(const boost::system::error_code& error, const std::size_t bytes_transferred);
   /**
@@ -49,23 +49,23 @@ public:
    * Sends a command, and use install_callback_once to wait for the answer
    * and call that callback to handle it.
    */
-  void request_answer(Command*, t_read_callback on_answer, char name = '\0');
+  void request_answer(Command*, t_read_callback on_answer, std::string name = "");
   /**
    * Install a new callback associated with a command. This callback will
    * be called upon receiving that command.
    */
-  void install_callback(const char, t_read_callback);
+  void install_callback(const std::string&, t_read_callback);
   /**
    * Install a new callback associated with a command. This callback will
    * be called upon receiving that command, but only once. This is used
    * for example if you send a command waiting for and answer, you install
    * a callback that will handle that answer, and only this one.
    */
-  void install_callback_once(const char, t_read_callback);
+  void install_callback_once(const std::string&, t_read_callback);
   /**
    * Remove a callback that has been installed.
    */
-  void remove_callback(const char);
+  void remove_callback(const std::string&);
   /**
    * Add the given command to the commands_to_send queue, then
    * calls check_commands_to_send. Which may send the next available
@@ -80,7 +80,7 @@ protected:
    * Returns 0 if nothing was found, in that case the execution of the
    * return value cause a failure.
    */
-  t_read_callback get_callback(const char);
+  t_read_callback get_callback(const std::string&);
   /**
    * @todo Check if the data was correctly sent on the socket
    */
@@ -111,8 +111,8 @@ private:
   CommandHandler(const CommandHandler&);
   CommandHandler& operator=(const CommandHandler&);
 
-  std::map<const char, t_read_callback > callbacks;
-  std::map<const char, t_read_callback > callbacks_once;
+  std::map<const std::string, t_read_callback > callbacks;
+  std::map<const std::string, t_read_callback > callbacks_once;
   /**
    * A queue of messages. If there's not async_write running, we pop one
    * from it and we send it.
