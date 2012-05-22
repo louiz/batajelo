@@ -45,8 +45,9 @@ private:
   Event(const Event&);
   Event& operator=(const Event&);
 
-  bool valid;
+protected:
   unsigned long int id;
+  bool valid;
 };
 
 /**
