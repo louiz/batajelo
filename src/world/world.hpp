@@ -77,6 +77,9 @@ public:
   void generate_command(const char* name, const std::string& archive);
   Command* get_pending_command();
 
+  void set_next_turn_callback(t_next_turn_callback);
+  void on_next_turn(unsigned long turn);
+
   void pause();
   void unpause();
 
@@ -86,6 +89,8 @@ public:
 
   bool validate_action(const unsigned int id, const unsigned long int by);
   void completely_validate_action(const unsigned int id);
+  bool validate_turn(const unsigned int id, const unsigned long int by);
+  void validate_turn_completely(const unsigned int number);
 
   void confirm_action(const unsigned long int id);
   /**
@@ -120,10 +125,18 @@ public:
   void move_callback(Command*);
 
   void ok_callback(Command*);
+  void turn_callback(Command*);
   void path_callback(Command*);
   void do_path(Event*);
   Entity* get_entity_by_id(unsigned short id);
-
+  /**
+   * Sends a command to the server saying that we are ready for that turn.
+   */
+  void confirm_turn(const unsigned int);
+  /**
+   * Sends a command to the server saying that we confirm that action.
+   */
+  void confirm_action(const unsigned int);
   /**
    * the list of other occupants of the game, when a new client connects to
    * the server, we add it to the list, when it disconnects we remove it.

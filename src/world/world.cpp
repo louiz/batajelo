@@ -27,6 +27,12 @@ Entity* World::get_next_entity()
   return entity;
 }
 
+void World::set_next_turn_callback(t_next_turn_callback callback)
+{
+  log_debug("set_next_turn_callback");
+  this->turn_handler->set_next_turn_callback(callback);
+}
+
 void World::reset_entity_iterator()
 {
   this->entities_iterator = this->entities.begin();
@@ -217,21 +223,35 @@ void World::start()
 
 void World::confirm_initial_turn()
 {
+  // Validate the turn itself.
+  this->confirm_turn(1);
+  // and the next
+  this->confirm_turn(2);
+
+  // Then, validate all the actions of the turn.
   Turn* turn = this->turn_handler->get_turn(1);
 
   turn->reset_action_iterator();
   Action* action;
 
-  Event* ok_event;
   while ((action = turn->get_next_action()))
     {
       if (action->is_completely_validated() == false)
-	{
-	  ok_event = new Event(action->get_id());
-	  this->generate_command("OK", ok_event->to_string());
-	  delete ok_event;
-	}
+	this->confirm_action(action->get_id());
     }
+}
+
+void World::confirm_action(const unsigned int id)
+{
+  Event ok_event(id);
+  this->generate_command("OK", ok_event.to_string());
+}
+
+void World::confirm_turn(const unsigned int number)
+{
+  std::ostringstream os;
+  os << number;
+  this->generate_command("T", os.str());
 }
 
 void World::ok_callback(Command* command)
@@ -243,6 +263,14 @@ void World::ok_callback(Command* command)
       return ;
     }
   this->completely_validate_action(ok_event.get_id());
+}
+
+void World::turn_callback(Command* command)
+{
+  std::istringstream is(std::string(command->body, command->body_size));
+  unsigned int number;
+  is >> number;
+  this->validate_turn_completely(number);
 }
 
 void World::move_callback(Command* command)
@@ -288,7 +316,6 @@ void World::confirm_action(const unsigned long int id)
 void World::do_path(Event* event)
 {
   PathEvent* path_event = static_cast<PathEvent*>(event);
-  log_debug("DOING PATH");
   Path path(path_event->x, path_event->y);
   unsigned short entity_id = path_event->actors_ids[0];
   Entity* entity = this->get_entity_by_id(entity_id);
@@ -320,3 +347,25 @@ Entity* World::get_entity_by_id(unsigned short id)
     }
   return 0;
 }
+
+void World::on_next_turn(unsigned long turn)
+{
+  this->confirm_turn(turn+2);
+}
+
+bool World::validate_turn(const unsigned int id, const unsigned long int by)
+{
+  return this->turn_handler->validate_turn(id, by, this->occupants.size());
+}
+
+void World::validate_turn_completely(const unsigned int number)
+{
+  this->turn_handler->completely_validate_turn(number);
+}
+
+
+
+
+
+
+

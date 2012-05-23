@@ -3,7 +3,16 @@
 TurnHandler::TurnHandler():
   current_turn(0),
   turn_advancement(0),
-  paused(true)
+  paused(true),
+  next_turn_callback(0)
+{
+}
+
+TurnHandler::TurnHandler(t_next_turn_callback next_turn_callback):
+  current_turn(0),
+  turn_advancement(0),
+  paused(true),
+  next_turn_callback(next_turn_callback)
 {
 }
 
@@ -44,6 +53,8 @@ void TurnHandler::tick()
 void TurnHandler::next_turn()
 {
   this->current_turn++;
+  if (this->next_turn_callback != 0)
+    this->next_turn_callback(this->current_turn);
   log_debug("current turn: " << this->current_turn);
   // if the deque is empty, no action has to be taken.
   if (this->turns.empty())
@@ -56,12 +67,13 @@ void TurnHandler::next_turn()
   this->turns[0].execute();
 }
 
-bool TurnHandler::insert_action(Action* action, const unsigned long turn)
+bool TurnHandler::insert_turn(const unsigned long turn)
 {
-  if (turn <= this->current_turn)
+  if (turn < this->current_turn)
     {
       log_error("Tried to insert an action in a turn already passed: " << turn << " <= " << this->current_turn);
-      delete action;
+      // Should not happen.
+      assert(false);
       return false;
     }
   if (this->turns.size() < turn - this->current_turn + 1)
@@ -69,6 +81,16 @@ bool TurnHandler::insert_action(Action* action, const unsigned long turn)
       Turn dummy;
       log_debug("Resizing to " << turn - this->current_turn + 1);
       this->turns.resize(turn - this->current_turn + 1, dummy);
+    }
+  return true;
+}
+
+bool TurnHandler::insert_action(Action* action, const unsigned long turn)
+{
+  if (this->insert_turn(turn) == false)
+    {
+      delete action;
+      return false ;
     }
   log_debug("Inserting  into " << turn - this->current_turn);
   this->turns[turn - this->current_turn].insert(action);
@@ -92,8 +114,8 @@ void TurnHandler::unpause()
 bool TurnHandler::is_next_turn_validated() const
 {
   if (this->turns.size() < 2)
-    // No action is in the next turn, so it's ok to go to it.
-    return true;
+    // There's no futur turn, it can't possibly be validated yet
+    return false;
   return this->turns[1].is_validated();
 }
 
@@ -143,8 +165,35 @@ void TurnHandler::completely_validate_action(const unsigned int id)
     }
 }
 
+bool TurnHandler::validate_turn(const unsigned int number,
+				const unsigned long int by,
+				const unsigned int confirmations_needed)
+{
+  if (this->insert_turn(number) == false)
+    {
+      // should not happen
+      assert(false);
+      return false;
+    }
+  Turn* turn = this->get_turn(number);
+  assert(turn != 0);
+  return turn->validate(by, confirmations_needed);
+}
 
 unsigned long TurnHandler::get_current_turn()
 {
   return this->current_turn;
+}
+
+void TurnHandler::set_next_turn_callback(t_next_turn_callback callback)
+{
+  this->next_turn_callback = callback;
+}
+
+void TurnHandler::completely_validate_turn(const unsigned int number)
+{
+  this->insert_turn(number);
+  Turn* turn = this->get_turn(number);
+  assert(turn != 0);
+  return turn->validate_completely();
 }

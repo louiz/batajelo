@@ -1,5 +1,10 @@
 #include <game/turn.hpp>
 
+Turn::Turn():
+  validated(false)
+{
+}
+
 Turn::~Turn()
 {
   std::vector<Action*>::iterator action_it;
@@ -35,7 +40,9 @@ bool Turn::is_validated() const
       if ((*it)->is_completely_validated() == false)
   	return false;
     }
-  return true;
+  if (this->validated == true)
+    return true;
+  return false;
 }
 
 Action* Turn::get_next_action()
@@ -53,4 +60,22 @@ Action* Turn::get_next_action()
 void Turn::reset_action_iterator()
 {
   this->actions_iterator = this->actions.begin();
+}
+
+bool Turn::validate(const unsigned long int by,
+			   const unsigned int confirmations_needed)
+{
+  this->ready_clients.push_back(by);
+  assert(this->ready_clients.size() <= confirmations_needed);
+  if (this->ready_clients.size() == confirmations_needed)
+    {
+      this->validate_completely();
+      return true;
+    }
+  return false;
+}
+
+void Turn::validate_completely()
+{
+  this->validated = true;
 }

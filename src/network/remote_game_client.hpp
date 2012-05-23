@@ -34,7 +34,9 @@ private:
    */
   virtual void install_callbacks();
   void ok_callback(Command* command);
+  void turn_callback(Command* command);
   void send_ok(const unsigned int id, const unsigned long int by);
+  void send_turn(const unsigned int id, const unsigned long int by);
   /**
    * A pointer to the server, to call its method when the RemoteGameClient
    * has to be deleted.

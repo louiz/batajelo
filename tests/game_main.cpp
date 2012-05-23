@@ -12,6 +12,7 @@ int main()
 {
   GameClient* c = new GameClient();
   World* world = new World;
+  world->set_next_turn_callback(boost::bind(&World::on_next_turn, world, _1));
   Camera* camera = new Camera(world);
   TurnHandler* turn_handler = new TurnHandler;
 
@@ -28,6 +29,8 @@ int main()
 		      boost::bind(&World::handle_start_command, world, _1));
   c->install_callback("OK",
 		      boost::bind(&World::ok_callback, world, _1));
+  c->install_callback("T",
+		      boost::bind(&World::turn_callback, world, _1));
   c->install_callback("PATH",
 		      boost::bind(&World::path_callback, world, _1));
 
