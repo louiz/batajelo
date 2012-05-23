@@ -205,6 +205,8 @@ void World::tick()
   if (this->started == false)
     return ;
   this->turn_handler->tick();
+  if (this->turn_handler->is_paused() == true)
+    return ;
   Entity* entity;
   this->reset_entity_iterator();
   while ((entity = this->get_next_entity()))

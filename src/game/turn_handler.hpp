@@ -83,6 +83,7 @@ public:
   void completely_validate_turn(const unsigned int id);
   void set_next_turn_callback(t_next_turn_callback callback);
 
+  bool is_paused() const;
   /**
    * Returns the turn we are currently at.
    */

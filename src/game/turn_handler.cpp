@@ -197,3 +197,8 @@ void TurnHandler::completely_validate_turn(const unsigned int number)
   assert(turn != 0);
   return turn->validate_completely();
 }
+
+bool TurnHandler::is_paused() const
+{
+  return this->paused;
+}
