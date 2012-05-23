@@ -352,7 +352,7 @@ Entity* World::get_entity_by_id(unsigned short id)
 
 void World::on_next_turn(unsigned long turn)
 {
-  this->confirm_turn(turn+2);
+  this->confirm_turn(turn+1);
 }
 
 bool World::validate_turn(const unsigned int id, const unsigned long int by)
@@ -364,10 +364,3 @@ void World::validate_turn_completely(const unsigned int number)
 {
   this->turn_handler->completely_validate_turn(number);
 }
-
-
-
-
-
-
-

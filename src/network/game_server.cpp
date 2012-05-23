@@ -55,6 +55,7 @@ void GameServer::on_new_client(RemoteGameClient* new_client)
   command->set_body(new_entity->to_string().c_str());
   log_debug(new_entity->to_string());
   this->send_to_all_clients(command);
+  this->world->reset_entity_iterator();
   Entity* entity;
   while ((entity = this->world->get_next_entity()))
     {
