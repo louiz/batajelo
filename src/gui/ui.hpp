@@ -16,6 +16,8 @@
 #include <gui/page.hpp>
 #include <network/command.hpp>
 
+class Popup;
+class ErrorPopup;
 class Game;
 class Settings;
 class Home;
@@ -29,48 +31,53 @@ public:
   /**
    * @name Window
    */
-	/**
+  /**
    * Close the window.
-	 * @return void
+   * @return void
    */
-	void close();
-	/**
+  void close();
+  /**
    * Handle all window events.
-	 * @return void
+   * @return void
    */
-	void handleEvent();
-	/**
+  void handleEvent();
+  /**
    * Clear the window.
-	 * @return void
+   * @return void
    */
-	void clear();
-	/**
-   * Update desktop of sgui.
-	 * @return void
+  void clear();
+  /**
+   * Refresh the window.
+   * @return void
    */
-	void update();
-	/**
+  void refresh();
+  /**
    * Check if the window is still open.
    * @return bool
    */
-	bool run();
-	/**
+  bool run();
+  /**
    * Draw the ui background
-	 * @return void
+   * @return void
    */
-	void draw_background();
-	/**
+  void draw_background();
+  /**
+   * Draw the popup background
+   * @return void
+   */
+  void draw_background_popup();
+  /**
    * Display the ui.
    * @return void
    */
-	void display_ui();
-	/**
+  void display_ui();
+  /**
    * Display the background.
    * @return void
    */
-	void display_background();
-	/**@}*/
-	/**@{*/
+  void display_background();
+  /**@}*/
+  /**@{*/
   /**
    * @name Pages
    */
@@ -78,45 +85,76 @@ public:
    * Load all the ui pages.
    * @return void
    */
-	void load_all_pages();
-	/**
-   * Pages switcher.
-	 * @param page A page pointer.
+  void load_all_pages();
+  /**
+   * Page switcher.
+   * @param page A page pointer.
    * @return void
    */
-	void switch_to_page(Page*);
-	/**
+  void switch_to_page(Page*);
+  /**
    * Switch to home page.
    * @return void
    */
-	void switch_to_home();
-	/**
+  void switch_to_home();
+  /**
    * Switch to settings page.
    * @return void
    */
-	void switch_to_settings();
-	 /**@}*/
+  void switch_to_settings();
+   /**@}*/
+  /**
+   * @name Popups
+   */
+  /**
+   * Load all the ui popups.
+   * @return void
+   */
+  void load_all_popups();
+  /**
+   * Switcher to Error Popup
+   * @param error The error message.
+   * @return void
+   */
+  void switch_to_error_popup(const std::string error);
+   /**@}*/
 
-	/**
+  /**
    * Connect to server with login/password
    * @return void
    */
-	void on_login_form_validated(const std::string&, const std::string&, const std::string&, const short&);
-	void on_authenticate(Command *);
+  void on_login_form_validated(const std::string&, const std::string&, const std::string&, const short&);
+  /**
+   * Callback after trying to login
+   * @return void
+   */
+  void on_authenticate(Command *);
+  /**
+   * Get the display mode based on config
+   * @return int
+   */
+  int get_display_mode();
+  /**
+   * Get the current key pressed
+   * @return sf::Keyboard::Key
+   */
+  sf::Keyboard::Key get_key();
 
-	std::string font_path;
-	std::string theme_path;
-  std::string img_path;
-private:
-	Page* current_page;
-	Home* home;
-	Settings* settings;
-	sfg::Desktop* desktop;
+  const std::string font_path;
+  const std::string theme_path;
+  const std::string img_path;
+  private:
+  Page* current_page;
+  Home* home;
+  Settings* settings;
+  Popup* current_popup;
+  ErrorPopup* error_popup;
+  sfg::Desktop* desktop;
   sf::RenderWindow* window;
-	sf::Event event;
+  sf::Event event;
   sf::Clock clock;
-	sfg::SFGUI sfgui;
-	Game* game;
+  sfg::SFGUI sfgui;
+  Game* game;
 };
 
 #endif // __UI_HPP__

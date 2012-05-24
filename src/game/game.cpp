@@ -14,18 +14,19 @@ Game::~Game()
 }
 
 void Game::on_login_form_validated(const std::string& login,
-				   const std::string& password,
-				   const std::string& host,
-				   const short& port)
+           const std::string& password,
+           const std::string& host,
+           const short& port)
 {
   this->client.connect(host, port,
-		       boost::bind(&Game::on_connection_success, this, login, password),
-		       boost::bind(&Game::on_connection_failed, this, host, port));
+           boost::bind(&Game::on_connection_success, this, login, password),
+           boost::bind(&Game::on_connection_failed, this, host, port));
 }
 
 void Game::on_connection_failed(const std::string& host, const short& port)
 {
   log_debug("Connection to remote " << host << ":" << port << " failed");
+//  this->ui->on_connection();
 }
 
 
@@ -55,14 +56,10 @@ void Game::request_file(const std::string& filename)
 
 void Game::run()
 {
-	while (this->ui->run() == true)
-	{
-		this->client.poll();
-		this->ui->handleEvent();
-		this->ui->update();
-		this->ui->clear();
-		this->ui->draw_background();
-		this->ui->display_ui();
-		this->ui->display_background();
-	}
+  while (this->ui->run() == true)
+  {
+    this->client.poll();
+    this->ui->handleEvent();
+    this->ui->refresh();
+  }
 }
