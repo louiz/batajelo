@@ -40,7 +40,8 @@ void Settings::update()
   int width;
   int height;
 
-  boost::split(choosen_res, this->res->GetSelectedText().toAnsiString(), boost::is_any_of("x"));
+  std::string selected_text(this->res->GetSelectedText().toAnsiString());
+  boost::split(choosen_res, selected_text, boost::is_any_of("x"));
   width = atoi(choosen_res.at(0).c_str());
   height = atoi(choosen_res.at(1).c_str());
   sf::VideoMode res_new(width, height, 32);

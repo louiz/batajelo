@@ -128,6 +128,7 @@ if(BUILD_CLIENT)
 file(
 	GLOB
 	source_gui
+	src/gui/*.[hc]pp
 	src/gui/menu/*.[hc]pp
 	src/gui/camera/*.[hc]pp
     	)

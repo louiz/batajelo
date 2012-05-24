@@ -6,9 +6,14 @@
 #include <logging/logging.hpp>
 #include <game/game.hpp>
 
-Ui::Ui(Game* game): game(game), img_path(Config::get("img_path", "C:/Work/pelaze/git/batajelo/data/images/").data()), 
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
+
+Ui::Ui(Game* game):
+  game(game),
+  font_path(Config::get("font_path", "C:/Work/pelaze/git/batajelo/data/fonts/").data()),
   theme_path(Config::get("theme_path", "C:/Work/pelaze/git/batajelo/data/themes/").data()),
-  font_path(Config::get("font_path", "C:/Work/pelaze/git/batajelo/data/fonts/").data())
+  img_path(Config::get("img_path", "C:/Work/pelaze/git/batajelo/data/images/").data())
 {
   /**
    *  @todo for default video mode :use the method getDesktopMode () instead of putting 800x600 
