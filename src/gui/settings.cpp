@@ -7,6 +7,7 @@
 Settings::Settings(Ui* ui, sfg::Desktop* desktop, sf::RenderWindow* window): Page(ui, desktop, window) 
 {
   this->build_ui();
+  this->build_background();
 }
 
 void Settings::hide()
@@ -44,25 +45,32 @@ void Settings::update()
   height = atoi(choosen_res.at(1).c_str());
   sf::VideoMode res_new(width, height, 32);
   if (res_new.isValid())
-  {
-    Config::set_int("display", this->display->GetSelectedItem());
-    Config::set_int("width", width);
-    Config::set_int("height", height, true);
-    this->window->create(res_new, "Batajelo", this->ui->get_display_mode());
-  }
+    {
+      Config::set_int("display", this->display->GetSelectedItem());
+      Config::set_int("width", width);
+      Config::set_int("height", height, true);
+      this->window->create(res_new, "Batajelo", this->ui->get_display_mode());
+      this->ui->on_resize();
+    }
   else
     log_error("display error resolution not handled");
 }
 
+void Settings::build_background()
+{
+  if (!this->bg.loadFromFile(this->ui->img_path + Config::get("home_bg", "bg.jpg").data()))
+    {
+      log_error("cant load home background");
+    }
+  else
+    {
+      this->sprite_bg.setTexture(this->bg);
+      this->sprite_bg.setScale((float)Config::get_int("width", 800)/1920, (float)Config::get_int("height", 600)/1080);
+    }
+}
+
 void Settings::draw_background()
 {
-  sf::Texture bg;
-  if (!bg.loadFromFile(this->ui->img_path + Config::get("home_bg", "bg.jpg").data()))
-  {
-    log_error("cant load home background");
-  }
-  this->sprite_bg.setTexture(bg);
-  this->sprite_bg.setScale((float)Config::get_int("width", 800)/1920, (float)Config::get_int("height", 600)/1080);
   this->window->draw(this->sprite_bg);
 }
 
@@ -71,16 +79,14 @@ void Settings::build_ui()
   // Back button
   this->img_back = sfg::Image::Create();
   if(this->img.loadFromFile(this->ui->img_path + "back.png"))
-  {
-    this->img_back->SetImage(this->img);
-    this->img_back->SetAllocation(sf::FloatRect(10, 10, 10, 10));
-    this->img_back->GetSignal(sfg::Widget::OnLeftClick).Connect(&Ui::switch_to_home, this->ui);
-    this->img_back->Show(false);
-  }
+    {
+      this->img_back->SetImage(this->img);
+      this->img_back->SetAllocation(sf::FloatRect(10, 10, 10, 10));
+      this->img_back->GetSignal(sfg::Widget::OnLeftClick).Connect(&Ui::switch_to_home, this->ui);
+      this->img_back->Show(false);
+    }
   else
-  {
     log_error("cant load img : settings");
-  }
 
   // Resolution comboBox
   this->build_resolution();
@@ -124,20 +130,19 @@ void Settings::build_resolution()
    **/
   std::ostringstream res_tmp;
   std::string res_config = Config::get("width", "800") + "x" + Config::get("height", "600");
-  log_error(Config::get("width", "800") + "x" + Config::get("height", "600"));
   this->label_res = sfg::Label::Create("Resolution : ");
   this->res = sfg::ComboBox::Create();
   std::vector<sf::VideoMode> modes = sf::VideoMode::getFullscreenModes();
 
   this->label_res->SetId("label_res");
   for (std::size_t i = 0; i < modes.size(); ++i)
-  {
-    if (modes[i].bitsPerPixel != 32 || modes[i].width < 800)
-      break;
-    res_tmp << modes[i].width << "x" << modes[i].height;
-    this->res->AppendItem(res_tmp.str());
-    if (res_config.compare(res_tmp.str()) == 0)
-      this->res->SelectItem(i);
-    res_tmp.str("");
-  }
+    {
+      if (modes[i].bitsPerPixel != 32 || modes[i].width < 800)
+        break;
+      res_tmp << modes[i].width << "x" << modes[i].height;
+      this->res->AppendItem(res_tmp.str());
+      if (res_config.compare(res_tmp.str()) == 0)
+        this->res->SelectItem(i);
+      res_tmp.str("");
+    }
 }

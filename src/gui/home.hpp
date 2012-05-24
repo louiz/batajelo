@@ -40,11 +40,6 @@ public:
    */
   virtual void deactivate();
   /**
-   * Build the ui.
-   * @return void
-   */
-  virtual void build_ui();
-  /**
    * Draw the background.
    * @return void
    */
@@ -62,14 +57,16 @@ public:
   void on_authenticate_success();
   void loading_animate();
 private:
-  //MD5 md5;
-  sfg::Label::Ptr label_error;
-  sfg::Entry::Ptr entry_login;
-  sfg::Entry::Ptr entry_pass;
-  sfg::Window::Ptr window_login;
-  sfg::Image::Ptr img_settings;
-  sfg::Image::Ptr img_loading;
-  sfg::Button::Ptr button_connect;
+  /**
+   * Build the ui.
+   * @return void
+   */
+  virtual void build_ui();
+  /**
+   * Build the background.
+   * @return void
+   */
+  virtual void build_background();
   /**
    * Connect to the game server
    * @return void
@@ -90,6 +87,15 @@ private:
    * @return void
    */
   void handle_keys_connect();  
+
+  //MD5 md5;
+  sfg::Label::Ptr label_error;
+  sfg::Entry::Ptr entry_login;
+  sfg::Entry::Ptr entry_pass;
+  sfg::Window::Ptr window_login;
+  sfg::Image::Ptr img_settings;
+  sfg::Image::Ptr img_loading;
+  sfg::Button::Ptr button_connect;
 };
 
 #endif // __HOME_HPP__

@@ -8,6 +8,7 @@
 Home::Home(Ui* ui, sfg::Desktop* desktop, sf::RenderWindow* window): Page(ui, desktop, window)
 {
   this->build_ui();
+  this->build_background();
 }
 /*
 
@@ -37,8 +38,6 @@ void Home::connect()
 {
   if (this->entry_login->GetText() != "" && this->entry_pass->GetText() != "")
   {
-  //  std::cout <<  md5.digestString(const_cast<char *>(this->entry_pass->GetText().toAnsiString().c_str())) << std::endl;
-    std::cout << this->entry_login->GetText().toAnsiString() << std::endl;
     //this->loading_animate();
     this->ui->on_login_form_validated(this->entry_login->GetText().toAnsiString(), this->entry_pass->GetText().toAnsiString(), "127.0.0.1", 7878);
   }
@@ -68,20 +67,22 @@ void Home::activate()
   this->img_settings->SetState(sfg::Widget::NORMAL);
 }
 
-void Home::draw_background()
+void Home::build_background()
 {
-  sf::Texture bg;
-
-  if (!bg.loadFromFile(this->ui->img_path + Config::get("home_bg", "bg.jpg").data()))
+  if (!this->bg.loadFromFile(this->ui->img_path + Config::get("home_bg", "bg.jpg").data()))
   {
     log_error("cant load home background");
   }
   else
   {
-    this->sprite_bg.setTexture(bg);
+    this->sprite_bg.setTexture(this->bg);
     this->sprite_bg.setScale((float)Config::get_int("width", 800)/1920, (float)Config::get_int("height", 600)/1080);
-    this->window->draw(this->sprite_bg);
   }
+}
+
+void Home::draw_background()
+{
+  this->window->draw(this->sprite_bg);
 }
 
 void Home::build_ui()

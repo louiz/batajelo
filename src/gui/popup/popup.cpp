@@ -8,11 +8,21 @@ Popup::Popup(Ui* ui, sfg::Desktop* desktop, sf::RenderWindow* window): ui(ui), d
 
   this->window_popup = sfg::Window::Create(sfg::Window::BACKGROUND);
   this->window_popup->SetId("window_popup");
+  this->build_background();
+}
+
+void Popup::build_background()
+{
+  this->bg.setSize(sf::Vector2f(Config::get_int("width", 800), Config::get_int("height", 600)));
+  this->bg.setFillColor(sf::Color(128,128,128,100));
 }
 
 void Popup::draw_background()
 {
-  this->bg.setSize(sf::Vector2f(Config::get_int("width", 800), Config::get_int("height", 600)));
-  this->bg.setFillColor(sf::Color(128,128,128,100));
   this->window->draw(this->bg);
+}
+
+void Popup::on_resize()
+{
+  this->bg.setSize(sf::Vector2f(Config::get_int("width", 800), Config::get_int("height", 600)));
 }
