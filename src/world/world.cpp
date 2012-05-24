@@ -227,8 +227,8 @@ void World::confirm_initial_turn()
 {
   // Validate the turn itself.
   this->confirm_turn(1);
-  // and the next
-  this->confirm_turn(2);
+  // // and the next
+  // this->confirm_turn(2);
 
   // Then, validate all the actions of the turn.
   Turn* turn = this->turn_handler->get_turn(1);
