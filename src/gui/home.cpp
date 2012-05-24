@@ -124,7 +124,7 @@ void Home::build_ui()
   entry_pass->HideText('*');
   entry_pass->GetSignal(sfg::Widget::OnKeyPress).Connect(&Home::handle_keys_password, this);
 
-  Settings button
+  // Settings button
   this->img_loading = sfg::Image::Create();
   this->img_loading->Show(false);
 
