@@ -31,12 +31,28 @@ public:
    */
   static std::string get(const std::string&, const std::string&);
   /**
+   * returns a value from the config. If it doesn’t exist, use
+   * the second argument as the default.
+   * @param option The option we want
+   * @param def The default value in case the option does not exist
+   */
+  static int get_int(const std::string&, const int&);
+  /**
    * Set a value for the given option. And write all the config
-   * in the file from which it was read.
+   * in the file from which it was read if boolean is set.
    * @param option The option to set
    * @param value The value to use
+   * @param save if true, save the config file
    */
-  static void set(const std::string&, const std::string&);
+  static void set(const std::string&, const std::string&, bool save = false);
+  /**
+   * Set a value for the given option. And write all the config
+   * in the file from which it was read if boolean is set.
+   * @param option The option to set
+   * @param value The value to use
+   * @param save if true, save the config file
+   */
+  static void set_int(const std::string&, const int&, bool save = false);
   /**
    * Read the configuration file at the given path.
    * @param filename The path to open and read.

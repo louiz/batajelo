@@ -1,6 +1,7 @@
 #include <config/config.hpp>
+#include <sstream>
 
-#define CONF_DEFAULT_PATH "./batajelo.conf"
+#define CONF_DEFAULT_PATH "C:/Work/pelaze/git/batajelo/src/batajelo.conf"
 
 Config* Config::instance = 0;
 
@@ -11,10 +12,10 @@ bool Config::read_conf(const std::string& filename)
       std::ifstream file;
       file.open(filename.data());
       if (!file.is_open())
-	{
-	  std::cerr << "Error: cannot open config file " << filename << std::endl;
-	  return false;
-	}
+  {
+    std::cerr << "Error: cannot open config file " << filename << std::endl;
+    return false;
+  }
       instance = new Config();
       instance->filename = filename;
 
@@ -23,19 +24,19 @@ bool Config::read_conf(const std::string& filename)
       std::string option;
       std::string value;
       while (file.good())
-	{
-	  std::getline(file, line);
-	  if (line == "" || line[0] == '#')
-	    continue ;
-	  pos = line.find('=');
-	  if (pos == std::string::npos)
-	    continue ;
-	  option = line.substr(0, pos);
-	  value = line.substr(pos+1);
-	  boost::algorithm::trim_all(value);
-	  boost::algorithm::trim_all(option);
-	  instance->values[option] = value;
-	}
+  {
+    std::getline(file, line);
+    if (line == "" || line[0] == '#')
+      continue ;
+    pos = line.find('=');
+    if (pos == std::string::npos)
+      continue ;
+    option = line.substr(0, pos);
+    value = line.substr(pos+1);
+    boost::algorithm::trim_all(value);
+    boost::algorithm::trim_all(option);
+    instance->values[option] = value;
+  }
       file.close();
       return true;
     }
@@ -62,7 +63,23 @@ std::string Config::get(const std::string& option, const std::string& def)
   return it->second;
 }
 
-void Config::set(const std::string& option, const std::string& value)
+int Config::get_int(const std::string& option, const int& def)
+{
+  std::string res = get(option, "");
+  if (res.size() > 0)
+  return atoi(res.c_str());
+  else
+    return def;
+}
+
+void Config::set_int(const std::string& option, const int& value, bool save)
+{
+  std::ostringstream os;
+  os << value;
+  set(option, os.str(), save);
+}
+
+void Config::set(const std::string& option, const std::string& value, bool save)
 {
   if (instance == 0)
     {
@@ -70,7 +87,8 @@ void Config::set(const std::string& option, const std::string& value)
       return ;
     }
   instance->values[option] = value;
-  instance->save_to_file();
+  if (save)
+    instance->save_to_file();
 }
 
 void Config::save_to_file()
