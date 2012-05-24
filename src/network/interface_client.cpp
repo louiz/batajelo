@@ -1,5 +1,8 @@
 #include <network/interface_client.hpp>
 #include <boost/algorithm/string.hpp>
+#ifdef _WIN32 || _WIN64
+# include <WinBase.h>
+#endif
 
 InterfaceClient::InterfaceClient()
 {
@@ -71,10 +74,18 @@ void InterfaceClient::poll(long timeout)
   this->io_service.poll();
   if (timeout == 0)
     return ;
+  #ifdef _WIN32 ||  _WIN64
+  for (; timeout > 0; timeout--)
+    {
+      Sleep(1);
+      this->io_service.poll();
+    }
+  #elif defined __linux__
   for (timeout *= 2; timeout > 0; timeout--)
     {
       usleep(500);
       this->io_service.poll();
     }
+  #endif
 }
 
