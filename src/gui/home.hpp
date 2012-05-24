@@ -13,51 +13,83 @@
 #ifndef __HOME_HPP__
 # define __HOME_HPP__
 
-#include <ui/page.hpp>
+#include <gui/page.hpp>
 
 class Home: public Page
 {
 public:
-	Home(Ui*, sfg::Desktop*, sf::RenderWindow*);
-	/**
+  Home(Ui*, sfg::Desktop*, sf::RenderWindow*);
+  /**
    * Hide the page.
-	 * @return void
+   * @return void
    */
-	virtual void hide();
-	/**
+  virtual void hide();
+  /**
    * Show the page.
-	 * @return void
+   * @return void
    */
-	virtual void show();
-	/**
+  virtual void show();
+  /**
+   * Activate a page.
+   * @return void
+   */
+  virtual void activate();
+  /**
+   * Deactivate a page.
+   * @return void
+   */
+  virtual void deactivate();
+  /**
    * Build the ui.
-	 * @return void
+   * @return void
    */
-	virtual void build_ui();
-	/**
+  virtual void build_ui();
+  /**
    * Draw the background.
-	 * @return void
+   * @return void
    */
-	virtual void draw_background();
-	/**
+  virtual void draw_background();
+  /**
    * Build the login error ui.
-	 * @param error The error message.
-	 * @return void
+   * @param error The error message.
+   * @return void
    */
-	void on_authenticate_error(const char*);
+  void on_authenticate_error(const char*);
+  /**
+   * Build the login success ui.
+   * @return void
+   */
+  void on_authenticate_success();
+  void loading_animate();
 private:
-	//MD5 md5;
-	sfg::Label::Ptr label_login;
-  sfg::Label::Ptr label_pass;
+  //MD5 md5;
+  sfg::Label::Ptr label_error;
   sfg::Entry::Ptr entry_login;
   sfg::Entry::Ptr entry_pass;
-	sfg::Window::Ptr window_login;
-	sfg::Image::Ptr img_settings;
-	/**
+  sfg::Window::Ptr window_login;
+  sfg::Image::Ptr img_settings;
+  sfg::Image::Ptr img_loading;
+  sfg::Button::Ptr button_connect;
+  /**
    * Connect to the game server
-	 * @return void
+   * @return void
    */
-	void connect();	
+  void connect();  
+  /**
+   * Handle key events for login field
+   * @return void
+   */
+  void handle_keys_login();  
+  /**
+   * Handle key events for password field
+   * @return void
+   */
+  void handle_keys_password();
+  /**
+   * Handle key events for connect button
+   * @return void
+   */
+  void handle_keys_connect();  
 };
 
 #endif // __HOME_HPP__
