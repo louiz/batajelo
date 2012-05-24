@@ -13,44 +13,60 @@
 #ifndef _SETTINGS_HPP__
 # define __SETTINGS_HPP__
 
-#include <ui/page.hpp>
+#include <gui/page.hpp>
 
 class Settings: public Page
 {
 public:
-	Settings(Ui*, sfg::Desktop*, sf::RenderWindow*);
-	/**
+  Settings(Ui*, sfg::Desktop*, sf::RenderWindow*);
+  /**
    * Hide the page.
-	 * @return void
+   * @return void
    */
-	virtual void hide();
-	/**
+  virtual void hide();
+  /**
    * Show the page.
-	 * @return void
+   * @return void
    */
-	virtual void show();
-	/**
+  virtual void show();
+  /**
+   * Activate a page.
+   * @return void
+   */
+  virtual void activate();
+  /**
+   * Deactivate a page.
+   * @return void
+   */
+  virtual void deactivate();
+  /**
+   * Build the resolution ui.
+   * @return void
+   */
+  void build_resolution();
+  /**
    * Build the ui.
-	 * @return void
+   * @return void
    */
-	virtual void build_ui();
-	/**
+  virtual void build_ui();
+  /**
    * Draw the background.
-	 * @return void
+   * @return void
    */
-	virtual void draw_background();
-private:
-	//MD5 md5;
-	sfg::Window::Ptr window_settings;
-	sfg::Image::Ptr img_settings;
-	sfg::Image::Ptr img_back;
-	sfg::ComboBox::Ptr res;
-	sfg::ComboBox::Ptr graphics;
-	/**
+  virtual void draw_background();
+  private:
+  //MD5 md5;
+  sfg::Window::Ptr window_settings;
+  sfg::Image::Ptr img_settings;
+  sfg::Image::Ptr img_back;
+  sfg::Label::Ptr label_res;
+  sfg::ComboBox::Ptr res;
+  sfg::ComboBox::Ptr display;
+  /**
    * Update the settings.
-	 * @return void
+   * @return void
    */
-	void update();
+  void update();
 };
 
 #endif // __SETTINGS_HPP__
