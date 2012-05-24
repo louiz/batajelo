@@ -14,9 +14,9 @@ Game::~Game()
 }
 
 void Game::on_login_form_validated(const std::string& login,
-           const std::string& password,
-           const std::string& host,
-           const short& port)
+                                   const std::string& password,
+                                   const std::string& host,
+                                   const short& port)
 {
   this->client.connect(host, port,
            boost::bind(&Game::on_connection_success, this, login, password),
@@ -59,7 +59,7 @@ void Game::run()
   while (this->ui->run() == true)
   {
     this->client.poll();
-    this->ui->handleEvent();
+    this->ui->handle_event();
     this->ui->refresh();
   }
 }

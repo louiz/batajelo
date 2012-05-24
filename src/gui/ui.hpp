@@ -40,7 +40,12 @@ public:
    * Handle all window events.
    * @return void
    */
-  void handleEvent();
+  void handle_event();
+  /**
+   * Handle all window events.
+   * @return void
+   */
+  void on_resize();
   /**
    * Clear the window.
    * @return void
@@ -118,7 +123,9 @@ public:
    */
   void switch_to_error_popup(const std::string error);
    /**@}*/
-
+  /**
+   * @name Events
+   */
   /**
    * Connect to server with login/password
    * @return void
@@ -129,6 +136,7 @@ public:
    * @return void
    */
   void on_authenticate(Command *);
+  /**@}*/
   /**
    * Get the display mode based on config
    * @return int
@@ -143,7 +151,7 @@ public:
   const std::string font_path;
   const std::string theme_path;
   const std::string img_path;
-  private:
+private:
   Page* current_page;
   Home* home;
   Settings* settings;

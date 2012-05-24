@@ -55,30 +55,32 @@ void Ui::clear()
 void Ui::refresh()
 {  
   if (this->clock.getElapsedTime().asMicroseconds() > 16666)
-  {
-    this->desktop->Update(this->clock.restart().asSeconds());
-    this->clear();
-    this->draw_background();
-    this->draw_background_popup();
-    this->display_ui();
-    this->display_background();
-    this->clock.restart();
-  }
+    {
+      this->desktop->Update(this->clock.restart().asSeconds());
+      this->clear();
+      this->draw_background();
+      this->draw_background_popup();
+      this->display_ui();
+      this->display_background();
+      this->clock.restart();
+    }
 }
 
-void Ui::handleEvent()
+void Ui::handle_event()
 {
   while(this->window->pollEvent(this->event)) 
   {
     this->desktop->HandleEvent(this->event);
     if(this->event.type == sf::Event::Closed) 
-    {
       this->close();
-    }
-    else if(this->event.type == sf::Event::Resized) 
-    {
-    }
   }
+}
+
+void Ui::on_resize()
+{
+  this->home->on_resize();
+  this->settings->on_resize();
+  this->error_popup->on_resize();
 }
 
 void Ui::load_all_pages()
@@ -98,16 +100,15 @@ void Ui::load_all_popups()
 void Ui::switch_to_page(Page* page)
 {
   if (this->current_popup)
-  {
-    this->current_popup->hide();
-    this->current_popup = NULL;
-  }
+    {
+      this->current_popup->hide();
+      this->current_popup = NULL;
+    }
   this->current_page->hide();
   page->activate();
   page->show();
   this->current_page = page;
 }
-
 
 void Ui::switch_to_error_popup(const std::string error)
 {
@@ -126,9 +127,6 @@ void Ui::switch_to_home()
   this->switch_to_page(this->home);
 }
 
-/**
- * @todo maybe we can optimize by calculating the resize at starting and only when window size are changed
- **/
 void Ui::draw_background()
 {
   this->current_page->draw_background();
@@ -137,9 +135,9 @@ void Ui::draw_background()
 void Ui::draw_background_popup()
 {
   if (this->current_popup != NULL)
-  {
-    this->current_popup->draw_background();
-  }
+    {
+      this->current_popup->draw_background();
+    }
 }
 
 void Ui::display_ui()
@@ -148,9 +146,9 @@ void Ui::display_ui()
 }
 
 void Ui::on_login_form_validated(const std::string& login,
-           const std::string& password,
-           const std::string& host,
-           const short& port)
+                                 const std::string& password,
+                                 const std::string& host,
+                                 const short& port)
 {
   this->game->on_login_form_validated(login, password, host, port);
 }
