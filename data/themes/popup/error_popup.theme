@@ -1,0 +1,10 @@
+Window#window_popup
+{
+  BackgroundColor: #FFFFFFFF;
+}
+
+Box#box_popup Label
+{
+  FontSize: 20;
+  Color: #FF0000FF;
+}
