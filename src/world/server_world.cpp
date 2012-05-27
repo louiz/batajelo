@@ -42,3 +42,17 @@ void ServerWorld::move_callback(Command* command)
   Action* action = new Action(boost::bind(&World::do_path, this, _1), path_event, this->occupants.size());
   this->turn_handler->insert_action(action, path_event->turn);
 }
+
+bool ServerWorld::validate_action(const unsigned int id, const unsigned long int by)
+{
+  log_debug("Action " << id << " validated by " << by);
+  bool res = this->turn_handler->validate_action(id, by);
+  log_debug("This made it completely validated:" << res);
+  return res;
+}
+
+bool ServerWorld::validate_turn(const unsigned int id, const unsigned long int by)
+{
+  return this->turn_handler->validate_turn(id, by, this->occupants.size());
+}
+

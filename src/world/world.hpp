@@ -68,27 +68,17 @@ public:
    */
   void insert_entity(Entity*);
   /**
-   * Handle an user event that may generate a real action, or nothing.
-   * The coordinates are the real-world ones.
-   * (for example if the user gives on order while no unit is selected, nothing
-   * happens).
-   * If an action is generated with this event, generate_action() is called.
-   */
-  void handle_event(actions::Type type, unsigned int x, unsigned y);
-  /**
    * Create an entity based on the given model.
    */
   Entity* create_entity(unsigned int type);
-  void generate_command(const char* name, const std::string& archive);
-  Command* get_pending_command();
   void set_next_turn_callback(t_next_turn_callback);
   void pause();
   void unpause();
   void install_start_action(Event*, unsigned int);
-  bool validate_action(const unsigned int id, const unsigned long int by);
   void completely_validate_action(const unsigned int id);
-  bool validate_turn(const unsigned int id, const unsigned long int by);
   void validate_turn_completely(const unsigned int number);
+  void generate_command(const char* name, const std::string& archive);
+  Command* get_pending_command();
   /**
    * Call tick(true) until the turn_handler is paused.
    */

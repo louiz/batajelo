@@ -27,6 +27,8 @@ public:
    * send that path action to all clients.
    */
   void move_callback(Command*);
+  bool validate_action(const unsigned int id, const unsigned long int by);
+  bool validate_turn(const unsigned int id, const unsigned long int by);
 
 private:
   ServerWorld(const ServerWorld&);

@@ -43,54 +43,6 @@ void World::insert_entity(Entity* entity)
   this->entities.push_back(entity);
 }
 
-void World::handle_event(actions::Type type, unsigned int x, unsigned y)
-{
-  if (type == actions::Select)
-    {
-      Entity* entity;
-      while ((entity = this->get_next_entity()))
-	{
-	  if (entity->contains(x, y))
-	    entity->selected = true;
-	  else
-	    entity->selected = false;
-	}
-    }
-  else if (type == actions::Move)
-    {
-      MoveEvent event;
-      Entity* entity;
-      while ((entity = this->get_next_entity()))
-  	{
-  	  if (entity->is_selected())
-  	    event.actors_ids.push_back(entity->get_id());
-  	}
-      if (event.actors_ids.size() == 0)
-	return ;
-      event.x = x;
-      event.y = y;
-      this->generate_command("MOVE", event.to_string());
-    }
-}
-
-void World::generate_command(const char* name, const std::string& archive)
-{
-  Command* command = new Command;
-  command->set_name(name);
-  command->set_body(archive.data(), archive.length());
-  this->commands_queue.push(command);
-  log_debug(this->commands_queue.size());
-}
-
-Command* World::get_pending_command()
-{
-  if (this->commands_queue.empty())
-    return 0;
-  Command* command = this->commands_queue.front();
-  this->commands_queue.pop();
-  return command;
-}
-
 void World::remove_occupant(Occupant* occupant)
 {
   std::vector<Occupant*>::iterator it;
@@ -180,12 +132,6 @@ void World::do_path(Event* event)
   entity->set_path(path);
 }
 
-bool World::validate_action(const unsigned int id, const unsigned long int by)
-{
-  log_debug("Action " << id << " validated by " << by);
-  return this->turn_handler->validate_action(id, by);
-}
-
 void World::completely_validate_action(const unsigned int id)
 {
   log_debug("Action " << id << " completely validated.");
@@ -206,12 +152,25 @@ Entity* World::get_entity_by_id(unsigned short id)
   return 0;
 }
 
-bool World::validate_turn(const unsigned int id, const unsigned long int by)
-{
-  return this->turn_handler->validate_turn(id, by, this->occupants.size());
-}
-
 void World::validate_turn_completely(const unsigned int number)
 {
   this->turn_handler->completely_validate_turn(number);
+}
+
+void World::generate_command(const char* name, const std::string& archive)
+{
+  Command* command = new Command;
+  command->set_name(name);
+  command->set_body(archive.data(), archive.length());
+  this->commands_queue.push(command);
+  log_debug(this->commands_queue.size());
+}
+
+Command* World::get_pending_command()
+{
+  if (this->commands_queue.empty())
+    return 0;
+  Command* command = this->commands_queue.front();
+  this->commands_queue.pop();
+  return command;
 }

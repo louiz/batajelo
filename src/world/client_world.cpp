@@ -120,3 +120,33 @@ void ClientWorld::on_next_turn(unsigned long turn)
 {
   this->confirm_turn(turn+1);
 }
+
+void ClientWorld::handle_event(actions::Type type, unsigned int x, unsigned y)
+{
+  if (type == actions::Select)
+    {
+      Entity* entity;
+      while ((entity = this->get_next_entity()))
+        {
+          if (entity->contains(x, y))
+            entity->selected = true;
+          else
+            entity->selected = false;
+        }
+    }
+  else if (type == actions::Move)
+    {
+      MoveEvent event;
+      Entity* entity;
+      while ((entity = this->get_next_entity()))
+        {
+          if (entity->is_selected())
+            event.actors_ids.push_back(entity->get_id());
+        }
+      if (event.actors_ids.size() == 0)
+        return ;
+      event.x = x;
+      event.y = y;
+      this->generate_command("MOVE", event.to_string());
+    }
+}

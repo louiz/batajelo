@@ -55,6 +55,14 @@ public:
    */
   void path_callback(Command*);
   void on_next_turn(unsigned long turn);
+  /**
+   * Handle an user event that may generate a real action, or nothing.
+   * The coordinates are the real-world ones.
+   * (for example if the user gives on order while no unit is selected, nothing
+   * happens).
+   * If an action is generated with this event, generate_action() is called.
+   */
+  void handle_event(actions::Type type, unsigned int x, unsigned y);
 
 private:
   ClientWorld(const ClientWorld&);
