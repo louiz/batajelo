@@ -16,7 +16,7 @@ Path& Path::operator=(const Path& path)
 {
   this->x = path.x;
   this->y = path.y;
-	return *this;
+  return *this;
 }
 
 Path::~Path()

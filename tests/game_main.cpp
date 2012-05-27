@@ -2,37 +2,35 @@
 #include <logging/logging.hpp>
 #include <network/game_client.hpp>
 #include <game/game.hpp>
-#include <world/world.hpp>
+#include <world/client_world.hpp>
 #include <world/time.hpp>
 #include <gui/camera/camera.hpp>
-#include <game/turn_handler.hpp>
 #include <network/command.hpp>
 
 int main()
 {
   GameClient* c = new GameClient();
-  World* world = new World;
-  world->set_next_turn_callback(boost::bind(&World::on_next_turn, world, _1));
+  ClientWorld* world = new ClientWorld;
+  world->set_next_turn_callback(boost::bind(&ClientWorld::on_next_turn, world, _1));
   Camera* camera = new Camera(world);
-  TurnHandler* turn_handler = new TurnHandler;
 
   sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(800, 600),
 						  "Bata");
 
   c->install_callback("NEW_OCCUPANT",
-		      boost::bind(&World::new_occupant_callback, world, _1));
+		      boost::bind(&ClientWorld::new_occupant_callback, world, _1));
   c->install_callback("OCCUPANT_LEFT",
-		      boost::bind(&World::occupant_left_callback, world, _1));
+		      boost::bind(&ClientWorld::occupant_left_callback, world, _1));
   c->install_callback("NEW_ENTITY",
-		      boost::bind(&World::new_entity_callback, world, _1));
+		      boost::bind(&ClientWorld::new_entity_callback, world, _1));
   c->install_callback("START",
-		      boost::bind(&World::handle_start_command, world, _1));
+		      boost::bind(&ClientWorld::handle_start_command, world, _1));
   c->install_callback("OK",
-		      boost::bind(&World::ok_callback, world, _1));
+		      boost::bind(&ClientWorld::ok_callback, world, _1));
   c->install_callback("T",
-		      boost::bind(&World::turn_callback, world, _1));
+		      boost::bind(&ClientWorld::turn_callback, world, _1));
   c->install_callback("PATH",
-		      boost::bind(&World::path_callback, world, _1));
+		      boost::bind(&ClientWorld::path_callback, world, _1));
 
 
   // c->connect("88.190.23.192", 7879);
@@ -91,7 +89,6 @@ int main()
   delete world;
   delete camera;
   delete window;
-  delete turn_handler;
 
   return 0;
 }

@@ -13,16 +13,16 @@
 #ifndef __GAME_SERVER_HPP__
 # define __GAME_SERVER_HPP__
 
-#include <world/world.hpp>
+#include <world/server_world.hpp>
 #include <network/server.hpp>
 #include <network/remote_game_client.hpp>
 
-class GameServer: public TurnHandler, public Server<RemoteGameClient>
+class GameServer: public Server<RemoteGameClient>
 {
 public:
   GameServer(short port);
   ~GameServer();
-  World* get_world() const;
+  ServerWorld* get_world() const;
 
   virtual void on_new_client(RemoteGameClient*);
   virtual void on_client_left(RemoteGameClient*);
@@ -40,7 +40,7 @@ private:
    * The state of the world, synchronized through commands with the world
    * kept by each remote client.
    */
-  World* world;
+  ServerWorld* world;
 };
 
 #endif // __GAME_SERVER_HPP__

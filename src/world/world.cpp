@@ -91,46 +91,6 @@ Command* World::get_pending_command()
   return command;
 }
 
-void World::new_occupant_callback(Command* command)
-{
-  log_debug("new_occupant_callback");
-  Occupant* occupant = new Occupant;
-
-  std::string data(command->body, command->body_size);
-  if (occupant->from_string(data) == false)
-    {
-      log_error("Invalid data received for the occupant.");
-      return ;
-    }
-  log_debug("Occupant: " << occupant->name << " " << occupant->number);
-  this->add_new_occupant(occupant);
-}
-
-void World::handle_start_command(Command* command)
-{
-  // Action* action = new Action(0, event, this->occupants.size());
-  // this->turn_handler->insert_action(action, turn);
-  Event* start_event = new Event(command);
-  if (start_event->is_valid() == false)
-    {
-      log_warning("Invalid data for START command");
-      return ;
-    }
-  this->install_start_action(start_event, 1);
-}
-
-void World::occupant_left_callback(Command* command)
-{
-  Occupant occupant;
-  if (occupant.from_string(std::string(command->body, command->body_size)) == false)
-    {
-      log_error("Invalid data received for the leaving occupant.");
-      return ;
-    }
-  log_debug("Occupant to remove: " << occupant.number);
-  this->remove_occupant(&occupant);
-}
-
 void World::remove_occupant(Occupant* occupant)
 {
   std::vector<Occupant*>::iterator it;
@@ -155,25 +115,13 @@ void World::add_new_occupant(Occupant* occupant)
   log_debug("Adding new occupant to the world:" << occupant->name << " " << occupant->number);
 }
 
-void World::new_entity_callback(Command* command)
-{
-  Entity* new_entity = new Entity;
-  std::string data(command->body, command->body_size);
-  log_debug("New_Entity: " << data);
-  if (new_entity->from_string(data) == false)
-    {
-      log_debug("Invalid data for the new entity.");
-      return ;
-    }
-  this->insert_entity(new_entity);
-}
-
 void World::init()
 {
   log_debug("Init world");
   // TODO, load these units from the Mod file.
   Entity* unit = new Entity;
   this->entity_models.push_back(unit);
+
   log_debug("Done.");
 }
 
@@ -223,98 +171,6 @@ void World::start()
   this->started = true;
 }
 
-void World::confirm_initial_turn()
-{
-  // Validate the turn itself.
-  this->confirm_turn(1);
-  // // and the next
-  // this->confirm_turn(2);
-
-  // Then, validate all the actions of the turn.
-  Turn* turn = this->turn_handler->get_turn(1);
-
-  turn->reset_action_iterator();
-  Action* action;
-
-  while ((action = turn->get_next_action()))
-    {
-      if (action->is_completely_validated() == false)
-	this->confirm_action(action->get_id());
-    }
-}
-
-void World::confirm_action(const unsigned int id)
-{
-  Event ok_event(id);
-  this->generate_command("OK", ok_event.to_string());
-}
-
-void World::confirm_turn(const unsigned int number)
-{
-  std::ostringstream os;
-  os << number;
-  this->generate_command("T", os.str());
-}
-
-void World::ok_callback(Command* command)
-{
-  OkEvent ok_event(command);
-  if (ok_event.is_valid() == false)
-    {
-      log_warning("Invalid data for OK command");
-      return ;
-    }
-  this->completely_validate_action(ok_event.get_id());
-}
-
-void World::turn_callback(Command* command)
-{
-  std::istringstream is(std::string(command->body, command->body_size));
-  unsigned int number;
-  is >> number;
-  this->validate_turn_completely(number);
-}
-
-void World::move_callback(Command* command)
-{
-  // TODO, do an actuall path finding, and other stuff, and
-  // generate a PathEvent, instead of a MoveEvent.
-  MoveEvent event(command);
-  if (event.is_valid() == false)
-    {
-      log_warning("Invalid data for MOVE command");
-      return ;
-    }
-  PathEvent* path_event = new PathEvent(event);
-  unsigned long current_turn = this->turn_handler->get_current_turn();
-  log_debug("Currently at: " << current_turn);
-  log_debug("move_callback: " << path_event->to_string());
-  path_event->turn = current_turn + 3;
-  this->generate_command("PATH", path_event->to_string());
-  Action* action = new Action(boost::bind(&World::do_path, this, _1), path_event, this->occupants.size());
-  this->turn_handler->insert_action(action, path_event->turn);
-}
-
-void World::path_callback(Command* command)
-{
-  PathEvent* e = new PathEvent(command);
-  if (e->is_valid() == false)
-    {
-      log_warning("Invalid data for PATH command");
-      return ;
-    }
-  log_debug("Must move unit " << e->actors_ids[0] << " to " << e->x << ":" << e->y << " on turn " << e->turn);
-  Action* action = new Action(boost::bind(&World::do_path, this, _1), e, this->occupants.size());
-  this->turn_handler->insert_action(action, e->turn);
-  this->confirm_action(e->get_id());
-}
-
-void World::confirm_action(const unsigned long int id)
-{
-  Event ok_event(id);
-  this->generate_command("OK", ok_event.to_string());
-}
-
 void World::do_path(Event* event)
 {
   PathEvent* path_event = static_cast<PathEvent*>(event);
@@ -348,11 +204,6 @@ Entity* World::get_entity_by_id(unsigned short id)
 	return entity;
     }
   return 0;
-}
-
-void World::on_next_turn(unsigned long turn)
-{
-  this->confirm_turn(turn+1);
 }
 
 bool World::validate_turn(const unsigned int id, const unsigned long int by)

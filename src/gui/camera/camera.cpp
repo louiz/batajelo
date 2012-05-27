@@ -1,6 +1,6 @@
 #include <gui/camera/camera.hpp>
 
-Camera::Camera(World* world):
+Camera::Camera(ClientWorld* world):
   x(0),
   y(0),
   zoom(1),
@@ -20,6 +20,7 @@ void Camera::draw(sf::RenderWindow* win)
   rectangle.setFillColor(sf::Color::Green);
   win->draw(rectangle);
   Entity* entity;
+  this->world->reset_entity_iterator();
   while ((entity = this->world->get_next_entity()))
     {
       this->draw_entity(win, entity);

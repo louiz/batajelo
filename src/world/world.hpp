@@ -16,6 +16,9 @@
 
 #include <list>
 #include <queue>
+#include <boost/bind.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <game/event.hpp>
 
 #ifndef __WORLD_HPP__
 # define __WORLD_HPP__
@@ -35,6 +38,8 @@ public:
   ~World();
   /**
    * Init the world by reading the Mod files.
+   * The initial state of the world (the map, the unit that are available
+   * and their stats, etc).
    */
   void init();
   /**
@@ -76,63 +81,28 @@ public:
   Entity* create_entity(unsigned int type);
   void generate_command(const char* name, const std::string& archive);
   Command* get_pending_command();
-
   void set_next_turn_callback(t_next_turn_callback);
-  void on_next_turn(unsigned long turn);
-
   void pause();
   void unpause();
-
-  void load_test();
-
   void install_start_action(Event*, unsigned int);
-
   bool validate_action(const unsigned int id, const unsigned long int by);
   void completely_validate_action(const unsigned int id);
   bool validate_turn(const unsigned int id, const unsigned long int by);
   void validate_turn_completely(const unsigned int number);
-
-  void confirm_action(const unsigned long int id);
   /**
-   * Called whenever we receive a new_occupant message from the server.
+   * Call tick(true) until the turn_handler is paused.
    */
-  void new_occupant_callback(Command*);
+  void advance_replay_until_paused();
   /**
    * Actually instert a occupant in the occupants list.
    */
   void add_new_occupant(Occupant*);
   /**
-   * Called whenever we receive a occupant_left message from the server.
-   */
-  void occupant_left_callback(Command*);
-  /**
    * Actually remove the occupant from the occupants list.
    */
   void remove_occupant(Occupant*);
-  /**
-   * Called when a new unit has to be inserted in the world.
-   */
-  void new_entity_callback(Command*);
-
-  /**
-   * When we receive the command from the server telling us that
-   * it is ready to start the game.
-   */
-  void handle_start_command(Command*);
-
-  void confirm_initial_turn();
-
-  void move_callback(Command*);
-
-  void ok_callback(Command*);
-  void turn_callback(Command*);
-  void path_callback(Command*);
   void do_path(Event*);
   Entity* get_entity_by_id(unsigned short id);
-  /**
-   * Sends a command to the server saying that we are ready for that turn.
-   */
-  void confirm_turn(const unsigned int);
   /**
    * Sends a command to the server saying that we confirm that action.
    */
@@ -148,6 +118,8 @@ public:
 private:
   World(const World&);
   World& operator=(const World&);
+
+protected:
   /**
    * The list of all models for the entities in the world.
    * That list is created by loading a Mod file. To spawn a unit
@@ -178,6 +150,7 @@ private:
    */
   TurnHandler* turn_handler;
   bool started;
+  Replay* replay;
 };
 
 #endif // __WORLD_HPP__

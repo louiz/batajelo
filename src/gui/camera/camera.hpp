@@ -16,13 +16,13 @@
 # define __CAMERA__HPP__
 
 #include <logging/logging.hpp>
-#include <world/world.hpp>
+#include <world/client_world.hpp>
 #include <world/time.hpp>
 
 class Camera
 {
 public:
-  Camera(World*);
+  Camera(ClientWorld*);
   ~Camera();
   /**
    * Draw the world viewed through the camera.
@@ -62,7 +62,7 @@ private:
   /**
    * A pointer to the world object used to display stuff on the screen.
    */
-  World* world;
+  ClientWorld* world;
 };
 
 #endif // __CAMERA__HPP__

@@ -3,14 +3,14 @@
 GameServer::GameServer(short port):
   Server<RemoteGameClient>(port)
 {
-  this->world = new World;
+  this->world = new ServerWorld;
 }
 
 GameServer::~GameServer()
 {
 }
 
-World* GameServer::get_world() const
+ServerWorld* GameServer::get_world() const
 {
   return this->world;
 }
@@ -44,37 +44,15 @@ void GameServer::on_new_client(RemoteGameClient* new_client)
 	}
     }
 
-  // Spawn a new unit for each new player.
-  // Only for tests, TODO: remove that.
-  Entity* new_entity = this->world->create_entity(0);
-  command = new Command();
-  new_entity->y = rand() % 200 + 450;
-  new_entity->x = rand() % 200 + 450;
-
-  command->set_name("NEW_ENTITY");
-  command->set_body(new_entity->to_string().c_str());
-  log_debug(new_entity->to_string());
-  this->send_to_all_clients(command);
-  this->world->reset_entity_iterator();
-  Entity* entity;
-  while ((entity = this->world->get_next_entity()))
-    {
-      command = new Command();
-      command->set_name("NEW_ENTITY");
-      command->set_body(entity->to_string().c_str());
-      new_client->send(command);
-    }
-  this->world->insert_entity(new_entity);
-
   // Finally send a START command to the new player, used to synchronize the
   // start of the game with others.
-  Event* start_event = new Event;
-  Command* start_command = new Command;
-  start_command->set_name("START");
-  start_command->set_body(start_event->to_string().c_str());
-  this->send_to_all_clients(start_command);
+  // Event* start_event = new Event;
+  // Command* start_command = new Command;
+  // start_command->set_name("START");
+  // start_command->set_body(start_event->to_string().c_str());
+  // this->send_to_all_clients(start_command);
 
-  this->world->install_start_action(start_event, 1);
+  // this->world->install_start_action(start_event, 1);
 
   // TODO remove that.
   this->start_game();

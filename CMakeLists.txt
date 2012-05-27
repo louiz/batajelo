@@ -130,6 +130,7 @@ file(
 	source_gui
 	src/gui/*.[hc]pp
 	src/gui/menu/*.[hc]pp
+	src/gui/popup/*.[hc]pp
 	src/gui/camera/*.[hc]pp
     	)
 add_library(gui STATIC ${source_gui})
