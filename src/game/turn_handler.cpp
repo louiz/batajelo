@@ -1,18 +1,11 @@
 #include <game/turn_handler.hpp>
 
-TurnHandler::TurnHandler():
+TurnHandler::TurnHandler(Replay* replay):
   current_turn(0),
   turn_advancement(0),
   paused(true),
-  next_turn_callback(0)
-{
-}
-
-TurnHandler::TurnHandler(t_next_turn_callback next_turn_callback):
-  current_turn(0),
-  turn_advancement(0),
-  paused(true),
-  next_turn_callback(next_turn_callback)
+  next_turn_callback(0),
+  replay(replay)
 {
 }
 
@@ -21,9 +14,9 @@ TurnHandler::~TurnHandler()
   this->turns.clear();
 }
 
-void TurnHandler::tick()
+void TurnHandler::tick(bool force)
 {
-  if (this->paused == true)
+  if ((this->paused == true) && (force == false))
     {
       // we check if next turn is validated, to unpause.
       if (this->is_next_turn_validated() == false)
@@ -36,7 +29,9 @@ void TurnHandler::tick()
   this->turn_advancement += 1;
   if (this->turn_advancement == TURN_TIME)
     {
-      if (this->is_next_turn_validated() == false)
+      if (force == false)
+        log_debug(*this);
+      if ((this->is_next_turn_validated() == false) && (force == false))
 	{
 	  log_debug("Next turn is not validated");
 	  this->pause();
@@ -63,8 +58,13 @@ void TurnHandler::next_turn()
   this->turns.pop_front();
   if (this->turns.empty())
     return ;
-  log_debug("Turn number " << this->current_turn << ": ");
-  this->turns[0].execute();
+  log_warning("Turn number " << this->current_turn << ": ");
+  Turn* turn = &(this->turns[0]);
+  Action* action;
+  if (this->replay != 0)
+    turn->execute(false);
+  else
+    turn->execute(true);
 }
 
 bool TurnHandler::insert_turn(const unsigned long turn)
@@ -92,7 +92,7 @@ bool TurnHandler::insert_action(Action* action, const unsigned long turn)
       delete action;
       return false ;
     }
-  log_debug("Inserting  into " << turn - this->current_turn);
+  log_debug("Inserting action with id " << action->get_id() << " into turn " << turn);
   this->turns[turn - this->current_turn].insert(action);
   return true;
 }
@@ -100,14 +100,14 @@ bool TurnHandler::insert_action(Action* action, const unsigned long turn)
 void TurnHandler::pause()
 {
   assert(this->paused == false);
-  log_debug("pausing turnhandler");
+  log_warning("pausing turnhandler at turn " << this->current_turn);
   this->paused = true;
 }
 
 void TurnHandler::unpause()
 {
   assert(this->paused == true);
-  log_debug("unpausing turnhandler");
+  log_warning("unpausing turnhandler");
   this->paused = false;
 }
 
@@ -121,7 +121,6 @@ bool TurnHandler::is_next_turn_validated() const
 
 Turn* TurnHandler::get_turn(const unsigned int number)
 {
-  assert(number > this->current_turn);
   if (this->turns.size() <= number - this->current_turn)
     return 0;
   return &this->turns[number - this->current_turn];
@@ -132,6 +131,7 @@ bool TurnHandler::validate_action(const unsigned int id, const unsigned long int
   std::deque<Turn>::iterator it;
   Action* action;
 
+  bool res;
   for (it = this->turns.begin(); it < this->turns.end(); ++it)
     {
       (*it).reset_action_iterator();
@@ -139,10 +139,14 @@ bool TurnHandler::validate_action(const unsigned int id, const unsigned long int
 	{
 	  if (action->get_id() == id)
 	    {
-	      return action->validate(by);
+	      res = action->validate(by);
+	      if (res == true)
+                this->replay->insert_action(action);
+	      return res;
 	    }
 	}
     }
+  log_warning("Action to validate was not found");
   // Action was not found, so it did'nt became completely validated
   return false;
 }
@@ -171,12 +175,11 @@ bool TurnHandler::validate_turn(const unsigned int number,
 {
   if (this->insert_turn(number) == false)
     {
-      // should not happen
-      assert(false);
       return false;
     }
   Turn* turn = this->get_turn(number);
-  assert(turn != 0);
+  if (turn == 0)
+    return false;
   return turn->validate(by, confirmations_needed);
 }
 
@@ -201,4 +204,35 @@ void TurnHandler::completely_validate_turn(const unsigned int number)
 bool TurnHandler::is_paused() const
 {
   return this->paused;
+}
+
+std::ostream& operator<<(std::ostream& os, TurnHandler& turn_handler)
+{
+  os << "Turn Handler:" << std::endl;
+  std::deque<Turn>::iterator it;
+  unsigned long int turn = turn_handler.current_turn;
+  for (it = turn_handler.turns.begin(); it < turn_handler.turns.end(); ++it)
+    {
+      os << "turn " << turn++ << "\t\t";
+      os << (*it);
+      os << std::endl;
+    }
+  return os;
+}
+
+void TurnHandler::reset_turns_iterator()
+{
+  this->turns_iterator = this->turns.begin();
+}
+
+Turn* TurnHandler::get_next_turn()
+{
+  if (this->turns_iterator == this->turns.end())
+    {
+      this->reset_turns_iterator();
+      return 0;
+    }
+  std::deque<Turn>::iterator it = this->turns_iterator;
+  ++this->turns_iterator;
+  return &(*it);
 }

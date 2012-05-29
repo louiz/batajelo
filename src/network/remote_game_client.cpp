@@ -60,6 +60,8 @@ void RemoteGameClient::turn_callback(Command* command)
 
 void RemoteGameClient::send_ok(const unsigned int id, const unsigned long int by)
 {
+  // TODO by value is useless here.
+  // Even the OkEvent is useless, we just need to pass an unsigned int.
   Command* command = new Command;
   command->set_name("OK");
   OkEvent ok_event(id, by);

@@ -26,7 +26,22 @@ public:
 
   virtual void on_new_client(RemoteGameClient*);
   virtual void on_client_left(RemoteGameClient*);
-
+  /**
+   * Send the complete content of the replay contained in the World
+   * to the client.
+   */
+  void send_replay(RemoteGameClient*);
+  /**
+   * Send a start command to the client telling it to start
+   * confirming turns and actions from there.
+   */
+  void send_start_command(RemoteGameClient*);
+  /**
+   * Take all futur actions in the turn_handler, if they are not
+   * completely validated yet, change their validations_needed value
+   * to the current number of occupants, and send them to the client.
+   */
+  void send_and_adjust_future_commands(RemoteGameClient*);
   void tick();
   void pause_game();
   void unpause_game();

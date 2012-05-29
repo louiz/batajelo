@@ -1,18 +1,18 @@
-#include <boost/bind.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <game/event.hpp>
 #include <world/world.hpp>
 
 World::World():
   started(false)
 {
-  this->entities_iterator = this->entities.begin();
+  this->replay = new Replay;
+  this->turn_handler = new TurnHandler(this->replay);
   this->init();
-  this->turn_handler = new TurnHandler;
 }
 
 World::~World()
 {
+  delete this->turn_handler;
+  if (this->replay != 0)
+    delete this->replay;
 }
 
 Entity* World::get_next_entity()
@@ -94,17 +94,12 @@ void World::unpause()
   this->turn_handler->unpause();
 }
 
-void World::install_start_action(Event* event, unsigned int turn)
-{
-  Action* action = new Action(0, event, this->occupants.size());
-  this->turn_handler->insert_action(action, turn);
-}
 
-void World::tick()
+void World::tick(bool force)
 {
-  if (this->started == false)
+  if ((this->started == false) && (force == false))
     return ;
-  this->turn_handler->tick();
+  this->turn_handler->tick(force);
   if (this->turn_handler->is_paused() == true)
     return ;
   Entity* entity;
@@ -115,6 +110,14 @@ void World::tick()
     }
 }
 
+void World::advance_replay_until_paused()
+{
+  do
+    {
+      this->tick(true);
+    } while (this->turn_handler->is_paused() == false);
+}
+
 void World::start()
 {
   log_debug("start");
@@ -123,13 +126,22 @@ void World::start()
   this->started = true;
 }
 
-void World::do_path(Event* event)
+void World::do_path(ActionEvent* event)
 {
   PathEvent* path_event = static_cast<PathEvent*>(event);
   Path path(path_event->x, path_event->y);
   unsigned short entity_id = path_event->actors_ids[0];
   Entity* entity = this->get_entity_by_id(entity_id);
   entity->set_path(path);
+}
+
+void World::do_new_entity(ActionEvent* event)
+{
+  log_debug("DO NEW ENTITY");
+  EntityEvent* entity_event = static_cast<EntityEvent*>(event);
+  Entity* new_entity = entity_event->entity;
+  log_debug("New_Entity" << new_entity->x << ":" << new_entity->y);
+  this->insert_entity(new_entity);
 }
 
 void World::completely_validate_action(const unsigned int id)
@@ -173,4 +185,19 @@ Command* World::get_pending_command()
   Command* command = this->commands_queue.front();
   this->commands_queue.pop();
   return command;
+}
+
+Replay* World::get_replay() const
+{
+  return this->replay;
+}
+
+TurnHandler* World::get_turn_handler() const
+{
+  return this->turn_handler;
+}
+
+unsigned int World::get_number_of_occupants() const
+{
+  return this->occupants.size();
 }

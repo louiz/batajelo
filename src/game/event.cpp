@@ -41,7 +41,19 @@ MoveEvent::MoveEvent(const Command* command)
     this->valid = true;
 }
 
-PathEvent::PathEvent(const Command* command)
+ActionEvent::ActionEvent(const Command* command):
+  name("")
+{
+  if (this->from_string(std::string(command->body,
+				    command->body_size).c_str()) == false)
+    this->valid = false;
+  else
+    this->valid = true;
+
+}
+
+PathEvent::PathEvent(const Command* command):
+  ActionEvent("PATH")
 {
   if (this->from_string(std::string(command->body,
 				    command->body_size).c_str()) == false)
@@ -50,4 +62,13 @@ PathEvent::PathEvent(const Command* command)
     this->valid = true;
 }
 
+EntityEvent::EntityEvent(const Command* command):
+  ActionEvent("NEW_ENTITY")
+{
+  if (this->from_string(std::string(command->body,
+				    command->body_size).c_str()) == false)
+    this->valid = false;
+  else
+    this->valid = true;
+}
 unsigned long int Event::current_id = 0;

@@ -38,28 +38,39 @@ void ClientWorld::occupant_left_callback(Command* command)
 
 void ClientWorld::new_entity_callback(Command* command)
 {
-  Entity* new_entity = new Entity;
-  std::string data(command->body, command->body_size);
-  log_debug("New_Entity: " << data);
-  if (new_entity->from_string(data) == false)
+  EntityEvent* e = new EntityEvent(command);
+  if (e->is_valid() == false)
     {
       log_debug("Invalid data for the new entity.");
       return ;
     }
-  this->insert_entity(new_entity);
+  Action* action = new Action(boost::bind(&World::do_new_entity, this, _1), e);
+  log_debug("new entity");
+  this->turn_handler->insert_action(action, e->turn);
+  if (this->started == true)
+    this->confirm_action(e->get_id());
+  else
+    action->validate_completely();
 }
 
 void ClientWorld::handle_start_command(Command* command)
 {
-  // Action* action = new Action(0, event, this->occupants.size());
-  // this->turn_handler->insert_action(action, turn);
-  Event* start_event = new Event(command);
-  if (start_event->is_valid() == false)
+  ActionEvent start_event(command);
+  if (start_event.is_valid() == false)
     {
       log_warning("Invalid data for START command");
       return ;
     }
-  this->install_start_action(start_event, 1);
+  log_debug("The first turn to start is " << start_event.turn);
+  this->unpause();
+  do
+    {
+      this->tick(true);
+    } while (this->turn_handler->get_current_turn() < start_event.turn - 1);
+
+  this->confirm_turn(start_event.turn);
+  this->validate_turn_completely(start_event.turn);
+  this->start();
 }
 
 void ClientWorld::ok_callback(Command* command)
@@ -90,12 +101,17 @@ void ClientWorld::path_callback(Command* command)
       return ;
     }
   log_debug("Must move unit " << e->actors_ids[0] << " to " << e->x << ":" << e->y << " on turn " << e->turn);
-  Action* action = new Action(boost::bind(&World::do_path, this, _1), e, this->occupants.size());
-  this->turn_handler->insert_action(action, e->turn);
+  Action* action = new Action(boost::bind(&World::do_path, this, _1), e);
+  this->insert_received_action(action, e);
+}
+
+void ClientWorld::insert_received_action(Action* action, ActionEvent* event)
+{
+  this->turn_handler->insert_action(action, event->turn);
   if (this->started == true)
-    this->confirm_action(e->get_id());
+    this->confirm_action(event->get_id());
   else
-    this->advance_replay_until_paused();
+    action->validate_completely();
 }
 
 void ClientWorld::confirm_action(const unsigned long int id)
@@ -118,7 +134,8 @@ void ClientWorld::confirm_turn(const unsigned int number)
 
 void ClientWorld::on_next_turn(unsigned long turn)
 {
-  this->confirm_turn(turn+1);
+  if (this->started == true)
+    this->confirm_turn(turn+1);
 }
 
 void ClientWorld::handle_event(actions::Type type, unsigned int x, unsigned y)

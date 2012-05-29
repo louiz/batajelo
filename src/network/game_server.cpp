@@ -43,19 +43,73 @@ void GameServer::on_new_client(RemoteGameClient* new_client)
 	  new_client->send(command);
 	}
     }
-
-  // Finally send a START command to the new player, used to synchronize the
-  // start of the game with others.
-  // Event* start_event = new Event;
-  // Command* start_command = new Command;
-  // start_command->set_name("START");
-  // start_command->set_body(start_event->to_string().c_str());
-  // this->send_to_all_clients(start_command);
-
-  // this->world->install_start_action(start_event, 1);
-
-  // TODO remove that.
+  // Send the replay to the new client.
+  this->send_replay(new_client);
+  // Send an action to indicate at what turn the replay ends
+  // and where the game currently is.
+  this->send_start_command(new_client);
+  // Send the futur commands to the new client
+  // and change their validations_needed value, since
+  // they now require one more validation.
+  this->send_and_adjust_future_commands(new_client);
+  // TODO start it somewhere else.
   this->start_game();
+}
+
+void GameServer::send_replay(RemoteGameClient* new_client)
+{
+  Replay* replay = this->world->get_replay();
+  replay->reset_action_iterator();
+  Action* action;
+  Command* command;
+  ActionEvent* event;
+  while ((action = replay->get_next_action()) != 0)
+    {
+      event = action->get_event();
+      command = new Command;
+      command->set_name(event->name);
+      command->set_body(event->to_string().c_str());
+      new_client->send(command);
+    }
+}
+
+void GameServer::send_and_adjust_future_commands(RemoteGameClient* new_client)
+{
+  Turn* turn;
+  Action* action;
+  Command* command;
+  ActionEvent* event;
+  TurnHandler* turn_handler = this->world->get_turn_handler();
+  unsigned int occupants = this->world->get_number_of_occupants();
+  turn_handler->reset_turns_iterator();
+  while ((turn = turn_handler->get_next_turn()) != 0)
+    {
+      turn->reset_action_iterator();
+      while ((action = turn->get_next_action()) != 0)
+        {
+          if (action->is_completely_validated() == false)
+            {
+              action->set_validations_needed(occupants);
+              event = action->get_event();
+              command = new Command;
+              command->set_name(event->name);
+              command->set_body(event->to_string().c_str());
+              new_client->send(command);
+            }
+        }
+    }
+}
+
+
+void GameServer::send_start_command(RemoteGameClient* client)
+{
+  Command* command = new Command;
+  ActionEvent start_event("START");
+  TurnHandler* turn_handler = this->world->get_turn_handler();
+  start_event.turn = turn_handler->get_current_turn() + 1;
+  command->set_name("START");
+  command->set_body(start_event.to_string().c_str());
+  client->send(command);
 }
 
 void GameServer::on_client_left(RemoteGameClient* client)

@@ -6,9 +6,10 @@
 class Turn
 {
 public:
+  friend std::ostream& operator<<(std::ostream& os, Turn& turn);
   Turn();
   ~Turn();
-  void execute();
+  void execute(bool delete_actions = true);
   void insert(Action*);
   bool is_validated() const;
   Action* get_next_action();

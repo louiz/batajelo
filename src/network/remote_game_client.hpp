@@ -25,6 +25,11 @@ public:
   ~RemoteGameClient();
   virtual void on_connection_closed();
   virtual boost::asio::io_service& get_io_service();
+  /**
+   * Send a command to all clients saying that the action with this id
+   * has been validated by all clients.
+   */
+  void send_ok(const unsigned int id, const unsigned long int by);
 
 private:
   /**
@@ -35,7 +40,6 @@ private:
   virtual void install_callbacks();
   void ok_callback(Command* command);
   void turn_callback(Command* command);
-  void send_ok(const unsigned int id, const unsigned long int by);
   void send_turn(const unsigned int id, const unsigned long int by);
   /**
    * A pointer to the server, to call its method when the RemoteGameClient

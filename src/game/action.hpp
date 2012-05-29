@@ -30,12 +30,13 @@ namespace actions
     };
 }
 
-typedef boost::function< void(Event*) > t_action_callback;
+typedef boost::function< void(ActionEvent*) > t_action_callback;
 
 class Action
 {
 public:
-  Action(t_action_callback, Event*, unsigned int);
+  friend std::ostream& operator<<(std::ostream& os, const Action&);
+  Action(t_action_callback, ActionEvent*, unsigned int required = 0);
   ~Action();
   void execute() const;
   /**
@@ -58,17 +59,25 @@ public:
    * Return the action id.
    */
   unsigned long int get_id() const;
-
-private:
-  Action(const Action&);
-  Action& operator=(const Action&);
+  /**
+   * Returns a pointer to the event contained in the action.
+   */
+  ActionEvent* get_event() const;
   /**
    * Returns true if the action is validated. This
    * means that the number of ready_clients is the same
    * as the validations_needed.
    */
   bool is_validated() const;
+  /**
+   * Sets the number of validations required to completely validate
+   * this action.
+   */
+  void set_validations_needed(unsigned int);
 
+private:
+  Action(const Action&);
+  Action& operator=(const Action&);
 public:
   /**
    * The list of the clients' IDs that confirmed this action.
@@ -81,7 +90,6 @@ public:
    * validated (and therefore executed).
    */
   unsigned int validations_needed;
-
   /**
    * Changes to true (using validate_completely) once the last needed call to
    * validate() has been made, or if we receive from the server that
@@ -92,7 +100,7 @@ public:
   /**
    * The structure passed to the callback when we execute the action.
    */
-  Event* event;
+  ActionEvent* event;
   t_action_callback callback;
 };
 

@@ -1,7 +1,7 @@
 #include <game/action.hpp>
 
 Action::Action(t_action_callback callback,
-	       Event* event,
+	       ActionEvent* event,
 	       unsigned int validations_needed):
   validations_needed(validations_needed),
   completely_validated(false),
@@ -63,4 +63,20 @@ void Action::validate_completely()
 bool Action::is_completely_validated() const
 {
   return this->completely_validated;
+}
+
+ActionEvent* Action::get_event() const
+{
+  return this->event;
+}
+
+std::ostream& operator<<(std::ostream& os, const Action& action)
+{
+  os << "action(" << action.ready_clients.size() << "/" << action.validations_needed << ")-> " << action.completely_validated;
+  return os;
+}
+
+void Action::set_validations_needed(unsigned int number)
+{
+  this->validations_needed = number;
 }

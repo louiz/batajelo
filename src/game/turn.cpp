@@ -15,14 +15,16 @@ Turn::~Turn()
   this->actions.clear();
 }
 
-void Turn::execute()
+void Turn::execute(bool delete_actions)
 {
   log_debug(this->actions.size() << " actions to execute");
   std::vector<Action*>::iterator it;
   for (it = this->actions.begin(); it < this->actions.end(); ++it)
     {
+      log_warning("Executing one action");
       (*it)->execute();
-      delete (*it);
+      if (delete_actions)
+	delete (*it);
     }
   this->actions.clear();
 }
@@ -63,11 +65,12 @@ void Turn::reset_action_iterator()
 }
 
 bool Turn::validate(const unsigned long int by,
-			   const unsigned int confirmations_needed)
+                    const unsigned int confirmations_needed)
 {
+  if (this->validated == true)
+    return false;
   this->ready_clients.push_back(by);
-  assert(this->ready_clients.size() <= confirmations_needed);
-  if (this->ready_clients.size() == confirmations_needed)
+  if (this->ready_clients.size() >= confirmations_needed)
     {
       this->validate_completely();
       return true;
@@ -78,4 +81,14 @@ bool Turn::validate(const unsigned long int by,
 void Turn::validate_completely()
 {
   this->validated = true;
+}
+
+std::ostream& operator<<(std::ostream& os, Turn& turn)
+{
+  turn.reset_action_iterator();
+  const Action* action;
+  os << "[" << turn.is_validated() << "]";
+  while ((action = turn.get_next_action()) != 0)
+    os << *action;
+  return os;
 }

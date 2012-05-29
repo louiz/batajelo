@@ -54,6 +54,13 @@ public:
    * The server gives a path to follow, to one or more entities.
    */
   void path_callback(Command*);
+  /**
+   * Insert an action, built from a command we received, into the turn handler,
+   * and confirm it or validate it, depending on if the game is started or not
+   * (meaning that it comes from the server replay).
+   */
+  void insert_received_action(Action* action, ActionEvent* event);
+
   void on_next_turn(unsigned long turn);
   /**
    * Handle an user event that may generate a real action, or nothing.

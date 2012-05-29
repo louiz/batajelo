@@ -16,6 +16,7 @@
 #include <logging/logging.hpp>
 #include <game/turn.hpp>
 #include <game/action.hpp>
+#include <game/replay.hpp>
 
 typedef boost::function< void(unsigned long) > t_next_turn_callback;
 
@@ -27,18 +28,20 @@ typedef boost::function< void(unsigned long) > t_next_turn_callback;
 class TurnHandler
 {
 public:
-  TurnHandler();
-  TurnHandler(t_next_turn_callback);
+  friend std::ostream& operator<<(std::ostream& os, TurnHandler& turn_handler);
+  TurnHandler(Replay*);
   ~TurnHandler();
   /**
    * Advance the current turn_advancement, and if the TURN_TIME
    * is elapsed, we call next_turn, which in turn executes the commands
    * associated with this turn.
    */
-  void tick();
+  void tick(bool force = false);
   /**
    * Insert an action element into the appropriate turn vector
-   * (which will contain one or more action)
+   * (which will contain one or more action).
+   * If there's a replay associated, add the action in the replay
+   * as well.
    */
   bool insert_action(Action*, const unsigned long turn);
   /**
@@ -47,7 +50,6 @@ public:
    * If we can not insert the turn because it's already passed, returns false.
    */
   bool insert_turn(const unsigned long turn);
-
   /**
    * Return true if the next turn has been fully validated, false otherwise.
    */
@@ -88,6 +90,8 @@ public:
    * Returns the turn we are currently at.
    */
   unsigned long get_current_turn();
+  void reset_turns_iterator();
+  Turn* get_next_turn();
 
 private:
   TurnHandler(const TurnHandler&);
@@ -100,6 +104,7 @@ private:
   void next_turn();
 
   std::deque<Turn> turns;
+  std::deque<Turn>::iterator turns_iterator;
   unsigned long current_turn;
   unsigned int turn_advancement;
 
@@ -109,6 +114,11 @@ private:
    * A function that will be called whenever we go to the next turn.
    */
   t_next_turn_callback next_turn_callback;
+  /**
+   * A pointer to the replay. When a turn is executed, fill the replay
+   * with the actions (if the replay is not 0)
+   */
+  Replay* replay;
 };
 
 #endif // __TURN_HANDLER_HPP__

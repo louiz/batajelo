@@ -12,6 +12,7 @@
 #ifndef __EVENT_HPP__
 # define __EVENT_HPP__
 
+#include <world/entity.hpp>
 #include <serialization/serializable.hpp>
 #include <network/command.hpp>
 
@@ -83,7 +84,12 @@ public:
 class ActionEvent: public Event
 {
 public:
-  ActionEvent(): Event() {}
+  ActionEvent(const std::string& name):
+    Event(),
+    name(name)
+  {}
+  ActionEvent(const Command*);
+
   virtual void serialize(boost::archive::text_oarchive& ar, const unsigned int v)
   {
     Event::serialize(ar, v);
@@ -95,9 +101,39 @@ public:
     ar & turn;
   }
   unsigned long int turn;
+  const std::string name;
 private:
   ActionEvent(const ActionEvent&);
   ActionEvent& operator=(const ActionEvent&);
+};
+
+/**
+ * An event containing an entity object.
+ */
+class EntityEvent: public ActionEvent
+{
+public:
+  EntityEvent(Entity* entity):
+    ActionEvent("NEW_ENTITY"),
+    entity(entity)
+  {}
+  EntityEvent(const Command*);
+
+  virtual void serialize(boost::archive::text_oarchive& ar, const unsigned int v)
+  {
+    ActionEvent::serialize(ar, v);
+    ar & entity;
+  }
+  virtual void serialize(boost::archive::text_iarchive& ar, const unsigned int v)
+  {
+    ActionEvent::serialize(ar, v);
+    ar & entity;
+  }
+  Entity* entity;
+
+private:
+  EntityEvent(const EntityEvent&);
+  EntityEvent& operator=(const ActionEvent&);
 };
 
 class MoveEvent: public Event
@@ -128,7 +164,10 @@ private:
 class PathEvent: public ActionEvent
 {
 public:
-  PathEvent(): ActionEvent() {}
+  PathEvent():
+    ActionEvent("PATH")
+  {}
+
   virtual void serialize(boost::archive::text_oarchive& ar, const unsigned int v)
   {
     ActionEvent::serialize(ar, v);
@@ -142,6 +181,7 @@ public:
 
   PathEvent(const Command*);
   PathEvent(const MoveEvent& e):
+    ActionEvent("PATH"),
     actors_ids(e.actors_ids),
     x(e.x),
     y(e.y)

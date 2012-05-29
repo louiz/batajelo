@@ -29,6 +29,7 @@
 #include <game/action.hpp>
 #include <game/event.hpp>
 #include <game/turn_handler.hpp>
+#include <game/replay.hpp>
 #include <network/command.hpp>
 
 class World
@@ -50,8 +51,12 @@ public:
   /**
    * Advance the world by the smallest step possible. Updates every entity,
    * timer, occupant, turn_handler etc it contains.
+   * The bool tells us to actually do the tick even if the world is not
+   * started. This is used when joining a game already started: we tick
+   * as fast as possible to get to the current game situation, and then
+   * we start the world normally to play the game at normal speed.
    */
-  void tick();
+  void tick(bool force = false);
   /**
    * returns a pointer to the next entity of the world. If it returns NULL,
    * this means that the list is over and the next call will restart from the
@@ -74,7 +79,6 @@ public:
   void set_next_turn_callback(t_next_turn_callback);
   void pause();
   void unpause();
-  void install_start_action(Event*, unsigned int);
   void completely_validate_action(const unsigned int id);
   void validate_turn_completely(const unsigned int number);
   void generate_command(const char* name, const std::string& archive);
@@ -91,12 +95,22 @@ public:
    * Actually remove the occupant from the occupants list.
    */
   void remove_occupant(Occupant*);
-  void do_path(Event*);
+  void do_path(ActionEvent*);
+  void do_new_entity(ActionEvent*);
   Entity* get_entity_by_id(unsigned short id);
   /**
    * Sends a command to the server saying that we confirm that action.
    */
   void confirm_action(const unsigned int);
+  /**
+   * Returns a pointer to the replay.
+   */
+  Replay* get_replay() const;
+  TurnHandler* get_turn_handler() const;
+  /**
+   * Return the current number of connected clients.
+   */
+  unsigned int get_number_of_occupants() const;
   /**
    * the list of other occupants of the game, when a new client connects to
    * the server, we add it to the list, when it disconnects we remove it.
