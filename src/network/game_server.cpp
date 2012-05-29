@@ -100,6 +100,41 @@ void GameServer::send_and_adjust_future_commands(RemoteGameClient* new_client)
     }
 }
 
+void GameServer::adjust_and_revalidate_futur_commands()
+{
+  Turn* turn;
+  Action* action;
+  TurnHandler* turn_handler = this->world->get_turn_handler();
+  unsigned int occupants = this->world->get_number_of_occupants();
+  unsigned long turn_id = this->world->get_turn_handler()->get_current_turn();
+  turn_handler->reset_turns_iterator();
+
+  while ((turn = turn_handler->get_next_turn()) != 0)
+    {
+      if (turn->get_number_of_validations() == occupants)
+        {
+          this->send_turn(turn_id, 0);
+          turn->validate_completely();
+        }
+      turn->reset_action_iterator();
+      while ((action = turn->get_next_action()) != 0)
+        {
+          if (action->is_completely_validated() == false)
+            {
+              action->set_validations_needed(occupants);
+              if (action->is_validated() == true)
+                { // If the action was validated by all clients
+                  // except the one that just left, the action is now
+                  // completely validated.
+                  action->validate_completely();
+                  this->send_ok(action->get_event()->get_id(), 0);
+                }
+            }
+        }
+      ++turn_id;
+    }
+}
+
 
 void GameServer::send_start_command(RemoteGameClient* client)
 {
@@ -128,6 +163,7 @@ void GameServer::on_client_left(RemoteGameClient* client)
 	  this->send_to_all_clients(command);
 	  this->world->occupants.erase(it);
 	  delete occupant_to_remove;
+          this->adjust_and_revalidate_futur_commands();
 	  return ;
 	}
     }
@@ -163,3 +199,26 @@ void GameServer::send_pending_commands()
       this->send_to_all_clients(command);
     }
 }
+
+void GameServer::send_ok(const unsigned int id, const unsigned long int by)
+{
+  // TODO the 'by' value is useless here.
+  // Even the OkEvent is useless, we just need to pass an unsigned int.
+  Command* command = new Command;
+  command->set_name("OK");
+  OkEvent ok_event(id, by);
+  command->set_body(ok_event.to_string().c_str());
+  this->send_to_all_clients(command);
+}
+
+void GameServer::send_turn(const unsigned int id, const unsigned long int by)
+{
+  // TODO Same here, remove the by.
+  Command* command = new Command;
+  command->set_name("T");
+  std::ostringstream os;
+  os << id;
+  command->set_body(os.str().c_str());
+  this->send_to_all_clients(command);
+}
+

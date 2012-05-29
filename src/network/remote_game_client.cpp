@@ -45,7 +45,7 @@ void RemoteGameClient::ok_callback(Command* command)
   ServerWorld* world = static_cast<GameServer*>(this->server)->get_world();
 
   if (world->validate_action(ok_event.get_id(), this->get_number()) == true)
-    this->send_ok(ok_event.get_id(), this->get_number());
+    static_cast<GameServer*>(this->server)->send_ok(ok_event.get_id(), this->get_number());
 }
 
 void RemoteGameClient::turn_callback(Command* command)
@@ -54,28 +54,7 @@ void RemoteGameClient::turn_callback(Command* command)
   unsigned int number;
   is >> number;
   ServerWorld* world = static_cast<GameServer*>(this->server)->get_world();
+
   if (world->validate_turn(number, this->get_number()) == true)
-    this->send_turn(number, this->get_number());
+    static_cast<GameServer*>(this->server)->send_turn(number, this->get_number());
 }
-
-void RemoteGameClient::send_ok(const unsigned int id, const unsigned long int by)
-{
-  // TODO by value is useless here.
-  // Even the OkEvent is useless, we just need to pass an unsigned int.
-  Command* command = new Command;
-  command->set_name("OK");
-  OkEvent ok_event(id, by);
-  command->set_body(ok_event.to_string().c_str());
-  this->server->send_to_all_clients(command);
-}
-
-void RemoteGameClient::send_turn(const unsigned int id, const unsigned long int by)
-{
-  Command* command = new Command;
-  command->set_name("T");
-  std::ostringstream os;
-  os << id;
-  command->set_body(os.str().c_str());
-  this->server->send_to_all_clients(command);
-}
-

@@ -22,6 +22,10 @@ public:
   bool validate(const unsigned long int by,
 		const unsigned int confirmations_needed);
   /**
+   * Return the number of validations for this turn, so far.
+   */
+  unsigned int get_number_of_validations() const;
+  /**
    * Just set the validated bool to true.
    */
   void validate_completely();

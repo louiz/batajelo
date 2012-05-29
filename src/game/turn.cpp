@@ -92,3 +92,8 @@ std::ostream& operator<<(std::ostream& os, Turn& turn)
     os << *action;
   return os;
 }
+
+unsigned int Turn::get_number_of_validations() const
+{
+  return this->ready_clients.size();
+}

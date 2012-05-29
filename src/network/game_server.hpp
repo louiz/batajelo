@@ -42,6 +42,19 @@ public:
    * to the current number of occupants, and send them to the client.
    */
   void send_and_adjust_future_commands(RemoteGameClient*);
+
+  void adjust_and_revalidate_futur_commands();
+  /**
+   * Send a command to all clients saying that the action with this id
+   * has been validated by all clients.
+   */
+  void send_ok(const unsigned int id, const unsigned long int by);
+  /**
+   * Send a command to all clients saying that the turn with this id
+   * has been validated by all clients.
+   */
+  void send_turn(const unsigned int id, const unsigned long int by);
+
   void tick();
   void pause_game();
   void unpause_game();
