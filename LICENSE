@@ -1,0 +1,46 @@
+=============
+  Batajelo
+=============
+
+Batajelo is Free Software.
+(learn more: http://www.gnu.org/philosophy/free-sw.html)
+
+Batajelo is released under the zlib License.
+Please read the LICENSE.ZLIB file for details.
+
+=============
+  External
+=============
+
+Several independent libraries are used by and distributed along with Batajelo.
+These libraries were released by their authors under various permissive
+free software licences, and you are then allowed to use and distribute them
+following their respective licences.
+
+The full licence texts are provided in separated files, and the copyright notices
+can be found at the top of each source code file, if provided.
+
+
+----------------- libtiled --------------------
+License:  Simplified BSD license
+Website:  http://www.mapeditor.org/
+Sources:  https://github.com/bjorn/tiled
+-----------------------------------------------
+
+------------------- boost ---------------------
+License:  Boost software license 1.0
+Website:  http://www.boost.org/
+Sources:  http://www.boost.org/users/download/
+-----------------------------------------------
+
+-------------------- SFML ---------------------
+License:  zlib
+Website:  http://www.sfml-dev.org/
+Sources:  https://github.com/LaurentGomila/SFML
+-----------------------------------------------
+
+-------------------- SFGUI --------------------
+License:  zlib
+Website:  http://sfgui.sfml-dev.de/
+Sources:  http://sfgui.sfml-dev.de/download
+-----------------------------------------------
