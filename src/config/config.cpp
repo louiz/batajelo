@@ -88,10 +88,13 @@ void Config::set(const std::string& option, const std::string& value, bool save)
     }
   instance->values[option] = value;
   if (save)
-    instance->save_to_file();
+    {
+      instance->save_to_file();
+      instance->trigger_configuration_change();
+    }
 }
 
-void Config::save_to_file()
+void Config::save_to_file() const
 {
   std::ofstream file(this->filename.data());
   if (file.fail())
@@ -101,9 +104,25 @@ void Config::save_to_file()
     }
   std::map<std::string, std::string>::iterator it;
   for (it=this->values.begin(); it != this->values.end(); ++it)
-    {
-      std::cout << it->first <<std::endl;
-      file << it->first << "=" << it->second << std::endl;
-    }
+    file << it->first << "=" << it->second << std::endl;
   file.close();
+}
+
+void Config::connect(t_config_changed_callback callback)
+{
+  if (instance == 0)
+    {
+      std::cerr << "Error: Config::read_conf() has never been called" << std::endl;
+      return ;
+    }
+  instance->callbacks.push_back(callback);
+}
+
+void Config::trigger_configuration_change()
+{
+  std::vector<t_config_changed_callback>::iterator it;
+  for (it = this->callbacks.begin(); it < this->callbacks.end(); ++it)
+    {
+      (*it)();
+    }
 }

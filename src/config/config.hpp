@@ -14,10 +14,14 @@
 # define __CONFIG_HPP__
 
 #include <map>
+#include <vector>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <boost/algorithm/string/trim_all.hpp>
+#include <boost/function.hpp>
+
+typedef boost::function<void()> t_config_changed_callback;
 
 class Config
 {
@@ -58,6 +62,14 @@ public:
    * @param filename The path to open and read.
    */
   static bool read_conf(const std::string&);
+  /**
+   * Adds a function to a list. This function will be called whenever a
+   * configuration change occurs.
+   */
+  static void connect(t_config_changed_callback);
+  /**
+   * The uniq config instance.
+   */
   static Config* instance;
 
 private:
@@ -66,10 +78,16 @@ private:
   /**
    * Write all the config values into the configuration file
    */
-  void save_to_file();
+  void save_to_file() const;
+  /**
+   * Call all the callbacks previously registered using connect().
+   * This is used to notify any class that a configuration change occured.
+   */
+  void trigger_configuration_change();
 
   std::string filename;
   std::map<std::string, std::string> values;
+  std::vector<t_config_changed_callback> callbacks;
 };
 
 #endif // __CONFIG_HPP__
