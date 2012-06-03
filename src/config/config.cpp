@@ -12,10 +12,10 @@ bool Config::read_conf(const std::string& filename)
       std::ifstream file;
       file.open(filename.data());
       if (!file.is_open())
-  {
-    std::cerr << "Error: cannot open config file " << filename << std::endl;
-    return false;
-  }
+        {
+          std::cerr << "Error: cannot open config file " << filename << std::endl;
+          return false;
+        }
       instance = new Config();
       instance->filename = filename;
 
@@ -24,19 +24,19 @@ bool Config::read_conf(const std::string& filename)
       std::string option;
       std::string value;
       while (file.good())
-  {
-    std::getline(file, line);
-    if (line == "" || line[0] == '#')
-      continue ;
-    pos = line.find('=');
-    if (pos == std::string::npos)
-      continue ;
-    option = line.substr(0, pos);
-    value = line.substr(pos+1);
-    boost::algorithm::trim_all(value);
-    boost::algorithm::trim_all(option);
-    instance->values[option] = value;
-  }
+        {
+          std::getline(file, line);
+          if (line == "" || line[0] == '#')
+            continue ;
+          pos = line.find('=');
+          if (pos == std::string::npos)
+            continue ;
+          option = line.substr(0, pos);
+          value = line.substr(pos+1);
+          boost::algorithm::trim_all(value);
+          boost::algorithm::trim_all(option);
+          instance->values[option] = value;
+        }
       file.close();
       return true;
     }
@@ -67,7 +67,7 @@ int Config::get_int(const std::string& option, const int& def)
 {
   std::string res = get(option, "");
   if (res.size() > 0)
-  return atoi(res.c_str());
+    return atoi(res.c_str());
   else
     return def;
 }
@@ -76,7 +76,7 @@ void Config::set_int(const std::string& option, const int& value, bool save)
 {
   std::ostringstream os;
   os << value;
-  set(option, os.str(), save);
+  Config::set(option, os.str(), save);
 }
 
 void Config::set(const std::string& option, const std::string& value, bool save)
@@ -102,7 +102,7 @@ void Config::save_to_file() const
       std::cerr << "Could not save config file." << std::endl;
       return ;
     }
-  std::map<std::string, std::string>::iterator it;
+  std::map<std::string, std::string>::const_iterator it;
   for (it=this->values.begin(); it != this->values.end(); ++it)
     file << it->first << "=" << it->second << std::endl;
   file.close();
