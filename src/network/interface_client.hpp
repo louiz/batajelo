@@ -27,6 +27,14 @@
 
 using boost::asio::ip::tcp;
 
+/**
+ * Does nothing, it is just used to exit the io_service.run_one() after
+ * a timeout.
+ */
+static void poll_timeout_handler(const boost::system::error_code&)
+{
+}
+
 class InterfaceClient: public CommandHandler, public TimedEventHandler, public PingHandler
 {
 public:
@@ -46,10 +54,9 @@ public:
    */
   virtual void install_callbacks() = 0;
   /**
-   * Check for data on the sockets (to send or write), and execute the
-   * appropriate handlers. Does nothing if there’s nothing to read or write.
-   * This is non-blocking, but can wait a little bit, polling, if timeout
-   * is not 0.
+   * Checks for network or timed events readiness.
+   * The timeout argument makes this call block for that amount
+   * of milliseconds.
    */
   void poll(long timeout = 0);
 
@@ -66,6 +73,7 @@ private:
   void ping_callback(Command*);
 
   boost::asio::io_service io_service;
+  boost::asio::deadline_timer timeout;
 };
 
 #endif /*__CLIENT_HPP__ */

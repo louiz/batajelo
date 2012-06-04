@@ -27,6 +27,14 @@
 
 using boost::asio::ip::tcp;
 
+/**
+ * Does nothing, it is just used to exit the io_service.run_one() after
+ * a timeout.
+ */
+static void poll_timeout_handler(const boost::system::error_code&)
+{
+}
+
 template <class T>
 class Server
 {
@@ -36,7 +44,8 @@ public:
    * @param port The port on which the servers accepts new connections.
    */
   Server(short port):
-    port(port)
+    port(port),
+    timeout(io_service)
   {
   }
   ~Server()
@@ -59,31 +68,28 @@ public:
     this->io_service.run();
   }
   /**
-   * Run the network loop once, non-blocking.
-   * The timeout simulates a timeout argument, as it could be used
-   * on select() to say that it does not need to return immediately but
-   * can wait a little bit for events before returning.
-   * Boost::asio doesn't provide such a feature, so we try to emulate that
-   * here we a loop and a short sleep.
+   * Checks for network or timed events readiness.
+   * The timeout argument makes this call block for that amount
+   * of milliseconds.
    */
   void poll(long timeout = 0)
   {
-    this->io_service.poll();
     if (timeout == 0)
-      return ;
-    #ifdef _WIN32 ||  _WIN64
-    for (; timeout > 0; timeout--)
       {
-        Sleep(1);
         this->io_service.poll();
+        return ;
       }
-    #elif defined __linux__
-    for (timeout *= 2; timeout > 0; timeout--)
-      {
-        usleep(500);
-        this->io_service.poll();
-      }
-    #endif
+    if (this->timeout.expires_from_now(boost::posix_time::milliseconds(timeout)) == 0)
+      // The last run_one() call returned because the timeout expired, so
+      // we reinstall it. If that's not the case
+      // (something actually happened on the socket)
+      // we just need to reset the time of expiration, but not reinstall it.
+      this->timeout.async_wait(&poll_timeout_handler);
+    // Wait for one event to happen (either a timeout or something
+    // on the socket).
+    this->io_service.run_one();
+    while (this->io_service.poll() != 0)
+      ; // Execute all other available handlers, if any
   }
   /**
    * To be called by the a RemoteClient instance, to delete itself from
@@ -221,6 +227,7 @@ private:
   std::vector<T*> clients;
   tcp::acceptor* acceptor;
   short port;
+  boost::asio::deadline_timer timeout;
 };
 
 #endif /*__SERVER_HPP__ */

@@ -32,7 +32,7 @@ int main()
 	  s.tick();
 	}
       s.send_pending_commands();
-      s.poll(10);
+      s.poll(100);
     }
   return 0;
 }

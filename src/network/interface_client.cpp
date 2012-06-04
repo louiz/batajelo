@@ -4,7 +4,8 @@
 # include <WinBase.h>
 #endif
 
-InterfaceClient::InterfaceClient()
+InterfaceClient::InterfaceClient():
+  timeout(io_service)
 {
   this->socket = new tcp::socket(io_service);
 }
@@ -71,21 +72,22 @@ boost::asio::io_service& InterfaceClient::get_io_service()
 
 void InterfaceClient::poll(long timeout)
 {
-  this->io_service.poll();
   if (timeout == 0)
-    return ;
-  #ifdef _WIN32 ||  _WIN64
-  for (; timeout > 0; timeout--)
     {
-      Sleep(1);
       this->io_service.poll();
+      return ;
     }
-  #elif defined __linux__
-  for (timeout *= 2; timeout > 0; timeout--)
-    {
-      usleep(500);
-      this->io_service.poll();
-    }
-  #endif
+  if (this->timeout.expires_from_now(boost::posix_time::milliseconds(timeout)) == 0)
+    // The last run_one() call returned because the timeout expired, so
+    // we reinstall it. If that's not the case
+    // (something actually happened on the socket)
+    // we just need to reset the time of expiration, but not reinstall it.
+    this->timeout.async_wait(&poll_timeout_handler);
+  // Wait for one event to happen (either a timeout or something
+  // on the socket).
+  this->io_service.run_one();
+  while (this->io_service.poll() != 0)
+    ; // Execute all other available handlers, if any.
 }
+
 
