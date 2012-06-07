@@ -27,20 +27,31 @@ Website:  http://www.mapeditor.org/
 Sources:  https://github.com/bjorn/tiled
 -----------------------------------------------
 
-------------------- boost ---------------------
+
+------------------ boost ----------------------
 License:  Boost software license 1.0
 Website:  http://www.boost.org/
 Sources:  http://www.boost.org/users/download/
 -----------------------------------------------
 
--------------------- SFML ---------------------
+
+------------------ SFML -----------------------
 License:  zlib
 Website:  http://www.sfml-dev.org/
 Sources:  https://github.com/LaurentGomila/SFML
 -----------------------------------------------
 
--------------------- SFGUI --------------------
+
+------------------ SFGUI ----------------------
 License:  zlib
 Website:  http://sfgui.sfml-dev.de/
 Sources:  http://sfgui.sfml-dev.de/download
 -----------------------------------------------
+
+
+------------------ Base64 ---------------------
+License:  zlib
+Website:  http://www.adp-gmbh.ch/cpp/common/base64.html
+Sources:  https://github.com/ReneNyffenegger/development_misc/tree/master/base64
+-----------------------------------------------
+
