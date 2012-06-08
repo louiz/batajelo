@@ -1,5 +1,9 @@
 #include <gui/camera/camera.hpp>
 
+#define TILEHEIGHT 96
+#define TILEWIDTH 128
+
+
 Camera::Camera(ClientWorld* world):
   x(0),
   y(0),

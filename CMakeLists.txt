@@ -48,9 +48,8 @@ endif(DOXYGEN_FOUND)
 
 #Librairies to include
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-find_package(Boost 1.47.0 COMPONENTS serialization system date_time unit_test_framework REQUIRED)
+find_package(Boost 1.47.0 COMPONENTS serialization system date_time unit_test_framework iostreams REQUIRED)
 find_package(Threads REQUIRED)
-
 
 
 include_directories(${Boost_INCLUDE_DIR})
@@ -112,6 +111,19 @@ target_link_libraries(
 
 file(
 	GLOB
+	source_utils
+	src/utils/*.[hc]pp
+)
+add_library(utils STATIC ${source_utils})
+
+target_link_libraries(
+	utils
+	${Boost_LIBRARIES}
+	${CMAKE_THREAD_LIBS_INIT}
+)
+
+file(
+	GLOB
 	source_config
 	src/config/config.*
 )
@@ -140,6 +152,7 @@ target_Link_libraries(
 	logging
 	config
 	world
+        utils
 	${SFML_LIBRARIES}
 	${SFGUI_LIBRARY}
 	${Boost_LIBRARIES}
