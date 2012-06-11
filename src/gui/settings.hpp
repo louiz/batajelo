@@ -18,6 +18,7 @@ class Settings: public Page
 {
 public:
   Settings(Ui*, sfg::Desktop*, sf::RenderWindow*);
+  virtual ~Settings() {}
   /**
    * Hide the page.
    * @return void

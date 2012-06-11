@@ -27,14 +27,6 @@
 
 using boost::asio::ip::tcp;
 
-/**
- * Does nothing, it is just used to exit the io_service.run_one() after
- * a timeout.
- */
-static void poll_timeout_handler(const boost::system::error_code&)
-{
-}
-
 class InterfaceClient: public CommandHandler, public TimedEventHandler, public PingHandler
 {
 public:

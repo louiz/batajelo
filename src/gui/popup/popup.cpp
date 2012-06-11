@@ -1,7 +1,10 @@
 #include <gui/popup/popup.hpp>
 #include <config/config.hpp>
 
-Popup::Popup(Ui* ui, sfg::Desktop* desktop, sf::RenderWindow* window): ui(ui), desktop(desktop), window(window) 
+Popup::Popup(Ui* ui, sfg::Desktop* desktop, sf::RenderWindow* window):
+  desktop(desktop),
+  window(window),
+  ui(ui)
 {
   this->box_popup = sfg::Box::Create(sfg::Box::VERTICAL);
   this->box_popup->SetId("box_popup");

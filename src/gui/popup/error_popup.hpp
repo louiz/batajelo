@@ -18,7 +18,7 @@ class ErrorPopup: public Popup
 {
 public:
   ErrorPopup(Ui*, sfg::Desktop*, sf::RenderWindow*);
-
+  virtual ~ErrorPopup() {}
   /**
    * Hide the page.
    * @return void

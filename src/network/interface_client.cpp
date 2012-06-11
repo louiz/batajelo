@@ -4,6 +4,14 @@
 # include <WinBase.h>
 #endif
 
+/**
+ * Does nothing, it is just used to exit the io_service.run_one() after
+ * a timeout.
+ */
+static void poll_timeout_handler(const boost::system::error_code&)
+{
+}
+
 InterfaceClient::InterfaceClient():
   timeout(io_service)
 {

@@ -1,3 +1,7 @@
 #include <gui/page.hpp>
 
-Page::Page(Ui* ui, sfg::Desktop* desktop, sf::RenderWindow* window): ui(ui), desktop(desktop), window(window) {}
+Page::Page(Ui* ui, sfg::Desktop* desktop, sf::RenderWindow* window):
+  desktop(desktop),
+  window(window),
+  ui(ui)
+{}

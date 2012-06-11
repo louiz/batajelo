@@ -18,7 +18,7 @@ class DialogPopup: public Popup
 {
 public:
   DialogPopup(Ui*, sfg::Desktop*, sf::RenderWindow*);
-
+  virtual ~DialogPopup() {}
   /**
    * Hide the page.
    * @return void

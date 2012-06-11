@@ -10,13 +10,13 @@ const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
 Ui::Ui(Game* game):
-  game(game),
   font_path(Config::get("font_path", "C:/Work/pelaze/git/batajelo/data/fonts/").data()),
   theme_path(Config::get("theme_path", "C:/Work/pelaze/git/batajelo/data/themes/").data()),
-  img_path(Config::get("img_path", "C:/Work/pelaze/git/batajelo/data/images/").data())
+  img_path(Config::get("img_path", "C:/Work/pelaze/git/batajelo/data/images/").data()),
+  game(game)
 {
   /**
-   *  @todo for default video mode :use the method getDesktopMode () instead of putting 800x600 
+   *  @todo for default video mode :use the method getDesktopMode () instead of putting 800x600
    **/
   if (sf::VideoMode(Config::get_int("width", 800), Config::get_int("height", 600)).isValid())
     this->window = new sf::RenderWindow(sf::VideoMode(Config::get_int("width", 800), Config::get_int("height", 600)), "Batajelo", this->get_display_mode());
@@ -33,7 +33,7 @@ Ui::Ui(Game* game):
   this->current_page->show();
 }
 
-Ui::~Ui() 
+Ui::~Ui()
 {
   delete this->error_popup;
   delete this->home;
@@ -58,7 +58,7 @@ void Ui::clear()
 }
 
 void Ui::refresh()
-{  
+{
   if (this->clock.getElapsedTime().asMicroseconds() > 16666)
     {
       this->desktop->Update(this->clock.restart().asSeconds());
@@ -73,10 +73,10 @@ void Ui::refresh()
 
 void Ui::handle_event()
 {
-  while(this->window->pollEvent(this->event)) 
+  while(this->window->pollEvent(this->event))
   {
     this->desktop->HandleEvent(this->event);
-    if(this->event.type == sf::Event::Closed) 
+    if(this->event.type == sf::Event::Closed)
       this->close();
   }
 }
@@ -123,12 +123,12 @@ void Ui::switch_to_error_popup(const std::string error)
 }
 
 void Ui::switch_to_settings()
-{ 
+{
   this->switch_to_page(this->settings);
 }
 
 void Ui::switch_to_home()
-{ 
+{
   this->switch_to_page(this->home);
 }
 
@@ -192,7 +192,7 @@ void Ui::on_authenticate(Command* received_command)
 int Ui::get_display_mode()
 {
   int display = Config::get_int("display", 2);
-  
+
   if (display == 0)
     return sf::Style::Close;
   else if (display == 1)

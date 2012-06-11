@@ -22,7 +22,7 @@ public:
   Event(const unsigned long int id);
   Event(const Command*);
   Event();
-  ~Event() {}
+  virtual ~Event() {}
   static unsigned long int current_id;
   virtual void serialize(boost::archive::text_oarchive& ar, const unsigned int)
   {

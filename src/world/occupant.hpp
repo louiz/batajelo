@@ -19,7 +19,7 @@ class Occupant: public Serializable
 public:
   Occupant(unsigned long int number, const std::string& name);
   Occupant();
-  ~Occupant();
+  virtual ~Occupant();
 
   virtual void serialize(oarchive & ar, const unsigned int)
   {

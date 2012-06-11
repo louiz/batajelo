@@ -19,6 +19,7 @@ class Home: public Page
 {
 public:
   Home(Ui*, sfg::Desktop*, sf::RenderWindow*);
+  virtual ~Home() {}
   /**
    * Hide the page.
    * @return void
