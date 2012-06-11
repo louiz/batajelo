@@ -60,7 +60,6 @@ void TurnHandler::next_turn()
     return ;
   log_warning("Turn number " << this->current_turn << ": ");
   Turn* turn = &(this->turns[0]);
-  Action* action;
   if (this->replay != 0)
     turn->execute(false);
   else
@@ -132,7 +131,7 @@ bool TurnHandler::validate_action(const unsigned int id, const unsigned long int
   Action* action;
 
   bool res;
-  for (it = this->turns.begin(); it < this->turns.end(); ++it)
+  for (it = this->turns.begin(); it != this->turns.end(); ++it)
     {
       (*it).reset_action_iterator();
       while ((action = (*it).get_next_action()) != 0)
@@ -156,7 +155,7 @@ void TurnHandler::completely_validate_action(const unsigned int id)
   std::deque<Turn>::iterator it;
   Action* action;
 
-  for (it = this->turns.begin(); it < this->turns.end(); ++it)
+  for (it = this->turns.begin(); it != this->turns.end(); ++it)
     {
       (*it).reset_action_iterator();
       while ((action = (*it).get_next_action()) != 0)
@@ -211,7 +210,7 @@ std::ostream& operator<<(std::ostream& os, TurnHandler& turn_handler)
   os << "Turn Handler:" << std::endl;
   std::deque<Turn>::iterator it;
   unsigned long int turn = turn_handler.current_turn;
-  for (it = turn_handler.turns.begin(); it < turn_handler.turns.end(); ++it)
+  for (it = turn_handler.turns.begin(); it != turn_handler.turns.end(); ++it)
     {
       os << "turn " << turn++ << "\t\t";
       os << (*it);

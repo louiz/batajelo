@@ -53,7 +53,7 @@ void DbObject::print()
   std::map<std::string, std::string>::iterator it;
 	std::cout << this->values.size();
 
-  for (it = this->values.begin(); it != this->values.end(); it++)
+  for (it = this->values.begin(); it != this->values.end(); ++it)
     log_info(it->first << " -> " << it->second);
 }
 

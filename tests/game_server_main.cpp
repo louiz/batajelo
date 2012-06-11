@@ -12,7 +12,6 @@ int main()
     return 1;
   log_debug("Starting server");
 
-  unsigned long long int total = 0;
   srand(getpid());
   GameServer s(7879);
   s.start();
