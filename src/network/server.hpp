@@ -123,7 +123,7 @@ public:
   /**
    * Called after a client just connected to us.
    */
-  virtual void on_new_client(T* client)
+  virtual void on_new_client(T*)
   {
   }
   /**
@@ -131,7 +131,7 @@ public:
    * Must NOT try to send anything to it, and should not assume
    * it's still in the clients' list.
    */
-  virtual void on_client_left(T* client)
+  virtual void on_client_left(T*)
   {
   }
 

@@ -7,9 +7,6 @@
  * @class Request
  */
 
-#include <iostream>
-#include <string>
-
 #ifndef __REQUEST_HPP__
 # define __REQUEST_HPP__
 
