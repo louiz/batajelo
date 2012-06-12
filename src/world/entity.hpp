@@ -23,7 +23,7 @@ public:
    * on a model.
    */
   Entity(const Entity&);
-  ~Entity();
+  virtual ~Entity();
   bool is_selected() const;
   bool contains(unsigned int, unsigned int) const;
 

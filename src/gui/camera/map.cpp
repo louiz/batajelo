@@ -34,6 +34,9 @@ GraphMap::~GraphMap()
 
 bool GraphMap::load_from_file(const std::string& filename)
 {
+  // TODO, don't duplicate parsing.
+  Map::load_from_file(filename);
+
   boost::property_tree::ptree tree;
   try
     {
@@ -48,7 +51,7 @@ bool GraphMap::load_from_file(const std::string& filename)
   const unsigned int tile_width = tree.get<unsigned int>("map.<xmlattr>.tilewidth", 0);
   if ((tile_width != TILE_WIDTH) || (tile_height != TILE_HEIGHT))
     {
-      log_error("Map has a wrong size: " << tile_width << ":" << tile_height);
+      log_error("Map has a wrong tile size: " << tile_width << ":" << tile_height);
       return false;
     }
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
@@ -87,7 +90,8 @@ bool GraphMap::read_layer(boost::property_tree::ptree& tree)
     return false;
   log_debug("Reading layer for level " << level);
   Layer* layer = this->layers[level];
-  layer->set_size(layer_height, layer_width);
+  layer->set_level(level);
+  layer->set_size(layer_width, layer_height);
   std::string data;
   if (this->get_layer_data(tree, data) == false)
     return false;
@@ -236,4 +240,21 @@ bool GraphMap::get_layer_data(boost::property_tree::ptree& tree, std::string& da
     }
   log_error("No data found for layer");
   return false;
+}
+
+void GraphMap::reset_layers_iterator()
+{
+  this->layers_iterator = this->layers.begin();
+}
+
+Layer* GraphMap::get_next_layer()
+{
+  if (this->layers_iterator == this->layers.end())
+    {
+      this->layers_iterator = this->layers.begin();
+      return 0;
+    }
+  Layer* layer = *this->layers_iterator;
+  ++this->layers_iterator;
+  return layer;
 }

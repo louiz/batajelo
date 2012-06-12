@@ -15,29 +15,40 @@
 # define __UI_MAP_HPP__
 
 #define LAYER_NUMBER 5
-
+#define LEVEL_HEIGHT 32
 #define TILE_WIDTH 128
 #define TILE_HEIGHT 96
 
 #include <logging/logging.hpp>
 #include <gui/camera/layer.hpp>
 #include <gui/camera/tile.hpp>
+#include <world/map.hpp>
 
-class GraphMap
+class Camera;
+
+class GraphMap: public Map
 {
+  friend Camera;
 public:
   GraphMap();
   ~GraphMap();
-  bool load_from_file(const std::string& filename);
+  virtual bool load_from_file(const std::string& filename);
   void set_size();
-  bool read_layer(boost::property_tree::ptree& tree);
-  bool read_tileset(boost::property_tree::ptree& tree);
-  bool get_layer_level(boost::property_tree::ptree& tree, unsigned int& level);
-  bool get_layer_data(boost::property_tree::ptree& tree, std::string& data);
+
+  void reset_layers_iterator();
+  Layer* get_next_layer();
 
 private:
   GraphMap(const GraphMap&);
   GraphMap& operator=(const GraphMap&);
+
+  bool read_layer(boost::property_tree::ptree& tree);
+  bool read_tileset(boost::property_tree::ptree& tree);
+  bool get_layer_level(boost::property_tree::ptree& tree, unsigned int& level);
+  bool get_layer_data(boost::property_tree::ptree& tree, std::string& data);
+  /**
+   * The list of all layers. A layer can be NULL.
+   */
   std::vector<Layer*> layers;
   /**
    * The list of all the tiles used in this map. The position in the list
@@ -52,6 +63,8 @@ private:
    * texture pointer to remain valid.
    */
   std::vector<sf::Texture*> tileset_textures;
+
+  std::vector<Layer*>::const_iterator layers_iterator;
 };
 
 #endif // __UI_MAP_HPP__

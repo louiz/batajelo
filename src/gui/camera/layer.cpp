@@ -25,6 +25,11 @@ void Layer::set_level(const unsigned int level)
   this->level = level;
 }
 
+uint Layer::get_level() const
+{
+  return this->level;
+}
+
 void Layer::set_cell(const unsigned int cell, const unsigned int value)
 {
   this->cells[cell] = value;

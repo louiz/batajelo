@@ -1,7 +1,8 @@
 #include <world/world.hpp>
 
 World::World():
-  started(false)
+  started(false),
+  map(0)
 {
   this->replay = new Replay;
   this->turn_handler = new TurnHandler(this->replay);
@@ -13,6 +14,13 @@ World::~World()
   delete this->turn_handler;
   if (this->replay != 0)
     delete this->replay;
+  this->reset_entity_iterator();
+  Entity* entity;
+  while ((entity = this->get_next_entity()) != 0)
+    delete entity;
+  std::vector<Entity*>::iterator it;
+  for (it = this->entity_models.begin(); it < this->entity_models.end(); ++it)
+    delete (*it);
 }
 
 Entity* World::get_next_entity()
@@ -121,6 +129,7 @@ void World::advance_replay_until_paused()
 void World::start()
 {
   log_debug("start");
+  assert(this->map != 0);
   if (this->started == true)
     return;
   this->started = true;

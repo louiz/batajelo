@@ -18,11 +18,12 @@
 #include <logging/logging.hpp>
 #include <world/client_world.hpp>
 #include <world/time.hpp>
+#include <gui/camera/map.hpp>
 
 class Camera
 {
 public:
-  Camera(ClientWorld*);
+  Camera(ClientWorld*, GraphMap*);
   ~Camera();
   /**
    * Draw the world viewed through the camera.
@@ -42,6 +43,8 @@ public:
    * input etc.
    */
   void update(const Duration& dt);
+
+  void draw_map(sf::RenderWindow* win);
 
 private:
   Camera(const Camera&);
@@ -63,6 +66,7 @@ private:
    * A pointer to the world object used to display stuff on the screen.
    */
   ClientWorld* world;
+  GraphMap* map;
 };
 
 #endif // __CAMERA__HPP__

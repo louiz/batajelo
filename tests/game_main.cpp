@@ -6,32 +6,37 @@
 #include <world/time.hpp>
 #include <gui/camera/camera.hpp>
 #include <network/command.hpp>
+#include <gui/camera/map.hpp>
 
 int main()
 {
-  GameClient* c = new GameClient();
-  ClientWorld* world = new ClientWorld;
-  world->set_next_turn_callback(boost::bind(&ClientWorld::on_next_turn, world, _1));
-  Camera* camera = new Camera(world);
-
-  sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(800, 600),
+  sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(1024, 768),
 						  "Bata");
 
-  c->install_callback("NEW_OCCUPANT",
-		      boost::bind(&ClientWorld::new_occupant_callback, world, _1));
-  c->install_callback("OCCUPANT_LEFT",
-		      boost::bind(&ClientWorld::occupant_left_callback, world, _1));
-  c->install_callback("NEW_ENTITY",
-		      boost::bind(&ClientWorld::new_entity_callback, world, _1));
-  c->install_callback("START",
-		      boost::bind(&ClientWorld::handle_start_command, world, _1));
-  c->install_callback("OK",
-		      boost::bind(&ClientWorld::ok_callback, world, _1));
-  c->install_callback("T",
-		      boost::bind(&ClientWorld::turn_callback, world, _1));
-  c->install_callback("PATH",
-		      boost::bind(&ClientWorld::path_callback, world, _1));
+  GameClient* c = new GameClient();
+  GraphMap* map = new GraphMap;
+  map->load_from_file("test.tmx");
+  ClientWorld* world = new ClientWorld;
+  world->set_next_turn_callback(boost::bind(&ClientWorld::on_next_turn, world, _1));
 
+
+  Camera camera(world, map);
+
+
+  c->install_callback("NEW_OCCUPANT",
+        	      boost::bind(&ClientWorld::new_occupant_callback, world, _1));
+  c->install_callback("OCCUPANT_LEFT",
+        	      boost::bind(&ClientWorld::occupant_left_callback, world, _1));
+  c->install_callback("NEW_ENTITY",
+        	      boost::bind(&ClientWorld::new_entity_callback, world, _1));
+  c->install_callback("START",
+        	      boost::bind(&ClientWorld::handle_start_command, world, _1));
+  c->install_callback("OK",
+        	      boost::bind(&ClientWorld::ok_callback, world, _1));
+  c->install_callback("T",
+        	      boost::bind(&ClientWorld::turn_callback, world, _1));
+  c->install_callback("PATH",
+        	      boost::bind(&ClientWorld::path_callback, world, _1));
 
   // c->connect("88.190.23.192", 7879);
   c->connect("127.0.0.1", 7879);
@@ -41,7 +46,6 @@ int main()
   Time time1 = boost::posix_time::microsec_clock::universal_time();
   Time time2;
   Duration dt;
-
 
   while (window->isOpen())
     {

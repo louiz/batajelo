@@ -26,6 +26,7 @@
 #include <world/occupant.hpp>
 #include <world/entity.hpp>
 #include <world/time.hpp>
+#include <world/map.hpp>
 #include <game/action.hpp>
 #include <game/event.hpp>
 #include <game/turn_handler.hpp>
@@ -155,6 +156,7 @@ protected:
   TurnHandler* turn_handler;
   bool started;
   Replay* replay;
+  Map* map;
 };
 
 #endif // __WORLD_HPP__

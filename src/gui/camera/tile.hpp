@@ -3,8 +3,11 @@
 #ifndef __GRAPH_TILE_HPP__
 # define __GRAPH_TILE_HPP__
 
+class Camera;
+
 class GraphTile
 {
+  friend Camera;
 public:
   GraphTile(const sf::Texture&, const sf::IntRect&);
   ~GraphTile();

@@ -6,15 +6,20 @@
 #include <config/config.hpp>
 #include <logging/logging.hpp>
 
+class Camera;
+
 class Layer
 {
+  friend Camera;
 public:
   Layer();
   ~Layer();
   void set_size(unsigned int width, unsigned int height);
   void set_level(unsigned int level);
+  uint get_level() const;
   void set_cell(unsigned int cell, const unsigned int value);
   unsigned int get_cell(const unsigned int cell) const;
+
 
 private:
   unsigned int width;

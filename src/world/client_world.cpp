@@ -143,6 +143,7 @@ void ClientWorld::handle_event(actions::Type type, unsigned int x, unsigned y)
   if (type == actions::Select)
     {
       Entity* entity;
+      this->reset_entity_iterator();
       while ((entity = this->get_next_entity()))
         {
           if (entity->contains(x, y))
