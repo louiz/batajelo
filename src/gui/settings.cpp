@@ -30,14 +30,15 @@ void Settings::deactivate()
   this->window_settings->SetState(sfg::Widget::INSENSITIVE);
 }
 
-void Settings::deactivate_resolution()
+void Settings::change_resolution()
 {
-  this->res->SetState(sfg::Widget::NORMAL);
-}
-
-void Settings::activate_resolution()
-{
-  this->res->SetState(sfg::Widget::INSENSITIVE);
+  if (this->display->GetSelectedItem() == 1)
+    {
+      this->res->SetState(sfg::Widget::INSENSITIVE);
+      this->res->SelectItem(0);
+    }
+  else
+    this->res->SetState(sfg::Widget::NORMAL);
 }
 
 void Settings::activate()
@@ -121,7 +122,7 @@ void Settings::build_ui()
   this->display->AppendItem(tr("Windowed (fullscreen)"));
   this->display->AppendItem(tr("Fullscreen"));
   this->display->SelectItem(Config::get_int("display", 0));
-  this->display->GetSignal(sfg::Widget::OnLeftClick).Connect(&Settings::deactivate_resolution, this);
+  this->display->GetSignal(sfg::ComboBox::OnSelect).Connect(&Settings::change_resolution, this);
   this->label_language = sfg::Label::Create(tr("Language"));
   this->label_language->SetId("label_language");
   this->language = sfg::ComboBox::Create();

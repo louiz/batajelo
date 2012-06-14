@@ -86,15 +86,10 @@ private:
    */
   void update();
   /**
-   * Activate the resolution comboBox
+   * Allow the change of resolution
    * @return void
    */
-  void activate_resolution();
-  /**
-   * Deactivate the resolution comboBox
-   * @return void
-   */
-  void deactivate_resolution();
+  void change_resolution();
 
   sfg::Notebook::Ptr notebook;
   sfg::Window::Ptr window_settings;
