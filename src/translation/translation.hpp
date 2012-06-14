@@ -1,0 +1,1 @@
+#define tr(string) boost::locale::translate(string).str()
