@@ -3,23 +3,23 @@
  */
 
 /**
- * Home
- * @class Home
+ * Login
+ * @class Login
  */
 
 #include <SFGUI/SFGUI.hpp>
-//#include <md5.h>
 
-#ifndef __HOME_HPP__
-# define __HOME_HPP__
+#ifndef __LOGIN_HPP__
+# define __LOGIN_HPP__
 
 #include <gui/page.hpp>
 
-class Home: public Page
+class Login: public Page
 {
 public:
-  Home(Ui*, sfg::Desktop*, sf::RenderWindow*);
-  virtual ~Home() {}
+  Login(Ui*, sfg::Desktop*, sf::RenderWindow*);
+  virtual ~Login() {}
+
   /**
    * Hide the page.
    * @return void
@@ -46,17 +46,21 @@ public:
    */
   virtual void draw_background();
   /**
-   * Build the login error ui.
-   * @param error The error message.
-   * @return void
-   */
-  void on_authenticate_error(const char*);
-  /**
-   * Build the login success ui.
+   * Callback on connection success
    * @return void
    */
   void on_authenticate_success();
-  void loading_animate();
+  /**
+   * Callback on resize.
+   * @return void
+   */
+  virtual void on_resize();
+  /**
+   * Translate the page.
+   * @return void
+   */
+  virtual void translate();
+  void invalidate();
 private:
   /**
    * Build the ui.
@@ -74,6 +78,11 @@ private:
    */
   void connect();  
   /**
+   * Save the login
+   * @return void
+   */
+  void save_login();  
+  /**
    * Handle key events for login field
    * @return void
    */
@@ -87,17 +96,29 @@ private:
    * Handle key events for connect button
    * @return void
    */
-  void handle_keys_connect();  
+  void handle_keys_connect();
 
-  //MD5 md5;
-  sfg::Label::Ptr label_error;
   sfg::Entry::Ptr entry_login;
   sfg::Entry::Ptr entry_pass;
+  sfg::Label::Ptr label_login;
+  sfg::Label::Ptr label_pass;
   sfg::Window::Ptr window_login;
-  sfg::Image::Ptr img_settings;
+  sfg::Window::Ptr window_menu;
   sfg::Image::Ptr img_loading;
-  sfg::Button::Ptr button_connect;
+  sfg::CheckButton::Ptr remember_login;
+  sfg::Button::Ptr button_login;
+  sfg::Button::Ptr button_close;
+  sfg::Button::Ptr button_settings;
+  sf::Image settings;
+  sfg::Image::Ptr img_refresh;
+
+  sf::RectangleShape bg;
 };
 
+<<<<<<< HEAD:src/gui/home.hpp
 #endif // __HOME_HPP__
 /**@}*/
+=======
+#endif // __LOGIN_HPP__
+/**@}*/
+>>>>>>> Renamed home to login, removed setting image, using table instead of box, created a menu/ remember login button, translate:src/gui/login.hpp

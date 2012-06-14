@@ -25,15 +25,11 @@ public:
   virtual void hide() = 0;
   virtual void activate() = 0;
   virtual void deactivate() = 0;
-  /**
-   * Callback on resize event.
-   * @return void
-   */
-  void on_resize();
+  virtual void on_resize() = 0;
+  virtual void translate() = 0;
 
   sfg::Desktop* desktop;
   sf::RenderWindow* window;
-  sf::Image img;
   sf::Texture bg;
   sf::Sprite sprite_bg;
   Ui* ui;
