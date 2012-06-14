@@ -122,6 +122,7 @@ void Settings::build_ui()
   this->display->AppendItem(tr("Windowed (fullscreen)"));
   this->display->AppendItem(tr("Fullscreen"));
   this->display->SelectItem(Config::get_int("display", 0));
+  this->change_resolution();
   this->display->GetSignal(sfg::ComboBox::OnSelect).Connect(&Settings::change_resolution, this);
   this->label_language = sfg::Label::Create(tr("Language"));
   this->label_language->SetId("label_language");
