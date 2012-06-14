@@ -9,7 +9,7 @@
 
 #include <SFGUI/SFGUI.hpp>
 
-#ifndef _SETTINGS_HPP__
+#ifndef __SETTINGS_HPP__
 # define __SETTINGS_HPP__
 
 #include <gui/page.hpp>
@@ -44,12 +44,27 @@ public:
    * @return void
    */
   virtual void draw_background();
+  /**
+   * Callback event on resize.
+   * @return void
+   */
+  virtual void on_resize();
+  /**
+   * Translate the settings page.
+   * @return void
+   */
+  virtual void translate();
 private:
   /**
    * Build the ui.
    * @return void
    */
   virtual void build_ui();
+  /**
+   * Get the current language.
+   * @return void
+   */
+  int get_language();
   /**
    * Build the resolution ui.
    * @return void
@@ -61,17 +76,45 @@ private:
    */
   virtual void build_background();
   /**
+   * Build the language vector
+   * @return void
+   */
+  void build_languages();
+  /**
    * Update the settings.
    * @return void
    */
   void update();
+  /**
+   * Activate the resolution comboBox
+   * @return void
+   */
+  void activate_resolution();
+  /**
+   * Deactivate the resolution comboBox
+   * @return void
+   */
+  void deactivate_resolution();
 
+  sfg::Notebook::Ptr notebook;
   sfg::Window::Ptr window_settings;
   sfg::Image::Ptr img_settings;
   sfg::Image::Ptr img_back;
   sfg::Label::Ptr label_res;
+  sfg::Label::Ptr label_display;
+  sfg::Label::Ptr label_language;
+  sfg::Label::Ptr label_table_video;
+  sfg::Label::Ptr label_table_account;
+  sfg::Button::Ptr button_settings_video;
+  sfg::Button::Ptr button_settings_account;
   sfg::ComboBox::Ptr res;
   sfg::ComboBox::Ptr display;
+  sfg::ComboBox::Ptr language;
+  sfg::Table::Ptr table_video;
+  sfg::Table::Ptr table_account;
+  std::map<std::string, std::string> language_codes;
+
+  sf::RectangleShape bg;
 };
 
 #endif // __SETTINGS_HPP__
