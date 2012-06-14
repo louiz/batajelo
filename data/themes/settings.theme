@@ -3,6 +3,11 @@ Notebook#notebook_settings ComboBox
  FontSize: 15;
 }
 
+Notebook#notebook_settings ComboBox:INSENSITIVE
+{
+  BackgroundColor: #DDDDDD99;
+}
+
 Notebook#notebook_settings Label
 {
   FontSize : 20;
