@@ -44,32 +44,40 @@ void RemoteClient::auth_callback(Command* received_command)
       std::string login = arg.substr(0, pos);
       std::string password = arg.substr(pos+1);
       log_debug(login << ":" << password);
-      DbObject* user = Database::inst()->get_object("*", "User",
-						    std::string("`login`='" + login + "' AND `password`='" + password + "'"));
-      if (user == 0)
-  	{
-  	  log_info("Authentication: User " << login << " does not exist in database.");
-  	  body = "2";
-  	}
-      else if (user->get("password") != password)
-  	{
-  	  log_info("Authentication: Invalid password for user " << login);
-  	  body = "3";
-  	  delete user;
-  	}
-      // else if (this->server->find_client_by_login(login) != 0)
-      // 	{
-      // 	  log_info("Authentication: user already logged in from an other location: " << login);
-      // 	  body = "4";
-      // 	  delete user;
-      // 	}
-      else
-  	{
-  	  log_info("Authentication: succes for user " << login);
-  	  body = "0";
-  	  this->user = static_cast<User*>(user);
-	  success = true;
-  	}
+      try 
+        {
+          DbObject* user = Database::inst()->get_object("*", "User",
+                    std::string("`login`='" + login + "'"));
+          std::cout << "USER: " << user << std::endl;
+          if (user == 0)
+            {
+              log_info("Authentication: User " << login << " does not exist in database.");
+              body = "2";
+            }
+          else if (user->get("password") != password)
+            {
+              log_info("Authentication: Invalid password for user " << login);
+              body = "3";
+              delete user;
+            }
+        // else if (this->server->find_client_by_login(login) != 0)
+        // 	{
+        // 	  log_info("Authentication: user already logged in from an other location: " << login);
+        // 	  body = "4";
+        // 	  delete user;
+        // 	}
+          else
+            {
+              log_info("Authentication: succes for user " << login);
+              body = "0";
+              this->user = static_cast<User*>(user);
+              success = true;
+            }
+        }
+      catch (char* error)
+        {
+          body = error;
+        }
     }
   command->set_name(name);
   command->set_body(body.c_str());
