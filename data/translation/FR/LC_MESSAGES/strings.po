@@ -1,0 +1,167 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: batajelo 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-06-14 14:52+0200\n"
+"PO-Revision-Date: 2012-06-14 14:54+0100\n"
+"Last-Translator: HypeR <antoine.mineau@gmail.com>\n"
+"Language-Team: pelaze <LL@li.org>\n"
+"Language: French \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: login.cpp:32
+msgid "Insert your account name and password."
+msgstr "Insérer votre nom de compte et mot de passe."
+
+#: login.cpp:72
+msgid "Account Name"
+msgstr "Compte"
+
+#: login.cpp:73
+#: login.cpp:136
+msgid "Password"
+msgstr "Mot de passe"
+
+#: login.cpp:74
+#: login.cpp:149
+msgid "Login"
+msgstr "Connexion"
+
+#: login.cpp:75
+#: login.cpp:154
+msgid "Remember my account name"
+msgstr "Se souvenir de mon nom de compte."
+
+#: login.cpp:134
+msgid "Account name"
+msgstr "Compte"
+
+#: login_steps.cpp:43
+#: login_steps.cpp:72
+#: login_steps.cpp:95
+msgid "Connecting to server..."
+msgstr "Connexion au serveur.."
+
+#: login_steps.cpp:44
+#: login_steps.cpp:73
+#: login_steps.cpp:96
+msgid "Authentification..."
+msgstr "Autentification..."
+
+#: login_steps.cpp:45
+#: login_steps.cpp:75
+msgid "Cancel"
+msgstr "Annuler"
+
+#: login_steps.cpp:101
+msgid "Authentification succeed"
+msgstr "Authentification réussie."
+
+#: login_steps.cpp:106
+msgid "Connected."
+msgstr "Connecté."
+
+#: settings.cpp:71
+#: settings.cpp:147
+msgid "Video"
+msgstr "Vidéo"
+
+#: settings.cpp:72
+#: settings.cpp:148
+msgid "Account"
+msgstr "Compte"
+
+#: settings.cpp:74
+#: settings.cpp:102
+msgid "Display"
+msgstr "Affichage"
+
+#: settings.cpp:75
+#: settings.cpp:105
+msgid "Windowed"
+msgstr "Fenêtré"
+
+#: settings.cpp:76
+#: settings.cpp:106
+msgid "Windowed (fullscreen)"
+msgstr "Fenêtré (plein écran)"
+
+#: settings.cpp:77
+#: settings.cpp:107
+msgid "Fullscreen"
+msgstr "Plein écran"
+
+#: settings.cpp:78
+#: settings.cpp:190
+msgid "Resolution"
+msgstr "Résolution"
+
+#: settings.cpp:79
+#: settings.cpp:110
+msgid "Language"
+msgstr "Langue"
+
+#: settings.cpp:80
+#: settings.cpp:116
+#: settings.cpp:251
+msgid "English"
+msgstr "Anglais"
+
+#: settings.cpp:81
+#: settings.cpp:117
+#: settings.cpp:250
+msgid "French"
+msgstr "Français"
+
+#: settings.cpp:82
+#: settings.cpp:118
+#: settings.cpp:252
+msgid "German"
+msgstr "Allemand"
+
+#: settings.cpp:121
+#: settings.cpp:124
+msgid "Apply"
+msgstr "Appliquer"
+
+#: ui.cpp:226
+msgid "Connection to server failed."
+msgstr "Connexion au serveur échouée."
+
+#: ui.cpp:238
+msgid "Unknown error."
+msgstr "Erreur iconnu."
+
+#: ui.cpp:239
+msgid ""
+"User does not exist.\n"
+" Please try again."
+msgstr ""
+"Utilisateur inconnu.\n"
+"Veuillez réessayer."
+
+#: ui.cpp:240
+msgid ""
+"Invalid password.\n"
+" Please try again."
+msgstr ""
+"Mot de passe invalide.\n"
+"Veuillez réessayer."
+
+#: ui.cpp:241
+msgid "User already logged from an other location."
+msgstr "Ce compte est déjà en cours d'utilisation."
+
+#: ui.cpp:242
+msgid "Internal error."
+msgstr "Erreur interne."
+
+#~ msgid "Resolution : "
+#~ msgstr "Résolution"
