@@ -115,10 +115,5 @@ private:
   sf::RectangleShape bg;
 };
 
-<<<<<<< HEAD:src/gui/home.hpp
-#endif // __HOME_HPP__
-/**@}*/
-=======
 #endif // __LOGIN_HPP__
 /**@}*/
->>>>>>> Renamed home to login, removed setting image, using table instead of box, created a menu/ remember login button, translate:src/gui/login.hpp

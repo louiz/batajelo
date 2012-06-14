@@ -184,10 +184,6 @@ void Ui::switch_to_settings()
   this->switch_to_page(this->settings);
 }
 
-void Ui::switch_to_home()
-{
-  this->switch_to_page(this->home);
-=======
 void Ui::switch_to_login()
 { 
   this->switch_to_page(this->login);
