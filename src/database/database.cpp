@@ -9,7 +9,7 @@ Database::Database():
   connected(false)
 {
   if (this->init() == 0)
-    exit(1);
+    throw "5";
 }
 
 Database::~Database()
@@ -41,18 +41,17 @@ bool Database::connect()
     return true;
   log_debug("Connecting to database using: host:" << Config::get("db_host", "localhost").data() << " user:" << Config::get("db_user", "root").data() << " pass:" << Config::get("db_password", "").data() << " db:" << Config::get("db_database", "batajelo").data());
   if (mysql_real_connect(this->mysql,
-			 Config::get("db_host", "localhost").data(),
-			 Config::get("db_user", "root").data(),
-			 Config::get("db_password", "").data(),
-			 Config::get("db_database", "batajelo").data(),
+			 Config::get("db_host", "localhost").c_str(),
+			 Config::get("db_user", "root").c_str(),
+			 Config::get("db_password", "").c_str(),
+			 Config::get("db_database", "batajelo").c_str(),
 			 DB_PORT, DB_UNIX_SOCKET, DB_CLIENT_FLAG) == NULL)
     {
-      log_error("Could'nt connect to the database.");
+      throw "5";
       return false;
     }
   else
     {
-      log_debug("Connected to database");
       this->connected = true;
       return true;
     }
@@ -68,18 +67,18 @@ void Database::close()
 MYSQL_RES* Database::do_query(const std::string& query)
 {
   if (this->connect() == false)
-    return NULL;
+    throw "5";
   log_debug("Doing query [" << query << "]");
   const unsigned int error = mysql_query(this->mysql, query.c_str());
   if (error != 0)
     {
       log_error("Couldn't query the database: " << error);
       this->connected = false;
-      return NULL;
+      throw "5";
     }
   MYSQL_RES* result = mysql_use_result(this->mysql);
   if (!result)
-    return NULL;
+    throw "5";
   return result;
 }
 

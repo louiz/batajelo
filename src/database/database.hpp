@@ -35,9 +35,9 @@
 # define DB_UNIX_SOCKET NULL
 /**
  * @def DB_CLIENT_FLAG
- * specifiy the database port
+ * The database client flag
  */
-# define DB_CLIENT_FLAG 0
+ #define DB_CLIENT_FLAG CLIENT_SSL
 
 class Database
 {
