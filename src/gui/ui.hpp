@@ -9,6 +9,7 @@
 
 #include <SFGUI/SFGUI.hpp>
 #include <SFML/Graphics.hpp>
+#include <boost/locale.hpp>
 
 #ifndef __UI_HPP__
 # define __UI_HPP__
@@ -18,15 +19,22 @@
 
 class Popup;
 class ErrorPopup;
+class DialogPopup;
 class Game;
+class LoginSteps;
 class Settings;
-class Home;
+class Login;
 
 class Ui
 {
 public:
 	Ui(Game*);
 	~Ui();
+  /**
+   * Initialize translation
+   * @return void
+   */
+  void init_translation();
 	/**@{*/
   /**
    * @name Window
@@ -41,6 +49,16 @@ public:
    * @return void
    */
   void handle_event();
+  /**
+   * Get event_handled value.
+   * @return bool
+   */
+  bool get_event_handled();
+  /**
+   * Set event_handled value.
+   * @return bool
+   */
+  void set_event_handled(bool);
   /**
    * Handle all window events.
    * @return void
@@ -98,16 +116,22 @@ public:
    */
   void switch_to_page(Page*);
   /**
-   * Switch to home page.
+   * Switch to login page.
    * @return void
    */
-  void switch_to_home();
+  void switch_to_login();
+  /**
+   * Switch to login steps page.
+   * @return void
+   */
+  void switch_to_login_steps();
   /**
    * Switch to settings page.
    * @return void
    */
   void switch_to_settings();
-   /**@}*/
+  /**@}*/
+  /**@{*/
   /**
    * @name Popups
    */
@@ -121,16 +145,33 @@ public:
    * @param error The error message.
    * @return void
    */
-  void switch_to_error_popup(const std::string error);
-   /**@}*/
+  void switch_to_error_popup(const std::string);
+  /**
+   * Switcher to Dialog Popup.
+   * @param error The dialog message.
+   * @return void
+   */
+  void switch_to_dialog_popup(sfg::Box::Ptr);
+  /**@}*/
+  /**@{*/
   /**
    * @name Events
    */
   /**
-   * Connect to server with login/password
+   * Connect to server with login/password.
    * @return void
    */
   void on_login_form_validated(const std::string&, const std::string&, const std::string&, const short&);
+  /**
+   * Callback after connection to server failed.
+   * @return void
+   */
+  void on_connection_success();
+  /**
+   * Callback after connection to server succeed.
+   * @return void
+   */
+  void on_connection_failed();
   /**
    * Callback after trying to login
    * @return void
@@ -138,7 +179,7 @@ public:
   void on_authenticate(Command *);
   /**@}*/
   /**
-   * Get the display mode based on config
+   * Get the display mode based on config.
    * @return int
    */
   int get_display_mode();
@@ -147,22 +188,36 @@ public:
    * @return sf::Keyboard::Key
    */
   sf::Keyboard::Key get_key();
+  /**
+   * Set the language
+   * @return void
+   */
+  void set_language(std::string);
+  /**
+   * Translate the ui
+   * @return void
+   */
+  void translate();
 
   const std::string font_path;
   const std::string theme_path;
   const std::string img_path;
 private:
   Page* current_page;
-  Home* home;
+  Login* login;
+  LoginSteps* login_steps;
   Settings* settings;
   Popup* current_popup;
   ErrorPopup* error_popup;
+  DialogPopup* dialog_popup;
   sfg::Desktop* desktop;
   sf::RenderWindow* window;
   sf::Event event;
   sf::Clock clock;
   sfg::SFGUI sfgui;
   Game* game;
+  bool event_handled;
+  boost::locale::generator gen;
 };
 
 #endif // __UI_HPP__
