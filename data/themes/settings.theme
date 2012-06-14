@@ -1,0 +1,15 @@
+Notebook#notebook_settings ComboBox
+{
+ FontSize: 15;
+}
+
+Notebook#notebook_settings Label
+{
+  FontSize : 20;
+  Color: #DDDDDDFF;
+}
+
+Notebook#notebook_settings Button
+{
+  FontSize: 30;
+}

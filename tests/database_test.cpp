@@ -4,6 +4,8 @@
 #include <database/friend_request.hpp>
 #include <config/config.hpp>
 #include <logging/logging.hpp>
+#include <sha.h>
+#include <base64.h>
 
 #define BOOST_TEST_MODULE database
 #include <boost/test/included/unit_test.hpp>
@@ -26,29 +28,50 @@ BOOST_AUTO_TEST_CASE(empty_user)
 
 BOOST_AUTO_TEST_CASE(update_user)
 {
+  std::string digest;
+  CryptoPP::SHA256 hash;
+
+  CryptoPP::StringSource("nightmare", true,
+   new CryptoPP::HashFilter(hash,
+      new CryptoPP::Base64Encoder (
+         new CryptoPP::StringSink(digest))));
+
   User* user = new User();
   user->set("login", "testing");
-  user->set("password", "password");
+  user->set("password", digest);
   BOOST_REQUIRE(Database::inst()->update(user, "User") == true);
   delete user;
 
   User* user1 = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
   BOOST_REQUIRE(user1 != 0);
-  BOOST_REQUIRE(user1->get("password") == "password");
+  BOOST_REQUIRE(user1->get("password") == digest);
 
-  user1->set("password", "new_pass");
+  digest.clear();
+  CryptoPP::StringSource("nightmare2", true,
+   new CryptoPP::HashFilter(hash,
+      new CryptoPP::Base64Encoder (
+         new CryptoPP::StringSink(digest))));
+  user1->set("password", digest);
   BOOST_REQUIRE(Database::inst()->update(user1, "User") == true);
 
   User* user2 = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
   BOOST_REQUIRE(user2 != 0);
-  BOOST_REQUIRE(user2->get("password") == "new_pass");
+  BOOST_REQUIRE(user2->get("password") == digest);
 }
 
 BOOST_AUTO_TEST_CASE(add_friend)
 {
+  std::string digest;
+  CryptoPP::SHA256 hash;
+
+  CryptoPP::StringSource("lol", true,
+   new CryptoPP::HashFilter(hash,
+      new CryptoPP::Base64Encoder (
+         new CryptoPP::StringSink(digest))));
+
   User* user2 = new User();
   user2->set("login", "testing2");
-  user2->set("password", "password");
+  user2->set("password", digest);
   BOOST_REQUIRE(Database::inst()->update(user2, "User") == true);
 
   user2 = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing2'"));

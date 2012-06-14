@@ -1,0 +1,27 @@
+Table#table_login Entry
+{
+  BackgroundColor: #00000000;
+}
+
+Table#table_login Label, Table#table_login Button, Table#table_menu Button
+{
+  Color: #FFFFFFFF;
+  FontSize: 20;
+}
+
+Button#button_login
+{
+  Color: #DDDDDDFF;
+  BackgroundColor: #666666FF;
+}
+
+Button#button_login:PRELIGHT
+{
+  BackgroundColor: #000000FF;
+}
+
+CheckButton#button_remember_login
+{
+  BackgroundColor: #00000000;
+  FontSize: 20;
+}

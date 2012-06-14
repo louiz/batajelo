@@ -1,0 +1,9 @@
+Window#window_login_steps
+{
+  BackgroundColor: #666666FF;
+}
+
+Window#window_login_steps Label
+{
+  FontSize: 20;
+}
