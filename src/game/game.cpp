@@ -26,13 +26,14 @@ void Game::on_login_form_validated(const std::string& login,
 void Game::on_connection_failed(const std::string& host, const short& port)
 {
   log_debug("Connection to remote " << host << ":" << port << " failed");
-//  this->ui->on_connection();
+  this->ui->on_connection_failed();
 }
 
 
 void Game::on_connection_success(const std::string& login, const std::string& password)
 {
-  log_debug("Login in...");
+  log_debug("Login in...")
+  this->ui->on_connection_success();
   this->authenticate(login, password);
 }
 
@@ -42,6 +43,7 @@ void Game::authenticate(const std::string& login, const std::string& password)
   Command* command = new Command;
   command->set_name("AUTH");
   std::string body = login + '*' + password;
+  log_error(body);
   command->set_body(body.data(), body.size());
   this->client.request_answer(command, boost::bind(&Ui::on_authenticate, this->ui, _1));
 }
