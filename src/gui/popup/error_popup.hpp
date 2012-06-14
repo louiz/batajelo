@@ -19,17 +19,19 @@ class ErrorPopup: public Popup
 public:
   ErrorPopup(Ui*, sfg::Desktop*, sf::RenderWindow*);
   virtual ~ErrorPopup() {}
+
   /**
    * Hide the page.
    * @return void
    */
   virtual void hide();
   /**
-   * Show the page.
+   * Show the popup.
    * @param error The error message.
    * @return void
    */
   void show(const std::string error);
+private:
   /**
    * Build the ui.
    * @return void
