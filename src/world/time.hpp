@@ -24,4 +24,6 @@ typedef boost::posix_time::time_duration Duration;
  */
 long get_number_of_updates(Duration& duration);
 
+float sec(const Duration&);
+
 #endif // __TIME_HPP__

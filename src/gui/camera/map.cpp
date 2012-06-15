@@ -4,7 +4,9 @@
 #include <utils/zlib.hpp>
 #include <boost/algorithm/string/trim_all.hpp>
 
-GraphMap::GraphMap()
+GraphMap::GraphMap():
+  width(0),
+  height(0)
 {
   for (int i = 0; i < LAYER_NUMBER; ++i)
     this->layers.push_back(new Layer);
@@ -92,6 +94,10 @@ bool GraphMap::read_layer(boost::property_tree::ptree& tree)
   Layer* layer = this->layers[level];
   layer->set_level(level);
   layer->set_size(layer_width, layer_height);
+  if ((layer_width * TILE_WIDTH) > this->width)
+    this->width = layer_width * TILE_WIDTH;
+  if ((layer_height * 96/2) > this->height)
+    this->height = layer_height * 96/2;
   std::string data;
   if (this->get_layer_data(tree, data) == false)
     return false;
@@ -103,8 +109,6 @@ bool GraphMap::read_layer(boost::property_tree::ptree& tree)
         data[i + 1] << 8 |
         data[i + 2] << 16 |
         data[i + 3] << 24;
-      if (gid != 0)
-        log_debug(i << ":" << gid);
       layer->set_cell(i/4, gid);
     }
   return true;
@@ -112,7 +116,6 @@ bool GraphMap::read_layer(boost::property_tree::ptree& tree)
 
 bool GraphMap::read_tileset(boost::property_tree::ptree& tileset_tree)
 {
-  log_debug("coucou");
   if (!tileset_tree.get_child_optional("image"))
     {
       log_error("Image node not found for tileset");
@@ -257,4 +260,14 @@ Layer* GraphMap::get_next_layer()
   Layer* layer = *this->layers_iterator;
   ++this->layers_iterator;
   return layer;
+}
+
+uint GraphMap::get_height() const
+{
+  return this->height;
+}
+
+uint GraphMap::get_width() const
+{
+  return this->width;
 }

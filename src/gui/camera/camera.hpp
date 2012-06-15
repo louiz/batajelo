@@ -23,17 +23,17 @@
 class Camera
 {
 public:
-  Camera(ClientWorld*, GraphMap*);
+  Camera(ClientWorld*, GraphMap*, sf::RenderWindow*);
   ~Camera();
   /**
    * Draw the world viewed through the camera.
    */
-  void draw(sf::RenderWindow*);
+  void draw();
   /**
    * Draw the given entity if it's visible by the camera.
    * Does nothing otherwise.
    */
-  void draw_entity(sf::RenderWindow* win, const Entity*);
+  void draw_entity(const Entity*);
   /**
    * handle one user input event.
    */
@@ -44,7 +44,7 @@ public:
    */
   void update(const Duration& dt);
 
-  void draw_map(sf::RenderWindow* win);
+  void draw_map();
 
 private:
   Camera(const Camera&);
@@ -52,21 +52,39 @@ private:
   /**
    * The left position of the camera
    */
-  unsigned int x;
+  double x;
   /**
    * The top position of the camera
    */
-  unsigned int y;
+  double y;
   /**
    * The zoom factor. A negative value would display the game
    * flipped over.
    */
-  unsigned int zoom;
+  double zoom;
+  /**
+   * Weither or not the window has the focus.
+   */
+  bool focused;
+  /**
+   * The speed at which the camera moves.
+   */
+  uint movement_speed;
+  /**
+   * The position of the cursor. It is used to know the movement the camera
+   * has to do, when middle click is pressed and the mouse is moved.
+   */
+  sf::Vector2i previous_position;
+  /**
+   * The position of the cursor when the user started dragging the camera.
+   */
+  sf::Vector2i start_drag_position;
   /**
    * A pointer to the world object used to display stuff on the screen.
    */
   ClientWorld* world;
   GraphMap* map;
+  sf::RenderWindow* win;
 };
 
 #endif // __CAMERA__HPP__

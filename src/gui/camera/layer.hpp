@@ -20,7 +20,6 @@ public:
   void set_cell(unsigned int cell, const unsigned int value);
   unsigned int get_cell(const unsigned int cell) const;
 
-
 private:
   unsigned int width;
   unsigned int height;

@@ -33,7 +33,8 @@ public:
   GraphMap();
   ~GraphMap();
   virtual bool load_from_file(const std::string& filename);
-  void set_size();
+  uint get_height() const;
+  uint get_width() const;
 
   void reset_layers_iterator();
   Layer* get_next_layer();
@@ -44,8 +45,15 @@ private:
 
   bool read_layer(boost::property_tree::ptree& tree);
   bool read_tileset(boost::property_tree::ptree& tree);
-  bool get_layer_level(boost::property_tree::ptree& tree, unsigned int& level);
-  bool get_layer_data(boost::property_tree::ptree& tree, std::string& data);
+  bool get_layer_level(boost::property_tree::ptree& tree, unsigned int& level);  bool get_layer_data(boost::property_tree::ptree& tree, std::string& data);
+  /**
+   * The width (in pixels) of the map.
+   */
+  uint width;
+  /**
+   * The height (in pixels) of the map.
+   */
+  uint height;
   /**
    * The list of all layers. A layer can be NULL.
    */

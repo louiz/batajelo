@@ -10,8 +10,10 @@
 
 int main()
 {
-  sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(1024, 768),
-						  "Bata");
+  sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(1920, 1078),
+						  "Bata", sf::Style::Default,
+                                                  sf::ContextSettings(0, 0, 0, 2));
+  window->setVerticalSyncEnabled(true);
 
   GameClient* c = new GameClient();
   GraphMap* map = new GraphMap;
@@ -20,7 +22,7 @@ int main()
   world->set_next_turn_callback(boost::bind(&ClientWorld::on_next_turn, world, _1));
 
 
-  Camera camera(world, map);
+  Camera camera(world, map, window);
 
 
   c->install_callback("NEW_OCCUPANT",
@@ -73,25 +75,24 @@ int main()
 
       long i = get_number_of_updates(dt);
       for (; i > 0; --i)
-	{
-	  world->tick();
-	}
+        {
+          world->tick();
+        }
 
-      // // Update everything, based on the elapsed time
-      camera->update(dt);
+      // Update everything, based on the elapsed time
+      camera.update(dt);
 
       // Draw the result on the screen. Limit to ~60 fps.
-      if (fps_clock.getElapsedTime().asMicroseconds() > 16666)
+      if (fps_clock.getElapsedTime().asMicroseconds() > 10000)
       	{
-	  window->clear();
-	  camera->draw(window);
+	  window->clear(sf::Color(70, 80, 80));
+	  camera.draw();
 	  window->display();
 	  fps_clock.restart();
 	}
     }
   delete c;
   delete world;
-  delete camera;
   delete window;
 
   return 0;

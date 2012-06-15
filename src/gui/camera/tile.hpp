@@ -11,6 +11,7 @@ class GraphTile
 public:
   GraphTile(const sf::Texture&, const sf::IntRect&);
   ~GraphTile();
+
 private:
   GraphTile(const GraphTile&);
   GraphTile& operator=(const GraphTile&);

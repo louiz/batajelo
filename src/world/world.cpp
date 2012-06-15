@@ -35,6 +35,22 @@ Entity* World::get_next_entity()
   return entity;
 }
 
+Entity* World::get_next_entity(const uint y)
+{
+  if (this->entities_iterator == this->entities.end())
+    {
+      this->entities_iterator = this->entities.begin();
+      return 0;
+    }
+  Entity* entity = *this->entities_iterator;
+  if (entity->y < y)
+    {
+      ++this->entities_iterator;
+      return entity;
+    }
+  return 0;
+}
+
 void World::set_next_turn_callback(t_next_turn_callback callback)
 {
   log_debug("set_next_turn_callback");
@@ -209,4 +225,14 @@ TurnHandler* World::get_turn_handler() const
 unsigned int World::get_number_of_occupants() const
 {
   return this->occupants.size();
+}
+
+static bool compare_entities(const Entity* a, const Entity* b)
+{
+  return (a->y >= b->y);
+}
+
+void World::sort_entities()
+{
+  this->entities.sort(compare_entities);
 }

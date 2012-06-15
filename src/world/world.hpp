@@ -66,6 +66,11 @@ public:
    */
   Entity* get_next_entity();
   /**
+   * Just like the other get_next_entity(), but it will also return
+   * NULL if the next entity's y is superior to the given y.
+   */
+  Entity* get_next_entity(const uint y);
+  /**
    * Set the entity iterator at its beginning.
    */
   void reset_entity_iterator();
@@ -107,11 +112,17 @@ public:
    * Returns a pointer to the replay.
    */
   Replay* get_replay() const;
+
   TurnHandler* get_turn_handler() const;
   /**
    * Return the current number of connected clients.
    */
   unsigned int get_number_of_occupants() const;
+  /**
+   * Sort the entities by their y position. This
+   * is used to draw them in the correct order.
+   */
+  void sort_entities();
   /**
    * the list of other occupants of the game, when a new client connects to
    * the server, we add it to the list, when it disconnects we remove it.
