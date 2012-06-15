@@ -48,11 +48,13 @@ endif(DOXYGEN_FOUND)
 
 #Librairies to include
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-find_package(Boost 1.47.0 COMPONENTS serialization system date_time unit_test_framework iostreams REQUIRED)
+find_package(Boost 1.48.0 COMPONENTS serialization system date_time unit_test_framework iostreams locale REQUIRED)
 find_package(Threads REQUIRED)
+find_package(Cryptopp REQUIRED)
 
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${CRYPTO++_INCLUDE_DIR})
 include_directories("src/")
 
 link_directories(${Boost_LIBRARY_DIRS})
@@ -156,6 +158,7 @@ target_Link_libraries(
 	${SFML_LIBRARIES}
 	${SFGUI_LIBRARY}
 	${Boost_LIBRARIES}
+        ${CRYPTO++_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	)
 endif(BUILD_CLIENT)
