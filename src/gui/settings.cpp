@@ -5,7 +5,7 @@
 #include <boost/algorithm/string.hpp>
 #include <translation/translation.hpp>
 
-Settings::Settings(Ui* ui, sfg::Desktop* desktop, sf::RenderWindow* window): Page(ui, desktop, window) 
+Settings::Settings(Ui* ui, sfg::Desktop* desktop, sf::RenderWindow* window): Page(ui, desktop, window)
 {
   this->build_languages();
   this->build_ui();
@@ -192,7 +192,7 @@ int Settings::get_language()
       break;
     }
   }
-  for (int x = 0; x != this->language->GetItemCount(); x++)
+  for (uint x = 0; x != this->language->GetItemCount(); x++)
     {
       if (this->language->GetItem(x).toAnsiString().compare(language_selected) == 0)
         return x;
@@ -231,8 +231,9 @@ void Settings::update()
   int width;
   int height;
   std::string lang_code;
+  std::string selected_text = this->res->GetSelectedText().toAnsiString();
 
-  boost::split(choosen_res, this->res->GetSelectedText().toAnsiString(), boost::is_any_of("x"));
+  boost::split(choosen_res, selected_text, boost::is_any_of("x"));
   if (this->display->GetSelectedItem() == 1)
     {
       sf::VideoMode desktop_res = sf::VideoMode::getDesktopMode();
@@ -259,7 +260,9 @@ void Settings::update()
       this->ui->set_language(lang_code);
       this->ui->translate();
     }
-  if (width != Config::get_int("width", 800) || height != Config::get_int("height", 600) || this->display->GetSelectedItem() != Config::get_int("display", 2))
+  if ((width != Config::get_int("width", 800)) ||
+      (height != Config::get_int("height", 600)) ||
+      (this->display->GetSelectedItem() != static_cast<uint>(Config::get_int("display", 2))))
     {
       sf::VideoMode res_new(width, height, 32);
       if (res_new.isValid())
