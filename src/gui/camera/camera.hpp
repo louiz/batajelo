@@ -20,8 +20,11 @@
 #include <world/time.hpp>
 #include <gui/camera/map.hpp>
 
+class Minimap;
+
 class Camera
 {
+  friend class Minimap;
 public:
   Camera(ClientWorld*, GraphMap*, sf::RenderWindow*);
   ~Camera();
@@ -29,11 +32,6 @@ public:
    * Draw the world viewed through the camera.
    */
   void draw();
-  /**
-   * Draw the given entity if it's visible by the camera.
-   * Does nothing otherwise.
-   */
-  void draw_entity(const Entity*);
   /**
    * handle one user input event.
    */
@@ -44,11 +42,14 @@ public:
    */
   void update(const Duration& dt);
 
-  void draw_map();
-
 private:
   Camera(const Camera&);
   Camera& operator=(const Camera&);
+  /**
+   * Draw the given entity if it's visible by the camera.
+   * Does nothing otherwise.
+   */
+  void draw_entity(const Entity*);
   /**
    * The left position of the camera
    */

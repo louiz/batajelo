@@ -7,10 +7,12 @@
 #include <logging/logging.hpp>
 
 class Camera;
+class GraphMap;
 
 class Layer
 {
-  friend Camera;
+  friend class Camera;
+  friend class GraphMap;
 public:
   Layer();
   ~Layer();

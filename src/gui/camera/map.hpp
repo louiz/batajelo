@@ -1,5 +1,3 @@
-#include <zlib.h>
-
 /**
  * A class containing all informations to render the map onscreen.
  */
@@ -14,6 +12,10 @@
 #ifndef __UI_MAP_HPP__
 # define __UI_MAP_HPP__
 
+#define MAPS_DIRECTORY "./data/maps/"
+#define MINIMAPS_DIRECTORY "./data/minimaps/"
+#define TILESETS_DIRECTORY "./data/tilesets/"
+
 #define LAYER_NUMBER 5
 #define LEVEL_HEIGHT 32
 #define TILE_WIDTH 128
@@ -25,19 +27,28 @@
 #include <world/map.hpp>
 
 class Camera;
+class Minimap;
 
 class GraphMap: public Map
 {
-  friend Camera;
+  friend class Camera;
+  friend class Minimap;
 public:
   GraphMap();
   ~GraphMap();
-  virtual bool load_from_file(const std::string& filename);
-  uint get_height() const;
-  uint get_width() const;
+  virtual bool load_from_file(const std::string& filename, bool load_minimap = true);
+  uint get_height_in_pixels() const;
+  uint get_width_in_pixels() const;
+  uint get_height_in_tiles() const;
+  uint get_width_in_tiles() const;
 
   void reset_layers_iterator();
   Layer* get_next_layer();
+  /**
+   * Draw the full map on the given render target.
+   * Used to generate, e.g., a minimap.
+   */
+  void draw_full_map(sf::RenderTarget&);
 
 private:
   GraphMap(const GraphMap&);
@@ -45,7 +56,8 @@ private:
 
   bool read_layer(boost::property_tree::ptree& tree);
   bool read_tileset(boost::property_tree::ptree& tree);
-  bool get_layer_level(boost::property_tree::ptree& tree, unsigned int& level);  bool get_layer_data(boost::property_tree::ptree& tree, std::string& data);
+  bool get_layer_level(boost::property_tree::ptree& tree, unsigned int& level);
+  bool get_layer_data(boost::property_tree::ptree& tree, std::string& data);
   /**
    * The width (in pixels) of the map.
    */
@@ -54,6 +66,14 @@ private:
    * The height (in pixels) of the map.
    */
   uint height;
+  /**
+   * The number of tiles, horizontally.
+   */
+  uint width_in_tiles;
+  /**
+   * The number of tiles, vertically.
+   */
+  uint height_in_tiles;
   /**
    * The list of all layers. A layer can be NULL.
    */
@@ -73,6 +93,7 @@ private:
   std::vector<sf::Texture*> tileset_textures;
 
   std::vector<Layer*>::const_iterator layers_iterator;
+  sf::Texture minimap_texture;
 };
 
 #endif // __UI_MAP_HPP__

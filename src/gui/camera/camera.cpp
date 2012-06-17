@@ -6,7 +6,7 @@ Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win):
   y(0),
   zoom(1),
   focused(true),
-  movement_speed(55),
+  movement_speed(100),
   previous_position(0, 0),
   start_drag_position(0, 0),
   world(world),
@@ -17,11 +17,6 @@ Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win):
 
 Camera::~Camera()
 {
-}
-
-void Camera::draw()
-{
-  this->draw_map();
 }
 
 void Camera::draw_entity(const Entity* entity)
@@ -81,26 +76,26 @@ void Camera::update(const Duration& dt)
       if (pos.y < 1)
         pos.y = 1;
       sf::Mouse::setPosition(pos, *this->win);
-      if (pos.x < 100)
+      if (pos.x < 20)
         this->x -= this->movement_speed * sec(dt);
-      if (pos.y < 100)
+      if (pos.y < 20)
         this->y -= this->movement_speed * sec(dt);
-      if ((pos.y > 0) && static_cast<uint>(pos.y) > (win_size.y - 100))
+      if ((pos.y > 0) && static_cast<uint>(pos.y) > (win_size.y - 20))
         this->y += this->movement_speed * sec(dt);
-      if ((pos.x > 0) && static_cast<uint>(pos.x) > (win_size.x - 100))
+      if ((pos.x > 0) && static_cast<uint>(pos.x) > (win_size.x - 20))
         this->x += this->movement_speed * sec(dt);
     }
   if (this->x < 0)
     this->x = 0;
-  else if (this->x > (this->map->get_width() - win_size.x))
-    this->x = this->map->get_width() - win_size.x;
+  else if (this->x > (this->map->get_width_in_pixels() - win_size.x))
+    this->x = this->map->get_width_in_pixels() - win_size.x;
   if (this->y < 0)
     this->y = 0;
-  else if (this->y > (this->map->get_height() - win_size.y))
-    this->y = this->map->get_height() - win_size.y;
+  else if (this->y > (this->map->get_height_in_pixels() - win_size.y))
+    this->y = this->map->get_height_in_pixels() - win_size.y;
 }
 
-void Camera::draw_map()
+void Camera::draw()
 {
   const sf::Vector2u win_size = this->win->getSize();
   Layer* layer;

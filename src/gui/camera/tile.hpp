@@ -4,10 +4,12 @@
 # define __GRAPH_TILE_HPP__
 
 class Camera;
+class GraphMap;
 
 class GraphTile
 {
-  friend Camera;
+  friend class Camera;
+  friend class GraphMap;
 public:
   GraphTile(const sf::Texture&, const sf::IntRect&);
   ~GraphTile();

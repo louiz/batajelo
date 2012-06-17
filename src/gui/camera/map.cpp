@@ -2,11 +2,14 @@
 #include <boost/utility.hpp>
 #include <utils/base64.hpp>
 #include <utils/zlib.hpp>
+#include <utils/string.hpp>
 #include <boost/algorithm/string/trim_all.hpp>
 
 GraphMap::GraphMap():
   width(0),
-  height(0)
+  height(0),
+  width_in_tiles(0),
+  height_in_tiles(0)
 {
   for (int i = 0; i < LAYER_NUMBER; ++i)
     this->layers.push_back(new Layer);
@@ -31,14 +34,25 @@ GraphMap::~GraphMap()
     {
       delete *ittt;
     }
-
 }
 
-bool GraphMap::load_from_file(const std::string& filename)
+bool GraphMap::load_from_file(const std::string& map_name, bool load_minimap)
 {
   // TODO, don't duplicate parsing.
+  std::string filename(MAPS_DIRECTORY);
+  filename += map_name;
   Map::load_from_file(filename);
 
+  if (load_minimap)
+    {
+      std::string minimap_filename(MINIMAPS_DIRECTORY);
+      minimap_filename += map_name;
+      if (this->minimap_texture.loadFromFile(utils::basename(minimap_filename) + ".png") == false)
+        {
+          log_error("Could not load minimap image " << minimap_filename);
+          return false;
+        }
+    }
   boost::property_tree::ptree tree;
   try
     {
@@ -95,9 +109,15 @@ bool GraphMap::read_layer(boost::property_tree::ptree& tree)
   layer->set_level(level);
   layer->set_size(layer_width, layer_height);
   if ((layer_width * TILE_WIDTH) > this->width)
-    this->width = layer_width * TILE_WIDTH;
+    {
+      this->width = layer_width * TILE_WIDTH;
+      this->width_in_tiles = layer_width;
+    }
   if ((layer_height * 96/2) > this->height)
-    this->height = layer_height * 96/2;
+    {
+      this->height = layer_height * 96/2;
+      this->height_in_tiles = layer_height;
+    }
   std::string data;
   if (this->get_layer_data(tree, data) == false)
     return false;
@@ -122,7 +142,8 @@ bool GraphMap::read_tileset(boost::property_tree::ptree& tileset_tree)
       return false;
     }
   const boost::property_tree::ptree image_tree = tileset_tree.get_child("image");
-  const std::string source = image_tree.get<std::string>("<xmlattr>.source", "");
+  const std::string maps_directory(MAPS_DIRECTORY);
+  const std::string source = maps_directory + image_tree.get<std::string>("<xmlattr>.source", "");
   const uint image_height = image_tree.get<uint>("<xmlattr>.height", 0);
   const uint image_width = image_tree.get<uint>("<xmlattr>.width", 0);
   const uint tile_height = tileset_tree.get<uint>("<xmlattr>.tileheight", 0);
@@ -262,12 +283,60 @@ Layer* GraphMap::get_next_layer()
   return layer;
 }
 
-uint GraphMap::get_height() const
+uint GraphMap::get_height_in_pixels() const
 {
   return this->height;
 }
 
-uint GraphMap::get_width() const
+uint GraphMap::get_width_in_pixels() const
 {
   return this->width;
+}
+
+uint GraphMap::get_height_in_tiles() const
+{
+  return this->height_in_tiles;
+}
+
+uint GraphMap::get_width_in_tiles() const
+{
+  return this->width_in_tiles;
+}
+
+void GraphMap::draw_full_map(sf::RenderTarget& target)
+{
+  Layer* layer;
+  GraphTile* tile;
+  uint level = 0;
+
+  this->reset_layers_iterator();
+  while ((layer = this->get_next_layer()) != 0)
+    {
+      if (layer->cells == 0)
+        continue ;
+      uint xoffset = 0;
+      uint yoffset = level++ * LEVEL_HEIGHT;
+      for (uint y = 0;
+           y < layer->height;
+           y++)
+        {
+          for (uint x = 0;
+               x < layer->width;
+               x++)
+            {
+              const uint gid = layer->cells[layer->width * y + x];
+              tile = this->tiles[gid];
+              if (tile != 0)
+                {
+                  tile->sprite.setPosition(x * TILE_WIDTH + xoffset,
+                                           y * TILE_HEIGHT/2 - yoffset);
+                  target.draw(tile->sprite);
+                }
+            }
+          if (xoffset != 0)
+            xoffset = 0;
+          else
+            xoffset = TILE_WIDTH/2;
+        }
+    }
 }

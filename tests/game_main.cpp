@@ -4,16 +4,14 @@
 #include <game/game.hpp>
 #include <world/client_world.hpp>
 #include <world/time.hpp>
-#include <gui/camera/camera.hpp>
+#include <gui/screen/screen.hpp>
 #include <network/command.hpp>
 #include <gui/camera/map.hpp>
 
 int main()
 {
-  sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(1920, 1078),
-						  "Bata", sf::Style::Default,
-                                                  sf::ContextSettings(0, 0, 0, 2));
-  window->setVerticalSyncEnabled(true);
+  sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(1920, 1080),
+  						  "Bata");
 
   GameClient* c = new GameClient();
   GraphMap* map = new GraphMap;
@@ -21,24 +19,23 @@ int main()
   ClientWorld* world = new ClientWorld;
   world->set_next_turn_callback(boost::bind(&ClientWorld::on_next_turn, world, _1));
 
-
-  Camera camera(world, map, window);
+  Screen screen(world, map, window);
 
 
   c->install_callback("NEW_OCCUPANT",
-        	      boost::bind(&ClientWorld::new_occupant_callback, world, _1));
+          	      boost::bind(&ClientWorld::new_occupant_callback, world, _1));
   c->install_callback("OCCUPANT_LEFT",
-        	      boost::bind(&ClientWorld::occupant_left_callback, world, _1));
+          	      boost::bind(&ClientWorld::occupant_left_callback, world, _1));
   c->install_callback("NEW_ENTITY",
-        	      boost::bind(&ClientWorld::new_entity_callback, world, _1));
+          	      boost::bind(&ClientWorld::new_entity_callback, world, _1));
   c->install_callback("START",
-        	      boost::bind(&ClientWorld::handle_start_command, world, _1));
+          	      boost::bind(&ClientWorld::handle_start_command, world, _1));
   c->install_callback("OK",
-        	      boost::bind(&ClientWorld::ok_callback, world, _1));
+          	      boost::bind(&ClientWorld::ok_callback, world, _1));
   c->install_callback("T",
-        	      boost::bind(&ClientWorld::turn_callback, world, _1));
+          	      boost::bind(&ClientWorld::turn_callback, world, _1));
   c->install_callback("PATH",
-        	      boost::bind(&ClientWorld::path_callback, world, _1));
+          	      boost::bind(&ClientWorld::path_callback, world, _1));
 
   // c->connect("88.190.23.192", 7879);
   c->connect("127.0.0.1", 7879);
@@ -49,23 +46,30 @@ int main()
   Time time2;
   Duration dt;
 
+  // window->setMouseCursorVisible(false);
   while (window->isOpen())
     {
       // Check for user events
       sf::Event event;
       while (window->pollEvent(event))
-      	{
-      	  if (event.type == sf::Event::Closed)
-      	    window->close();
-      	  camera->handle_event(event);
-      	}
+        {
+          if (event.type == sf::Event::Closed)
+            {
+              window->close();
+            }
+          // if (event.type == sf::Event::GainedFocus)
+          //   {
+          //   }
+          screen.handle_event(event);
+        }
       Command* command;
       while ((command = world->get_pending_command()))
-      	{
-	  log_debug("PENDING COMMAND!");
-      	  c->send(command);
-      	}
+        {
+          log_debug("PENDING COMMAND!");
+          c->send(command);
+        }
 
+      // Simulate lag
       c->poll(10);
 
       // Get the elapsed time
@@ -80,16 +84,16 @@ int main()
         }
 
       // Update everything, based on the elapsed time
-      camera.update(dt);
+      screen.update(dt);
 
       // Draw the result on the screen. Limit to ~60 fps.
       if (fps_clock.getElapsedTime().asMicroseconds() > 10000)
-      	{
-	  window->clear(sf::Color(70, 80, 80));
-	  camera.draw();
-	  window->display();
-	  fps_clock.restart();
-	}
+        {
+  	  window->clear(sf::Color(70, 80, 80));
+  	  screen.draw();
+  	  window->display();
+  	  fps_clock.restart();
+  	}
     }
   delete c;
   delete world;
@@ -97,3 +101,4 @@ int main()
 
   return 0;
 }
+
