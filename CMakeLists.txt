@@ -93,6 +93,11 @@ if(BUILD_SERVER)
 		)
 endif(BUILD_SERVER)
 
+	add_executable(minimap_generator src/main/minimap_generator.cpp)
+	target_link_libraries(
+                minimap_generator
+                gui
+		)
 
 
 #Library build
