@@ -1,18 +1,9 @@
 #include <gui/camera/map.hpp>
-#include <boost/utility.hpp>
-#include <utils/base64.hpp>
-#include <utils/zlib.hpp>
 #include <utils/string.hpp>
-#include <boost/algorithm/string/trim_all.hpp>
+#include <boost/utility.hpp>
 
-GraphMap::GraphMap():
-  width(0),
-  height(0),
-  width_in_tiles(0),
-  height_in_tiles(0)
+GraphMap::GraphMap()
 {
-  for (int i = 0; i < LAYER_NUMBER; ++i)
-    this->layers.push_back(new Layer);
   // A value of 0 in a cell means no tile, so the TileGraph
   // with gid 0 is NULL;
   this->tiles.push_back(0);
@@ -20,19 +11,16 @@ GraphMap::GraphMap():
 
 GraphMap::~GraphMap()
 {
-  std::vector<Layer*>::iterator it;
-  for (it = this->layers.begin(); it < this->layers.end(); ++it)
-    delete *it;
-  std::vector<GraphTile*>::iterator itt;
-  for (itt = this->tiles.begin(); itt < this->tiles.end(); ++itt)
+  std::vector<GraphTile*>::iterator it;
+  for (it = this->tiles.begin(); it < this->tiles.end(); ++it)
     {
-      if ((*itt) != 0)
-        delete *itt;
+      if ((*it) != 0)
+        delete *it;
     }
-  std::vector<sf::Texture*>::iterator ittt;
-  for (ittt = this->tileset_textures.begin(); ittt < this->tileset_textures.end(); ++ittt)
+  std::vector<sf::Texture*>::iterator itt;
+  for (itt = this->tileset_textures.begin(); itt < this->tileset_textures.end(); ++itt)
     {
-      delete *ittt;
+      delete *itt;
     }
 }
 
@@ -63,73 +51,14 @@ bool GraphMap::load_from_file(const std::string& map_name, bool load_minimap)
       log_error(e.what());
       return false;
     }
-  const unsigned int tile_height = tree.get<unsigned int>("map.<xmlattr>.tileheight", 0);
-  const unsigned int tile_width = tree.get<unsigned int>("map.<xmlattr>.tilewidth", 0);
-  if ((tile_width != TILE_WIDTH) || (tile_height != TILE_HEIGHT))
-    {
-      log_error("Map has a wrong tile size: " << tile_width << ":" << tile_height);
-      return false;
-    }
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
                 tree.get_child("map"))
     {
-      if (v.first == "layer")
+      if (v.first == "tileset")
         {
-          if (this->read_layer(v.second) == false)
-            return false;
-        }
-      else if (v.first == "tileset")
-        {
-          log_debug(v.second.get("<xmlattr>.name", ""));
           if (this->read_tileset(v.second) == false)
             return false;
         }
-    }
-  return true;
-}
-
-bool GraphMap::read_layer(boost::property_tree::ptree& tree)
-{
-  const unsigned int layer_height = tree.get<unsigned int>
-    ("<xmlattr>.height", 0);
-  const unsigned int layer_width = tree.get<unsigned int>
-    ("<xmlattr>.width", 0);
-  if (layer_width == 0 or layer_width == 0)
-    {
-      log_error("Layer has an invalid size: " <<
-                layer_height << ":" <<
-                layer_width);
-      return false;
-    }
-  unsigned int level;
-  if ((this->get_layer_level(tree, level) == false))
-    return false;
-  log_debug("Reading layer for level " << level);
-  Layer* layer = this->layers[level];
-  layer->set_level(level);
-  layer->set_size(layer_width, layer_height);
-  if ((layer_width * TILE_WIDTH) > this->width)
-    {
-      this->width = layer_width * TILE_WIDTH;
-      this->width_in_tiles = layer_width;
-    }
-  if ((layer_height * 96/2) > this->height)
-    {
-      this->height = layer_height * 96/2;
-      this->height_in_tiles = layer_height;
-    }
-  std::string data;
-  if (this->get_layer_data(tree, data) == false)
-    return false;
-  const int size = layer_width * layer_height * 4;
-
-  for (int i = 0; i < size - 3; i += 4)
-    {
-      const unsigned int gid = data[i] |
-        data[i + 1] << 8 |
-        data[i + 2] << 16 |
-        data[i + 3] << 24;
-      layer->set_cell(i/4, gid);
     }
   return true;
 }
@@ -184,14 +113,11 @@ bool GraphMap::read_tileset(boost::property_tree::ptree& tileset_tree)
   this->tileset_textures.push_back(texture);
   const uint number_of_tiles = (image_height / tile_height) *
     (image_width / tile_width);
-  log_debug("The image will contain " << number_of_tiles << " tiles, and starts with gid number " << gid);
   if (this->tiles.size() < number_of_tiles + gid)
     this->tiles.resize(number_of_tiles + gid, 0);
-  log_debug("The tiles list size is now " << this->tiles.size());
   for (uint y = 0; y < image_height; y += tile_height)
     for (uint x = 0; x < image_width; x += tile_width)
       {
-        log_debug(x << ":" << y << " = " << gid);
         GraphTile* tile = new GraphTile(*texture,
                                         sf::Rect<int>(x, y,
                                                       tile_width,
@@ -199,108 +125,6 @@ bool GraphMap::read_tileset(boost::property_tree::ptree& tileset_tree)
         this->tiles[gid++] = tile;
       }
   return true;
-}
-
-bool GraphMap::get_layer_level(boost::property_tree::ptree& tree, unsigned int& level)
-{
-  if (!tree.get_child_optional("properties"))
-    {
-      log_error("No properties for the layer");
-      return false;
-    }
-  BOOST_FOREACH(boost::property_tree::ptree::value_type &property,
-                tree.get_child("properties"))
-    if ((property.first == "property") &&
-        (property.second.get<std::string>("<xmlattr>.name", "") == "level"))
-      {
-        try
-          {
-            level = property.second.get<unsigned int>("<xmlattr>.value");
-          }
-        catch (std::exception& e)
-          {
-            log_error("Layer level is invalid: " << e.what());
-            return false;
-          }
-        if (level >= this->layers.size())
-          {
-            log_error("Layer level is too big: " << level);
-            return false;
-          }
-        else
-          return true;
-      }
-  log_debug("Level property not found");
-  return false;
-}
-
-bool GraphMap::get_layer_data(boost::property_tree::ptree& tree, std::string& data)
-{
-  BOOST_FOREACH(boost::property_tree::ptree::value_type &child, tree)
-    {
-      if (child.first == "data")
-        {
-          boost::property_tree::ptree node = child.second;
-          if ((node.get<std::string>("<xmlattr>.encoding", "") != "base64") ||
-              (node.get<std::string>("<xmlattr>.compression", "") != "zlib"))
-            {
-              log_error("Wrong data encoding/compression");
-              return false;
-            }
-          std::string content(node.get<std::string>("", ""));
-          boost::algorithm::trim_all(content);
-          log_debug(content)
-            try
-              {
-                data = zlib_decompress(base64_decode(content));
-              }
-            catch (std::exception& e)
-              {
-                log_error(e.what());
-                return false;
-              }
-          return true;
-        }
-    }
-  log_error("No data found for layer");
-  return false;
-}
-
-void GraphMap::reset_layers_iterator()
-{
-  this->layers_iterator = this->layers.begin();
-}
-
-Layer* GraphMap::get_next_layer()
-{
-  if (this->layers_iterator == this->layers.end())
-    {
-      this->layers_iterator = this->layers.begin();
-      return 0;
-    }
-  Layer* layer = *this->layers_iterator;
-  ++this->layers_iterator;
-  return layer;
-}
-
-uint GraphMap::get_height_in_pixels() const
-{
-  return this->height;
-}
-
-uint GraphMap::get_width_in_pixels() const
-{
-  return this->width;
-}
-
-uint GraphMap::get_height_in_tiles() const
-{
-  return this->height_in_tiles;
-}
-
-uint GraphMap::get_width_in_tiles() const
-{
-  return this->width_in_tiles;
 }
 
 void GraphMap::draw_full_map(sf::RenderTarget& target)

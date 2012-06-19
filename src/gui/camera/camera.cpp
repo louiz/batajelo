@@ -1,5 +1,5 @@
 #include <gui/camera/camera.hpp>
-#include <gui/camera/layer.hpp>
+#include <world/layer.hpp>
 
 Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win):
   x(0),

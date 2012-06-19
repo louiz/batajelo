@@ -13,7 +13,7 @@ Minimap::Minimap(sf::RenderWindow* win, GraphMap* map, Camera* camera):
   log_debug("Minimap. Map size: " <<
             map->get_width_in_tiles() << ":" << map->get_height_in_tiles() <<
             " = " << static_cast<float>(map->get_width_in_tiles()) /
-            static_cast<float>(map->get_height_in_tiles()));
+                     static_cast<float>(map->get_height_in_tiles()));
   this->minimap_sprite.setPosition(x, y);
 }
 

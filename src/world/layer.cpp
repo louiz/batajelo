@@ -1,4 +1,4 @@
-#include <gui/camera/layer.hpp>
+#include <world/layer.hpp>
 
 Layer::Layer():
   cells(0)
@@ -37,5 +37,7 @@ void Layer::set_cell(const unsigned int cell, const unsigned int value)
 
 unsigned int Layer::get_cell(const unsigned int cell) const
 {
+  if (this->cells == 0)
+    return 0;
   return this->cells[cell];
 }
