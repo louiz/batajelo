@@ -125,9 +125,19 @@ add_library(utils STATIC ${source_utils})
 
 target_link_libraries(
 	utils
-	${Boost_LIBRARIES}
-	${CMAKE_THREAD_LIBS_INIT}
 )
+
+file(
+	GLOB
+	source_pathfinding
+	src/pathfinding/*.[hc]pp
+)
+add_library(pathfinding STATIC ${source_pathfinding})
+
+target_link_libraries(
+	pathfinding
+)
+
 
 file(
 	GLOB
@@ -182,6 +192,7 @@ target_Link_libraries(
 	game
 	logging
 	serialization
+        pathfinding
 	${SFML_LIBRARIES}
 	${SFGUI_LIBRARY}
 	${Boost_LIBRARIES}
@@ -321,14 +332,13 @@ endif(BUILD_SERVER)
 file(
 	GLOB
 	modules_srcs
-	tests/*main.cpp
+	tests/*_main.cpp
 )
 
 foreach(module_src ${modules_srcs})
 
 	get_filename_component(lib ${module_src} NAME_WE)
 	string(REGEX REPLACE "(.*)_main$" "\\1" lib ${lib})
-
 	if(TARGET ${lib})
 	add_executable(${lib}_main  EXCLUDE_FROM_ALL ${module_src})
 
