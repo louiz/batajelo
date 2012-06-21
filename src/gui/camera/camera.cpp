@@ -6,7 +6,7 @@ Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win):
   y(0),
   zoom(1),
   focused(true),
-  movement_speed(100),
+  movement_speed(0.2),
   previous_position(0, 0),
   start_drag_position(0, 0),
   world(world),

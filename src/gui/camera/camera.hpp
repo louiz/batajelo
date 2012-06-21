@@ -70,7 +70,7 @@ private:
   /**
    * The speed at which the camera moves.
    */
-  uint movement_speed;
+  float movement_speed;
   /**
    * The position of the cursor. It is used to know the movement the camera
    * has to do, when middle click is pressed and the mouse is moved.

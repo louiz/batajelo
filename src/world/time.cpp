@@ -11,7 +11,7 @@ long get_number_of_updates(Duration& duration)
   return updates;
 }
 
-float sec(const Duration& dt)
+long sec(const Duration& dt)
 {
-  return (float)dt.total_milliseconds() / 1000.f;
+  return dt.total_milliseconds();
 }
