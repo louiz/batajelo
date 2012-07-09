@@ -27,7 +27,6 @@ CMakeCache.txt
 *.suo
 *.sdf
 *.dir
-*.cmake
 *~
 bin
 CMakeFiles
