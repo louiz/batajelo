@@ -10,15 +10,14 @@ set(LIBRARY_OUTPUT_PATH output_lib)
 
 if(${CMAKE_BUILD_TYPE} MATCHES "debug")
 	message(STATUS "Configuring a debug build")
-	add_definitions(-ggdb -Wextra -Wall)
+	add_definitions(-ggdb -Wextra -Wall -lefence)
 	set(DEFINE_DEBUG 1)
 else(${CMAKE_BUILD_TYPE} MATCHES "debug")
 	message(STATUS "Configuring a release build")
-	add_definitions(-O3)
+	add_definitions(-O3 -flto)
 	set(DEFINE_DEBUG 0)
 endif(${CMAKE_BUILD_TYPE} MATCHES "debug")
 configure_file("${PROJECT_SOURCE_DIR}/src/constant.hpp.in" "${PROJECT_SOURCE_DIR}/src/constant.hpp")
-
 
 
 if(NOT DEFINED BUILD_SERVER)
