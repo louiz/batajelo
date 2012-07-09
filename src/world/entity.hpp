@@ -2,13 +2,14 @@
 # define __ENTITY_HPP__
 
 #include <logging/logging.hpp>
-#include <serialization/serializable.hpp>
 #include <world/path.hpp>
+#include <mpreal/mpreal.h>
 
 class Camera;
 class World;
+class SerializableEntity;
 
-class Entity: public Serializable
+class Entity
 {
   friend class Camera;
   friend class World;
@@ -23,28 +24,18 @@ public:
    * on a model.
    */
   Entity(const Entity&);
+  Entity(const Entity& model, const SerializableEntity& e);
   virtual ~Entity();
   bool is_selected() const;
-  bool contains(unsigned int, unsigned int) const;
-
+  bool contains(const mpreal&, const mpreal&) const;
+  void update_health();
   unsigned short get_id() const { return this->id; }
 
   static unsigned short current_id;
   static unsigned short current_type_id;
 
-  virtual void serialize(oarchive & ar, const unsigned int)
-  {
-    ar & x & y & width & height & selected & id & type_id;
-  }
-  virtual void serialize(iarchive & ar, const unsigned int)
-  {
-   ar & x & y & width & height & selected & id & type_id;
-  }
-
   virtual void tick();
   void follow_path();
-  void update_health();
-
   void set_path(const Path& path);
   void cancel_path();
 
@@ -54,19 +45,19 @@ public:
   /**
    * The left position
    */
-  unsigned int x;
+  mpreal x;
   /**
    * The top position
    */
-  unsigned int y;
+  mpreal y;
   /**
    * The width
    */
-  unsigned int width;
+  int16_t width;
   /**
    * The height
    */
-  unsigned int height;
+  int16_t height;
   /**
    * Whether or not the entity is selected.
    */
@@ -83,9 +74,10 @@ public:
    * The path to follow. If it is 0, the entity is not moving.
    */
   Path* path;
-
-  unsigned health;
-
+  /**
+   * The entity health.
+   */
+  uint health;
 };
 
 #endif // __ENTITY_HPP__

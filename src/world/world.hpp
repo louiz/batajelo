@@ -25,6 +25,7 @@
 
 #include <world/occupant.hpp>
 #include <world/entity.hpp>
+#include <world/serializable_entity.hpp>
 #include <world/time.hpp>
 #include <world/map.hpp>
 #include <game/action.hpp>
@@ -32,11 +33,23 @@
 #include <game/turn_handler.hpp>
 #include <game/replay.hpp>
 #include <network/command.hpp>
+#include <mpreal/mpreal.h>
+
+using namespace mpfr;
+
+/**
+ * From left to right, and from top to bottom, a cell has this size, in the
+ * world representation. This means that if you add 100 to an entity
+ * position, it will move to the next cell.
+ */
+#define CELL_SIZE 100.f
+#define LAYER_HEIGHT 32.f // MUST be 0.32 * CELL_SIZE
 
 class World
 {
 public:
   World();
+  World(Map*);
   ~World();
   /**
    * Init the world by reading the Mod files.
@@ -69,7 +82,7 @@ public:
    * Just like the other get_next_entity(), but it will also return
    * NULL if the next entity's y is superior to the given y.
    */
-  Entity* get_next_entity(const uint y);
+  Entity* get_next_entity(const int y);
   /**
    * Set the entity iterator at its beginning.
    */
@@ -82,6 +95,11 @@ public:
    * Create an entity based on the given model.
    */
   Entity* create_entity(unsigned int type);
+  /**
+   * Create an entity based on the given model, with the given
+   * SerializableEntity to copy the initial entity position.
+   */
+  Entity* create_entity(unsigned int type, const SerializableEntity& e);
   void set_next_turn_callback(t_next_turn_callback);
   void pause();
   void unpause();
@@ -123,6 +141,18 @@ public:
    * is used to draw them in the correct order.
    */
   void sort_entities();
+  /**
+   * Sets the coordinate of the cell containing the given world position.
+   */
+  void get_cell_at_position(const mpreal& x, const mpreal& y,
+                            int& xa, int& ya) const;
+  /**
+   * Returns the height (ingame) of the point at the given position.
+   * It takes into account the highest level having a tile containing this
+   * position and the tile height (see tile_heights in map.hpp)
+   */
+  mpreal get_position_height(const mpreal& x, const mpreal& y) const;
+  bool is_started() const;
   /**
    * the list of other occupants of the game, when a new client connects to
    * the server, we add it to the list, when it disconnects we remove it.

@@ -40,6 +40,14 @@ int main()
   // c->connect("88.190.23.192", 7879);
   c->connect("127.0.0.1", 7879);
 
+  while (world->is_started() == false)
+    {
+      // Here be a loading screen.
+      c->poll(10);
+    }
+
+  Screen screen(world, map, window);
+
   sf::Clock fps_clock;
 
   Time time1 = boost::posix_time::microsec_clock::universal_time();
@@ -69,27 +77,27 @@ int main()
           c->send(command);
         }
 
-      // Simulate lag
-      c->poll(10);
+      c->poll(0);
 
       // Get the elapsed time
       time2 = boost::posix_time::microsec_clock::universal_time();
       dt += time2 - time1;
       time1 = time2;
 
+      screen.update(dt);
+      // Update everything, based on the elapsed time
       long i = get_number_of_updates(dt);
       for (; i > 0; --i)
         {
           world->tick();
         }
 
-      // Update everything, based on the elapsed time
-      screen.update(dt);
-
       // Draw the result on the screen. Limit to ~60 fps.
       if (fps_clock.getElapsedTime().asMicroseconds() > 10000)
         {
   	  window->clear(sf::Color(70, 80, 80));
+          // sf::View view(sf::FloatRect(0, 0, 960, 540));
+          // window->setView(view);
   	  screen.draw();
   	  window->display();
   	  fps_clock.restart();

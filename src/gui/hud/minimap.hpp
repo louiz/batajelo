@@ -14,10 +14,10 @@
 #ifndef __MINIMAP_HPP__
 # define __MINIMAP_HPP__
 
-#define MINIMAP_X 40.f
-#define MINIMAP_Y 40.f
-#define MINIMAP_WIDTH 300.f
-#define MINIMAP_HEIGHT 225.f
+#define MINIMAP_X 15.f
+#define MINIMAP_Y 15.f
+#define MINIMAP_WIDTH 250.f
+#define MINIMAP_HEIGHT 250.f
 
 #include <gui/camera/map.hpp>
 #include <gui/camera/camera.hpp>

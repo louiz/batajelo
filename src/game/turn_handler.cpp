@@ -29,8 +29,6 @@ void TurnHandler::tick(bool force)
   this->turn_advancement += 1;
   if (this->turn_advancement == TURN_TIME)
     {
-      if (force == false)
-        log_debug(*this);
       if ((this->is_next_turn_validated() == false) && (force == false))
 	{
 	  log_debug("Next turn is not validated");

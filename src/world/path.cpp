@@ -1,6 +1,6 @@
 #include <world/path.hpp>
 
-Path::Path(const unsigned int x, const unsigned int y):
+Path::Path(const mpreal x, const mpreal y):
   x(x),
   y(y)
 {

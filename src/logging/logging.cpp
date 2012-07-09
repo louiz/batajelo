@@ -4,7 +4,7 @@ Logger* Logger::instance = 0;
 
 Logger::Logger():
   log_level(atoi(Config::get("log_level", "0").data())),
-  _stream(Config::get("log_file", "") == "" ? &std::cerr : new std::ofstream(Config::get("log_file", "").data(), std::ios_base::app)),
+  _stream(Config::get("log_file", "") == "" ? &std::cout : new std::ofstream(Config::get("log_file", "").data(), std::ios_base::app)),
   null_stream(new nullstream)
 {
 }

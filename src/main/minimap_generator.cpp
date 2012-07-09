@@ -9,7 +9,7 @@ int main(int ac, char** av)
       std::cout << "Usage: " << av[0] << " input.map output.png" << std::endl;
       return 1;
     }
-  sf::RenderWindow window(sf::VideoMode(300, 225), "coucou");
+  sf::RenderWindow window(sf::VideoMode(250, 250), "coucou");
   window.setVisible(false);
 
   GraphMap map;

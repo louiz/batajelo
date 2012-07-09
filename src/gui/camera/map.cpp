@@ -27,9 +27,9 @@ GraphMap::~GraphMap()
 bool GraphMap::load_from_file(const std::string& map_name, bool load_minimap)
 {
   // TODO, don't duplicate parsing.
+  Map::load_from_file(map_name);
   std::string filename(MAPS_DIRECTORY);
   filename += map_name;
-  Map::load_from_file(filename);
 
   if (load_minimap)
     {
@@ -138,7 +138,6 @@ void GraphMap::draw_full_map(sf::RenderTarget& target)
     {
       if (layer->cells == 0)
         continue ;
-      uint xoffset = 0;
       uint yoffset = level++ * LEVEL_HEIGHT;
       for (uint y = 0;
            y < layer->height;
@@ -152,15 +151,11 @@ void GraphMap::draw_full_map(sf::RenderTarget& target)
               tile = this->tiles[gid];
               if (tile != 0)
                 {
-                  tile->sprite.setPosition(x * TILE_WIDTH + xoffset,
-                                           y * TILE_HEIGHT/2 - yoffset);
+                  tile->sprite.setPosition(x * TILE_WIDTH,
+                                           -64 + y * TILE_HEIGHT - yoffset);
                   target.draw(tile->sprite);
                 }
             }
-          if (xoffset != 0)
-            xoffset = 0;
-          else
-            xoffset = TILE_WIDTH/2;
         }
     }
 }

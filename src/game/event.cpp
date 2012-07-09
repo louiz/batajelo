@@ -71,4 +71,5 @@ EntityEvent::EntityEvent(const Command* command):
   else
     this->valid = true;
 }
+
 unsigned long int Event::current_id = 0;

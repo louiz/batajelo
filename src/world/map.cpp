@@ -25,8 +25,11 @@ Map::~Map()
     delete[] walking_map;
 }
 
-bool Map::load_from_file(const std::string& filename)
+bool Map::load_from_file(const std::string& map_name)
 {
+  std::string filename(MAPS_DIRECTORY);
+  filename += map_name;
+
   boost::property_tree::ptree tree;
   try
     {
@@ -78,14 +81,15 @@ bool Map::read_layer(boost::property_tree::ptree& tree)
   Layer* layer = this->layers[level];
   layer->set_level(level);
   layer->set_size(layer_width, layer_height);
-  if ((layer_width * TILE_WIDTH) > this->width)
+  log_error(layer_width);
+  if ((layer_width * TILE_WIDTH) >= this->width)
     {
       this->width = layer_width * TILE_WIDTH;
       this->width_in_tiles = layer_width;
     }
-  if ((layer_height * 96/2) > this->height)
+  if ((layer_height * TILE_HEIGHT) >= this->height)
     {
-      this->height = layer_height * 96/2;
+      this->height = layer_height * TILE_HEIGHT;
       this->height_in_tiles = layer_height;
     }
   std::string data;
@@ -220,9 +224,7 @@ void Map::generate_walking_map()
         }
       else
         {
-          log_debug("Level for tile " << i << " is " << level << " and the cell is of type: " << this->layers[level]->get_cell(i) / TILESET_WIDTH);
-          char* tile = tile_heights[this->layers[level]->get_cell(i) / TILESET_WIDTH];
-          log_debug((int)tile[0] << (int)tile[1] << (int)tile[2] << (int)tile[3]);
+          const char* tile = tile_heights[this->layers[level]->get_cell(i) / TILESET_WIDTH];
           this->walking_map[i] = 0;
           for (uint y = 0; y < 4; ++y)
             {
@@ -230,14 +232,6 @@ void Map::generate_walking_map()
               this->walking_map[i] |= (tile[y] + level) << (y * 4);
             }
         }
-    }
-  for (uint i = 0; i < map_size; ++i)
-    {
-      ushort a = (this->walking_map[i] >> 12) & 15;
-      ushort b = (this->walking_map[i] >> 8) & 15;
-      ushort c = (this->walking_map[i] >> 4) & 15;
-      ushort d = (this->walking_map[i]) & 15;
-      log_debug(a << ":" << b << ":" << c << ":" << d);
     }
 }
 
@@ -251,4 +245,14 @@ int Map::get_max_level_for_cell(const uint cell) const
         ret = (*it)->get_level();
     }
   return ret;
+}
+
+ushort Map::get_cell_heights(const int cellx, const int celly) const
+{
+  assert(cellx >= 0);
+  assert(celly >= 0);
+  assert(cellx < this->get_width_in_tiles());
+  assert(celly < this->get_height_in_tiles());
+  std::size_t index = (this->get_width_in_tiles() * celly) + cellx;
+  return this->walking_map[index];
 }

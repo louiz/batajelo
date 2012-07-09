@@ -9,16 +9,21 @@
  * @class Camera
  */
 
-#include <SFML/System.hpp>
-#include <SFML/Graphics.hpp>
-
 #ifndef __CAMERA__HPP__
 # define __CAMERA__HPP__
+
+#include <cstdlib>
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 
 #include <logging/logging.hpp>
 #include <world/client_world.hpp>
 #include <world/time.hpp>
 #include <gui/camera/map.hpp>
+#include <gui/camera/mouse_selection.hpp>
+#include <mpreal/mpreal.h>
+
+using namespace mpfr;
 
 class Minimap;
 
@@ -33,14 +38,53 @@ public:
    */
   void draw();
   /**
+   * Draw the rectangle representing the mouse selection.
+   */
+  void draw_mouse_selection();
+  /**
+   * Draw the entity on the screen, taking the on-screen position of the
+   * entity.
+   */
+  void draw_entity(const Entity* entity, const uint x, const uint y,
+                   const bool in_mouse_selection, sf::RectangleShape& rectangle);
+  /**
    * handle one user input event.
    */
-  void handle_event(const sf::Event&);
+  bool handle_event(const sf::Event&);
+  void handle_right_click(const sf::Event&);
+  void handle_middle_click(const sf::Event&);
+  void handle_left_click(const sf::Event&);
+  void handle_left_release(const sf::Event&);
+  void handle_middle_release(const sf::Event&);
   /**
    * Update the camera position or other stuff according to previous
    * input etc.
    */
   void update(const Duration& dt);
+  sf::Vector2u world_to_camera_position(const mpreal&, const mpreal&) const;
+  sf::Vector2u camera_to_world_position(const int, const int) const;
+  /**
+   * Start a mouse selection, i.e. drawing a rectangle to select entities
+   * inside it. The position is a world-static position, not a camera
+   * position; this means that if the camera moves while there's an ongoing
+   * mouse selection, the start position of the mouse selection may go out
+   * of the camera's sight.
+   */
+  void start_mouse_selection(const sf::Vector2u& pos);
+  /**
+   * Takes everything under mouse selection and add it to the selection.
+   */
+  void add_mouse_selection_to_selection();
+  /**
+   * Takes everything under mouse selection and set it as the selection.
+   * Replaces the previous selection completely.
+   */
+  void set_mouse_selection_to_selection();
+  /**
+   * Returns whether or not a mouse selection (by dragging) is currently
+   * ongoing or not.
+   */
+  bool is_mouse_selection_ongoing() const;
 
 private:
   Camera(const Camera&);
@@ -50,6 +94,10 @@ private:
    * Does nothing otherwise.
    */
   void draw_entity(const Entity*);
+  /**
+   * Check if the camera is at a valid position. If not, fix it.
+   */
+  void fixup_camera_position();
   /**
    * The left position of the camera
    */
@@ -86,6 +134,7 @@ private:
   ClientWorld* world;
   GraphMap* map;
   sf::RenderWindow* win;
+  MouseSelection mouse_selection;
 };
 
 #endif // __CAMERA__HPP__

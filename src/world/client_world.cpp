@@ -5,6 +5,11 @@ ClientWorld::ClientWorld():
 {
 }
 
+ClientWorld::ClientWorld(Map* map):
+  World(map)
+{
+}
+
 ClientWorld::~ClientWorld()
 {
 }
@@ -100,7 +105,6 @@ void ClientWorld::path_callback(Command* command)
       log_warning("Invalid data for PATH command");
       return ;
     }
-  log_debug("Must move unit " << e->actors_ids[0] << " to " << e->x << ":" << e->y << " on turn " << e->turn);
   Action* action = new Action(boost::bind(&World::do_path, this, _1), e);
   this->insert_received_action(action, e);
 }
@@ -140,19 +144,7 @@ void ClientWorld::on_next_turn(unsigned long turn)
 
 void ClientWorld::handle_event(actions::Type type, unsigned int x, unsigned y)
 {
-  if (type == actions::Select)
-    {
-      Entity* entity;
-      this->reset_entity_iterator();
-      while ((entity = this->get_next_entity()))
-        {
-          if (entity->contains(x, y))
-            entity->selected = true;
-          else
-            entity->selected = false;
-        }
-    }
-  else if (type == actions::Move)
+  if (type == actions::Move)
     {
       MoveEvent event;
       Entity* entity;

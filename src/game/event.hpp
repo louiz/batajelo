@@ -12,9 +12,12 @@
 #ifndef __EVENT_HPP__
 # define __EVENT_HPP__
 
-#include <world/entity.hpp>
 #include <serialization/serializable.hpp>
+#include <world/serializable_entity.hpp>
 #include <network/command.hpp>
+#include <mpreal/mpreal.h>
+
+using namespace mpfr;
 
 class Event: public Serializable
 {
@@ -113,7 +116,7 @@ private:
 class EntityEvent: public ActionEvent
 {
 public:
-  EntityEvent(Entity* entity):
+  EntityEvent(SerializableEntity* entity):
     ActionEvent("NEW_ENTITY"),
     entity(entity)
   {}
@@ -129,7 +132,7 @@ public:
     ActionEvent::serialize(ar, v);
     ar & entity;
   }
-  Entity* entity;
+  SerializableEntity* entity;
 
 private:
   EntityEvent(const EntityEvent&);
@@ -153,8 +156,8 @@ public:
   }
 
   std::vector<unsigned short> actors_ids;
-  unsigned int x;
-  unsigned int y;
+  uint x;
+  uint y;
 
 private:
   MoveEvent(const MoveEvent&);
@@ -187,8 +190,8 @@ public:
     y(e.y)
   {}
   std::vector<unsigned short> actors_ids;
-  unsigned int x;
-  unsigned int y;
+  uint x;
+  uint y;
 };
 
 #endif // __EVENT_HPP__

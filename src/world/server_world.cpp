@@ -14,24 +14,20 @@ void ServerWorld::init()
 {
   log_debug("Creating initial world state");
   // Spawn initial units.
-  for (int i = 0; i < 2; ++i)
+  for (int x = 0; x < 5; ++x)
+    for (int y = 0; y < 5; ++y)
     {
       Entity* new_entity = this->create_entity(0);
-      new_entity->y = rand() % 100 + 450;
-      new_entity->x = rand() % 100 + 450;
-      EntityEvent* e = new EntityEvent(new_entity);
+      new_entity->x = x*100 + 200;
+      new_entity->y = y*100 + 100;
+      SerializableEntity* s_entity = new SerializableEntity(*new_entity);
+      EntityEvent* e = new EntityEvent(s_entity);
       e->turn = 1;
       Action* action = new Action(0, e, 0);
       action->validate_completely();
       this->replay->insert_action(action);
+      delete new_entity;
     }
-  Entity* new_entity = this->create_entity(0);
-  new_entity->y = rand() % 100 + 450;
-  new_entity->x = rand() % 100 + 450;
-  EntityEvent* e = new EntityEvent(new_entity);
-  e->turn = 40;
-  Action* action = new Action(0, e, 0);
-  this->turn_handler->insert_action(action, e->turn);
   log_debug("done");
 }
 

@@ -9,6 +9,8 @@
  * @class Hud
  */
 
+#define HUD_HEIGHT 300
+
 #include <SFML/System.hpp>
 
 #ifndef __HUP_HPP__
@@ -30,6 +32,8 @@ private:
   Hud& operator=(const Hud&);
   Minimap minimap;
   sf::RenderWindow* win;
+  sf::Sprite hud_sprite;
+  sf::Texture hud_texture;
 };
 
 #endif // __HUP_HPP__

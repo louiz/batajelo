@@ -63,6 +63,8 @@ bool Minimap::handle_event(const sf::Event& event)
        ((event.type == sf::Event::MouseMoved) && (sf::Mouse::isButtonPressed(sf::Mouse::Left))))
       &&
       (((mouse_pos.x > x) && (mouse_pos.x < x + MINIMAP_WIDTH)) && ((mouse_pos.y > y ) && (mouse_pos.y < y + MINIMAP_HEIGHT)))
+      &&
+      (this->camera->is_mouse_selection_ongoing() == false)
       )
     {
       const float xratio = MINIMAP_HEIGHT / map->get_height_in_pixels();

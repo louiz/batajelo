@@ -35,7 +35,7 @@ public:
 private:
   Screen(const Screen&);
   Screen& operator=(const Screen&);
-  ClientWorld* world;
+  sf::RenderWindow* win;
   Camera camera;
   Hud hud;
 };

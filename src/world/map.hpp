@@ -20,18 +20,19 @@
 #define MAPS_DIRECTORY "./data/maps/"
 
 /**
- * Defines the heights of the four corners of various tiles based
- * on where they are positionned in the tile set.
- * For example a tile positionned on the second line of the tileset
- * has these heights: left=0, top=0, right=1, bottom=1.
+ * Defines the heights of the four corners of various tiles based on where
+ * they are positionned in the tile set.  For example a tile positionned on
+ * the second line of the tileset has these heights: left-top=0,
+ * right-top=1, bottom-right=1, bottom-left=0, bottom=1.
  */
-static char tile_heights[5][4] =
+static const char tile_heights[6][4] =
 {
   {1, 1, 1, 1},
+  {0, 1, 1, 0},
+  {1, 0, 0, 1},
   {0, 0, 1, 1},
-  {1, 0, 1, 0},
-  {0, 1, 0, 1},
-  {1, 1, 0, 0}
+  {1, 1, 0, 0},
+  {0, 0, 0, 0}
 };
 
 class Camera;
@@ -51,12 +52,16 @@ public:
   Layer* get_next_layer();
   int get_max_level_for_cell(const uint cell) const;
   /**
-   * Generates the walking map. This structure is used to know the
-   * height of an entity, based on its position, and to do the path
-   * finding (it describes the traversability from one tile to another
-   * based on these tiles' heights).
+   * Generates the walking map. This structure is used to know the height of
+   * an entity, based on its position, and to do the path finding (it
+   * describes the traversability from one tile to another based on these
+   * tiles' heights).
    */
   void generate_walking_map();
+  /**
+   * Returns an ushort containing the 4 corners' heights of the given cell.
+   */
+  ushort get_cell_heights(const int cellx, const int celly) const;
 
 protected:
   bool read_layer(boost::property_tree::ptree& tree);

@@ -30,9 +30,9 @@ public:
   void on_transfer_ended(const TransferReceiver*);
 
 private:
-  void connect_handler(boost::function< void(void) >,
-		       boost::function< void(void) >,
-		       const boost::system::error_code&);
+  // void connect_handler(boost::function< void(void) >,
+  //       	       boost::function< void(void) >,
+  //       	       const boost::system::error_code&);
   /**
    * Called when the server initiate a file transfer with us.
    * Install the temporary callback to receive each file chunk.

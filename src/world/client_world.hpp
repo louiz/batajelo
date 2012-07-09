@@ -7,6 +7,7 @@ class ClientWorld: public World
 {
 public:
   ClientWorld();
+  ClientWorld(Map*);
   ~ClientWorld();
   /**
    * Tells the server that we received and inserted the action into

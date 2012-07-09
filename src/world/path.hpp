@@ -7,19 +7,22 @@
 #ifndef __PATH_HPP__
 # define __PATH_HPP__
 
+#include <mpreal/mpreal.h>
+
+using namespace mpfr;
+
 class Path
 {
 public:
-  Path(const unsigned int x, const unsigned int y);
+  Path(const mpreal x, const mpreal y);
   Path& operator=(const Path&);
   Path(const Path&);
   ~Path();
   /**
    * Currently, a path is just a destination, but this will be changed.
    */
-  unsigned int x;
-  unsigned int y;
-private:
+  mpreal x;
+  mpreal y;
 };
 
 
