@@ -1,0 +1,16 @@
+For everything:
+build-essential
+
+For SFML2:
+libgl1-mesa-dev
+libxrandr-dev
+libfreetype6-dev
+libglew1.6-dev
+libjpeg-dev
+libopenal-dev
+libsndfile1-dev
+
+For Batajelo:
+libmysqlclient-dev
+libboost1.48-all-dev
+libcrypto++-dev

@@ -1,0 +1,20 @@
+For everything
+gcc-c++
+cmake
+
+For SFML2:
+mesa-libGL-devel
+libXrandr-devel
+freetype-devel
+mesa-libGL-devel
+glew-devel
+libjpeg-turbo-devel
+openal-soft-devel
+libsndfile-devel
+
+For SFGUI:
+
+For Batajelo:
+boost-devel
+cryptopp-devel
+mysql-devel
