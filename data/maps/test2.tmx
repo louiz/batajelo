@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="staggered" width="2" height="4" tilewidth="128" tileheight="96">
+ <tileset firstgid="1" name="tileset2" tilewidth="128" tileheight="160">
+  <image source="../tilesets/tileset2.png" width="1024" height="1280"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="2" height="4">
+  <properties>
+   <property name="level" value="0"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzjZGBgkARiRSAWZMAEAAhoAFU=
+  </data>
+ </layer>
+ <layer name="Tile Layer 2" width="2" height="4" xoffset="0" yoffset="32">
+  <properties>
+   <property name="level" value="1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYMAPAAAgAAE=
+  </data>
+ </layer>
+</map>
