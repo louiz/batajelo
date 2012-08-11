@@ -1,5 +1,6 @@
 #include <world/world.hpp>
 #include <world/serializable_entity.hpp>
+#include <world/path.hpp>
 
 World::World():
   started(false),
@@ -53,7 +54,7 @@ Entity* World::get_next_entity(const int y)
       return 0;
     }
   Entity* entity = *this->entities_iterator;
-  if (entity->y < y)
+  if (entity->pos.y < y)
     {
       ++this->entities_iterator;
       return entity;
@@ -199,7 +200,7 @@ void World::do_new_entity(ActionEvent* event)
   // and we pass the initial position of the entity as well.
   Entity* new_entity = this->create_entity(entity->type_id, *entity);
   delete entity;
-  log_debug("New_Entity" << new_entity->x << ":" << new_entity->y);
+  log_debug("New_Entity: " << new_entity->pos);
   this->insert_entity(new_entity);
 }
 
@@ -263,7 +264,7 @@ unsigned int World::get_number_of_occupants() const
 
 static bool compare_entities(const Entity* a, const Entity* b)
 {
-  return (a->y < b->y);
+  return (a->pos.y < b->pos.y);
 }
 
 void World::sort_entities()
@@ -271,25 +272,25 @@ void World::sort_entities()
   this->entities.sort(compare_entities);
 }
 
-void World::get_cell_at_position(const mpreal& x, const mpreal& y,
+void World::get_cell_at_position(const Position& pos,
                                  int& xa, int& ya) const
 {
   const int16_t cell_size = static_cast<const int16_t>(CELL_SIZE);
   assert(cell_size % 2 == 0);
   assert(cell_size > 1);
-  xa = (x / cell_size).toLong();
-  ya = (y / cell_size).toLong();
+  xa = (pos.x / cell_size).toLong();
+  ya = (pos.y / cell_size).toLong();
 }
 
-mpreal World::get_position_height(const mpreal& x, const mpreal& y) const
+mpreal World::get_position_height(const Position& pos) const
 {
   int cellx;
   int celly;
   const int cell_size = static_cast<const int>(CELL_SIZE);
-  this->get_cell_at_position(x, y, cellx, celly);
+  this->get_cell_at_position(pos, cellx, celly);
   ushort heights = this->map->get_cell_heights(cellx, celly);
-  mpreal cx = mpreal(x.toLong() % cell_size) / mpreal(CELL_SIZE);
-  mpreal cy = mpreal(y.toLong() % cell_size) / mpreal(CELL_SIZE);
+  mpreal cx = mpreal(pos.x.toLong() % cell_size) / mpreal(CELL_SIZE);
+  mpreal cy = mpreal(pos.y.toLong() % cell_size) / mpreal(CELL_SIZE);
   mpreal a = (heights) & 15;
   mpreal b = (heights >> 4) & 15;
   mpreal d = (heights >> 12) & 15;

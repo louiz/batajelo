@@ -1,12 +1,14 @@
 #include <string>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+#include <list>
 
 #ifndef __MAP_HPP__
 # define __MAP_HPP__
 
 #include <logging/logging.hpp>
 #include <world/layer.hpp>
+#include <world/position.hpp>
 
 #define LAYER_NUMBER 5
 #define LEVEL_HEIGHT 32
@@ -34,6 +36,8 @@ static const char tile_heights[6][4] =
   {1, 1, 0, 0},
   {0, 0, 0, 0}
 };
+
+typedef std::list<std::size_t> cell_path_t;
 
 class Camera;
 

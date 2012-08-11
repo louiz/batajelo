@@ -2,9 +2,10 @@
 
 SerializableEntity::SerializableEntity(const Entity& e)
 {
-  this->x = e.x.toString();
-  this->y = e.y.toString();
+  this->x = e.pos.x.toString();
+  this->y = e.pos.y.toString();
   this->type_id = e.type_id;
+  log_error("SerializableEntity: " << this->x << ":" << this->y);
 }
 
 SerializableEntity::~SerializableEntity()

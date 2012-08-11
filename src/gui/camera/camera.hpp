@@ -22,6 +22,7 @@
 #include <gui/camera/map.hpp>
 #include <gui/camera/mouse_selection.hpp>
 #include <mpreal/mpreal.h>
+#include <world/position.hpp>
 
 using namespace mpfr;
 
@@ -61,8 +62,8 @@ public:
    * input etc.
    */
   void update(const Duration& dt);
-  sf::Vector2u world_to_camera_position(const mpreal&, const mpreal&) const;
-  sf::Vector2u camera_to_world_position(const int, const int) const;
+  sf::Vector2u world_to_camera_position(const Position&) const;
+  Position camera_to_world_position(const int, const int) const;
   /**
    * Start a mouse selection, i.e. drawing a rectangle to select entities
    * inside it. The position is a world-static position, not a camera

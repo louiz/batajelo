@@ -7,23 +7,10 @@
 #ifndef __PATH_HPP__
 # define __PATH_HPP__
 
-#include <mpreal/mpreal.h>
+#include <world/position.hpp>
+#include <list>
 
-using namespace mpfr;
-
-class Path
-{
-public:
-  Path(const mpreal x, const mpreal y);
-  Path& operator=(const Path&);
-  Path(const Path&);
-  ~Path();
-  /**
-   * Currently, a path is just a destination, but this will be changed.
-   */
-  mpreal x;
-  mpreal y;
-};
+typedef std::list<Position> Path;
 
 
 #endif // __PATH_HPP__

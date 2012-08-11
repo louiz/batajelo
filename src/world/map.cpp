@@ -4,6 +4,8 @@
 #include <utils/zlib.hpp>
 #include <boost/utility.hpp>
 #include <boost/foreach.hpp>
+#include <map>
+#include <climits>
 
 Map::Map():
   width(0),

@@ -34,6 +34,8 @@
 #include <game/replay.hpp>
 #include <network/command.hpp>
 #include <mpreal/mpreal.h>
+#include <world/position.hpp>
+#include <world/path.hpp>
 
 using namespace mpfr;
 
@@ -144,14 +146,14 @@ public:
   /**
    * Sets the coordinate of the cell containing the given world position.
    */
-  void get_cell_at_position(const mpreal& x, const mpreal& y,
+  void get_cell_at_position(const Position& pos,
                             int& xa, int& ya) const;
   /**
    * Returns the height (ingame) of the point at the given position.
    * It takes into account the highest level having a tile containing this
    * position and the tile height (see tile_heights in map.hpp)
    */
-  mpreal get_position_height(const mpreal& x, const mpreal& y) const;
+  mpreal get_position_height(const Position&) const;
   bool is_started() const;
   /**
    * the list of other occupants of the game, when a new client connects to

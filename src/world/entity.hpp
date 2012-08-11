@@ -3,7 +3,7 @@
 
 #include <logging/logging.hpp>
 #include <world/path.hpp>
-#include <mpreal/mpreal.h>
+#include <world/position.hpp>
 
 class Camera;
 class World;
@@ -27,7 +27,7 @@ public:
   Entity(const Entity& model, const SerializableEntity& e);
   virtual ~Entity();
   bool is_selected() const;
-  bool contains(const mpreal&, const mpreal&) const;
+  bool contains(const Position&) const;
   void update_health();
   unsigned short get_id() const { return this->id; }
 
@@ -42,14 +42,7 @@ public:
 private:
   Entity& operator=(const Entity&);
 public:
-  /**
-   * The left position
-   */
-  mpreal x;
-  /**
-   * The top position
-   */
-  mpreal y;
+  Position pos;
   /**
    * The width
    */
@@ -73,7 +66,7 @@ public:
   /**
    * The path to follow. If it is 0, the entity is not moving.
    */
-  Path* path;
+  Path path;
   /**
    * The entity health.
    */

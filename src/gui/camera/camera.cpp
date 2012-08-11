@@ -111,14 +111,12 @@ void Camera::handle_middle_click(const sf::Event& event)
 
 void Camera::handle_right_click(const sf::Event& event)
 {
-  const sf::Vector2u pos = this->camera_to_world_position(event.mouseButton.x,
-                                                          event.mouseButton.y);
-  int x;
-  int y;
-  this->world->get_cell_at_position(pos.x,
-                                    pos.y,
-                                    x, y);
-  this->world->handle_event(actions::Move, pos.x, pos.y);
+  const Position pos = this->camera_to_world_position(event.mouseButton.x,
+                                                      event.mouseButton.y);
+  // int x;
+  // int y;
+  // this->world->get_cell_at_position(pos, x, y);
+  this->world->handle_event(actions::Move, pos.x.toLong(), pos.y.toLong());
 }
 
 void Camera::handle_left_click(const sf::Event& event)
@@ -148,7 +146,7 @@ void Camera::set_mouse_selection_to_selection()
   while ((entity = this->world->get_next_entity()) != 0)
     {
       if (this->mouse_selection.contains(mouse_pos,
-                                         this->world_to_camera_position(entity->x, entity->y),
+                                         this->world_to_camera_position(entity->pos),
                                          entity->width + 4))
         entity->selected = true;
       else
@@ -167,7 +165,7 @@ void Camera::add_mouse_selection_to_selection()
   while ((entity = this->world->get_next_entity()) != 0)
     {
       if (this->mouse_selection.contains(mouse_pos,
-                                         this->world_to_camera_position(entity->x, entity->y),
+                                         this->world_to_camera_position(entity->pos),
                                          entity->width + 4))
         entity->selected = true;
     }
@@ -273,8 +271,8 @@ void Camera::draw()
           this->world->reset_entity_iterator();
           while ((entity = this->world->get_next_entity()) != 0)
             {
-              this->world->get_cell_at_position(entity->x, entity->y, cellx, celly);
-              sf::Vector2u entpos = this->world_to_camera_position(entity->x, entity->y);
+              this->world->get_cell_at_position(entity->pos, cellx, celly);
+              sf::Vector2u entpos = this->world_to_camera_position(entity->pos);
               if ((celly == y) && ((entpos.x > this->x) && (entpos.x < this->x + win_size.x) &&
                                    (entpos.y > this->y) && (entpos.y < this->y + win_size.y)))
                 {
@@ -328,38 +326,38 @@ void Camera::fixup_camera_position()
     this->y = this->map->get_height_in_pixels() - win_size.y;
 }
 
-sf::Vector2u Camera::world_to_camera_position(const mpreal& x, const mpreal& y) const
+sf::Vector2u Camera::world_to_camera_position(const Position& pos) const
 {
   sf::Vector2u res;
-  res.x = ((x * TILE_WIDTH) / CELL_SIZE).toLong();
-  res.y = ((y * TILE_HEIGHT) / CELL_SIZE).toLong();
-  mpreal height = this->world->get_position_height(x, y) * 32;
+  res.x = ((pos.x * TILE_WIDTH) / CELL_SIZE).toLong();
+  res.y = ((pos.y * TILE_HEIGHT) / CELL_SIZE).toLong();
+  mpreal height = this->world->get_position_height(pos) * 32;
   res.y -= height.toLong();
   return res;
 }
 
-sf::Vector2u Camera::camera_to_world_position(const int x,
-                                              const int y) const
+Position Camera::camera_to_world_position(const int x,
+                                          const int y) const
 {
-  sf::Vector2u res;
+  Position res;
   const uint cell_size = static_cast<const uint>(CELL_SIZE);
   res.x = (x + this->x) * (CELL_SIZE / static_cast<const float>(TILE_WIDTH));
   res.y = (y + this->y) * (CELL_SIZE / static_cast<const float>(TILE_HEIGHT));
 
-  uint offset = (cell_size - (res.y % cell_size));
+  uint offset = (cell_size - (res.y.toLong() % cell_size));
   uint i = 0;
-  mpreal height_of_bottom_cell = this->world->get_position_height(res.x, res.y + offset);
+  mpreal height_of_bottom_cell = this->world->get_position_height(Position(res.x, res.y + offset));
   if (height_of_bottom_cell > ((offset) * (1.f/LAYER_HEIGHT)))
     res.y += (height_of_bottom_cell * LAYER_HEIGHT).toLong();
   else
     {
       offset += cell_size;
-      height_of_bottom_cell = this->world->get_position_height(res.x, res.y + offset);
+      height_of_bottom_cell = this->world->get_position_height(Position(res.x, res.y + offset));
       if (height_of_bottom_cell > (offset * (1.f/LAYER_HEIGHT)))
         res.y += (height_of_bottom_cell * LAYER_HEIGHT).toLong();
       else
         {
-          mpreal height_of_current_cell = this->world->get_position_height(res.x, res.y);
+          mpreal height_of_current_cell = this->world->get_position_height(Position(res.x, res.y));
           res.y += (height_of_current_cell * LAYER_HEIGHT).toLong();
         }
     }
