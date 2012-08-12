@@ -154,6 +154,41 @@ public:
    * position and the tile height (see tile_heights in map.hpp)
    */
   mpreal get_position_height(const Position&) const;
+  /**
+   * Convert a path made of cells by a path composed of world positions
+   */
+  Path smooth_path(cell_path_t path,
+                                    Position& start, const Position& end, const int width) const;
+  /**
+   * Returns wheither or not we can walk from the start position to the end
+   * position, following a single straight line.
+   */
+  bool has_a_line_of_sight(const Position& start, const Position& end, const mpreal step, const int width) const;
+  /**
+   * Returns whether the entity can walk in a straight line from one point
+   * to another.  This is done by checking if two parallel lines of sight
+   * exist, separated by the width of the entity.
+   */
+  bool can_walk_in_straight_line(const Position& start, const Position& end, const mpreal step, const int width) const;
+  /**
+   * Returns whether or not we can move from one cell to another, according
+   * to their respective heights.
+   */
+  bool can_traverse_cell(const int x, const int y,
+                         const int x2, const int y2) const;
+  /**
+   * Return the position of the nearest corner of the given cell, using the next
+   * cell to determine the optimal corner.
+   */
+  Position get_nearest_corner(const Position&, const std::size_t, const std::size_t, const int width) const;
+  /**
+  * Return the position of the nearest corner of the given cell, in the case
+  * where that is the last cell of the path.
+  */
+  Position get_nearest_corner(const Position&, const std::size_t, const int width) const;
+  Position get_next_path_position(cell_path_t& path, const Position current,
+                                         const Position& end, const int width) const;
+
   bool is_started() const;
   /**
    * the list of other occupants of the game, when a new client connects to

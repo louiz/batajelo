@@ -66,6 +66,15 @@ public:
    * Returns an ushort containing the 4 corners' heights of the given cell.
    */
   ushort get_cell_heights(const int cellx, const int celly) const;
+  cell_path_t do_astar(const uint startx, const uint starty,
+                                    const uint endx, const uint endy);
+  /**
+   * Returns the neighbour cells of the given one if it's walkable to it.
+   * It's walkable if the two adjacent and corresponding heights are equal.
+   * If one of them is different, it's not walkable.  The return vector can
+   * contain 2, 3 or 4 values.
+   */
+  std::vector<std::size_t> get_neighbour_nodes(const std::size_t);
 
 protected:
   bool read_layer(boost::property_tree::ptree& tree);
@@ -104,5 +113,34 @@ private:
   Map(const Map&);
   Map& operator=(const Map&);
 };
+
+typedef struct
+{
+  std::size_t index;
+  int g;
+  int f;
+} t_node;
+
+typedef std::vector<std::size_t> t_closed_nodes;
+typedef std::list<t_node> t_nodes;
+
+/**
+ * Insert a node in the given list, in the correct position as to have the
+ * list always ordered by t_score.fvalue in ascendant order.  If it's
+ * already present, remove it and reinsert it, updating the associated
+ * score.
+ */
+void insert_node(t_nodes& nodes, std::size_t index, int g, int f);
+/**
+ * Just returns true if the node is in the set.
+ */
+bool is_in_set(std::size_t index, const t_closed_nodes& nodes);
+/**
+ * Returns true if the given index score is lower than the one already in
+ * the set. Returns true as well if the index is not in the set already.
+ */
+bool is_better_than_previously_open(const std::size_t index, const int score, const t_nodes& open);
+cell_path_t reconstruct_path(const std::map<std::size_t, std::size_t>& came_from, const std::size_t end);
+int heuristic();
 
 #endif // __MAP_HPP__

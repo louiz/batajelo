@@ -259,8 +259,14 @@ void Camera::draw()
               if (tile != 0)
                 {
                   tile->sprite.setColor(sf::Color::White);
+                  for (std::list<std::size_t>::iterator it = this->world->current_path.begin();
+                       it != this->world->current_path.end(); ++it)
+                    {
+                      if ((*it) == layer->width * y + x)
+                        tile->sprite.setColor(sf::Color::Red);
+                    }
                   tile->sprite.setPosition(x * TILE_WIDTH - this->x,
-                                           - 64 + y * TILE_HEIGHT - yoffset - this->y);
+                                           -64 + y * TILE_HEIGHT - yoffset - this->y);
                   this->win->draw(tile->sprite);
                 }
             }

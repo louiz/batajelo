@@ -12,5 +12,4 @@
 
 typedef std::list<Position> Path;
 
-
 #endif // __PATH_HPP__

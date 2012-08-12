@@ -258,3 +258,188 @@ ushort Map::get_cell_heights(const int cellx, const int celly) const
   std::size_t index = (this->get_width_in_tiles() * celly) + cellx;
   return this->walking_map[index];
 }
+
+cell_path_t Map::do_astar(const uint startx, const uint starty,
+                   const uint endx, const uint endy)
+{
+  assert(startx < this->get_width_in_tiles());
+  assert(starty < this->get_height_in_tiles());
+  assert(endx < this->get_width_in_tiles());
+  assert(endy < this->get_height_in_tiles());
+
+  std::size_t start = (this->get_width_in_tiles() * starty) + startx;
+  std::size_t goal = (this->get_width_in_tiles() * endy) + endx;
+  t_nodes open;
+  t_closed_nodes closed;
+  insert_node(open, start, 0, 0);
+  std::map<std::size_t, std::size_t> came_from;
+
+  t_node current;
+  while (open.empty() == false)
+    {
+      current = open.front();
+      log_error("Current node: " << current.index << ":(" << current.g << "." << current.f << ")");
+      if (current.index == goal)
+        {
+          return reconstruct_path(came_from, current.index);
+        }
+      open.pop_front();
+      closed.push_back(current.index);
+      std::vector<std::size_t> neighbours = this->get_neighbour_nodes(current.index);
+      for (std::vector<std::size_t>::const_iterator it = neighbours.begin();
+           it != neighbours.end(); ++it)
+        {
+          log_error("Neighbour: " << (*it));
+          if (is_in_set((*it), closed) == true)
+            {
+              log_error("Is already closed");
+              continue;
+            }
+          int tentative_g = current.g + 1;
+          if (is_better_than_previously_open((*it), tentative_g, open) == true)
+            {
+              insert_node(open, (*it), tentative_g, tentative_g);
+              came_from[(*it)] = current.index;
+            }
+          else
+            {
+              log_error("Is not better than the one already opened");
+            }
+        }
+    }
+  cell_path_t ret;
+  return ret;
+}
+
+std::vector<std::size_t> Map::get_neighbour_nodes(const std::size_t index)
+{
+  const uint x = index % this->get_width_in_tiles();
+  const uint y = index / this->get_width_in_tiles();
+  ushort heights = this->get_cell_heights(x, y);
+  std::vector<std::size_t> res;
+  if (y != 0)
+    { // Try top
+      std::size_t neighbour = index - this->get_width_in_tiles();
+      ushort neighbour_heights = this->get_cell_heights(
+                                   neighbour % this->get_width_in_tiles(),
+                                   neighbour / this->get_width_in_tiles());
+      if ((((heights) & 15) == ((neighbour_heights >> 12) & 15)) &&
+          (((heights >> 4) & 15) == ((neighbour_heights >> 8) & 15)))
+        res.push_back(neighbour);
+    }
+  if (x != 0)
+    { // Try left
+      std::size_t neighbour = index - 1;
+      ushort neighbour_heights = this->get_cell_heights(
+                                   neighbour % this->get_width_in_tiles(),
+                                   neighbour / this->get_width_in_tiles());
+      if ((((heights) & 15) == ((neighbour_heights >> 4) & 15)) &&
+          (((heights >> 12) & 15) == ((neighbour_heights >> 8) & 15)))
+        res.push_back(neighbour);
+    }
+  if ((x != this->get_width_in_tiles() - 1))
+    { // Try right
+      std::size_t neighbour = index + 1;
+      ushort neighbour_heights = this->get_cell_heights(
+                                   neighbour % this->get_width_in_tiles(),
+                                   neighbour / this->get_width_in_tiles());
+      if ((((heights >> 4) & 15) == ((neighbour_heights) & 15)) &&
+          (((heights >> 8) & 15) == ((neighbour_heights >> 12) & 15)))
+        res.push_back(neighbour);
+    }
+  if ((y != this->get_width_in_tiles() - 1))
+    { // Try bottom
+      std::size_t neighbour = index + this->get_width_in_tiles();
+      ushort neighbour_heights = this->get_cell_heights(
+                                   neighbour % this->get_width_in_tiles(),
+                                   neighbour / this->get_width_in_tiles());
+      log_error("Neighbour heights: " <<
+                ((neighbour_heights) & 15) << "," <<
+                ((neighbour_heights >> 4) & 15) << "," <<
+                ((neighbour_heights >> 8) & 15) << "," <<
+                ((neighbour_heights >> 12) & 15) << ".")
+
+      if ((((heights >> 8) & 15) == ((neighbour_heights >> 4) & 15)) &&
+          (((heights >> 12) & 15) == ((neighbour_heights) & 15)))
+        res.push_back(neighbour);
+    }
+  return res;
+}
+
+int heuristic()
+{
+  return 0;
+}
+
+void insert_node(t_nodes& nodes, std::size_t index, int g, int f)
+{
+  std::list<t_node>::iterator it;
+  bool inserted = false;
+  t_node node;
+  node.f = f;
+  node.g = g;
+  node.index = index;
+
+  for (it = nodes.begin(); it != nodes.end(); ++it)
+    {
+      // Remove the node from the list if already present.
+      if ((*it).index == index)
+        {
+          it = nodes.erase(it);
+        }
+    }
+  for (it = nodes.begin(); it != nodes.end(); ++it)
+    {
+      if (((*it).f >= f))
+        {
+          nodes.insert(it, node);
+          return ;
+        }
+    }
+  nodes.insert(nodes.end(), node);
+}
+
+bool is_in_set(std::size_t index, const t_closed_nodes& nodes)
+{
+  std::vector<std::size_t>::const_iterator it;
+  for (it = nodes.begin(); it != nodes.end(); ++it)
+    {
+      if ((*it) == index)
+        return true;
+    }
+  return false;
+}
+
+bool is_better_than_previously_open(const std::size_t index, const int score, const t_nodes& open)
+{
+  std::list<t_node>::const_iterator it;
+  for (it = open.begin(); it != open.end(); ++it)
+    {
+      if ((*it).index == index)
+        {
+          if ((*it).g < score)
+            return false;
+          else
+            return true;
+        }
+    }
+  return true;
+}
+
+cell_path_t reconstruct_path(const std::map<std::size_t, std::size_t>& came_from,
+                                          const std::size_t end)
+{
+  cell_path_t res;
+  std::map<std::size_t, std::size_t>::const_iterator it;
+  log_error("Path in backward: ");
+  log_error(end);
+  res.push_back(end);
+  it = came_from.find(end);
+  while (it != came_from.end())
+    {
+      log_error((*it).second);
+      res.push_back((*it).second);
+      it = came_from.find((*it).second);
+    }
+  return res;
+}
