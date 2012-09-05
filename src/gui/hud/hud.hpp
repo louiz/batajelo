@@ -9,24 +9,27 @@
  * @class Hud
  */
 
-#define HUD_HEIGHT 300
-
 #include <SFML/System.hpp>
 
 #ifndef __HUP_HPP__
 # define __HUP_HPP__
 
+#define HUD_HEIGHT 323
+
 #include <world/client_world.hpp>
-#include <gui/hud/minimap.hpp>
 #include <gui/camera/camera.hpp>
+#include <gui/hud/minimap.hpp>
+#include <gui/hud/selection_panel.hpp>
 
 class Hud
 {
 public:
-  Hud(GraphMap*, sf::RenderWindow*, Camera*);
+  Hud(GraphMap*, ClientWorld*, sf::RenderWindow*, Camera*);
   ~Hud();
   void draw(Camera*);
   bool handle_event(const sf::Event&);
+  bool is_entity_hovered(const Entity*) const;
+
 private:
   Hud(const Hud&);
   Hud& operator=(const Hud&);
@@ -34,6 +37,8 @@ private:
   sf::RenderWindow* win;
   sf::Sprite hud_sprite;
   sf::Texture hud_texture;
+  ClientWorld* world;
+  SelectionPanel selection_panel;
 };
 
 #endif // __HUP_HPP__

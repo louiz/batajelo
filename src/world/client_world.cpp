@@ -150,7 +150,7 @@ void ClientWorld::handle_event(actions::Type type, unsigned int x, unsigned y)
       Entity* entity;
       while ((entity = this->get_next_entity()))
         {
-          if (entity->is_selected())
+          if (this->is_entity_selected(entity))
             event.actors_ids.push_back(entity->get_id());
         }
       if (event.actors_ids.size() == 0)
@@ -159,4 +159,30 @@ void ClientWorld::handle_event(actions::Type type, unsigned int x, unsigned y)
       event.y = y;
       this->generate_command("MOVE", event.to_string());
     }
+}
+
+void ClientWorld::select_entity(const Entity* entity)
+{
+  
+  this->current_selection.add_to_selection(entity);
+}
+
+void ClientWorld::unselect_entity(const Entity* entity)
+{
+  this->current_selection.remove_from_selection(entity);
+}
+
+void ClientWorld::clear_selection()
+{
+  this->current_selection.clear();
+}
+
+bool ClientWorld::is_entity_selected(const Entity* entity) const
+{
+  return this->current_selection.is_in_selection(entity);
+}
+
+const Selection& ClientWorld::get_selection() const
+{
+  return this->current_selection;
 }

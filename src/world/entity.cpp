@@ -1,15 +1,15 @@
 #include <world/entity.hpp>
 #include <cmath>
 #include <world/serializable_entity.hpp>
+#include <world/world.hpp>
 
 unsigned short Entity::current_id = 0;
 unsigned short Entity::current_type_id = 0;
 
 Entity::Entity():
   pos(0, 0),
-  width(30),
+  width(15),
   height(0),
-  selected(false),
   type_id(Entity::current_type_id++),
   // path(0),
   health(0)
@@ -18,8 +18,7 @@ Entity::Entity():
 }
 
 Entity::Entity(const Entity& model):
-  id(++Entity::current_id),
-  selected(false)
+  id(++Entity::current_id)
   // path(0)
 {
   this->pos = model.pos;
@@ -30,29 +29,24 @@ Entity::Entity(const Entity& model):
   log_debug("Creating new unit(" << this->type_id << ") of id: " << this->id);
 }
 
-Entity::Entity(const Entity& model, const SerializableEntity& e):
-  id(++Entity::current_id),
-  selected(false),
-  // path(0),
-  health(0)
-{
-  this->width = model.width;
-  this->height = model.height;
-  this->selected = model.selected;
-  this->type_id = model.type_id;
-  this->health = model.health;
-  // this->path = 0;
-  this->pos = Position(e.x, e.y);
-  log_debug("Creating new unit(" << this->type_id << ") of id: " << this->id);
-}
+// Entity::Entity(const Entity& model, const SerializableEntity& e):
+//   selected(false),
+//   id(++Entity::current_id),
+//   // path(0),
+//   health(0)
+// {
+//   this->width = model.width;
+//   this->height = model.height;
+//   this->selected = model.selected;
+//   this->type_id = model.type_id;
+//   this->health = model.health;
+//   // this->path = 0;
+//   this->pos = Position(e.x, e.y);
+//   log_debug("Creating new unit(" << this->type_id << ") of id: " << this->id);
+// }
 
 Entity::~Entity()
 {
-}
-
-bool Entity::is_selected() const
-{
-  return this->selected;
 }
 
 bool Entity::contains(const Position& pos) const

@@ -2,6 +2,7 @@
 # define __CLIENT_WORLD_HPP__
 
 #include <world/world.hpp>
+#include <world/selection.hpp>
 
 class ClientWorld: public World
 {
@@ -71,10 +72,19 @@ public:
    * If an action is generated with this event, generate_action() is called.
    */
   void handle_event(actions::Type type, unsigned int x, unsigned y);
-
+  void select_entity(const Entity*);
+  void unselect_entity(const Entity*);
+  void clear_selection();
+  bool is_entity_selected(const Entity*) const;
+  const Selection& get_selection() const;
+  const Selection* get_selection_ptr() const
+  {
+    return &this->current_selection;
+  }
 private:
   ClientWorld(const ClientWorld&);
   ClientWorld& operator=(const ClientWorld&);
+  Selection current_selection;
 };
 
 #endif // __CLIENT_WORLD_HPP__

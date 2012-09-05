@@ -31,6 +31,7 @@ public:
   void draw();
   void update(const Duration&);
   void handle_event(const sf::Event&);
+  bool is_entity_hovered(const Entity*) const;
 
 private:
   Screen(const Screen&);

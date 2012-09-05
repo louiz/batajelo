@@ -27,6 +27,7 @@
 using namespace mpfr;
 
 class Minimap;
+class Screen;
 
 class Camera
 {
@@ -37,7 +38,7 @@ public:
   /**
    * Draw the world viewed through the camera.
    */
-  void draw();
+  void draw(const Screen*);
   /**
    * Draw the rectangle representing the mouse selection.
    */

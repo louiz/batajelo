@@ -1,4 +1,5 @@
 #include <gui/camera/camera.hpp>
+#include <gui/screen/screen.hpp>
 #include <world/layer.hpp>
 
 Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win):
@@ -26,18 +27,18 @@ void Camera::draw_entity(const Entity* entity, const uint x, const uint y,
     {
       sf::CircleShape in_mouse_circle;
       in_mouse_circle.setRadius(entity->width/2 + 6);
-      in_mouse_circle.setOutlineColor(sf::Color(0x32, 0xcb, 0x36, 40));
+      in_mouse_circle.setOutlineColor(sf::Color(0xff, 0xcb, 0x36, 255));
       in_mouse_circle.setFillColor(sf::Color::Transparent);
       in_mouse_circle.setOutlineThickness(2);
       in_mouse_circle.setPosition(x - entity->width/2 - 6, y - entity->width + 4);
       in_mouse_circle.setScale(sf::Vector2f(1, 3.f/4.f));
       this->win->draw(in_mouse_circle);
     }
-  if (entity->selected)
+  if (this->world->is_entity_selected(entity))
     {
       sf::CircleShape selection_circle;
       selection_circle.setRadius(entity->width/2 + 8);
-      selection_circle.setOutlineColor(sf::Color(0x32, 0xcb, 0x36, 100));
+      selection_circle.setOutlineColor(sf::Color(0xff, 0x00, 0x36, 200));
       selection_circle.setFillColor(sf::Color::Transparent);
       selection_circle.setOutlineThickness(3);
       selection_circle.setPosition(x - entity->width/2 - 8, y - entity->width + 5);
@@ -138,19 +139,38 @@ void Camera::handle_left_release(const sf::Event& event)
 
 void Camera::set_mouse_selection_to_selection()
 {
-  this->world->reset_entity_iterator();
+
   Entity* entity;
   sf::Vector2i mouse_pos = sf::Mouse::getPosition(*this->win);
   mouse_pos.x += this->x;
   mouse_pos.y += this->y;
+  this->world->reset_entity_iterator();
+  // First check the number of entities inside the selection. If it's 0, do
+  // nothing
+  uint n = 0;
   while ((entity = this->world->get_next_entity()) != 0)
+    if (this->mouse_selection.contains(mouse_pos,
+                                       this->world_to_camera_position(entity->pos),
+                                       entity->width + 4))
+      n++;
+  if (n > 0)
     {
-      if (this->mouse_selection.contains(mouse_pos,
-                                         this->world_to_camera_position(entity->pos),
-                                         entity->width + 4))
-        entity->selected = true;
-      else
-        entity->selected = false;
+      this->world->reset_entity_iterator();
+      while ((entity = this->world->get_next_entity()) != 0)
+        {
+          if (this->mouse_selection.contains(mouse_pos,
+                                             this->world_to_camera_position(entity->pos),
+                                             entity->width + 4))
+            {
+              if (this->world->is_entity_selected(entity) == false)
+                this->world->select_entity(entity);
+            }
+          else
+            {
+              if (this->world->is_entity_selected(entity) == true)
+                this->world->unselect_entity(entity);
+            }
+        }
     }
   this->mouse_selection.end();
 }
@@ -167,7 +187,10 @@ void Camera::add_mouse_selection_to_selection()
       if (this->mouse_selection.contains(mouse_pos,
                                          this->world_to_camera_position(entity->pos),
                                          entity->width + 4))
-        entity->selected = true;
+        {
+          if (this->world->is_entity_selected(entity) == false)
+            this->world->select_entity(entity);
+        }
     }
   this->mouse_selection.end();
 }
@@ -203,7 +226,7 @@ void Camera::update(const Duration& dt)
   this->fixup_camera_position();
 }
 
-void Camera::draw()
+void Camera::draw(const Screen* screen)
 {
   const sf::Vector2u win_size = this->win->getSize();
   Layer* layer;
@@ -284,7 +307,8 @@ void Camera::draw()
                 {
                   this->draw_entity(entity, entpos.x - this->x, entpos.y - this->y,
                                     this->mouse_selection.contains(mouse_pos,
-                                                                   entpos, entity->width + 4),
+                                                                   entpos, entity->width + 4) ||
+                                    screen->is_entity_hovered(entity),
                                     rectangle);
                 }
             }
@@ -304,8 +328,8 @@ void Camera::draw_mouse_selection()
   sf::RectangleShape rect(sf::Vector2f(::abs(mouse_pos.x - this->mouse_selection.start_pos.x),
                                        ::abs(mouse_pos.y- this->mouse_selection.start_pos.y)));
   rect.setOutlineThickness(1);
-  rect.setFillColor(sf::Color(0x32, 0xcb, 0x36, 40));
-  rect.setOutlineColor(sf::Color(0x32, 0xcb, 0x36));
+  rect.setFillColor(sf::Color(13, 0, 152, 40));
+  rect.setOutlineColor(sf::Color(13, 0, 152, 0x36));
   sf::Vector2f rect_pos;
   if (this->mouse_selection.start_pos.x < mouse_pos.x)
     rect_pos.x = this->mouse_selection.start_pos.x - this->x;

@@ -14,8 +14,8 @@
 #ifndef __MINIMAP_HPP__
 # define __MINIMAP_HPP__
 
-#define MINIMAP_X 15.f
-#define MINIMAP_Y 15.f
+#define MINIMAP_X 35.f
+#define MINIMAP_Y 20.f
 #define MINIMAP_WIDTH 250.f
 #define MINIMAP_HEIGHT 250.f
 
