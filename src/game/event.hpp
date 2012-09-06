@@ -13,11 +13,9 @@
 # define __EVENT_HPP__
 
 #include <serialization/serializable.hpp>
-#include <world/serializable_entity.hpp>
+#include <world/entity.hpp>
 #include <network/command.hpp>
 #include <mpreal/mpreal.h>
-
-using namespace mpfr;
 
 class Event: public Serializable
 {
@@ -116,7 +114,7 @@ private:
 class EntityEvent: public ActionEvent
 {
 public:
-  EntityEvent(SerializableEntity* entity):
+  EntityEvent(Entity* entity):
     ActionEvent("NEW_ENTITY"),
     entity(entity)
   {}
@@ -132,7 +130,7 @@ public:
     ActionEvent::serialize(ar, v);
     ar & entity;
   }
-  SerializableEntity* entity;
+  Entity* entity;
 
 private:
   EntityEvent(const EntityEvent&);

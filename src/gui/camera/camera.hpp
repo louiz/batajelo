@@ -24,8 +24,6 @@
 #include <mpreal/mpreal.h>
 #include <world/position.hpp>
 
-using namespace mpfr;
-
 class Minimap;
 class Screen;
 

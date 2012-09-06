@@ -25,7 +25,6 @@
 
 #include <world/occupant.hpp>
 #include <world/entity.hpp>
-#include <world/serializable_entity.hpp>
 #include <world/time.hpp>
 #include <world/map.hpp>
 #include <game/action.hpp>
@@ -36,8 +35,6 @@
 #include <mpreal/mpreal.h>
 #include <world/position.hpp>
 #include <world/path.hpp>
-
-using namespace mpfr;
 
 /**
  * From left to right, and from top to bottom, a cell has this size, in the
@@ -101,7 +98,7 @@ public:
    * Create an entity based on the given model, with the given
    * SerializableEntity to copy the initial entity position.
    */
-  Entity* create_entity(unsigned int type, const SerializableEntity& e);
+  Entity* create_entity(unsigned int type, const Entity& e);
   void set_next_turn_callback(t_next_turn_callback);
   void pause();
   void unpause();
@@ -147,7 +144,7 @@ public:
    * Sets the coordinate of the cell containing the given world position.
    */
   void get_cell_at_position(const Position& pos,
-                            int& xa, int& ya) const;
+                            short& xa, short& ya) const;
   /**
    * Returns the height (ingame) of the point at the given position.
    * It takes into account the highest level having a tile containing this
@@ -157,37 +154,37 @@ public:
   /**
    * Convert a path made of cells by a path composed of world positions
    */
-  Path smooth_path(cell_path_t path,
-                                    Position& start, const Position& end, const int width) const;
+  Path smooth_path(cell_path_t path, Position& start,
+                   const Position& end, const short width) const;
   /**
    * Returns wheither or not we can walk from the start position to the end
    * position, following a single straight line.
    */
-  bool has_a_line_of_sight(const Position& start, const Position& end, const mpreal step, const int width) const;
+  bool has_a_line_of_sight(const Position& start, const Position& end, const mpreal step, const short width) const;
   /**
    * Returns whether the entity can walk in a straight line from one point
    * to another.  This is done by checking if two parallel lines of sight
    * exist, separated by the width of the entity.
    */
-  bool can_walk_in_straight_line(const Position& start, const Position& end, const mpreal step, const int width) const;
+  bool can_walk_in_straight_line(const Position& start, const Position& end, const mpreal step, const short width) const;
   /**
    * Returns whether or not we can move from one cell to another, according
    * to their respective heights.
    */
-  bool can_traverse_cell(const int x, const int y,
-                         const int x2, const int y2) const;
+  bool can_traverse_cell(const short x, const short y,
+                         const short x2, const short y2) const;
   /**
    * Return the position of the nearest corner of the given cell, using the next
    * cell to determine the optimal corner.
    */
-  Position get_nearest_corner(const Position&, const std::size_t, const std::size_t, const int width) const;
+  Position get_nearest_corner(const Position&, const std::size_t, const std::size_t, const short width) const;
   /**
   * Return the position of the nearest corner of the given cell, in the case
   * where that is the last cell of the path.
   */
-  Position get_nearest_corner(const Position&, const std::size_t, const int width) const;
+  Position get_nearest_corner(const Position&, const std::size_t, const short width) const;
   Position get_next_path_position(cell_path_t& path, const Position current,
-                                         const Position& end, const int width) const;
+                                         const Position& end, const short width) const;
 
   bool is_started() const;
   /**
@@ -197,6 +194,10 @@ public:
    * RemoteGameClient object stored in the server.
    */
   std::vector<Occupant*> occupants;
+  /**
+   * The list of all existing entities in the world.
+   */
+  std::list<Entity*> entities;
 
 private:
   World(const World&);
@@ -212,10 +213,6 @@ protected:
    * is started.
    */
   std::vector<Entity*> entity_models;
-  /**
-   * The list of all existing entities in the world.
-   */
-  std::list<Entity*> entities;
   /**
    * An iterator to help other classes get the entities one by
    * one without having to play with an iterator themselve, etc.

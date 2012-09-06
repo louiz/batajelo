@@ -238,8 +238,8 @@ void Camera::draw(const Screen* screen)
   uint end_y = start_y + win_size.y / TILE_HEIGHT + 2;
   uint start_x = static_cast<uint>(this->x) / TILE_WIDTH;
   uint end_x = start_x + win_size.x / TILE_WIDTH + 2;
-  int cellx;
-  int celly;
+  short cellx;
+  short celly;
   this->world->sort_entities();
 
   GraphTile* tile;
@@ -359,8 +359,8 @@ void Camera::fixup_camera_position()
 sf::Vector2u Camera::world_to_camera_position(const Position& pos) const
 {
   sf::Vector2u res;
-  res.x = ((pos.x * TILE_WIDTH) / CELL_SIZE).toLong();
-  res.y = ((pos.y * TILE_HEIGHT) / CELL_SIZE).toLong();
+  res.x = (pos.x.toLong() * TILE_WIDTH) / CELL_SIZE;
+  res.y = (pos.y.toLong() * TILE_HEIGHT) / CELL_SIZE;
   mpreal height = this->world->get_position_height(pos) * 32;
   res.y -= height.toLong();
   return res;
@@ -376,13 +376,14 @@ Position Camera::camera_to_world_position(const int x,
 
   uint offset = (cell_size - (res.y.toLong() % cell_size));
   uint i = 0;
-  mpreal height_of_bottom_cell = this->world->get_position_height(Position(res.x, res.y + offset));
+  assert(offset <= 32767);
+  mpreal height_of_bottom_cell = this->world->get_position_height(Position(res.x, res.y + static_cast<short>(offset)));
   if (height_of_bottom_cell > ((offset) * (1.f/LAYER_HEIGHT)))
     res.y += (height_of_bottom_cell * LAYER_HEIGHT).toLong();
   else
     {
       offset += cell_size;
-      height_of_bottom_cell = this->world->get_position_height(Position(res.x, res.y + offset));
+      height_of_bottom_cell = this->world->get_position_height(Position(res.x, res.y + static_cast<short>(offset)));
       if (height_of_bottom_cell > (offset * (1.f/LAYER_HEIGHT)))
         res.y += (height_of_bottom_cell * LAYER_HEIGHT).toLong();
       else

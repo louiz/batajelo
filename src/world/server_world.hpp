@@ -29,11 +29,16 @@ public:
   void move_callback(Command*);
   bool validate_action(const unsigned int id, const unsigned long int by);
   bool validate_turn(const unsigned int id, const unsigned long int by);
+  /**
+   * Generate a unit of the given type, at the given position and adds the
+   * event of its creation to the first turn of the replay (which will be
+   * sent to any joining client).
+   */
+  void spawn_unit(const size_t, const int, const int);
 
 private:
   ServerWorld(const ServerWorld&);
   ServerWorld& operator=(const ServerWorld&);
 };
-
 
 #endif // __SERVER_WORLD_HPP__

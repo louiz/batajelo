@@ -10,24 +10,24 @@ ServerWorld::~ServerWorld()
 {
 }
 
+void ServerWorld::spawn_unit(const size_t type, const int x, const int y)
+{
+  Entity* new_entity = this->create_entity(type);
+  new_entity->pos = Position(x, y);
+  EntityEvent* e = new EntityEvent(new_entity);
+  e->turn = 1;
+  Action* action = new Action(0, e, 0);
+  action->validate_completely();
+  this->replay->insert_action(action);
+}
+
 void ServerWorld::init()
 {
-  log_debug("Creating initial world state");
-  // Spawn initial units.
-  for (int x = 0; x < 5; ++x)
-    for (int y = 0; y < 5; ++y)
-    {
-      Entity* new_entity = this->create_entity(0);
-      new_entity->x = x*100 + 200;
-      new_entity->y = y*100 + 100;
-      SerializableEntity* s_entity = new SerializableEntity(*new_entity);
-      EntityEvent* e = new EntityEvent(s_entity);
-      e->turn = 1;
-      Action* action = new Action(0, e, 0);
-      action->validate_completely();
-      this->replay->insert_action(action);
-      delete new_entity;
-    }
+  log_error("Creating initial world state");
+  this->spawn_unit(0, 353, 325);
+  this->spawn_unit(0, 154, 512);
+  this->spawn_unit(0, 254, 512);
+  this->spawn_unit(0, 154, 312);
   log_debug("done");
 }
 

@@ -1,11 +1,12 @@
+#include <logging/logging.hpp>
+
 #ifndef __VEC2_HPP__
 # define __VEC2_HPP__
 
 #include <mpreal/mpreal.h>
+#include <serialization/serializable.hpp>
 
-using namespace mpfr;
-
-class Vec2
+class Vec2: public Serializable
 {
 public:
   mpreal x;
@@ -14,85 +15,113 @@ public:
   ~Vec2() {}
   Vec2(const Vec2& v) {x=v.x; y=v.y;}
 
-    // constructors
+  // constructors
   Vec2 (): x( 0.0f ), y( 0.0f ) {}
-  Vec2 (mpreal X, mpreal Y) : x( X ), y( Y ) {}
+  Vec2 (mpreal X, mpreal Y): x( X ), y( Y ) {}
+  Vec2 (const unsigned int X, const unsigned int Y)
+  {
+    // See the Fix16 limits at
+    // http://code.google.com/p/libfixmath/wiki/Fix16Limits
+    assert(X < 32767);
+    assert(Y < 32767);
+    x = (short)X;
+    y = (short)Y;
+  }
 
-    // vector addition
-    Vec2 operator+ (const Vec2& v) const {return Vec2 (x+v.x, y+v.y);}
+  Vec2 (const int X, const int Y)
+  {
+    // See the Fix16 limits at
+    // http://code.google.com/p/libfixmath/wiki/Fix16Limits
+    assert(X < 32767);
+    assert(Y < 32767);
+    assert(X > -32768);
+    assert(Y > -32768);
+    x = (short)X;
+    y = (short)Y;
+  }
 
-    // vector subtraction
-    Vec2 operator- (const Vec2& v) const {return Vec2 (x-v.x, y-v.y);}
+  // vector addition
+  Vec2 operator+ (const Vec2& v) const {return Vec2 (x+v.x, y+v.y);}
 
-    // unary minus
-    Vec2 operator- (void) const {return Vec2 (-x, -y);}
+  // vector subtraction
+  Vec2 operator- (const Vec2& v) const {return Vec2 (x-v.x, y-v.y);}
 
-    // vector times scalar product (scale length of vector times argument)
-    Vec2 operator* (const mpreal s) const {return Vec2 (x * s, y * s);}
+  // unary minus
+  Vec2 operator- (void) const {return Vec2 (-x, -y);}
 
-    // vector divided by a scalar (divide length of vector by argument)
-    Vec2 operator/ (const mpreal s) const {return Vec2 (x / s, y / s);}
+  // vector times scalar product (scale length of vector times argument)
+  Vec2 operator* (const mpreal s) const {return Vec2 (x * s, y * s);}
 
-    // dot product
-    mpreal dot (const Vec2& v) const {return (x * v.x) + (y * v.y);}
+  // vector divided by a scalar (divide length of vector by argument)
+  Vec2 operator/ (const mpreal s) const {return Vec2 (x / s, y / s);}
 
-    // // length
-    // mpreal length (void) const {return sqrtXXX (lengthSquared ());}
+  // dot product
+  mpreal dot (const Vec2& v) const {return (x * v.x) + (y * v.y);}
 
-    // // length squared
-    // mpreal lengthSquared (void) const {return this->dot (*this);}
-
-    // normalize: returns normalized version (parallel to this, length = 1)
-    // Vec2 normalize (void) const
-    // {
-    //   // skip divide if length is zero
-    //   const mpreal len = length ();
-    //   return (len>0) ? (*this)/len : (*this);
-    // }
-
-    // // cross product (modify "*this" to be A x B)
-    // // [XXX  side effecting -- deprecate this function?  XXX]
-    // void cross(const Vec2& a, const Vec2& b)
-    // {
-    //   *this = Vec2 ((a.y * b.z) - (a.z * b.y),
-    //                 (a.z * b.x) - (a.x * b.z),
-    //                 (a.x * b.y) - (a.y * b.x));
-    // }
 
     // assignment
-    Vec2& operator= (const Vec2& v) {x=v.x; y=v.y; return *this;}
+  Vec2& operator= (const Vec2& v) {x=v.x; y=v.y; return *this;}
 
-    // set XY coordinates to given two mpreals
-    Vec2& set (const mpreal _x, const mpreal _y)
-    {x = _x; y = _y; return *this;}
+  // set XY coordinates to given two mpreals
+  Vec2& set (const mpreal _x, const mpreal _y)
+  {x = _x; y = _y; return *this;}
 
-    // +=
-    Vec2& operator+= (const Vec2& v) {return *this = (*this + v);}
+  // +=
+  Vec2& operator+= (const Vec2& v) {return *this = (*this + v);}
 
-    // -=
-    Vec2& operator-= (const Vec2& v) {return *this = (*this - v);}
+  // -=
+  Vec2& operator-= (const Vec2& v) {return *this = (*this - v);}
 
-    // *=
-    Vec2& operator*= (const mpreal& s) {return *this = (*this * s);}
+  // *=
+  Vec2& operator*= (const mpreal& s) {return *this = (*this * s);}
 
-    // /=
-    Vec2& operator/=( mpreal d ) { return *this = (*this / d);}
+  // /=
+  Vec2& operator/=( mpreal d ) { return *this = (*this / d);}
 
-    // equality/inequality
-    bool operator== (const Vec2& v) const {return x==v.x && y==v.y;}
-    bool operator!= (const Vec2& v) const {return !(*this == v);}
+  // equality/inequality
+  bool operator== (const Vec2& v) const {return x==v.x && y==v.y;}
+  bool operator!= (const Vec2& v) const {return !(*this == v);}
 
-    // @todo Remove - use @c distance from the Vec2Utilitites header instead.
-    // XXX experimental (4-1-03 cwr): is this the right approach?  defining
-    // XXX "Vec2 distance (vec3, Vec2)" collided with STL's distance template.
+  // @todo Remove - use @c distance from the Vec2Utilitites header instead.
+  // XXX experimental (4-1-03 cwr): is this the right approach?  defining
+  // XXX "Vec2 distance (vec3, Vec2)" collided with STL's distance template.
   static mpreal distance(const Vec2& a, const Vec2& b)
   {
     return (a - b).length();
   }
 
+  void rotate(const mpreal angle)
+  {
+    const mpreal l = this->length();
+    const mpreal s = angle.sin();
+    const mpreal c = angle.cos();
+    this->x = (this->x * c) - (this->y * s);
+    this->y = (this->x * s) + (this->y * c);
+    this->set_length(l);
+  }
+
   mpreal length() const
   {
-    return sqrt(pow(x, 2) + pow(y, 2));
+    // WORKAROUND 1: x^2 often exceeds the Fix16 limit.  We convert the values
+    // to ints to do the calculation, but we lose (a lot of?) precision.
+    // const int xi = x.toLong();
+    // const int yi = y.toLong();
+    // const int res = xi*xi + yi*yi;
+    // mpreal t = sqrt(res);
+    // return t;
+
+    // WORKAROUND 2: We go through two additional steps, to avoid having any
+    // big number during the calculation: we divide x and y by 16 before calculating their power of two. And after the sqrt we multiply by 16 again to find the correct result.
+    const int m = 32;
+    mpreal t = (x/m)*(x/m) + (y/m)*(y/m);
+    mpreal a = (x/m)*(x/m);
+    mpreal b = (x/m)*(x/m);
+    // log_error("length(): x=" << fix16_to_float(a) << " y=" << b);
+    t = t.sqrt();
+    return t*m;
+
+    // mpreal t = x*x + y*y;
+    // return t.sqrt();
   }
 
   // Change the vector's length but keep the same direction.
@@ -114,6 +143,29 @@ public:
     Vec2 res(-this->y, this->x);
     return res;
   }
+
+  static Vec2 zero;
+
+  virtual void serialize(oarchive & ar, const unsigned int)
+  {
+    ar & x & y;
+  }
+  virtual void serialize(iarchive & ar, const unsigned int)
+  {
+    ar & x & y;
+  }
+
+};
+
+inline Vec2 operator*(mpreal s, const Vec2& v) {return v*s;}
+inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
+{
+  return o << "Vec2 (" << static_cast<double>(v.x) << ", " << static_cast<double>(v.y) << ")";
+}
+
+#endif // __VEC2_HPP__
+
+
 
     // --------------------------- utility member functions used in OpenSteer
 
@@ -335,13 +387,27 @@ public:
   // length
   // distance
   // normalized
-};
-
-inline Vec2 operator*(mpreal s, const Vec2& v) {return v*s;}
-inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
-{
-  return o << "Vec2 (" << v.x << "," << v.y << ")";
-}
 
 
-#endif // __VEC2_HPP__
+  // // length
+  // mpreal length (void) const {return sqrtXXX (lengthSquared ());}
+
+  // // length squared
+  // mpreal lengthSquared (void) const {return this->dot (*this);}
+
+    // normalize: returns normalized version (parallel to this, length = 1)
+    // Vec2 normalize (void) const
+    // {
+    //   // skip divide if length is zero
+    //   const mpreal len = length ();
+    //   return (len>0) ? (*this)/len : (*this);
+    // }
+
+    // // cross product (modify "*this" to be A x B)
+    // // [XXX  side effecting -- deprecate this function?  XXX]
+    // void cross(const Vec2& a, const Vec2& b)
+    // {
+    //   *this = Vec2 ((a.y * b.z) - (a.z * b.y),
+    //                 (a.z * b.x) - (a.x * b.z),
+    //                 (a.x * b.y) - (a.y * b.x));
+    // }

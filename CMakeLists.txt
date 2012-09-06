@@ -117,12 +117,22 @@ add_library(mpreal STATIC ${source_mpreal})
 
 target_link_libraries(
         mpreal
-        serialization
-        ${MPFR_LIBRARIES}
-        ${GMP_LIBRARIES}
-	${Boost_LIBRARIES}
-	${CMAKE_THREAD_LIBS_INIT}
+        fixmath
 )
+
+file(
+	GLOB
+	source_fixmath
+	src/fixmath/*.c
+	src/fixmath/*.cpp
+)
+add_library(fixmath STATIC ${source_fixmath})
+
+target_link_libraries(
+        fixmath
+        logging
+)
+
 
 file(
 	GLOB
@@ -232,6 +242,7 @@ add_library(serialization STATIC ${source_serialization})
 target_Link_libraries(
 	serialization
 	logging
+        world
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 )
