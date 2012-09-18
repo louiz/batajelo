@@ -91,13 +91,11 @@ bool Camera::handle_event(const sf::Event& event)
     {
       this->previous_position = sf::Mouse::getPosition(*this->win);
       this->start_drag_position = this->previous_position;
-      this->win->setMouseCursorVisible(false);
     }
   else if (event.type == sf::Event::MouseButtonReleased &&
            event.mouseButton.button == sf::Mouse::Middle)
     {
       sf::Mouse::setPosition(this->start_drag_position);
-      this->win->setMouseCursorVisible(true);
       this->previous_position = sf::Vector2i(0, 0);
     }
   this->fixup_camera_position();

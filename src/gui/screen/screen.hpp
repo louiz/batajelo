@@ -10,15 +10,38 @@
  * @class Screen
  */
 
-#include <SFML/Graphics.hpp>
-
 #ifndef __SCREEN_HPP__
 # define __SCREEN_HPP__
+
+#include <vector>
+
+#include <SFML/Graphics.hpp>
 
 #include <gui/camera/camera.hpp>
 #include <gui/hud/hud.hpp>
 #include <world/client_world.hpp>
 #include <logging/logging.hpp>
+
+namespace cursor
+{
+  enum type
+    {
+      Normal,
+      Select,
+      Aim,
+      Cast,
+      // Just keep track of the possible number of cursors
+      size
+    };
+
+  static const char filenames[size][15] =
+  {
+    "gui_cursor.png",
+    "gui_cursor.png",
+    "gui_cursor.png",
+    "gui_cursor.png"
+  };
+}
 
 class Screen
 {
@@ -32,6 +55,8 @@ public:
   void update(const Duration&);
   void handle_event(const sf::Event&);
   bool is_entity_hovered(const Entity*) const;
+  void set_cursor_type(const cursor::type);
+  void draw_mouse_cursor();
 
 private:
   Screen(const Screen&);
@@ -39,6 +64,15 @@ private:
   sf::RenderWindow* win;
   Camera camera;
   Hud hud;
+
+  /**
+   * The list of the cursors' images. We just draw them at the mouse
+   * position. The texture is changed whenever needed (for example when
+   * changing the on_left_click_action callback to a spell, we also set the
+   * texture to the cursor::Cast one.
+   */
+  std::vector<sf::Texture> cursor_textures;
+  sf::Sprite cursor_sprite;
 };
 
 #endif // __SCREEN_HPP__
