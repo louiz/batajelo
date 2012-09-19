@@ -278,7 +278,6 @@ cell_path_t Map::do_astar(const uint startx, const uint starty,
   while (open.empty() == false)
     {
       current = open.front();
-      log_error("Current node: " << current.index << ":(" << current.g << "." << current.f << ")");
       if (current.index == goal)
         {
           return reconstruct_path(came_from, current.index);
@@ -289,10 +288,8 @@ cell_path_t Map::do_astar(const uint startx, const uint starty,
       for (std::vector<std::size_t>::const_iterator it = neighbours.begin();
            it != neighbours.end(); ++it)
         {
-          log_error("Neighbour: " << (*it));
           if (is_in_set((*it), closed) == true)
             {
-              log_error("Is already closed");
               continue;
             }
           int tentative_g = current.g + 1;
@@ -353,12 +350,6 @@ std::vector<std::size_t> Map::get_neighbour_nodes(const std::size_t index)
       ushort neighbour_heights = this->get_cell_heights(
                                    neighbour % this->get_width_in_tiles(),
                                    neighbour / this->get_width_in_tiles());
-      log_error("Neighbour heights: " <<
-                ((neighbour_heights) & 15) << "," <<
-                ((neighbour_heights >> 4) & 15) << "," <<
-                ((neighbour_heights >> 8) & 15) << "," <<
-                ((neighbour_heights >> 12) & 15) << ".")
-
       if ((((heights >> 8) & 15) == ((neighbour_heights >> 4) & 15)) &&
           (((heights >> 12) & 15) == ((neighbour_heights) & 15)))
         res.push_back(neighbour);
@@ -431,13 +422,10 @@ cell_path_t reconstruct_path(const std::map<std::size_t, std::size_t>& came_from
 {
   cell_path_t res;
   std::map<std::size_t, std::size_t>::const_iterator it;
-  log_error("Path in backward: ");
-  log_error(end);
   res.push_back(end);
   it = came_from.find(end);
   while (it != came_from.end())
     {
-      log_error((*it).second);
       res.push_back((*it).second);
       it = came_from.find((*it).second);
     }

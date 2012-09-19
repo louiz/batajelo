@@ -53,7 +53,7 @@ void Screen::set_cursor_type(const cursor::type type)
 void Screen::draw_mouse_cursor()
 {
   const sf::Vector2i pos = sf::Mouse::getPosition(*this->win);
-  this->cursor_sprite.setPosition(static_cast<float>(pos.x),
-                                  static_cast<float>(pos.y));
+  this->cursor_sprite.setPosition(static_cast<float>(pos.x) - 42.f,
+                                  static_cast<float>(pos.y) - 42.f);
   this->win->draw(this->cursor_sprite);
 }

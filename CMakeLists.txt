@@ -19,6 +19,9 @@ else(${CMAKE_BUILD_TYPE} MATCHES "debug")
 endif(${CMAKE_BUILD_TYPE} MATCHES "debug")
 configure_file("${PROJECT_SOURCE_DIR}/src/constant.hpp.in" "${PROJECT_SOURCE_DIR}/src/constant.hpp")
 
+## This flag is very important, if one client is compiled without it, its world representation
+## may not be identical with the other’s one.
+set(CMAKE_C_FLAGS "-DFIXMATH_SIN_LUT")
 
 if(NOT DEFINED BUILD_SERVER)
 	set(BUILD_SERVER true CACHE BOOL "build the server")

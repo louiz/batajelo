@@ -36,11 +36,11 @@ void InterfaceClient::connect(const std::string& host,
 {
   // TODO use resolve and DNS
   tcp::endpoint endpoint(boost::asio::ip::address::from_string(host), port);
-  log_info("Connecting");
   this->socket->async_connect(endpoint,
 			     boost::bind(&InterfaceClient::connect_handler, this,
 					 on_success, on_failure,
 					 boost::asio::placeholders::error));
+  log_info("Connecting to " << host << ":" << port);
 }
 
 void InterfaceClient::connect_handler(boost::function< void(void) > on_success,

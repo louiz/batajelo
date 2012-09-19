@@ -232,6 +232,10 @@ protected:
   bool started;
   Replay* replay;
   Map* map;
+
+public:
+  // for debug
+  cell_path_t current_path;
 };
 
 #endif // __WORLD_HPP__

@@ -15,11 +15,9 @@ int main()
   window->setMouseCursorVisible(false);
   GameClient* c = new GameClient();
   GraphMap* map = new GraphMap;
-  map->load_from_file("test.tmx");
-  ClientWorld* world = new ClientWorld;
+  map->load_from_file("test4.tmx");
+  ClientWorld* world = new ClientWorld(map);
   world->set_next_turn_callback(boost::bind(&ClientWorld::on_next_turn, world, _1));
-
-  Screen screen(world, map, window);
 
 
   c->install_callback("NEW_OCCUPANT",

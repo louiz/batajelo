@@ -28,6 +28,30 @@ void ServerWorld::init()
   this->spawn_unit(0, 154, 512);
   this->spawn_unit(0, 254, 512);
   this->spawn_unit(0, 154, 312);
+  // this->spawn_unit(0, 254, 412);
+  // this->spawn_unit(0, 214, 422);
+  // this->spawn_unit(0, 334, 402);
+  // this->spawn_unit(0, 434, 452);
+  // this->spawn_unit(0, 534, 472);
+  // this->spawn_unit(0, 634, 482);
+  // this->spawn_unit(0, 734, 492);
+  // this->spawn_unit(0, 834, 392);
+  // this->spawn_unit(0, 734, 392);
+  // this->spawn_unit(0, 634, 392);
+  // this->spawn_unit(0, 534, 392);
+  // this->spawn_unit(0, 434, 392);
+  // this->spawn_unit(0, 334, 392);
+  // this->spawn_unit(0, 234, 392);
+  // this->spawn_unit(0, 334, 792);
+  // this->spawn_unit(0, 434, 792);
+  // this->spawn_unit(0, 534, 792);
+  // this->spawn_unit(0, 634, 792);
+  // this->spawn_unit(0, 734, 792);
+  // this->spawn_unit(0, 834, 792);
+  // this->spawn_unit(0, 934, 792);
+  // for (int x = 200; x < 1000; x += 62)
+  //   for (int y = 200; y < 1000; y += 62)
+  //     this->spawn_unit(0, x, y);
   log_debug("done");
 }
 

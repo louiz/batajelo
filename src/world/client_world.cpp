@@ -3,6 +3,7 @@
 ClientWorld::ClientWorld():
   World()
 {
+  this->init();
 }
 
 ClientWorld::ClientWorld(Map* map):
@@ -12,6 +13,11 @@ ClientWorld::ClientWorld(Map* map):
 
 ClientWorld::~ClientWorld()
 {
+}
+
+void ClientWorld::init()
+{
+
 }
 
 void ClientWorld::new_occupant_callback(Command* command)
@@ -141,7 +147,6 @@ void ClientWorld::on_next_turn(unsigned long turn)
   if (this->started == true)
     this->confirm_turn(turn+1);
 }
-
 
 bool ClientWorld::action_move(const unsigned int x, const unsigned y)
 {

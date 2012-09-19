@@ -39,7 +39,7 @@ void Camera::draw_entity(const Entity* entity, const uint x, const uint y,
     {
       sf::CircleShape selection_circle;
       selection_circle.setRadius(entity->width/2 + 8);
-      selection_circle.setOutlineColor(sf::Color(0xff, 0x00, 0x36, 200));
+      selection_circle.setOutlineColor(sf::Color(0x00, 0x00, 0xff, 200));
       selection_circle.setFillColor(sf::Color::Transparent);
       selection_circle.setOutlineThickness(3);
       selection_circle.setPosition(x - entity->width/2 - 8, y - entity->width + 5);
@@ -113,11 +113,12 @@ void Camera::handle_right_click(const sf::Event& event)
 {
   const Position pos = this->camera_to_world_position(event.mouseButton.x,
                                                       event.mouseButton.y);
-  // int x;
-  // int y;
-  // this->world->get_cell_at_position(pos, x, y);
-  // this->world->handle_event(actions::Move, pos.x.toLong(), pos.y.toLong());
-  this->world->action_move(pos.x.toLong(), pos.y.toLong());
+  // A right click when there's an action associated with the left click
+  // just resets the default action of the right click.
+  if (this->screen->get_left_click_callback())
+    this->screen->set_left_click_callback(0);
+  else // otherwise it always does the move action.
+    this->world->action_move(pos.x.toLong(), pos.y.toLong());
 }
 
 void Camera::handle_left_click(const sf::Event& event)
@@ -322,7 +323,7 @@ void Camera::draw()
                   this->draw_entity(entity, entpos.x - this->x, entpos.y - this->y,
                                     this->mouse_selection.contains(mouse_pos,
                                                                    entpos, entity->width + 4) ||
-                                    screen->is_entity_hovered(entity),
+                                    this->screen->is_entity_hovered(entity),
                                     rectangle);
                 }
             }

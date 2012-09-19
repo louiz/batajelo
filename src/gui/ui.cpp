@@ -271,6 +271,6 @@ int Ui::get_display_mode()
   if (display == 0)
     return sf::Style::Close;
   else if (display == 1)
-    return sf::Style::None;
+    return sf::Style::Titlebar;
   return sf::Style::Fullscreen;
 }

@@ -10,6 +10,7 @@ public:
   ClientWorld();
   ClientWorld(Map*);
   ~ClientWorld();
+  void init();
   /**
    * Tells the server that we received and inserted the action into
    * our turn_handler, so we are ready to execute it when its turn comes.

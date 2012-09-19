@@ -30,8 +30,8 @@ public:
 
 private:
   void connect_handler(boost::function< void(void) >,
-		       boost::function< void(void) >,
-		       const boost::system::error_code&);
+        	       boost::function< void(void) >,
+        	       const boost::system::error_code&);
   boost::asio::io_service io_service;
 };
 

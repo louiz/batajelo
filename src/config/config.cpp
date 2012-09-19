@@ -1,7 +1,7 @@
 #include <config/config.hpp>
 #include <sstream>
 
-#define CONF_DEFAULT_PATH "C:/Work/pelaze/git/batajelo/src/batajelo.conf"
+#define CONF_DEFAULT_PATH "./batajelo.conf"
 
 Config* Config::instance = 0;
 
