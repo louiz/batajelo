@@ -3,8 +3,9 @@
 
 Screen::Screen(ClientWorld* world, GraphMap* map, sf::RenderWindow* win):
   win(win),
-  camera(world, map, win),
-  hud(map, world, win, &camera)
+  camera(world, map, win, this),
+  world(world),
+  hud(map, world, win, &camera, this)
 {
   this->cursor_textures.resize(cursor::size);
   const std::string data_path("./data/images/");
@@ -23,7 +24,7 @@ Screen::~Screen()
 
 void Screen::draw()
 {
-  this->camera.draw(this);
+  this->camera.draw();
   this->hud.draw(&this->camera);
   this->draw_mouse_cursor();
 }

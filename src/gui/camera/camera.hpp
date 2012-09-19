@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include <boost/function.hpp>
 
 #include <logging/logging.hpp>
 #include <world/client_world.hpp>
@@ -31,12 +32,12 @@ class Camera
 {
   friend class Minimap;
 public:
-  Camera(ClientWorld*, GraphMap*, sf::RenderWindow*);
+  Camera(ClientWorld*, GraphMap*, sf::RenderWindow*, Screen*);
   ~Camera();
   /**
    * Draw the world viewed through the camera.
    */
-  void draw(const Screen*);
+  void draw();
   /**
    * Draw the rectangle representing the mouse selection.
    */
@@ -135,6 +136,7 @@ private:
   GraphMap* map;
   sf::RenderWindow* win;
   MouseSelection mouse_selection;
+  Screen* screen;
 };
 
 #endif // __CAMERA__HPP__

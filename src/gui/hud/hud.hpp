@@ -20,11 +20,14 @@
 #include <gui/camera/camera.hpp>
 #include <gui/hud/minimap.hpp>
 #include <gui/hud/selection_panel.hpp>
+#include <gui/hud/action_panel.hpp>
+
+class Screen;
 
 class Hud
 {
 public:
-  Hud(GraphMap*, ClientWorld*, sf::RenderWindow*, Camera*);
+  Hud(GraphMap*, ClientWorld*, sf::RenderWindow*, Camera*, Screen*);
   ~Hud();
   void draw(Camera*);
   bool handle_event(const sf::Event&);
@@ -39,6 +42,7 @@ private:
   sf::Texture hud_texture;
   ClientWorld* world;
   SelectionPanel selection_panel;
+  ActionPanel action_panel;
 };
 
 #endif // __HUP_HPP__

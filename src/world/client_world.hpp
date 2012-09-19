@@ -71,7 +71,19 @@ public:
    * happens).
    * If an action is generated with this event, generate_action() is called.
    */
-  void handle_event(actions::Type type, unsigned int x, unsigned y);
+  // void handle_event(actions::Type type, unsigned int x, unsigned y);
+
+  /**
+   * Give the order to all selected and movable units to move to the given
+   * world coordinates.
+   */
+  bool action_move(const unsigned int x, const unsigned y);
+  /**
+   * Give the order to all selected and movable units to move to the given
+   * world coordinates with an attack order (will attack all encountered
+   * enemy entity in range) OR to attack the entity under the mouse if any.
+   */
+  void action_attack(const unsigned int x, const unsigned y);
   void select_entity(const Entity*);
   void unselect_entity(const Entity*);
   void clear_selection();

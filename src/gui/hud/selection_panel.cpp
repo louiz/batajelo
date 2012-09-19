@@ -66,7 +66,7 @@ void SelectionPanel::draw_tab(const std::size_t tab_number)
   win->draw(tab);
 }
 
-bool SelectionPanel::handle_event(sf::RenderWindow* win, const sf::Event& event, ClientWorld* world)
+bool SelectionPanel::handle_event(const sf::Event& event, ClientWorld* world)
 {
   // Check if we clicked on a tab
   if ((event.mouseButton.x < (TABS_X + TAB_WIDTH)) &&
@@ -74,7 +74,7 @@ bool SelectionPanel::handle_event(sf::RenderWindow* win, const sf::Event& event,
     {
       if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
         {
-          const int y = event.mouseButton.y - (win->getSize().y - TABS_Y);
+          const int y = event.mouseButton.y - (this->win->getSize().y - TABS_Y);
           if (y >= 0)
             {
               int n = y / (TAB_HEIGHT + SPACE_BETWEEN_TABS);
@@ -94,7 +94,7 @@ bool SelectionPanel::handle_event(sf::RenderWindow* win, const sf::Event& event,
   if (event.type == sf::Event::MouseButtonPressed)
     if ((event.mouseButton.x > PANEL_X) &&
         (event.mouseButton.x < (PANEL_X + (SPACE_BETWEEN_SQUARES + SQUARE_SIZE) * SQUARES_PER_LINE - SPACE_BETWEEN_SQUARES)) &&
-        (event.mouseButton.y > win->getSize().y - PANEL_Y))
+        (event.mouseButton.y > this->win->getSize().y - PANEL_Y))
       {
         log_error("event on panel");
         const Entity* entity = this->get_entity_under_mouse();

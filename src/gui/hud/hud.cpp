@@ -1,11 +1,12 @@
 #include <gui/hud/hud.hpp>
 #include <world/entity.hpp>
 
-Hud::Hud(GraphMap* map, ClientWorld* world, sf::RenderWindow* win, Camera* camera):
+Hud::Hud(GraphMap* map, ClientWorld* world, sf::RenderWindow* win, Camera* camera, Screen* screen):
   minimap(win, map, camera),
   win(win),
   world(world),
-  selection_panel(win, world->get_selection_ptr())
+  selection_panel(win, world->get_selection_ptr()),
+  action_panel(win, screen, world->get_selection_ptr())
 {
   this->hud_texture.loadFromFile("./data/images/hud.png");
   this->hud_sprite.setTexture(this->hud_texture);
@@ -20,15 +21,18 @@ void Hud::draw(Camera* camera)
 {
   this->win->draw(this->hud_sprite);
   this->minimap.draw();
-  if (this->world->get_selection().size() > 1)
-    this->selection_panel.draw();
+  // if (this->world->get_selection().size() > 1)
+  this->selection_panel.draw();
+  this->action_panel.draw();
 }
 
 bool Hud::handle_event(const sf::Event& event)
 {
   if (this->minimap.handle_event(event) == true)
     return true;
-  if (this->selection_panel.handle_event(this->win, event, this->world) == true)
+  if (this->selection_panel.handle_event(event, this->world) == true)
+    return true;
+  if (this->action_panel.handle_event(event) == true)
     return true;
   return false;
 }

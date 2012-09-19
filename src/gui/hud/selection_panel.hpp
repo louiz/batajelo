@@ -10,7 +10,7 @@
  * be passed for it to to handle clicks on unit-squares, hovers, tab
  * changes, etc.
  *
- * @class MouseSelection
+ * @class SelectionPanel
  */
 
 #ifndef __SELECTION_PANEL_HPP__
@@ -43,7 +43,7 @@ public:
   ~SelectionPanel();
   void draw();
   void draw_tab(const std::size_t);
-  bool handle_event(sf::RenderWindow*, const sf::Event&, ClientWorld*);
+  bool handle_event(const sf::Event&, ClientWorld*);
   bool is_entity_hovered(const Entity*) const;
   const Entity* get_entity_under_mouse() const;
   void update();

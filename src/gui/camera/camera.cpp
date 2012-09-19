@@ -2,7 +2,7 @@
 #include <gui/screen/screen.hpp>
 #include <world/layer.hpp>
 
-Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win):
+Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win, Screen* screen):
   x(0),
   y(0),
   zoom(1),
@@ -12,7 +12,8 @@ Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win):
   start_drag_position(0, 0),
   world(world),
   map(map),
-  win(win)
+  win(win),
+  screen(screen)
 {
 }
 
@@ -115,15 +116,27 @@ void Camera::handle_right_click(const sf::Event& event)
   // int x;
   // int y;
   // this->world->get_cell_at_position(pos, x, y);
-  this->world->handle_event(actions::Move, pos.x.toLong(), pos.y.toLong());
+  // this->world->handle_event(actions::Move, pos.x.toLong(), pos.y.toLong());
+  this->world->action_move(pos.x.toLong(), pos.y.toLong());
 }
 
 void Camera::handle_left_click(const sf::Event& event)
 {
-  // TODO do nothing if the click is not in the screen.
-  const sf::Vector2i pos(event.mouseButton.x + this->x,
-                         event.mouseButton.y + this->y);
-  this->mouse_selection.start(pos);
+  // TODO do nothing if the click is not in the camera zone.
+  if (!this->screen->get_left_click_callback())
+    {
+      const sf::Vector2i pos(event.mouseButton.x + this->x,
+                             event.mouseButton.y + this->y);
+
+      this->mouse_selection.start(pos);
+    }
+  else
+    {
+      const Position pos = this->camera_to_world_position(event.mouseButton.x,
+                                                          event.mouseButton.y);
+      if (this->screen->get_left_click_callback()(pos.x.toLong(), pos.y.toLong()) == true)
+        this->screen->set_left_click_callback(0);
+    }
 }
 
 void Camera::handle_left_release(const sf::Event& event)
@@ -224,7 +237,7 @@ void Camera::update(const Duration& dt)
   this->fixup_camera_position();
 }
 
-void Camera::draw(const Screen* screen)
+void Camera::draw()
 {
   const sf::Vector2u win_size = this->win->getSize();
   Layer* layer;
@@ -284,7 +297,7 @@ void Camera::draw(const Screen* screen)
                        it != this->world->current_path.end(); ++it)
                     {
                       if ((*it) == layer->width * y + x)
-                        tile->sprite.setColor(sf::Color::Red);
+                        tile->sprite.setColor(sf::Color::Blue);
                     }
                   tile->sprite.setPosition(x * TILE_WIDTH - this->x,
                                            -64 + y * TILE_HEIGHT - yoffset - this->y);
@@ -293,11 +306,14 @@ void Camera::draw(const Screen* screen)
             }
           // Draw entites on that line.
           std::vector<Entity*> entities_at_that_level = entities[level];
-          std::vector<Entity*>::iterator it;
+          // std::vector<Entity*>::iterator it;
+          std::list<Entity*>::iterator it;
           int i = 0;
-          this->world->reset_entity_iterator();
-          while ((entity = this->world->get_next_entity()) != 0)
+          // this->world->reset_entity_iterator();
+          // while ((entity = this->world->get_next_entity()) != 0)
+          for (it = this->world->entities.begin(); it != this->world->entities.end(); ++it)
             {
+              entity = *it;
               this->world->get_cell_at_position(entity->pos, cellx, celly);
               sf::Vector2u entpos = this->world_to_camera_position(entity->pos);
               if ((celly == y) && ((entpos.x > this->x) && (entpos.x < this->x + win_size.x) &&

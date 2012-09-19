@@ -8,11 +8,11 @@
  * @class Action
  */
 
-#include <boost/function.hpp>
-#include <vector>
-
 #ifndef __ACTION_HPP__
 # define __ACTION_HPP__
+
+#include <vector>
+#include <boost/function.hpp>
 
 #include <logging/logging.hpp>
 #include <game/event.hpp>
