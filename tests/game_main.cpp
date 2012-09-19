@@ -12,7 +12,7 @@ int main()
 {
   sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(1920, 1080),
   						  "Bata");
-
+  window->setMouseCursorVisible(false);
   GameClient* c = new GameClient();
   GraphMap* map = new GraphMap;
   map->load_from_file("test.tmx");

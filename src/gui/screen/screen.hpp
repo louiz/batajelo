@@ -21,27 +21,7 @@
 #include <gui/hud/hud.hpp>
 #include <world/client_world.hpp>
 #include <logging/logging.hpp>
-
-namespace cursor
-{
-  enum type
-    {
-      Normal,
-      Select,
-      Aim,
-      Cast,
-      // Just keep track of the possible number of cursors
-      size
-    };
-
-  static const char filenames[size][15] =
-  {
-    "gui_cursor.png",
-    "gui_cursor.png",
-    "gui_cursor.png",
-    "gui_cursor.png"
-  };
-}
+#include <gui/cursor.hpp>
 
 class Screen
 {
