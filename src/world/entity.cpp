@@ -1,6 +1,5 @@
 #include <world/entity.hpp>
 #include <cmath>
-#include <world/serializable_entity.hpp>
 #include <world/world.hpp>
 
 unsigned short Entity::current_id = 0;

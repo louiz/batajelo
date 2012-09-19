@@ -1,5 +1,4 @@
 #include <world/world.hpp>
-#include <world/serializable_entity.hpp>
 #include <world/path.hpp>
 
 World::World():
