@@ -13,7 +13,7 @@
 typedef boost::function<bool(const unsigned int, const unsigned int)> t_left_click_callback;
 
 
-typedef boost::function< void(const t_left_click_callback, const cursor::type) > t_action_panel_button_callback;
+typedef boost::function<void(const t_left_click_callback, const cursor::type, const std::size_t)> t_action_panel_button_callback;
 
 class ActionPanelButton
 {
@@ -21,7 +21,7 @@ public:
   /**
    * TODO: read that from the mod file.
    */
-  ActionPanelButton(const std::string&, const t_action_panel_button_callback, const std::size_t position, const t_left_click_callback, const cursor::type);
+  ActionPanelButton(const std::string&, const t_action_panel_button_callback, const std::size_t position, const t_left_click_callback, const cursor::type, const std::size_t);
   ~ActionPanelButton();
   void draw(sf::RenderWindow*);
   void on_clicked();
@@ -39,6 +39,7 @@ private:
   const std::size_t position;
   const t_left_click_callback left_click_callback;
   cursor::type cursor_type;
+  const std::size_t value;
   sf::Texture texture;
   sf::Sprite sprite;
 };

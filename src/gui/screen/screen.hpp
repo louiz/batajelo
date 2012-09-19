@@ -41,7 +41,7 @@ public:
   {
     return on_left_click;
   }
-  void set_left_click_callback(const t_left_click_callback callback, const cursor::type cursor_type=cursor::Normal)
+  void set_left_click_callback(const t_left_click_callback callback, const cursor::type cursor_type=cursor::Normal, const std::size_t=0)
   {
     on_left_click = callback;
     this->set_cursor_type(cursor_type);
@@ -50,6 +50,7 @@ public:
   {
     return world;
   }
+  void reset_left_click_action();
 
 private:
   Screen(const Screen&);

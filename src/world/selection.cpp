@@ -26,6 +26,7 @@ void Selection::add_to_selection(const Entity* entity)
   if (this->entities.size() == MAX_SELECTION_SIZE)
     return ;
   this->entities.push_back(entity);
+  this->on_modified();
 }
 
 void Selection::remove_from_selection(const Entity* entity)
@@ -36,6 +37,7 @@ void Selection::remove_from_selection(const Entity* entity)
       if ((*it) == entity)
         {
           this->entities.erase(it);
+          this->on_modified();
           return ;
         }
     }
@@ -46,6 +48,7 @@ void Selection::remove_from_selection(const Entity* entity)
 void Selection::clear()
 {
   this->entities.clear();
+  this->on_modified();
 }
 
 bool Selection::is_empty() const
@@ -61,4 +64,13 @@ const std::list<const Entity*>& Selection::get_entities() const
 std::size_t Selection::size() const
 {
   return this->entities.size();
+}
+
+void Selection::on_modified() const
+{
+  for (std::vector<t_selection_changed_callback>::const_iterator it = this->on_modified_callbacks.begin();
+       it != this->on_modified_callbacks.end(); ++it)
+    {
+      (*it)();
+    }
 }

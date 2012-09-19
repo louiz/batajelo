@@ -1,3 +1,5 @@
+#include <boost/bind.hpp>
+
 #include <gui/hud/hud.hpp>
 #include <world/entity.hpp>
 
@@ -8,6 +10,9 @@ Hud::Hud(GraphMap* map, ClientWorld* world, sf::RenderWindow* win, Camera* camer
   selection_panel(win, world->get_selection_ptr()),
   action_panel(win, screen, world->get_selection_ptr())
 {
+  // Install a callback on the selection that will reset the action_panel
+  // whenever the selection is modified.
+  world->add_selection_change_callback(boost::bind(&ActionPanel::reset_all_tables, &this->action_panel));
   this->hud_texture.loadFromFile("./data/images/hud.png");
   this->hud_sprite.setTexture(this->hud_texture);
   this->hud_sprite.setPosition(0, win->getSize().y - HUD_HEIGHT);
@@ -40,4 +45,9 @@ bool Hud::handle_event(const sf::Event& event)
 bool Hud::is_entity_hovered(const Entity* entity) const
 {
   return this->selection_panel.is_entity_hovered(entity);
+}
+
+void Hud::reset_left_click_action()
+{
+  this->action_panel.reset_all_tables();
 }

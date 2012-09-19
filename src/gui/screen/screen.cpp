@@ -57,3 +57,9 @@ void Screen::draw_mouse_cursor()
                                   static_cast<float>(pos.y) - 42.f);
   this->win->draw(this->cursor_sprite);
 }
+
+void Screen::reset_left_click_action()
+{
+  this->set_left_click_callback(0);
+  this->hud.reset_left_click_action();
+}

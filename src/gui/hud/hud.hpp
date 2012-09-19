@@ -32,6 +32,7 @@ public:
   void draw(Camera*);
   bool handle_event(const sf::Event&);
   bool is_entity_hovered(const Entity*) const;
+  void reset_left_click_action();
 
 private:
   Hud(const Hud&);

@@ -36,3 +36,14 @@ bool ActionPanelTable::handle_event(const sf::Event& event)
 {
   return this->pages[this->current_page]->handle_event(event);
 }
+
+void ActionPanelTable::action_change_current_page(const t_left_click_callback, const cursor::type, const std::size_t number)
+{
+  assert(number <= this->pages.size() - 1);
+  this->change_current_page(number);
+}
+
+void ActionPanelTable::change_current_page(const std::size_t number)
+{
+  this->current_page = number;
+}

@@ -192,3 +192,8 @@ const Selection& ClientWorld::get_selection() const
 {
   return this->current_selection;
 }
+
+void ClientWorld::add_selection_change_callback(const t_selection_changed_callback callback)
+{
+  this->current_selection.on_modified_callbacks.push_back(callback);
+}

@@ -94,6 +94,8 @@ public:
   {
     return &this->current_selection;
   }
+  void add_selection_change_callback(const t_selection_changed_callback);
+
 private:
   ClientWorld(const ClientWorld&);
   ClientWorld& operator=(const ClientWorld&);

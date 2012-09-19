@@ -15,11 +15,11 @@
 # define __ACTION_PANEL_HPP__
 
 #define ACTION_SQUARE_SIZE 68
-#define ACTION_SQUARES_PER_LINE 2
-#define ACTION_SPACE_BETWEEN_SQUARES 8
+#define ACTION_SQUARES_PER_LINE 5
+#define ACTION_SPACE_BETWEEN_SQUARES 2
 #define ACTION_SPACE_BETWEEN_LINES 2
 #define ACTION_NUMBER_OF_LINES 3
-#define ACTION_PANEL_X 1545
+#define ACTION_PANEL_X 1543
 #define ACTION_PANEL_Y 845
 
 // #define ACTION_TABS_X 622
@@ -45,6 +45,12 @@ public:
   ~ActionPanel();
   void draw();
   bool handle_event(const sf::Event&);
+  /**
+   * Sets back the page number 0 as the current page for all the existing
+   * tables.  It is used for example when escape is pressed, or an action is
+   * sucessfully executed, etc.
+   */
+  void reset_all_tables();
 private:
   ActionPanel(const ActionPanel&);
   ActionPanel& operator=(const ActionPanel&);

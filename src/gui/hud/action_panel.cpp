@@ -35,3 +35,10 @@ bool ActionPanel::handle_event(const sf::Event& event)
   ActionPanelTable* table = this->tables[entity_to_use->type_id];
   return table->handle_event(event);
 }
+
+void ActionPanel::reset_all_tables()
+{
+  std::vector<ActionPanelTable*>::iterator it;
+  for (it = this->tables.begin(); it != this->tables.end(); ++it)
+    (*it)->change_current_page(0);
+}

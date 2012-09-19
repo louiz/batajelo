@@ -13,7 +13,11 @@
 # define __SELECTION_HPP__
 
 #include <list>
+#include <vector>
 #include <world/entity.hpp>
+#include <boost/function.hpp>
+
+typedef boost::function<void(void)> t_selection_changed_callback;
 
 /**
  * A selection cannot contain more entities than that.
@@ -32,6 +36,9 @@ public:
   bool is_empty() const;
   const std::list<const Entity*>& get_entities() const;
   std::size_t size() const;
+  void on_modified() const;
+
+  std::vector<t_selection_changed_callback> on_modified_callbacks;
 
 private:
   Selection(const Selection&);

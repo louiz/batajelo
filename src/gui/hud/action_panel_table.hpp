@@ -26,6 +26,9 @@ public:
   ~ActionPanelTable();
   void draw(sf::RenderWindow*);
   bool handle_event(const sf::Event&);
+  void action_change_current_page(const t_left_click_callback, const cursor::type, const std::size_t number);
+  void change_current_page(const std::size_t number);
+
 private:
   ActionPanelTable(const ActionPanelTable&);
   ActionPanelTable& operator=(const ActionPanelTable&);
