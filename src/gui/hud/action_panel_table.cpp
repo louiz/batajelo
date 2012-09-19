@@ -15,12 +15,38 @@ ActionPanelTable::ActionPanelTable(Screen* screen):
   ActionPanelPage* page = new ActionPanelPage();
   this->pages.push_back(page);
   ClientWorld* world = screen->get_world();
-  
+
   t_left_click_callback left_click_callback = boost::bind(&ClientWorld::action_move, world, _1, _2);
-  const std::size_t pos = 0;
   ActionPanelButton* move_button = new ActionPanelButton("./data/images/actions/move.png",
-                                                         boost::bind(&Screen::set_left_click_callback, screen, _1, _2), pos, left_click_callback, cursor::Move);
-  page->add_button(move_button, pos);
+                                                         boost::bind(&Screen::set_left_click_callback, screen, _1, _2, _3), 0, left_click_callback, cursor::Move, 0);
+  page->add_button(move_button, 0);
+
+  page->add_button(new ActionPanelButton("./data/images/actions/build2.png",
+                                         boost::bind(&ActionPanelTable::action_change_current_page, this, _1, _2, _3), 11, 0, cursor::Normal, 1),
+                   11);
+  page->add_button(new ActionPanelButton("./data/images/actions/stop.png",
+                                         0, 1, 0, cursor::Normal, 0),
+                   1);
+
+  page->add_button(new ActionPanelButton("./data/images/actions/keep_position.png",
+                                         0, 2, 0, cursor::Normal, 0),
+                   2);
+
+  page->add_button(new ActionPanelButton("./data/images/actions/patrol.png",
+                                         0, 3, 0, cursor::Normal, 0),
+                   3);
+
+  page->add_button(new ActionPanelButton("./data/images/actions/attack.png",
+                                         0, 4, 0, cursor::Normal, 0),
+                   4);
+
+  page = new ActionPanelPage();
+  this->pages.push_back(page);
+  move_button = new ActionPanelButton("./data/images/actions/move.png",
+                                                         boost::bind(&Screen::set_left_click_callback, screen, _1, _2, _3), 12, left_click_callback, cursor::Move, 0);
+  page->add_button(move_button, 12);
+
+
 }
 
 ActionPanelTable::~ActionPanelTable()
