@@ -115,7 +115,7 @@ void Camera::handle_right_click(const sf::Event& event)
                                                       event.mouseButton.y);
   // A right click when there's an action associated with the left click
   // just resets the default action of the right click.
-  if (this->screen->get_left_click_callback())
+  if (this->screen->get_left_click().callback)
     this->screen->reset_left_click_action();
   else // otherwise it always does the move action.
     this->world->action_move(pos.x.toLong(), pos.y.toLong());
@@ -124,7 +124,7 @@ void Camera::handle_right_click(const sf::Event& event)
 void Camera::handle_left_click(const sf::Event& event)
 {
   // TODO do nothing if the click is not in the camera zone.
-  if (!this->screen->get_left_click_callback())
+  if (!this->screen->get_left_click().callback)
     {
       const sf::Vector2i pos(event.mouseButton.x + this->x,
                              event.mouseButton.y + this->y);
@@ -135,7 +135,7 @@ void Camera::handle_left_click(const sf::Event& event)
     {
       const Position pos = this->camera_to_world_position(event.mouseButton.x,
                                                           event.mouseButton.y);
-      if (this->screen->get_left_click_callback()(pos.x.toLong(), pos.y.toLong()) == true)
+      if (this->screen->get_left_click().callback(pos.x.toLong(), pos.y.toLong(), this->screen->get_left_click().id) == true)
         this->screen->reset_left_click_action();
     }
 }

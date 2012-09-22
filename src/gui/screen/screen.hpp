@@ -37,13 +37,13 @@ public:
   bool is_entity_hovered(const Entity*) const;
   void set_cursor_type(const cursor::type);
   void draw_mouse_cursor();
-  t_left_click_callback get_left_click_callback() const
+  t_left_click get_left_click() const
   {
     return on_left_click;
   }
-  void set_left_click_callback(const t_left_click_callback callback, const cursor::type cursor_type=cursor::Normal, const std::size_t=0)
+  void set_left_click_callback(const t_left_click left_click, const cursor::type cursor_type=cursor::Normal)
   {
-    on_left_click = callback;
+    on_left_click = left_click;
     this->set_cursor_type(cursor_type);
   }
   ClientWorld* get_world() const
@@ -67,7 +67,7 @@ private:
    */
   std::vector<sf::Texture> cursor_textures;
   sf::Sprite cursor_sprite;
-  t_left_click_callback on_left_click;
+  t_left_click on_left_click;
 };
 
 #endif // __SCREEN_HPP__

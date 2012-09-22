@@ -148,7 +148,7 @@ void ClientWorld::on_next_turn(unsigned long turn)
     this->confirm_turn(turn+1);
 }
 
-bool ClientWorld::action_move(const unsigned int x, const unsigned y)
+bool ClientWorld::action_move(const unsigned int x, const unsigned y, const std::size_t)
 {
   MoveEvent event;
   Entity* entity;

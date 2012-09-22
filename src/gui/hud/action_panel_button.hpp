@@ -7,13 +7,27 @@
 
 /**
  * A function called when we left click. We pass the world coordinate to it
- * (which should be ignored if we are clicking on a hud element instead of
- * somewhere on the world).
+ * (which should be ignored in some cases, for example if we target an
+ * entity) and a type_id.
  */
-typedef boost::function<bool(const unsigned int, const unsigned int)> t_left_click_callback;
+typedef boost::function<bool(const unsigned int, const unsigned int, const std::size_t)> t_left_click_callback;
 
+/**
+ * a structure containing various elements to pass to the left click callback (for example if this is cast_spell, the structure contains the type_id of the spell).
+ */
+struct t_left_click
+{
+  /**
+   * The callback called when we left click.
+   */
+  t_left_click_callback callback;
+  /**
+   * The type_id of the spell to cast or the unit to produce, etc
+   */
+  std::size_t id;
+};
 
-typedef boost::function<void(const t_left_click_callback, const cursor::type, const std::size_t)> t_action_panel_button_callback;
+typedef boost::function<void(const t_left_click, const cursor::type)> t_action_panel_button_callback;
 
 class ActionPanelButton
 {
@@ -21,7 +35,7 @@ public:
   /**
    * TODO: read that from the mod file.
    */
-  ActionPanelButton(const std::string&, const t_action_panel_button_callback, const std::size_t position, const t_left_click_callback, const cursor::type, const std::size_t);
+  ActionPanelButton(const std::string&, const t_action_panel_button_callback, const std::size_t position, const t_left_click, const cursor::type);
   ~ActionPanelButton();
   void draw(sf::RenderWindow*);
   void on_clicked();
@@ -37,9 +51,8 @@ private:
    */
   const t_action_panel_button_callback callback;
   const std::size_t position;
-  const t_left_click_callback left_click_callback;
+  const t_left_click left_click;
   cursor::type cursor_type;
-  const std::size_t value;
   sf::Texture texture;
   sf::Sprite sprite;
 };

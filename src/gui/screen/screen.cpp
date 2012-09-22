@@ -60,6 +60,7 @@ void Screen::draw_mouse_cursor()
 
 void Screen::reset_left_click_action()
 {
-  this->set_left_click_callback(0);
+  t_left_click null = {0, 0};
+  this->set_left_click_callback(null);
   this->hud.reset_left_click_action();
 }

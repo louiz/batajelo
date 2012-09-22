@@ -2,12 +2,11 @@
 #include <gui/common.hpp>
 #include <gui/hud/action_panel.hpp>
 
-ActionPanelButton::ActionPanelButton(const std::string& image_filename, const t_action_panel_button_callback callback, const std::size_t position, const t_left_click_callback left_click_callback, const cursor::type cursor_type, const std::size_t value):
+ActionPanelButton::ActionPanelButton(const std::string& image_filename, const t_action_panel_button_callback callback, const std::size_t position, const t_left_click left_click, const cursor::type cursor_type):
   callback(callback),
   position(position),
-  left_click_callback(left_click_callback),
-  cursor_type(cursor_type),
-  value(value)
+  left_click(left_click),
+  cursor_type(cursor_type)
 {
   if (!this->texture.loadFromFile(image_filename.c_str()))
     throw GraphInitError();
@@ -35,6 +34,6 @@ void ActionPanelButton::on_clicked()
     }
   else
     {
-      this->callback(this->left_click_callback, this->cursor_type, this->value);
+      this->callback(this->left_click, this->cursor_type);
     }
 }

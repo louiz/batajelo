@@ -78,7 +78,7 @@ public:
    * Give the order to all selected and movable units to move to the given
    * world coordinates.
    */
-  bool action_move(const unsigned int x, const unsigned y);
+  bool action_move(const unsigned int x, const unsigned y, const std::size_t=0);
   /**
    * Give the order to all selected and movable units to move to the given
    * world coordinates with an attack order (will attack all encountered
