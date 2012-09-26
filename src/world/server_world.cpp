@@ -14,7 +14,7 @@ void ServerWorld::spawn_unit(const size_t type, const int x, const int y)
 {
   Entity* new_entity = this->create_entity(type);
   new_entity->pos = Position(x, y);
-  EntityEvent* e = new EntityEvent(new_entity);
+  DoEntityEvent* e = new DoEntityEvent(new_entity);
   e->turn = 1;
   Action* action = new Action(0, e, 0);
   action->validate_completely();
@@ -58,14 +58,14 @@ void ServerWorld::init()
 void ServerWorld::move_callback(Command* command)
 {
   // TODO, do an actuall path finding, and other stuff, and
-  // generate a PathEvent, instead of a MoveEvent.
+  // generate a DoMoveEvent, instead of a MoveEvent.
   MoveEvent event(command);
   if (event.is_valid() == false)
     {
       log_warning("Invalid data for MOVE command");
       return ;
     }
-  PathEvent* path_event = new PathEvent(event);
+  DoMoveEvent* path_event = new DoMoveEvent(event);
   unsigned long current_turn = this->turn_handler->get_current_turn();
   log_debug("Currently at: " << current_turn);
   log_debug("move_callback: " << path_event->to_string());

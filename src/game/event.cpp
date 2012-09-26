@@ -52,7 +52,7 @@ ActionEvent::ActionEvent(const Command* command):
 
 }
 
-PathEvent::PathEvent(const Command* command):
+DoMoveEvent::DoMoveEvent(const Command* command):
   ActionEvent("PATH")
 {
   if (this->from_string(std::string(command->body,
@@ -62,7 +62,7 @@ PathEvent::PathEvent(const Command* command):
     this->valid = true;
 }
 
-EntityEvent::EntityEvent(const Command* command):
+DoEntityEvent::DoEntityEvent(const Command* command):
   ActionEvent("NEW_ENTITY")
 {
   if (this->from_string(std::string(command->body,

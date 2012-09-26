@@ -55,12 +55,12 @@ public:
    * Return true if we will collide with a wall OR a unit if we move
    * following that vector.
    */
-  bool will_collide_if_we_move(Vec2& mov, World*) const;
+  bool will_collide_if_we_move(Vec2&, World*) const;
   /**
    * Returns weither or not this entity will go into a wall if we move on
    * following the given movement.
    */
-  bool is_wall_ahead(Vec2& mov, World* world) const;
+  bool is_wall_ahead(Vec2&, World*) const;
   /**
    * Return whether or not the unit can be pushed by an other entity.
    Mostly, if it is not doing any action and is not on Hold position, it

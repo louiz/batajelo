@@ -49,7 +49,7 @@ void ClientWorld::occupant_left_callback(Command* command)
 
 void ClientWorld::new_entity_callback(Command* command)
 {
-  EntityEvent* e = new EntityEvent(command);
+  DoEntityEvent* e = new DoEntityEvent(command);
   if (e->is_valid() == false)
     {
       log_debug("Invalid data for the new entity.");
@@ -105,7 +105,7 @@ void ClientWorld::turn_callback(Command* command)
 
 void ClientWorld::path_callback(Command* command)
 {
-  PathEvent* e = new PathEvent(command);
+  DoMoveEvent* e = new DoMoveEvent(command);
   if (e->is_valid() == false)
     {
       log_warning("Invalid data for PATH command");

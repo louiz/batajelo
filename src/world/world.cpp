@@ -177,7 +177,7 @@ void World::start()
 
 void World::do_path(ActionEvent* event)
 {
-  PathEvent* path_event = static_cast<PathEvent*>(event);
+  DoMoveEvent* path_event = static_cast<DoMoveEvent*>(event);
   // Path path(path_event->x, path_event->y);
   Position endpos(static_cast<short>(path_event->x), static_cast<short>(path_event->y));
   std::vector<unsigned short>::const_iterator actors_it;
@@ -211,7 +211,7 @@ void World::do_path(ActionEvent* event)
 void World::do_new_entity(ActionEvent* event)
 {
   log_debug("DO NEW ENTITY");
-  EntityEvent* entity_event = static_cast<EntityEvent*>(event);
+  DoEntityEvent* entity_event = static_cast<DoEntityEvent*>(event);
   // This entity just contains the initial position of the entity, and it's
   // type_id because we don't need to pass all these informations, because
   // we already have all the possible entity types in our list

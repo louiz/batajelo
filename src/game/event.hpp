@@ -3,9 +3,13 @@
  */
 
 /**
- * Structures containing the information associated with
- * a player event. For example the MOVE event is associated
- * with a list of entity IDs, and a destination.
+ * Structures containing the information associated with a player event. For
+ * example the MOVE event is associated with a list of entity IDs, and a
+ * destination.  A SomethingEvent is an event that is sent from the client
+ * to the server, indicating that the client wants to execute that event. A
+ * DoSomethingEvent is a “corresponding” event from the server to the
+ * clients telling the client to actually do that action; these actions are
+ * ActionEvents, because they are associated with a turn.
  * @class Event
  */
 
@@ -111,14 +115,14 @@ private:
 /**
  * An event containing an entity object.
  */
-class EntityEvent: public ActionEvent
+class DoEntityEvent: public ActionEvent
 {
 public:
-  EntityEvent(Entity* entity):
+  DoEntityEvent(Entity* entity):
     ActionEvent("NEW_ENTITY"),
     entity(entity)
   {}
-  EntityEvent(const Command*);
+  DoEntityEvent(const Command*);
 
   virtual void serialize(boost::archive::text_oarchive& ar, const unsigned int v)
   {
@@ -133,8 +137,8 @@ public:
   Entity* entity;
 
 private:
-  EntityEvent(const EntityEvent&);
-  EntityEvent& operator=(const ActionEvent&);
+  DoEntityEvent(const DoEntityEvent&);
+  DoEntityEvent& operator=(const ActionEvent&);
 };
 
 class MoveEvent: public Event
@@ -162,10 +166,10 @@ private:
   MoveEvent& operator=(const MoveEvent&);
 };
 
-class PathEvent: public ActionEvent
+class DoMoveEvent: public ActionEvent
 {
 public:
-  PathEvent():
+  DoMoveEvent():
     ActionEvent("PATH")
   {}
 
@@ -180,8 +184,8 @@ public:
     ar & actors_ids & x & y;
   }
 
-  PathEvent(const Command*);
-  PathEvent(const MoveEvent& e):
+  DoMoveEvent(const Command*);
+  DoMoveEvent(const MoveEvent& e):
     ActionEvent("PATH"),
     actors_ids(e.actors_ids),
     x(e.x),
