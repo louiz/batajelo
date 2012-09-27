@@ -119,6 +119,13 @@ void ClientWorld::build_callback(Command* command)
 {
   DoBuildEvent* e = new DoBuildEvent(command);
   log_info("Build_callback: " << e->actor << " " << e->x << ":" << e->y);
+  if (e->is_valid() == false)
+    {
+      log_warning("Invalid data for BUILD command");
+      return ;
+    }
+  Action* action = new Action(boost::bind(&World::do_build, this, _1), e);
+  this->insert_received_action(action, e);
 }
 
 void ClientWorld::insert_received_action(Action* action, ActionEvent* event)

@@ -249,10 +249,12 @@ public:
 
   virtual void serialize(boost::archive::text_oarchive& ar, const unsigned int v)
   {
+    ActionEvent::serialize(ar, v);
     BuildEvent::serialize(ar, v);
   }
   virtual void serialize(boost::archive::text_iarchive& ar, const unsigned int v)
   {
+    ActionEvent::serialize(ar, v);
     BuildEvent::serialize(ar, v);
   }
 

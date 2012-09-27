@@ -225,6 +225,12 @@ void World::do_new_entity(ActionEvent* event)
   this->insert_entity(new_entity);
 }
 
+void World::do_build(ActionEvent* event)
+{
+  log_info("do_build");
+  DoBuildEvent* build_event = static_cast<DoBuildEvent*>(event);
+}
+
 void World::completely_validate_action(const unsigned int id)
 {
   log_debug("Action " << id << " completely validated.");

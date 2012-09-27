@@ -120,6 +120,7 @@ public:
   void remove_occupant(Occupant*);
   void do_path(ActionEvent*);
   void do_new_entity(ActionEvent*);
+  void do_build(ActionEvent*);
   Entity* get_entity_by_id(unsigned short id);
   /**
    * Sends a command to the server saying that we confirm that action.
