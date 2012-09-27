@@ -72,4 +72,22 @@ DoEntityEvent::DoEntityEvent(const Command* command):
     this->valid = true;
 }
 
+BuildEvent::BuildEvent(const Command* command)
+{
+  if (this->from_string(std::string(command->body,
+				    command->body_size).c_str()) == false)
+    this->valid = false;
+  else
+    this->valid = true;
+}
+
+DoBuildEvent::DoBuildEvent(const Command* command):
+  ActionEvent("BUILD")
+{
+  if (this->from_string(std::string(command->body,
+				    command->body_size).c_str()) == false)
+    this->valid = false;
+  else
+    this->valid = true;
+}
 unsigned long int Event::current_id = 0;

@@ -58,6 +58,10 @@ public:
    */
   void path_callback(Command*);
   /**
+   * The server tells one unit to build the given building
+   */
+  void build_callback(Command*);
+  /**
    * Insert an action, built from a command we received, into the turn handler,
    * and confirm it or validate it, depending on if the game is started or not
    * (meaning that it comes from the server replay).
@@ -79,6 +83,7 @@ public:
    * world coordinates.
    */
   bool action_move(const unsigned int x, const unsigned y, const std::size_t=0);
+  bool action_build(const unsigned int, const unsigned int, const std::size_t);
   /**
    * Give the order to all selected and movable units to move to the given
    * world coordinates with an attack order (will attack all encountered

@@ -27,6 +27,11 @@ public:
    * send that path action to all clients.
    */
   void move_callback(Command*);
+  /**
+   * Called whenever we receive a BUILD command from one client.
+   * Check if the position is valid and the building can be built (money, the unit actually has this ability, etc).
+   */
+  void build_callback(Command*);
   bool validate_action(const unsigned int id, const unsigned long int by);
   bool validate_turn(const unsigned int id, const unsigned long int by);
   /**

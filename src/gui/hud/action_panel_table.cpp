@@ -37,21 +37,25 @@ ActionPanelTable::ActionPanelTable(Screen* screen):
   page->add_button(new ActionPanelButton("./data/images/actions/stop.png",
                                          0, 1, null_left, cursor::Normal),
                    1);
-
   page->add_button(new ActionPanelButton("./data/images/actions/keep_position.png",
                                          0, 2, null_left, cursor::Normal),
                    2);
-
   page->add_button(new ActionPanelButton("./data/images/actions/patrol.png",
                                          0, 3, null_left, cursor::Normal),
                    3);
-
   page->add_button(new ActionPanelButton("./data/images/actions/attack.png",
                                          0, 4, null_left, cursor::Normal),
                    4);
-
   page = new ActionPanelPage();
   this->pages.push_back(page);
+
+  t_left_click_callback build_callback = boost::bind(&ClientWorld::action_build, world, _1, _2, _3);
+  t_left_click left_click_build;
+  left_click_build.callback = build_callback;
+  left_click_build.id = 0;
+  ActionPanelButton* building_button = new ActionPanelButton("./data/images/actions/build_archive.png",
+                                                             boost::bind(&Screen::set_left_click_callback, screen, _1, _2), 1, left_click_build, cursor::Build);
+  page->add_button(building_button, 1);
 
 
 }

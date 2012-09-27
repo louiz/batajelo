@@ -115,6 +115,12 @@ void ClientWorld::path_callback(Command* command)
   this->insert_received_action(action, e);
 }
 
+void ClientWorld::build_callback(Command* command)
+{
+  DoBuildEvent* e = new DoBuildEvent(command);
+  log_info("Build_callback: " << e->actor << " " << e->x << ":" << e->y);
+}
+
 void ClientWorld::insert_received_action(Action* action, ActionEvent* event)
 {
   this->turn_handler->insert_action(action, event->turn);
@@ -146,6 +152,19 @@ void ClientWorld::on_next_turn(unsigned long turn)
 {
   if (this->started == true)
     this->confirm_turn(turn+1);
+}
+
+bool ClientWorld::action_build(const unsigned int x, const unsigned y, const std::size_t id)
+{
+  log_info("action_build: " << x << ":" << y << "=" << id);
+  assert(this->current_selection.is_empty() == false);
+  BuildEvent event;
+  event.actor = this->current_selection.get_entities().front()->id;
+  Position pos(x, y);
+  this->get_cell_at_position(pos, event.x, event.y);
+  event.type_id = id;
+  this->generate_command("BUILD", event.to_string());
+  return true;
 }
 
 bool ClientWorld::action_move(const unsigned int x, const unsigned y, const std::size_t)

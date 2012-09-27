@@ -8,6 +8,7 @@ namespace cursor
       Normal,
       Select,
       Move,
+      Build,
       Aim,
       Cast,
       // Just keep track of the possible number of cursors
@@ -19,6 +20,7 @@ namespace cursor
     "gui_cursor.png",
     "gui_cursor.png",
     "move_cursor.png",
+    "build_cursor.png",
     "gui_cursor.png",
     "gui_cursor.png"
   };
