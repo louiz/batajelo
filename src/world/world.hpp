@@ -213,7 +213,7 @@ protected:
    * entity model is uniq, and that list does not change once the game
    * is started.
    */
-  std::vector<Entity*> entity_models;
+  std::vector<const Entity*> entity_models;
   /**
    * An iterator to help other classes get the entities one by
    * one without having to play with an iterator themselve, etc.

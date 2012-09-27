@@ -28,7 +28,7 @@ World::~World()
   Entity* entity;
   while ((entity = this->get_next_entity()) != 0)
     delete entity;
-  std::vector<Entity*>::iterator it;
+  std::vector<const Entity*>::iterator it;
   for (it = this->entity_models.begin(); it < this->entity_models.end(); ++it)
     delete (*it);
 }
@@ -105,7 +105,7 @@ void World::init()
 {
   log_debug("Init world");
   // TODO, load these units from the Mod file.
-  Entity* unit = new Entity;
+  const Entity *const unit = new Entity;
   this->entity_models.push_back(unit);
 
   log_debug("Done.");
