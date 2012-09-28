@@ -1,7 +1,7 @@
 #include <gui/ui.hpp>
-#include <gui/settings.hpp>
-#include <gui/login.hpp>
-#include <gui/login_steps.hpp>
+#include <gui/page/settings.hpp>
+#include <gui/page/login.hpp>
+#include <gui/page/login_steps.hpp>
 #include <gui/popup/popup.hpp>
 #include <gui/popup/error_popup.hpp>
 #include <gui/popup/dialog_popup.hpp>

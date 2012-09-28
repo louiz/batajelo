@@ -14,7 +14,7 @@
 #ifndef __UI_HPP__
 # define __UI_HPP__
 
-#include <gui/page.hpp>
+#include <gui/page/page.hpp>
 #include <network/command.hpp>
 
 class Popup;
