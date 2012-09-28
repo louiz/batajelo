@@ -1,0 +1,20 @@
+Window#window_home
+{
+  BackgroundColor: #666666FF;
+  FontSize: 26;
+}
+
+Window#window_home Table#table_header Label#label_login
+{
+  FontSize: 34;
+}
+
+Window#window_home Table#table_body Label
+{
+  FontSize: 34;
+}
+
+Window#window_home Table#table_ladder Button
+{
+  FontSize: 26;
+}
