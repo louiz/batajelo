@@ -17,9 +17,9 @@
 # define __EVENT_HPP__
 
 #include <serialization/serializable.hpp>
-#include <world/entity.hpp>
 #include <network/command.hpp>
 #include <mpreal/mpreal.h>
+#include <world/unit.hpp>
 
 class Event: public Serializable
 {
@@ -113,32 +113,32 @@ private:
 };
 
 /**
- * An event containing an entity object.
+ * An event containing an unit object.
  */
-class DoEntityEvent: public ActionEvent
+class DoUnitEvent: public ActionEvent
 {
 public:
-  DoEntityEvent(Entity* entity):
-    ActionEvent("NEW_ENTITY"),
-    entity(entity)
+  DoUnitEvent(Unit* unit):
+    ActionEvent("NEW_UNIT"),
+    unit(unit)
   {}
-  DoEntityEvent(const Command*);
+  DoUnitEvent(const Command*);
 
   virtual void serialize(boost::archive::text_oarchive& ar, const unsigned int v)
   {
     ActionEvent::serialize(ar, v);
-    ar & entity;
+    ar & unit;
   }
   virtual void serialize(boost::archive::text_iarchive& ar, const unsigned int v)
   {
     ActionEvent::serialize(ar, v);
-    ar & entity;
+    ar & unit;
   }
-  Entity* entity;
+  Unit* unit;
 
 private:
-  DoEntityEvent(const DoEntityEvent&);
-  DoEntityEvent& operator=(const ActionEvent&);
+  DoUnitEvent(const DoUnitEvent&);
+  DoUnitEvent& operator=(const ActionEvent&);
 };
 
 class MoveEvent: public Event

@@ -21,32 +21,32 @@ Camera::~Camera()
 {
 }
 
-void Camera::draw_entity(const Entity* entity, const uint x, const uint y,
+void Camera::draw_unit(const Unit* unit, const uint x, const uint y,
                          const bool in_mouse_selection, sf::RectangleShape& rectangle)
 {
   if (in_mouse_selection)
     {
       sf::CircleShape in_mouse_circle;
-      in_mouse_circle.setRadius(entity->width/2 + 6);
+      in_mouse_circle.setRadius(unit->width/2 + 6);
       in_mouse_circle.setOutlineColor(sf::Color(0xff, 0xcb, 0x36, 255));
       in_mouse_circle.setFillColor(sf::Color::Transparent);
       in_mouse_circle.setOutlineThickness(2);
-      in_mouse_circle.setPosition(x - entity->width/2 - 6, y - entity->width + 4);
+      in_mouse_circle.setPosition(x - unit->width/2 - 6, y - unit->width + 4);
       in_mouse_circle.setScale(sf::Vector2f(1, 3.f/4.f));
       this->win->draw(in_mouse_circle);
     }
-  if (this->world->is_entity_selected(entity))
+  if (this->world->is_entity_selected(unit))
     {
       sf::CircleShape selection_circle;
-      selection_circle.setRadius(entity->width/2 + 8);
+      selection_circle.setRadius(unit->width/2 + 8);
       selection_circle.setOutlineColor(sf::Color(0x00, 0x00, 0xff, 200));
       selection_circle.setFillColor(sf::Color::Transparent);
       selection_circle.setOutlineThickness(3);
-      selection_circle.setPosition(x - entity->width/2 - 8, y - entity->width + 5);
+      selection_circle.setPosition(x - unit->width/2 - 8, y - unit->width + 5);
       selection_circle.setScale(sf::Vector2f(1, 3.f/4.f));
       this->win->draw(selection_circle);
     }
-  rectangle.setPosition(x - entity->width/2, y - entity->width);
+  rectangle.setPosition(x - unit->width/2, y - unit->width);
   this->win->draw(rectangle);
 }
 
@@ -152,7 +152,7 @@ void Camera::handle_left_release(const sf::Event& event)
 void Camera::set_mouse_selection_to_selection()
 {
 
-  Entity* entity;
+  Unit* entity;
   sf::Vector2i mouse_pos = sf::Mouse::getPosition(*this->win);
   mouse_pos.x += this->x;
   mouse_pos.y += this->y;
@@ -160,7 +160,7 @@ void Camera::set_mouse_selection_to_selection()
   // First check the number of entities inside the selection. If it's 0, do
   // nothing
   uint n = 0;
-  while ((entity = this->world->get_next_entity()) != 0)
+  while ((entity = static_cast<Unit*>(this->world->get_next_entity())) != 0)
     if (this->mouse_selection.contains(mouse_pos,
                                        this->world_to_camera_position(entity->pos),
                                        entity->width + 4))
@@ -168,7 +168,7 @@ void Camera::set_mouse_selection_to_selection()
   if (n > 0)
     {
       this->world->reset_entity_iterator();
-      while ((entity = this->world->get_next_entity()) != 0)
+      while ((entity = static_cast<Unit*>(this->world->get_next_entity())) != 0)
         {
           if (this->mouse_selection.contains(mouse_pos,
                                              this->world_to_camera_position(entity->pos),
@@ -190,11 +190,11 @@ void Camera::set_mouse_selection_to_selection()
 void Camera::add_mouse_selection_to_selection()
 {
   this->world->reset_entity_iterator();
-  Entity* entity;
+  Unit* entity;
   sf::Vector2i mouse_pos = sf::Mouse::getPosition(*this->win);
   mouse_pos.x += this->x;
   mouse_pos.y += this->y;
-  while ((entity = this->world->get_next_entity()) != 0)
+  while ((entity = static_cast<Unit*>(this->world->get_next_entity())) != 0)
     {
       if (this->mouse_selection.contains(mouse_pos,
                                          this->world_to_camera_position(entity->pos),
@@ -258,7 +258,7 @@ void Camera::draw()
   std::vector<std::vector<Entity*> > entities;
   entities.resize(5);
   this->world->reset_entity_iterator();
-  Entity* entity;
+  Unit* entity;
 
   sf::Vector2i mouse_pos = sf::Mouse::getPosition(*this->win);
   mouse_pos.x += this->x;
@@ -314,13 +314,13 @@ void Camera::draw()
           // while ((entity = this->world->get_next_entity()) != 0)
           for (it = this->world->entities.begin(); it != this->world->entities.end(); ++it)
             {
-              entity = *it;
+              entity = static_cast<Unit*>(*it);
               this->world->get_cell_at_position(entity->pos, cellx, celly);
               sf::Vector2u entpos = this->world_to_camera_position(entity->pos);
               if ((celly == y) && ((entpos.x > this->x) && (entpos.x < this->x + win_size.x) &&
                                    (entpos.y > this->y) && (entpos.y < this->y + win_size.y)))
                 {
-                  this->draw_entity(entity, entpos.x - this->x, entpos.y - this->y,
+                  this->draw_unit(entity, entpos.x - this->x, entpos.y - this->y,
                                     this->mouse_selection.contains(mouse_pos,
                                                                    entpos, entity->width + 4) ||
                                     this->screen->is_entity_hovered(entity),

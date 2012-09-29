@@ -12,9 +12,9 @@ ServerWorld::~ServerWorld()
 
 void ServerWorld::spawn_unit(const size_t type, const int x, const int y)
 {
-  Entity* new_entity = this->create_entity(type);
-  new_entity->pos = Position(x, y);
-  DoEntityEvent* e = new DoEntityEvent(new_entity);
+  Unit* new_unit = this->create_unit(type);
+  new_unit->pos = Position(x, y);
+  DoUnitEvent* e = new DoUnitEvent(new_unit);
   e->turn = 1;
   Action* action = new Action(0, e, 0);
   action->validate_completely();

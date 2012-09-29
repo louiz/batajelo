@@ -38,7 +38,7 @@ public:
   /**
    * Called when a new unit has to be inserted in the world.
    */
-  void new_entity_callback(Command*);
+  void new_unit_callback(Command*);
   /**
    * When we receive the command from the server telling us that
    * it is ready to start the game.

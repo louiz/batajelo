@@ -24,8 +24,8 @@ int main()
           	      boost::bind(&ClientWorld::new_occupant_callback, world, _1));
   c->install_callback("OCCUPANT_LEFT",
           	      boost::bind(&ClientWorld::occupant_left_callback, world, _1));
-  c->install_callback("NEW_ENTITY",
-          	      boost::bind(&ClientWorld::new_entity_callback, world, _1));
+  c->install_callback("NEW_UNIT",
+          	      boost::bind(&ClientWorld::new_unit_callback, world, _1));
   c->install_callback("START",
           	      boost::bind(&ClientWorld::handle_start_command, world, _1));
   c->install_callback("OK",

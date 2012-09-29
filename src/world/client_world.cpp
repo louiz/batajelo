@@ -47,15 +47,15 @@ void ClientWorld::occupant_left_callback(Command* command)
   this->remove_occupant(&occupant);
 }
 
-void ClientWorld::new_entity_callback(Command* command)
+void ClientWorld::new_unit_callback(Command* command)
 {
-  DoEntityEvent* e = new DoEntityEvent(command);
+  DoUnitEvent* e = new DoUnitEvent(command);
   if (e->is_valid() == false)
     {
       log_debug("Invalid data for the new entity.");
       return ;
     }
-  Action* action = new Action(boost::bind(&World::do_new_entity, this, _1), e);
+  Action* action = new Action(boost::bind(&World::do_new_unit, this, _1), e);
   log_debug("new entity");
   this->turn_handler->insert_action(action, e->turn);
   if (this->started == true)

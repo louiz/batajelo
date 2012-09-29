@@ -47,18 +47,22 @@ Entity* World::get_next_entity()
 
 Entity* World::get_next_entity(const int y)
 {
-  if (this->entities_iterator == this->entities.end())
-    {
-      this->entities_iterator = this->entities.begin();
-      return 0;
-    }
-  Entity* entity = *this->entities_iterator;
-  if (entity->pos.y < Fix16(y))
-    {
-      ++this->entities_iterator;
-      return entity;
-    }
-  return 0;
+  return this->get_next_entity();
+  // TODO FIX THAT
+
+
+  // if (this->entities_iterator == this->entities.end())
+  //   {
+  //     this->entities_iterator = this->entities.begin();
+  //     return 0;
+  //   }
+  // Entity* entity = *this->entities_iterator;
+  // if (entity->pos.y < Fix16(y))
+  //   {
+  //     ++this->entities_iterator;
+  //     return entity;
+  //   }
+  // return 0;
 }
 
 void World::set_next_turn_callback(t_next_turn_callback callback)
@@ -105,26 +109,26 @@ void World::init()
 {
   log_debug("Init world");
   // TODO, load these units from the Mod file.
-  const Entity *const unit = new Entity;
+  const Unit* unit = new Unit;
   this->entity_models.push_back(unit);
 
   log_debug("Done.");
 }
 
-Entity* World::create_entity(unsigned int type)
+Unit* World::create_unit(unsigned int type)
 {
-  const Entity* model = this->entity_models[type];
-  Entity* new_entity = new Entity(*model);
+  const Unit* model = static_cast<const Unit*>(this->entity_models[type]);
+  Unit* new_entity = new Unit(*model);
   return new_entity;
 }
 
-Entity* World::create_entity(unsigned int type, const Entity& e)
+Unit* World::create_unit(unsigned int type, const Unit& e)
 {
   log_debug("Creating entity of type " << type);
-  const Entity* model = this->entity_models[type];
-  Entity* new_entity = new Entity(*model);
-  new_entity->pos = e.pos;
-  return new_entity;
+  const Unit* model = static_cast<const Unit*>(this->entity_models[type]);
+  Unit* new_unit = new Unit(*model);
+  new_unit->pos = e.pos;
+  return new_unit;
 }
 
 void World::pause()
@@ -183,7 +187,7 @@ void World::do_path(ActionEvent* event)
   std::vector<unsigned short>::const_iterator actors_it;
   for (actors_it = path_event->actors_ids.begin(); actors_it < path_event->actors_ids.end(); ++actors_it)
     {
-      Entity* entity = this->get_entity_by_id((*actors_it));
+      Unit* entity = static_cast<Unit*>(this->get_entity_by_id((*actors_it)));
       assert(entity != 0);
       // entity->set_path(path);
       // log_error("Path finding from " << entity->pos << " to " << path_event->x << ":" << path_event->y);
@@ -208,21 +212,21 @@ void World::do_path(ActionEvent* event)
     }
 }
 
-void World::do_new_entity(ActionEvent* event)
+void World::do_new_unit(ActionEvent* event)
 {
-  log_debug("DO NEW ENTITY");
-  DoEntityEvent* entity_event = static_cast<DoEntityEvent*>(event);
-  // This entity just contains the initial position of the entity, and it's
+  log_debug("DO NEW UNIT");
+  DoUnitEvent* unit_event = static_cast<DoUnitEvent*>(event);
+  // This unit just contains the initial position of the unit, and it's
   // type_id because we don't need to pass all these informations, because
-  // we already have all the possible entity types in our list
-  // (entity_models).
-  Entity* entity = entity_event->entity;
-  // We use the type id to create an entity using the corresponding model,
-  // and we pass the initial position of the entity as well.
-  Entity* new_entity = this->create_entity(entity->type_id, *entity);
-  delete entity;
-  log_debug("New_Entity: " << new_entity->pos);
-  this->insert_entity(new_entity);
+  // we already have all the possible unit types in our list
+  // (unit_models).
+  Unit* unit = unit_event->unit;
+  // We use the type id to create an unit using the corresponding model,
+  // and we pass the initial position of the unit as well.
+  Unit* new_unit = this->create_unit(unit->type_id, *unit);
+  delete unit;
+  log_debug("New_Unit: " << new_unit->pos);
+  this->insert_entity(new_unit);
 }
 
 void World::do_build(ActionEvent* event)
@@ -289,14 +293,14 @@ unsigned int World::get_number_of_occupants() const
   return this->occupants.size();
 }
 
-static bool compare_entities(const Entity* a, const Entity* b)
+static bool compare_units(const Unit* a, const Unit* b)
 {
   return (a->pos.y < b->pos.y);
 }
 
 void World::sort_entities()
 {
-  this->entities.sort(compare_entities);
+  // this->entities.sort(compare_units);
 }
 
 void World::get_cell_at_position(const Position& pos,

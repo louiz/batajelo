@@ -43,10 +43,10 @@ public:
    */
   void draw_mouse_selection();
   /**
-   * Draw the entity on the screen, taking the on-screen position of the
-   * entity.
+   * Draw the unit on the screen, taking the on-screen position of the
+   * unit.
    */
-  void draw_entity(const Entity* entity, const uint x, const uint y,
+  void draw_unit(const Unit*, const uint x, const uint y,
                    const bool in_mouse_selection, sf::RectangleShape& rectangle);
   /**
    * handle one user input event.
@@ -90,11 +90,6 @@ public:
 private:
   Camera(const Camera&);
   Camera& operator=(const Camera&);
-  /**
-   * Draw the given entity if it's visible by the camera.
-   * Does nothing otherwise.
-   */
-  void draw_entity(const Entity*);
   /**
    * Check if the camera is at a valid position. If not, fix it.
    */

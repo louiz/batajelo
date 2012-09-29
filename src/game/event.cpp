@@ -62,8 +62,8 @@ DoMoveEvent::DoMoveEvent(const Command* command):
     this->valid = true;
 }
 
-DoEntityEvent::DoEntityEvent(const Command* command):
-  ActionEvent("NEW_ENTITY")
+DoUnitEvent::DoUnitEvent(const Command* command):
+  ActionEvent("NEW_UNIT")
 {
   if (this->from_string(std::string(command->body,
 				    command->body_size).c_str()) == false)

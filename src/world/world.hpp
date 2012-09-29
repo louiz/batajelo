@@ -25,6 +25,7 @@
 
 #include <world/occupant.hpp>
 #include <world/entity.hpp>
+#include <world/unit.hpp>
 #include <world/time.hpp>
 #include <world/map.hpp>
 #include <game/action.hpp>
@@ -93,12 +94,12 @@ public:
   /**
    * Create an entity based on the given model.
    */
-  Entity* create_entity(unsigned int type);
+  Unit* create_unit(unsigned int type);
   /**
    * Create an entity based on the given model, with the given
    * SerializableEntity to copy the initial entity position.
    */
-  Entity* create_entity(unsigned int type, const Entity& e);
+  Unit* create_unit(unsigned int type, const Unit& e);
   void set_next_turn_callback(t_next_turn_callback);
   void pause();
   void unpause();
@@ -119,7 +120,7 @@ public:
    */
   void remove_occupant(Occupant*);
   void do_path(ActionEvent*);
-  void do_new_entity(ActionEvent*);
+  void do_new_unit(ActionEvent*);
   void do_build(ActionEvent*);
   Entity* get_entity_by_id(unsigned short id);
   /**
