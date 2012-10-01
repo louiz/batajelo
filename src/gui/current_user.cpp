@@ -24,7 +24,7 @@ const std::string CurrentUser::get_key(const std::string& field) const
 
 void CurrentUser::set_key(const std::string& field, const std::string& value)
 {
-  std::map<std::string, std::string>::const_iterator it = this->current_user.find(field);
+  std::map<std::string, std::string>::iterator it = this->current_user.find(field);
   if (it != this->current_user.end())
     this->current_user.erase(it);
   this->current_user.insert(std::make_pair(field, value));

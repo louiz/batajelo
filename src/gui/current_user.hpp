@@ -22,31 +22,31 @@ public:
    * Get the object.
    * @return  const std::map<std::string, std::string>&
    */
-  const std::map<std::string, std::string>& CurrentUser::get_current_user() const;
+  const std::map<std::string, std::string>& get_current_user() const;
   /**
    * Get the field value.
    * @param std::string& field
    * @return const int
    */
-  const std::string CurrentUser::get_key(const std::string& field) const;
+  const std::string get_key(const std::string& field) const;
   /**
    * Set the field value.
    * @param const std::string& field
    * @param const std::string& value
    * @return void
    */
-  void CurrentUser::set_key(const std::string& field, const std::string& value);
+  void set_key(const std::string& field, const std::string& value);
   /**
    * Get user teams
    * @return TeamStatsSerial*
    */
-  const TeamSerial* CurrentUser::get_teams() const;
+  const TeamSerial* get_teams() const;
  /**
    * Set user teams
    * @param TeamStatsSerial* the teams
    * @return TeamStatsSerial*
    */
-  void CurrentUser::set_teams(TeamSerial*);
+  void set_teams(TeamSerial*);
 
 private:
   TeamSerial* teams;
