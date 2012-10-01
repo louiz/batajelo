@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="80" height="100" tilewidth="128" tileheight="96">
+ <tileset firstgid="1" name="tileset3" tilewidth="128" tileheight="160">
+  <image source="../tilesets/tileset4.png" width="1024" height="1280"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="80" height="100">
+  <properties>
+   <property name="level" value="0"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt1LtuwzAUREG5dJkypUv//w+6D2I9QFLLC04xJQ3tAc3Htm2PA+8dR2fRb1Q7/Y796KeffmV5//S7o8/Vbvpd66TfmH6rd9Rvjn5/O67SuHe/1e6oduP7tfZOb0z1+3bmV7umflcapvcl+/VomN43c78zDdP70v00bO94x/nq9va/NGza7g627391+J30vmS/Hv/j9L5kux4N0xtn6He2oX5tDVfpd7XbmSYrvX+t/f5ro98Y6a36zUe/Oh3TG6t3TW+p3jG9Qb/a9NNPv7r0G99v71z6+9PcLf30q+tbu+cE31aBfvrN2M/7px8AAAAAAAAAAAAAAAAAAMDqPsCrlpE=
+  </data>
+ </layer>
+ <layer name="Tile Layer 2" width="80" height="100" xoffset="0" yoffset="32">
+  <properties>
+   <property name="level" value="1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt1rENwDAMBDFp/6UzxBWODRL4XrhKM9xiTx9wOf0a/Rr9Gv0a/Rr9Gv0a/Rr9Gv0a/Rr9Gv0a/Rr9mh0NC/0a/Rr9Gv0a/Rr9Gv2aHQ0L/Rr9Gv0a/Rr9Gv0a/Rr9Gv0a/Rr9Gu0a/Rr9Gv0a/Rr9Gv9Lo1+jXaNfo1+jX6Nf82K/PbCX6AcAAAAAAAAAAAAAAAAAAP/xAd9BAJ0=
+  </data>
+ </layer>
+</map>
