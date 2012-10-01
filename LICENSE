@@ -54,3 +54,9 @@ License:  zlib
 Website:  http://www.adp-gmbh.ch/cpp/common/base64.html
 Sources:  https://github.com/ReneNyffenegger/development_misc/tree/master/base64
 -----------------------------------------------
+
+----------------- libfixmath ------------------
+License:  MIT
+Website:  http://code.google.com/p/libfixmath/
+Sources:  http://code.google.com/p/libfixmath/source/checkout
+-----------------------------------------------
