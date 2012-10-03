@@ -1,18 +1,20 @@
-// The main class for the game itself
+/**
+ * Provide a gateway between the network events and the Ui events.  This is
+ * mainly a serie of callbacks that are called by the client (network-wise).
+ */
 
-
-#ifndef __GAME_HPP__
-# define __GAME_HPP__
+#ifndef __NETWORKTOUI_HPP__
+# define __NETWORKTOUI_HPP__
 
 #include <network/client.hpp>
 #include <network/command.hpp>
 #include <gui/ui.hpp>
 
-class Game
+class NetworkToUi
 {
 public:
-  Game();
-  ~Game();
+  NetworkToUi();
+  ~NetworkToUi();
   // Called whenever the login form has been filled, clicked and checked for validity.
   void on_login_form_validated(const std::string&, const std::string&, const std::string&, const short&);
   void on_connection_failed(const std::string&, const short&);
@@ -30,8 +32,8 @@ public:
 private:
   Client client;
   Ui* ui;
-  Game(const Game&);
-  Game& operator=(const Game&);
+  NetworkToUi(const NetworkToUi&);
+  NetworkToUi& operator=(const NetworkToUi&);
 };
 
-#endif // __GAME_HPP__
+#endif // __NETWORKTOUI_HPP__

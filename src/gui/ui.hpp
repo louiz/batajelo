@@ -20,7 +20,7 @@
 class Popup;
 class ErrorPopup;
 class DialogPopup;
-class Game;
+class NetworkToUi;
 class LoginSteps;
 class Settings;
 class Login;
@@ -28,7 +28,7 @@ class Login;
 class Ui
 {
 public:
-	Ui(Game*);
+	Ui(NetworkToUi*);
 	~Ui();
   /**
    * Initialize translation
@@ -215,7 +215,7 @@ private:
   sf::Event event;
   sf::Clock clock;
   sfg::SFGUI sfgui;
-  Game* game;
+  NetworkToUi* network_to_ui;
   bool event_handled;
   boost::locale::generator gen;
 };

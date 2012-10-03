@@ -1,43 +1,43 @@
-#include <game/game.hpp>
+#include <gui/network_to_ui.hpp>
 #include <logging/logging.hpp>
 
-Game::Game()
+NetworkToUi::NetworkToUi()
 {
   this->ui = new Ui(this);
   log_info("Launching game");
 }
 
-Game::~Game()
+NetworkToUi::~NetworkToUi()
 {
   delete this->ui;
   log_info("End.");
 }
 
-void Game::on_login_form_validated(const std::string& login,
+void NetworkToUi::on_login_form_validated(const std::string& login,
                                    const std::string& password,
                                    const std::string& host,
                                    const short& port)
 {
   this->client.connect(host, port,
-           boost::bind(&Game::on_connection_success, this, login, password),
-           boost::bind(&Game::on_connection_failed, this, host, port));
+           boost::bind(&NetworkToUi::on_connection_success, this, login, password),
+           boost::bind(&NetworkToUi::on_connection_failed, this, host, port));
 }
 
-void Game::on_connection_failed(const std::string& host, const short& port)
+void NetworkToUi::on_connection_failed(const std::string& host, const short& port)
 {
   log_debug("Connection to remote " << host << ":" << port << " failed");
   this->ui->on_connection_failed();
 }
 
 
-void Game::on_connection_success(const std::string& login, const std::string& password)
+void NetworkToUi::on_connection_success(const std::string& login, const std::string& password)
 {
   log_debug("Login in...")
   this->ui->on_connection_success();
   this->authenticate(login, password);
 }
 
-void Game::authenticate(const std::string& login, const std::string& password)
+void NetworkToUi::authenticate(const std::string& login, const std::string& password)
 {
   // TODO send a password hash, and do not use that stupid separator.
   Command* command = new Command;
@@ -48,7 +48,7 @@ void Game::authenticate(const std::string& login, const std::string& password)
   this->client.request_answer(command, boost::bind(&Ui::on_authenticate, this->ui, _1));
 }
 
-void Game::request_file(const std::string& filename)
+void NetworkToUi::request_file(const std::string& filename)
 {
   Command* command = new Command;
   command->set_name("TRANSFER");
@@ -56,7 +56,7 @@ void Game::request_file(const std::string& filename)
   this->client.send(command);
 }
 
-void Game::run()
+void NetworkToUi::run()
 {
   while (this->ui->run() == true)
   {

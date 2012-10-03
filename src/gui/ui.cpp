@@ -6,17 +6,17 @@
 #include <gui/popup/error_popup.hpp>
 #include <gui/popup/dialog_popup.hpp>
 #include <logging/logging.hpp>
-#include <game/game.hpp>
+#include <gui/network_to_ui.hpp>
 #include <translation/translation.hpp>
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
-Ui::Ui(Game* game):
+Ui::Ui(NetworkToUi* network_to_ui):
   font_path(Config::get("font_path", "C:/Work/pelaze/git/batajelo/data/fonts/").data()),
   theme_path(Config::get("theme_path", "C:/Work/pelaze/git/batajelo/data/themes/").data()),
   img_path(Config::get("img_path", "C:/Work/pelaze/git/batajelo/data/images/").data()),
-  game(game)
+  network_to_ui(network_to_ui)
 {
   /**
    * @todo for default video mode :use the method getDesktopMode () instead of putting 800x600 
@@ -217,7 +217,7 @@ void Ui::on_login_form_validated(const std::string& login,
                                  const std::string& host,
                                  const short& port)
 {
-  this->game->on_login_form_validated(login, password, host, port);
+  this->network_to_ui->on_login_form_validated(login, password, host, port);
 }
 
 void Ui::display_background()

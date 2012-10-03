@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project(batajelo)
 
+
 #Variable
 set(batajelo_VERSION_MAJOR 0)
 set(batajelo_VERSION_MINOR 1)
@@ -84,6 +85,7 @@ if(BUILD_CLIENT)
 	target_link_libraries(
 		batajelo_client
 		server
+                gui
 		)
 endif(BUILD_CLIENT)
 
@@ -223,8 +225,7 @@ target_Link_libraries(
 	serialization
         pathfinding
         mpreal
-	${SFML_LIBRARIES}
-	${SFGUI_LIBRARY}
+        utils
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 )
@@ -281,7 +282,6 @@ target_Link_libraries(
 		client
 		logging
 		config
-		gui
 		world
 		)
 
@@ -322,8 +322,6 @@ if(BUILD_SERVER)
 		config
 		game
 		database
-		${SFML_LIBRARIES}
-		${SFGUI_LIBRARY}
 		${Boost_LIBRARIES}
 		${CMAKE_THREAD_LIBS_INIT}
 		)
@@ -333,10 +331,8 @@ if(BUILD_SERVER)
 		game_server
 		logging
 		config
-		game
 		database
-		${SFML_LIBRARIES}
-		${SFGUI_LIBRARY}
+                world
 		${Boost_LIBRARIES}
 		${CMAKE_THREAD_LIBS_INIT}
 		)
