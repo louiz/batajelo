@@ -42,11 +42,9 @@ public:
   {
     return on_left_click;
   }
-  void set_left_click_callback(const t_left_click left_click, const cursor::type cursor_type=cursor::Normal)
-  {
-    on_left_click = left_click;
-    this->set_cursor_type(cursor_type);
-  }
+  void set_left_click_callback(const t_left_click left_click);
+  cursor::type draw_build_cursor(const unsigned int, const unsigned int y, const std::size_t);
+  cursor::type draw_move_cursor(const uint, const uint, const std::size_t);
   ClientWorld* get_world() const
   {
     return world;
@@ -67,8 +65,11 @@ private:
    * texture to the cursor::Cast one.
    */
   std::vector<sf::Texture> cursor_textures;
+  cursor::type current_cursor_type;
   sf::Sprite cursor_sprite;
   t_left_click on_left_click;
+  t_draw_cursor_action on_cursor_draw;
+  std::vector<BuildingSprite*> building_sprites;
 };
 
 #endif // __SCREEN_HPP__

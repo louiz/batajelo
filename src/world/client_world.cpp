@@ -212,3 +212,8 @@ void ClientWorld::add_selection_change_callback(const t_selection_changed_callba
 {
   this->current_selection.on_modified_callbacks.push_back(callback);
 }
+
+void draw_build_cursor(const unsigned int, const unsigned int y, const std::size_t)
+{
+  
+}

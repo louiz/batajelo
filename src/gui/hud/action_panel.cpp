@@ -1,14 +1,19 @@
 #include <gui/hud/action_panel.hpp>
 
-ActionPanel::ActionPanel(sf::RenderWindow* win, Screen* screen, const Selection* selection):
+ActionPanel::ActionPanel(sf::RenderWindow* win, Screen* screen, const Selection* selection, ClientMod& mod):
   win(win),
   selection(selection)
 {
   // for unit in MOD_FILE
   // create a nem ActionPanelTable()
   // add it to the vector
-  ActionPanelTable* table = new ActionPanelTable(screen);
-  this->tables.push_back(table);
+
+  // DO THAT
+  this->tables = mod.get_action_tables(screen);
+
+  // REMOVE THAT
+  // ActionPanelTable* table = new ActionPanelTable(screen);
+  // this->tables.push_back(table);
 }
 
 ActionPanel::~ActionPanel()

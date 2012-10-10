@@ -87,11 +87,11 @@ public:
   /**
    * Set the entity iterator at its beginning.
    */
-  void reset_entity_iterator();
   /**
-   * Insert an entity at the end of the list.
+   * Insert a unit in the unit list. It will also be added into the entity list.
    */
-  void insert_entity(Entity*);
+  void insert_unit(Unit*);
+  void reset_entity_iterator();
   /**
    * Create an entity based on the given model.
    */
@@ -201,21 +201,30 @@ public:
    * The list of all existing entities in the world.
    */
   std::list<Entity*> entities;
+  /**
+   * The list of all existing entities in the world.
+   */
+  std::list<Unit*> units;
 
 private:
+  /**
+   * Insert an entity at the end of the list.
+   */
+  void insert_entity(Entity*);
   World(const World&);
   World& operator=(const World&);
 
 protected:
   /**
-   * The list of all models for the entities in the world.
+   * The list of all models for the units in the world.
    * That list is created by loading a Mod file. To spawn a unit
    * in the world, we take the entity type in that list, and copy
    * it into a new unit. This list order is important, each
    * entity model is uniq, and that list does not change once the game
    * is started.
    */
-  std::vector<const Entity*> entity_models;
+  std::vector<const Unit*> unit_models;
+  std::vector<const Building*> building_models;
   /**
    * An iterator to help other classes get the entities one by
    * one without having to play with an iterator themselve, etc.

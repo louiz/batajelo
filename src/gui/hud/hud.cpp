@@ -3,12 +3,12 @@
 #include <gui/hud/hud.hpp>
 #include <world/entity.hpp>
 
-Hud::Hud(GraphMap* map, ClientWorld* world, sf::RenderWindow* win, Camera* camera, Screen* screen):
+Hud::Hud(GraphMap* map, ClientWorld* world, sf::RenderWindow* win, Camera* camera, Screen* screen, ClientMod& mod):
   minimap(win, map, camera),
   win(win),
   world(world),
   selection_panel(win, world->get_selection_ptr()),
-  action_panel(win, screen, world->get_selection_ptr())
+  action_panel(win, screen, world->get_selection_ptr(), mod)
 {
   // Install a callback on the selection that will reset the action_panel
   // whenever the selection is modified.

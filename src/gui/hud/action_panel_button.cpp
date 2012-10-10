@@ -1,14 +1,17 @@
 #include <gui/hud/action_panel_button.hpp>
 #include <gui/common.hpp>
 #include <gui/hud/action_panel.hpp>
+#include <logging/logging.hpp>
 
-ActionPanelButton::ActionPanelButton(const std::string& image_filename, const t_action_panel_button_callback callback, const std::size_t position, const t_left_click left_click, const cursor::type cursor_type):
+ActionPanelButton::ActionPanelButton(const std::string& image_filename, const t_action_panel_button_callback callback, const std::size_t position, const t_left_click left_click):
   callback(callback),
   position(position),
-  left_click(left_click),
-  cursor_type(cursor_type)
+  left_click(left_click)
 {
-  if (!this->texture.loadFromFile(image_filename.c_str()))
+  const std::string image_directory("./data/images/actions/");
+  const std::string filename = image_directory + image_filename;
+  log_error("Creating button with image: " << filename);
+  if (!this->texture.loadFromFile(filename.c_str()))
     throw GraphInitError();
   this->sprite.setTexture(this->texture);
   this->x = ACTION_PANEL_X + ((ACTION_SQUARE_SIZE + ACTION_SPACE_BETWEEN_SQUARES) * (position % ACTION_SQUARES_PER_LINE));
@@ -34,6 +37,6 @@ void ActionPanelButton::on_clicked()
     }
   else
     {
-      this->callback(this->left_click, this->cursor_type);
+      this->callback(this->left_click);
     }
 }

@@ -231,6 +231,7 @@ file(
 	src/gui/camera/*.[hc]pp
 	src/gui/screen/*.[hc]pp
 	src/gui/hud/*.[hc]pp
+	src/gui/sprites/*.[hc]pp
     	)
 add_library(gui STATIC ${source_gui})
 

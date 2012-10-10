@@ -3,7 +3,7 @@
 
 Unit::Unit():
   Entity(),
-  width(10),
+  width(20),
   speed(2)
 {
 }
@@ -66,10 +66,10 @@ void Unit::follow_path(World* world)
   else
     movement.set_length(this->speed);
   // log_error("Movement: " << movement);
-  Entity* entity_ahead;
-  if ((entity_ahead = this->get_entity_ahead(movement, world)) != 0)
+  Unit* unit_ahead;
+  if ((unit_ahead = this->get_unit_ahead(movement, world)) != 0)
     {
-      if ((this->path.size() == 1) && (entity_ahead->is_obstructing_position(this, goal) == true))
+      if ((this->path.size() == 1) && (unit_ahead->is_obstructing_position(this, goal) == true))
         {
           // We considere the goal to be reached
           this->path.pop_front();
@@ -103,46 +103,46 @@ void Unit::steer_to_avoid_obstacle(Vec2& mov, World* world) const
   bool turn_direction;
   while (this->will_collide_if_we_move(mov, world) == true)
     {
-      // if (turn_direction == true)
-      //   {
-      //     // log_error("Rotate " << 0.1*i);
-      //     mov.rotate(0.5 * i);
-      //   }
-      // else
-      //   {
-      //     // log_error("Rotate " << -(0.1*i));
-      //     mov.rotate(-(0.5 * i));
-      //   }
-      // turn_direction = !turn_direction;
-      // if (i++ == 13)
-      //   {
+      if (turn_direction == true)
+        {
+          // log_error("Rotate " << 0.1*i);
+          mov.rotate(0.5 * i);
+        }
+      else
+        {
+          // log_error("Rotate " << -(0.1*i));
+          mov.rotate(-(0.5 * i));
+        }
+      turn_direction = !turn_direction;
+      if (i++ == 13)
+        {
           mov = Vec2::zero;
           return ;
-        // }
+        }
     }
 }
 
-Entity* Unit::get_entity_ahead(const Vec2& mov, World* world) const
+Unit* Unit::get_unit_ahead(const Vec2& mov, World* world) const
 {
-  Entity* entity;
-  std::list<Entity*>::iterator it;
-  for (it = world->entities.begin(); it != world->entities.end(); ++it)
+  Unit* unit;
+  std::list<Unit*>::iterator it;
+  for (it = world->units.begin(); it != world->units.end(); ++it)
     {
-      entity = *it;
-      if (entity == this)
+      unit = *it;
+      if (unit == this)
         continue;
-      // if (Position::distance(this->pos + mov, entity->pos) <= (entity->width + this->width))
-      //   {
-      //     return entity;
-      //   }
+      if (Position::distance(this->pos + mov, unit->pos) <= (unit->width + this->width))
+        {
+          return unit;
+        }
     }
   return 0;
 }
 
 bool Unit::will_collide_if_we_move(Vec2& mov, World* world) const
 {
-  Entity* entity = this->get_entity_ahead(mov, world);
-  if (entity != 0)
+  Unit* unit = this->get_unit_ahead(mov, world);
+  if (unit != 0)
     return true;
   if (this->is_wall_ahead(mov, world) == true)
     return true;

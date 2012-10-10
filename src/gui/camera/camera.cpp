@@ -7,7 +7,7 @@ Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win, Screen*
   y(0),
   zoom(1),
   focused(true),
-  movement_speed(0.35),
+  movement_speed(0.2),
   previous_position(0, 0),
   start_drag_position(0, 0),
   world(world),
@@ -87,18 +87,18 @@ bool Camera::handle_event(const sf::Event& event)
           log_debug("Mouse button not implemented.");
         }
     }
-  if (event.type == sf::Event::MouseButtonPressed &&
-      event.mouseButton.button == sf::Mouse::Middle)
-    {
-      this->previous_position = sf::Mouse::getPosition(*this->win);
-      this->start_drag_position = this->previous_position;
-    }
-  else if (event.type == sf::Event::MouseButtonReleased &&
-           event.mouseButton.button == sf::Mouse::Middle)
-    {
-      sf::Mouse::setPosition(this->start_drag_position);
-      this->previous_position = sf::Vector2i(0, 0);
-    }
+  // if (event.type == sf::Event::MouseButtonPressed &&
+  //     event.mouseButton.button == sf::Mouse::Middle)
+  //   {
+  //     this->previous_position = sf::Mouse::getPosition(*this->win);
+  //     this->start_drag_position = this->previous_position;
+  //   }
+  // else if (event.type == sf::Event::MouseButtonReleased &&
+  //          event.mouseButton.button == sf::Mouse::Middle)
+  //   {
+  //     sf::Mouse::setPosition(this->start_drag_position);
+  //     this->previous_position = sf::Vector2i(0, 0);
+  //   }
   this->fixup_camera_position();
   if (this->mouse_selection.ongoing == true)
     return true;

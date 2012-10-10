@@ -28,8 +28,8 @@ World::~World()
   Entity* entity;
   while ((entity = this->get_next_entity()) != 0)
     delete entity;
-  std::vector<const Entity*>::iterator it;
-  for (it = this->entity_models.begin(); it < this->entity_models.end(); ++it)
+  std::vector<const Unit*>::iterator it;
+  for (it = this->unit_models.begin(); it < this->unit_models.end(); ++it)
     delete (*it);
 }
 
@@ -76,6 +76,12 @@ void World::reset_entity_iterator()
   this->entities_iterator = this->entities.begin();
 }
 
+void World::insert_unit(Unit* unit)
+{
+  this->units.push_back(unit);
+  this->insert_entity(unit);
+}
+
 void World::insert_entity(Entity* entity)
 {
   this->entities.push_back(entity);
@@ -105,19 +111,20 @@ void World::add_new_occupant(Occupant* occupant)
   log_debug("Adding new occupant to the world:" << occupant->name << " " << occupant->number);
 }
 
-void World::init()
+void World::init(Mod& mod)
 {
   log_debug("Init world");
   // TODO, load these units from the Mod file.
-  const Unit* unit = new Unit;
-  this->entity_models.push_back(unit);
-
+  // const Unit* unit = new Unit;
+  // this->entity_models.push_back(unit);
+  this->unit_models = mod.get_unit_models();
+  this->building_models = mod.get_building_models();
   log_debug("Done.");
 }
 
 Unit* World::create_unit(unsigned int type)
 {
-  const Unit* model = static_cast<const Unit*>(this->entity_models[type]);
+  const Unit* model = this->unit_models[type];
   Unit* new_entity = new Unit(*model);
   return new_entity;
 }
@@ -125,7 +132,7 @@ Unit* World::create_unit(unsigned int type)
 Unit* World::create_unit(unsigned int type, const Unit& e)
 {
   log_debug("Creating entity of type " << type);
-  const Unit* model = static_cast<const Unit*>(this->entity_models[type]);
+  const Unit* model = this->unit_models[type];
   Unit* new_unit = new Unit(*model);
   new_unit->pos = e.pos;
   return new_unit;
@@ -226,7 +233,7 @@ void World::do_new_unit(ActionEvent* event)
   Unit* new_unit = this->create_unit(unit->type_id, *unit);
   delete unit;
   log_debug("New_Unit: " << new_unit->pos);
-  this->insert_entity(new_unit);
+  this->insert_unit(new_unit);
 }
 
 void World::do_build(ActionEvent* event)

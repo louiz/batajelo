@@ -32,7 +32,7 @@ public:
    * follow the givement vector movement, we will collide with it). If
    * there's none, NULL is returned.
    */
-  Entity* get_entity_ahead(const Vec2&, World*) const;
+  Unit* get_unit_ahead(const Vec2&, World*) const;
   /**
    * Return true if we will collide with a wall OR a unit if we move
    * following that vector.
@@ -51,11 +51,11 @@ public:
   bool can_be_pushed() const;
   bool is_obstructing_position(Entity*, const Position&) const;
 
-  virtual void serialize(oarchive & ar, const unsigned int v)
+  virtual void serialize(oarchive & ar, const unsigned int)
   {
     ar & type_id & pos;
   }
-  virtual void serialize(iarchive & ar, const unsigned int v)
+  virtual void serialize(iarchive & ar, const unsigned int)
   {
     ar & type_id & pos;
   }
