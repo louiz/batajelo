@@ -1,7 +1,7 @@
 #include <gui/screen/screen.hpp>
 #include <gui/common.hpp>
 
-Screen::Screen(ClientWorld* world, GraphMap* map, sf::RenderWindow* win):
+Screen::Screen(ClientWorld* world, GraphMap* map, sf::RenderWindow* win, ClientMod& mod):
   win(win),
   camera(world, map, win, this),
   world(world),

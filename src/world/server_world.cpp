@@ -1,7 +1,7 @@
 #include <world/server_world.hpp>
 
-ServerWorld::ServerWorld():
-  World()
+ServerWorld::ServerWorld(Mod& mod):
+  World(mod)
 {
   this->init();
 }

@@ -2,11 +2,12 @@
 # define __SERVER_WORLD_HPP__
 
 #include <world/world.hpp>
+#include <mod/mod.hpp>
 
 class ServerWorld: public World
 {
 public:
-  ServerWorld();
+  ServerWorld(Mod&);
   ~ServerWorld();
   /**
    * In addition to call World::init(), this will create the initial game

@@ -1,22 +1,22 @@
 #include <world/world.hpp>
 #include <world/path.hpp>
 
-World::World():
+World::World(Mod& mod):
   started(false),
   map(0)
 {
   this->replay = new Replay;
   this->turn_handler = new TurnHandler(this->replay);
-  this->init();
+  this->init(mod);
 }
 
-World::World(Map* map):
+World::World(Map* map, Mod& mod):
   started(false),
   map(map)
 {
   this->replay = new Replay;
   this->turn_handler = new TurnHandler(this->replay);
-  this->init();
+  this->init(mod);
 }
 
 World::~World()

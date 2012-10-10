@@ -35,13 +35,15 @@
 #include <gui/hud/action_panel_table.hpp>
 #include <world/selection.hpp>
 #include <vector>
+#include <mod/client_mod.hpp>
 
 class Screen;
 
 class ActionPanel
 {
+  friend class Mod;
 public:
-  ActionPanel(sf::RenderWindow*, Screen*, const Selection*);
+  ActionPanel(sf::RenderWindow*, Screen*, const Selection*, ClientMod&);
   ~ActionPanel();
   void draw();
   bool handle_event(const sf::Event&);
@@ -51,6 +53,7 @@ public:
    * sucessfully executed, etc.
    */
   void reset_all_tables();
+
 private:
   ActionPanel(const ActionPanel&);
   ActionPanel& operator=(const ActionPanel&);

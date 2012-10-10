@@ -23,7 +23,7 @@ public:
    * on a model.
    */
   Entity(const Entity&);
-virtual ~Entity() {};
+  virtual ~Entity() {};
 
   unsigned short get_id() const { return this->id; }
   /**

@@ -1,23 +1,12 @@
 #include <world/client_world.hpp>
 
-ClientWorld::ClientWorld():
-  World()
-{
-  this->init();
-}
-
-ClientWorld::ClientWorld(Map* map):
-  World(map)
+ClientWorld::ClientWorld(Map* map, Mod& mod):
+  World(map, mod)
 {
 }
 
 ClientWorld::~ClientWorld()
 {
-}
-
-void ClientWorld::init()
-{
-
 }
 
 void ClientWorld::new_occupant_callback(Command* command)

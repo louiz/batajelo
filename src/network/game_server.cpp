@@ -1,9 +1,9 @@
 #include <network/game_server.hpp>
 
-GameServer::GameServer(short port):
+GameServer::GameServer(short port, Mod& mod):
   Server<RemoteGameClient>(port)
 {
-  this->world = new ServerWorld;
+  this->world = new ServerWorld(mod);
 }
 
 GameServer::~GameServer()

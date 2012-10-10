@@ -22,11 +22,12 @@
 #include <world/client_world.hpp>
 #include <logging/logging.hpp>
 #include <gui/cursor.hpp>
+#include <mod/client_mod.hpp>
 
 class Screen
 {
 public:
-  Screen(ClientWorld*, GraphMap*, sf::RenderWindow*);
+  Screen(ClientWorld*, GraphMap*, sf::RenderWindow*, ClientMod&);
   ~Screen();
   /**
    * Draw all elements of the screen.

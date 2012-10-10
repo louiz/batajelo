@@ -6,6 +6,7 @@
 #include <gui/screen/screen.hpp>
 #include <network/command.hpp>
 #include <gui/camera/map.hpp>
+#include <mod/client_mod.hpp>
 
 int main()
 {
@@ -15,7 +16,8 @@ int main()
   GameClient* c = new GameClient();
   GraphMap* map = new GraphMap;
   map->load_from_file("test4.tmx");
-  ClientWorld* world = new ClientWorld(map);
+  ClientMod mod("monsters.yaml");
+  ClientWorld* world = new ClientWorld(map, mod);
   world->set_next_turn_callback(boost::bind(&ClientWorld::on_next_turn, world, _1));
 
 
@@ -45,7 +47,7 @@ int main()
       c->poll(10);
     }
 
-  Screen screen(world, map, window);
+  Screen screen(world, map, window, mod);
 
   sf::Clock fps_clock;
 

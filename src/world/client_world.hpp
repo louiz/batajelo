@@ -7,8 +7,7 @@
 class ClientWorld: public World
 {
 public:
-  ClientWorld();
-  ClientWorld(Map*);
+  ClientWorld(Map*, Mod&);
   ~ClientWorld();
   void init();
   /**

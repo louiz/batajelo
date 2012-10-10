@@ -36,6 +36,7 @@
 #include <mpreal/mpreal.h>
 #include <world/position.hpp>
 #include <world/path.hpp>
+#include <mod/mod.hpp>
 
 /**
  * From left to right, and from top to bottom, a cell has this size, in the
@@ -48,15 +49,15 @@
 class World
 {
 public:
-  World();
-  World(Map*);
+  World(Mod&);
+  World(Map*, Mod&);
   ~World();
   /**
    * Init the world by reading the Mod files.
    * The initial state of the world (the map, the unit that are available
    * and their stats, etc).
    */
-  void init();
+  void init(Mod&);
   /**
    * Start the world and it's turn_handler.
    * Before this method is called, tick() will do nothing.

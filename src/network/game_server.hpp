@@ -14,13 +14,14 @@
 # define __GAME_SERVER_HPP__
 
 #include <world/server_world.hpp>
+#include <mod/mod.hpp>
 #include <network/server.hpp>
 #include <network/remote_game_client.hpp>
 
 class GameServer: public Server<RemoteGameClient>
 {
 public:
-  GameServer(short port);
+  GameServer(short port, Mod& mod);
   ~GameServer();
   ServerWorld* get_world() const;
 

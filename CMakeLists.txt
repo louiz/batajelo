@@ -58,6 +58,7 @@ find_package(Cryptopp REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${CRYPTO++_INCLUDE_DIR})
 include_directories("src/")
+include_directories("src/yaml-cpp/include/")
 
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${CRYPTO++_LIBRARIES})
@@ -183,6 +184,42 @@ target_link_libraries(
 	${CMAKE_THREAD_LIBS_INIT}
 )
 
+file(
+        GLOB
+        source_yaml
+        src/yaml-cpp/src/*.cpp
+)
+add_library(yaml STATIC ${source_yaml})
+target_link_libraries(
+        yaml
+        )
+
+file(
+        GLOB
+        source_clientmod
+        src/mod/mod.cpp
+        src/mod/client_mod.cpp
+)
+add_library(clientmod STATIC ${source_clientmod})
+target_link_libraries(
+        clientmod
+        yaml
+        world
+        gui
+        )
+
+
+file(
+        GLOB
+        source_mod
+        src/mod/mod.cpp
+)
+add_library(mod STATIC ${source_mod})
+target_link_libraries(
+        mod
+        yaml
+        world
+        )
 
 if(BUILD_CLIENT)
 file(
@@ -203,6 +240,7 @@ target_Link_libraries(
 	config
 	world
         utils
+        clientmod
 	${SFML_LIBRARIES}
 	${SFGUI_LIBRARY}
 	${Boost_LIBRARIES}
@@ -225,6 +263,7 @@ target_Link_libraries(
 	serialization
         pathfinding
         mpreal
+        mod
         utils
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}

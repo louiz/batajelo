@@ -21,13 +21,14 @@
 #include <gui/hud/minimap.hpp>
 #include <gui/hud/selection_panel.hpp>
 #include <gui/hud/action_panel.hpp>
+#include <mod/client_mod.hpp>
 
 class Screen;
 
 class Hud
 {
 public:
-  Hud(GraphMap*, ClientWorld*, sf::RenderWindow*, Camera*, Screen*);
+  Hud(GraphMap*, ClientWorld*, sf::RenderWindow*, Camera*, Screen*, ClientMod&);
   ~Hud();
   void draw(Camera*);
   bool handle_event(const sf::Event&);

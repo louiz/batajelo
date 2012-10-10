@@ -13,7 +13,8 @@ int main()
   log_debug("Starting server");
 
   srand(getpid());
-  GameServer s(7879);
+  Mod mod("monsters.yaml");
+  GameServer s(7879, mod);
   s.start();
 
   Time time1 = boost::posix_time::microsec_clock::universal_time();
