@@ -1,0 +1,56 @@
+--- ###### Units ######
+- name: Tee
+  speed: 3
+  width: 15
+  actions:
+        - type: page # just goes to a different action page
+          value: 1
+          page: 0
+          position: 10
+          image: build2.png
+        - type: build
+          image: build_archive.png
+          value: 0
+          page: 1
+          position: 10
+
+--- ###### BUILDINGS
+- name: Archive
+  sprite: building_archive
+  build_time: 10
+  cells: 1 # size in map squares
+
+--- ####### Spells
+- name: boost
+  mana_cost: 10
+  target: self
+  effect: 0
+  duration: 200
+
+--- ####### Effects
+- name: boosted
+  speed: 2 #increase the unit speed by 2.
+
+--- ###### Agagruis
+  position: [0, 5, 0]
+  powers:
+    - name: Club
+      damage: 10
+    - name: Fist
+      damage: 8
+- name: Dragon
+  position: [1, 0, 10]
+  powers:
+    - name: Fire Breath
+      damage: 25
+    - name: Claws
+      damage: 15
+- name: Wizard
+  position: [5, -3, 0]
+  powers:
+    - name: Acid Rain
+      damage: 50
+    - name: Staff
+      damage: 3
+
+--- ###### Spells ######
