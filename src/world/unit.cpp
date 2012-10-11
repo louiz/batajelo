@@ -1,5 +1,6 @@
 #include <world/unit.hpp>
 #include <world/world.hpp>
+#include <world/work.hpp>
 
 Unit::Unit():
   Entity(),
@@ -34,28 +35,41 @@ bool Unit::contains(const Position& pos) const
 void Unit::tick(World* world)
 {
   // log_error("Entity.tick(): " << this->id);
-  this->follow_path(world);
+  // this->follow_path(world);
   // this->update_health();
+  if (this->works.empty())
+    return ;
+  Work* current_work = this->works.front();
+  if ((*current_work)(world, current_work) == true)
+    {
+      delete current_work;
+      this->works.pop();
+    }
 }
 
-void Unit::follow_path(World* world)
+bool Unit::follow_path(World* world, Work* w)
 {
-  if (this->path.size() == 0)
-    return ;
-  if (this->pos == this->path.front())
-    this->path.pop_front();
-  if (this->path.size() == 0)
-    return ;
-  Position goal = this->path.front();
-  // log_error("Current: " << this->pos << ". Goal: " << goal);
+  log_warning("follow_path");
+  PathWork* work = static_cast<PathWork*>(w);
+  if (work->path.size() == 0)
+    {
+      if (work->calculated == false)
+        {
+          log_warning("Calculating path");
+          work->path = world->calculate_path(work->end_position, this);
+          work->calculated = true;
+        }
+      else
+        return true;
+    }
+  Position goal = work->path.front();
   Vec2 movement(goal - this->pos);
-  // log_error("Movement: " << movement << " length: " << movement.length());
   if (movement.length() == 0)
     // Movement is too short to have something != 0 because of the Fix16 precision.
     // We consider to be at the goal.
     {
-      this->path.pop_front();
-      return ;
+      work->path.pop_front();
+      return false;
     }
   // log_error(movement.length() / speed);
   movement.set_length(this->speed);
@@ -69,23 +83,24 @@ void Unit::follow_path(World* world)
   Unit* unit_ahead;
   if ((unit_ahead = this->get_unit_ahead(movement, world)) != 0)
     {
-      if ((this->path.size() == 1) && (unit_ahead->is_obstructing_position(this, goal) == true))
+      if ((work->path.size() == 1) && (unit_ahead->is_obstructing_position(this, goal) == true))
         {
           // We considere the goal to be reached
-          this->path.pop_front();
-          return ;
+          work->path.pop_front();
+          return false;
         }
     }
   if (is_wall_ahead(movement, world) == true)
     {
-      if ((this->path.size() == 1) && (Position::distance(this->pos, goal) <= this->width/2))
+      if ((work->path.size() == 1) && (Position::distance(this->pos, goal) <= this->width/2))
         {
-          this->path.pop_front();
-          return ;
+          work->path.pop_front();
+          return false;
         }
     }
   this->steer_to_avoid_obstacle(movement, world);
   this->pos += movement;
+  return false;
 }
 
 bool Unit::is_obstructing_position(Entity* entity, const Position& position) const

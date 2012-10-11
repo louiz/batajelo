@@ -1,12 +1,15 @@
 #ifndef __ENTITY_HPP__
 # define __ENTITY_HPP__
 
+#include <queue>
+
 #include <logging/logging.hpp>
 #include <serialization/serializable.hpp>
 #include <world/position.hpp>
 
 class Camera;
 class World;
+class Work;
 
 class Entity: Serializable
 {
@@ -23,7 +26,7 @@ public:
    * on a model.
    */
   Entity(const Entity&);
-  virtual ~Entity() {};
+  virtual ~Entity();
 
   unsigned short get_id() const { return this->id; }
   /**
@@ -35,6 +38,8 @@ public:
    */
   virtual void tick(World*) = 0;
 
+  void clear_works();
+  void set_work(Work*);
   /**
    * Returns weither or not this entity (if not moving) makes it impossible
    * for the given entity to reach this Position. This means that this
@@ -63,6 +68,19 @@ public:
    * The entity name
    */
   std::string name;
+  /**
+   * A serie of works that the entity has to execute.  For example
+   * World::do_path will add a PathWork to the entity, which contains a path
+   * and a pointer to Unit::follow_path, receiving that PathWork structure
+   * as an argument. World::do_build will push a PathWork (to go to the cell
+   * to build) and a BuildWork.
+   *
+   * Once the Work is done (destination reached, or building complete, or
+   * anything), we pop that work. Many works can be queued. For example if
+   * we do a shift-move, the PathWork is added at the end of the queue. If
+   * not, it just replaces all the works in the queue.
+   */
+  std::queue<Work*> works;
 };
 
 #endif // __ENTITY_HPP__

@@ -1,5 +1,6 @@
 #include <world/world.hpp>
 #include <world/path.hpp>
+#include <world/work.hpp>
 
 World::World(Mod& mod):
   started(false),
@@ -196,27 +197,25 @@ void World::do_path(ActionEvent* event)
     {
       Unit* entity = static_cast<Unit*>(this->get_entity_by_id((*actors_it)));
       assert(entity != 0);
-      // entity->set_path(path);
-      // log_error("Path finding from " << entity->pos << " to " << path_event->x << ":" << path_event->y);
-      short startx;
-      short starty;
-      short endx;
-      short endy;
-      this->get_cell_at_position(entity->pos, startx, starty);
-      this->get_cell_at_position(endpos, endx, endy);
-      this->current_path = this->map->do_astar(startx, starty, endx, endy);
-      // cell_path_t temp_path(this->current_path.front(), this->current_path.back());
-      if (this->current_path.size() > 0)
-        entity->path =
-          this->smooth_path(this->current_path, entity->pos, endpos, entity->width);
-      // log_error("ENTITY_POSITION: " << entity->pos);
-      // log_error("PATH TO FOLLOW IS: ");
-      // for (std::list<Position>::const_iterator it = entity->path.begin();
-      //      it != entity->path.end();
-      //      ++it)
-      //   log_error(*it);
-      // log_error("FIN");
+      PathWork* work = new PathWork(entity, endpos);
+      entity->set_work(work);
     }
+}
+
+Path World::calculate_path(Position endpos, Unit* unit)
+{
+  short startx;
+  short starty;
+  short endx;
+  short endy;
+  this->get_cell_at_position(unit->pos, startx, starty);
+  this->get_cell_at_position(endpos, endx, endy);
+  this->current_path = this->map->do_astar(startx, starty, endx, endy);
+  // cell_path_t temp_path(this->current_path.front(), this->current_path.back());
+  Path path;
+  if (this->current_path.size() > 0)
+    path = this->smooth_path(this->current_path, unit->pos, endpos, unit->width);
+  return path;
 }
 
 void World::do_new_unit(ActionEvent* event)

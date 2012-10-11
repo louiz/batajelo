@@ -16,3 +16,24 @@ Entity::Entity(const Entity& model):
   type_id(model.type_id)
 {
 }
+
+Entity::~Entity()
+{
+  log_debug("Deleting entity");
+  this->clear_works();
+}
+
+void Entity::set_work(Work* work)
+{
+  this->clear_works();
+  this->works.push(work);
+}
+
+void Entity::clear_works()
+{
+  while (!this->works.empty())
+    {
+      delete this->works.front();
+      this->works.pop();
+    }
+}

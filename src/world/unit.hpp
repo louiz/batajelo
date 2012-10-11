@@ -14,6 +14,8 @@
 #include <world/path.hpp>
 #include <world/position.hpp>
 
+class Work;
+
 class Unit: public Entity
 {
 public:
@@ -23,9 +25,7 @@ public:
   bool contains(const Position&) const;
   void tick(World*);
 
-  void follow_path(World*);
-  void set_path(const Path& path);
-  void cancel_path();
+  bool follow_path(World*, Work*);
   void steer_to_avoid_obstacle(Vec2&, World*) const;
   /**
    * Returns a pointer to the entity just ahead of us (that means that if we
@@ -74,10 +74,6 @@ public:
    * The height
    */
   int16_t height;
-  /**
-   * The path to follow. If it is 0, the entity is not moving.
-   */
-  Path path;
   /**
    * The entity health.
    */

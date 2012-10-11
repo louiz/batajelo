@@ -31,6 +31,7 @@ class Screen;
 class Camera
 {
   friend class Minimap;
+  friend class Screen;
 public:
   Camera(ClientWorld*, GraphMap*, sf::RenderWindow*, Screen*);
   ~Camera();

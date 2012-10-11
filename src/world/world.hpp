@@ -121,6 +121,7 @@ public:
    */
   void remove_occupant(Occupant*);
   void do_path(ActionEvent*);
+  Path calculate_path(Position, Unit*);
   void do_new_unit(ActionEvent*);
   void do_build(ActionEvent*);
   Entity* get_entity_by_id(unsigned short id);
