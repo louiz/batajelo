@@ -84,9 +84,19 @@ void Screen::set_left_click_callback(const t_left_click left_click)
 cursor::type Screen::draw_build_cursor(const uint x, const uint y, const std::size_t id)
 {
   log_error("id: " << id);
-  sf::Sprite& sprite = this->building_sprites[id]->get_cursor_sprite();
-  sprite.setPosition(static_cast<float>(x) - 42.f,
-                     static_cast<float>(y) - 42.f);
+  sf::Sprite sprite = this->building_sprites[id]->get_cursor_sprite();
+  short xa, ya;
+  Position world_pos = this->camera.camera_to_world_position(x, y);
+  this->world->get_cell_at_position(world_pos, xa, ya);
+  mpreal height = this->world->get_position_height(world_pos);
+  float xpos = xa * TILE_WIDTH - this->camera.x;
+  float ypos = ya * TILE_HEIGHT - this->camera.y - static_cast<int>(height) * LAYER_HEIGHT - 32;
+  if (this->world->can_build_at_cell(xa, ya))
+    sprite.setColor(sf::Color(0, 0, 255, 150));
+  else
+    sprite.setColor(sf::Color(255, 0, 0, 150));
+  sprite.setPosition(xpos, ypos);
+
   this->win->draw(sprite);
   return cursor::Build;
 }

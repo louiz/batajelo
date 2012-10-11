@@ -9,7 +9,7 @@ public:
   ArchiveSprite();
   ~ArchiveSprite();
   void draw(const Building*) const;
-  sf::Sprite& get_cursor_sprite();
+  sf::Sprite get_cursor_sprite() const;
 private:
   ArchiveSprite(const ArchiveSprite&);
   ArchiveSprite& operator=(const ArchiveSprite&);

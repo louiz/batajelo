@@ -30,7 +30,7 @@ public:
    * Returns the sprite that should be drawn on the cell under the cursor we
    * the left click action is to build this building.
    */
-  virtual sf::Sprite& get_cursor_sprite() = 0;
+  virtual sf::Sprite get_cursor_sprite() const = 0;
 private:
   BuildingSprite(const BuildingSprite&);
   BuildingSprite& operator=(const BuildingSprite&);

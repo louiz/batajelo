@@ -40,9 +40,9 @@ std::vector<ActionPanelTable*> ClientMod::get_action_tables(Screen* screen)
 
   return tables;
 }
-std::vector<BuildingSprite*> ClientMod::get_building_sprites()
+std::vector<const BuildingSprite*> ClientMod::get_building_sprites()
 {
-  std::vector<BuildingSprite*> sprites;
+  std::vector<const BuildingSprite*> sprites;
   std::map<const std::string, BuildingSprite*>::iterator it;
   std::string sprite_name;
   for (unsigned int i=0; i < this->buildings_doc->size(); i++)

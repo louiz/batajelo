@@ -17,7 +17,7 @@ void ArchiveSprite::draw(const Building* building) const
 {
 }
 
-sf::Sprite& ArchiveSprite::get_cursor_sprite()
+sf::Sprite ArchiveSprite::get_cursor_sprite() const
 {
   return this->sprite;
 }

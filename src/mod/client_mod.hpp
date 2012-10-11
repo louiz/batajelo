@@ -23,7 +23,7 @@ class ClientMod: public Mod
 {
 public:
   std::vector<ActionPanelTable*> get_action_tables(Screen*);
-  std::vector<BuildingSprite*> get_building_sprites();
+  std::vector<const BuildingSprite*> get_building_sprites();
   ClientMod(const std::string& filename);
 private:
   ClientMod(const ClientMod&);

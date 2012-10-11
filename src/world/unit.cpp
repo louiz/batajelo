@@ -189,8 +189,8 @@ bool Unit::is_wall_ahead(Vec2& mov, World* world) const
 
 bool Unit::can_be_pushed() const
 {
-  if (this->path.size() == 0)
-    return true;
-  else
-    return false;
+  // if (this->path.size() == 0)
+  //   return true;
+  // else
+  return false;
 }

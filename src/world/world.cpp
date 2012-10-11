@@ -239,6 +239,7 @@ void World::do_build(ActionEvent* event)
 {
   log_info("do_build");
   DoBuildEvent* build_event = static_cast<DoBuildEvent*>(event);
+  
 }
 
 void World::completely_validate_action(const unsigned int id)
@@ -634,4 +635,9 @@ Position World::get_nearest_corner(const Position& pos, const std::size_t cell, 
       nearest_position = other_position;
     }
   return nearest_position;
+}
+
+bool World::can_build_at_cell(const int x, const int y) const
+{
+  return this->map->can_be_built_on(x, y);
 }

@@ -66,6 +66,10 @@ public:
    * Returns an ushort containing the 4 corners' heights of the given cell.
    */
   ushort get_cell_heights(const int cellx, const int celly) const;
+  /**
+   * Returns whether or not this cell can be built on.
+   */
+  bool can_be_built_on(const int cellx, const int celly) const;
   cell_path_t do_astar(const uint startx, const uint starty,
                                     const uint endx, const uint endy);
   /**

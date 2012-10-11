@@ -158,6 +158,7 @@ public:
   /**
    * Convert a path made of cells by a path composed of world positions
    */
+  bool can_build_at_cell(const int x, const int y) const;
   Path smooth_path(cell_path_t path, Position& start,
                    const Position& end, const short width) const;
   /**

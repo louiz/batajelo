@@ -259,6 +259,23 @@ ushort Map::get_cell_heights(const int cellx, const int celly) const
   return this->walking_map[index];
 }
 
+bool Map::can_be_built_on(const int cellx, const int celly) const
+{
+  assert(cellx >= 0);
+  assert(celly >= 0);
+  assert(cellx < this->get_width_in_tiles());
+  assert(celly < this->get_height_in_tiles());
+  std::size_t index = (this->get_width_in_tiles() * celly) + cellx;
+  ushort heights = this->walking_map[index];
+  ushort a = (heights >> 12) & 15;
+  ushort b = (heights >> 8) & 15;
+  ushort c = (heights >> 4) & 15;
+  ushort d = (heights) & 15;
+  if (a == b && b == c && c == d)
+    return true;
+  return false;
+}
+
 cell_path_t Map::do_astar(const uint startx, const uint starty,
                    const uint endx, const uint endy)
 {
