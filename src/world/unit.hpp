@@ -26,6 +26,7 @@ public:
   void tick(World*);
 
   bool follow_path(World*, Work*);
+  bool build(World*, Work*);
   void steer_to_avoid_obstacle(Vec2&, World*) const;
   /**
    * Returns a pointer to the entity just ahead of us (that means that if we

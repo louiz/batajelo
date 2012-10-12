@@ -156,31 +156,29 @@ void Camera::set_mouse_selection_to_selection()
   sf::Vector2i mouse_pos = sf::Mouse::getPosition(*this->win);
   mouse_pos.x += this->x;
   mouse_pos.y += this->y;
-  this->world->reset_entity_iterator();
   // First check the number of entities inside the selection. If it's 0, do
   // nothing
   uint n = 0;
-  while ((entity = static_cast<Unit*>(this->world->get_next_entity())) != 0)
+  for (std::list<Unit*>::iterator it = this->world->units.begin(); it != this->world->units.end(); ++it)
     if (this->mouse_selection.contains(mouse_pos,
-                                       this->world_to_camera_position(entity->pos),
-                                       entity->width + 4))
+                                       this->world_to_camera_position((*it)->pos),
+                                       (*it)->width + 4))
       n++;
   if (n > 0)
     {
-      this->world->reset_entity_iterator();
-      while ((entity = static_cast<Unit*>(this->world->get_next_entity())) != 0)
+      for (std::list<Unit*>::iterator it = this->world->units.begin(); it != this->world->units.end(); ++it)
         {
           if (this->mouse_selection.contains(mouse_pos,
-                                             this->world_to_camera_position(entity->pos),
-                                             entity->width + 4))
+                                             this->world_to_camera_position((*it)->pos),
+                                             (*it)->width + 4))
             {
-              if (this->world->is_entity_selected(entity) == false)
-                this->world->select_entity(entity);
+              if (this->world->is_entity_selected(*it) == false)
+                this->world->select_entity(*it);
             }
           else
             {
-              if (this->world->is_entity_selected(entity) == true)
-                this->world->unselect_entity(entity);
+              if (this->world->is_entity_selected(*it) == true)
+                this->world->unselect_entity(*it);
             }
         }
     }
@@ -189,19 +187,18 @@ void Camera::set_mouse_selection_to_selection()
 
 void Camera::add_mouse_selection_to_selection()
 {
-  this->world->reset_entity_iterator();
   Unit* entity;
   sf::Vector2i mouse_pos = sf::Mouse::getPosition(*this->win);
   mouse_pos.x += this->x;
   mouse_pos.y += this->y;
-  while ((entity = static_cast<Unit*>(this->world->get_next_entity())) != 0)
+  for (std::list<Unit*>::iterator it = this->world->units.begin(); it != this->world->units.end(); ++it)
     {
       if (this->mouse_selection.contains(mouse_pos,
-                                         this->world_to_camera_position(entity->pos),
-                                         entity->width + 4))
+                                         this->world_to_camera_position((*it)->pos),
+                                         (*it)->width + 4))
         {
-          if (this->world->is_entity_selected(entity) == false)
-            this->world->select_entity(entity);
+          if (this->world->is_entity_selected(*it) == false)
+            this->world->select_entity(*it);
         }
     }
   this->mouse_selection.end();
@@ -257,7 +254,6 @@ void Camera::draw()
   GraphTile* tile;
   std::vector<std::vector<Entity*> > entities;
   entities.resize(5);
-  this->world->reset_entity_iterator();
   Unit* entity;
 
   sf::Vector2i mouse_pos = sf::Mouse::getPosition(*this->win);
@@ -307,14 +303,10 @@ void Camera::draw()
             }
           // Draw entites on that line.
           std::vector<Entity*> entities_at_that_level = entities[level];
-          // std::vector<Entity*>::iterator it;
-          std::list<Entity*>::iterator it;
           int i = 0;
-          // this->world->reset_entity_iterator();
-          // while ((entity = this->world->get_next_entity()) != 0)
-          for (it = this->world->entities.begin(); it != this->world->entities.end(); ++it)
+          for (std::list<Unit*>::iterator it = this->world->units.begin(); it != this->world->units.end(); ++it)
             {
-              entity = static_cast<Unit*>(*it);
+              entity = *it;
               this->world->get_cell_at_position(entity->pos, cellx, celly);
               sf::Vector2u entpos = this->world_to_camera_position(entity->pos);
               if ((celly == y) && ((entpos.x > this->x) && (entpos.x < this->x + win_size.x) &&

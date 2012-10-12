@@ -26,11 +26,11 @@ public:
 
   virtual void serialize(oarchive & ar, const unsigned int)
   {
-    ar & type_id & cell_pos;
+    ar & name & type_id & x & y;
   }
   virtual void serialize(iarchive & ar, const unsigned int)
   {
-    ar & type_id & cell_pos;
+    ar & name & type_id & x & y;
   }
 
 private:
@@ -44,7 +44,8 @@ public:
   /**
    * The top left cell where the building is placed.
    */
-  std::size_t cell_pos;
+  short x;
+  short y;
   /**
    * The height
    */

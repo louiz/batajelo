@@ -25,45 +25,12 @@ World::~World()
   delete this->turn_handler;
   if (this->replay != 0)
     delete this->replay;
-  this->reset_entity_iterator();
-  Entity* entity;
-  while ((entity = this->get_next_entity()) != 0)
-    delete entity;
-  std::vector<const Unit*>::iterator it;
-  for (it = this->unit_models.begin(); it < this->unit_models.end(); ++it)
-    delete (*it);
-}
-
-Entity* World::get_next_entity()
-{
-  if (this->entities_iterator == this->entities.end())
-    {
-      this->entities_iterator = this->entities.begin();
-      return 0;
-    }
-  Entity* entity = *this->entities_iterator;
-  ++this->entities_iterator;
-  return entity;
-}
-
-Entity* World::get_next_entity(const int y)
-{
-  return this->get_next_entity();
-  // TODO FIX THAT
-
-
-  // if (this->entities_iterator == this->entities.end())
-  //   {
-  //     this->entities_iterator = this->entities.begin();
-  //     return 0;
-  //   }
-  // Entity* entity = *this->entities_iterator;
-  // if (entity->pos.y < Fix16(y))
-  //   {
-  //     ++this->entities_iterator;
-  //     return entity;
-  //   }
-  // return 0;
+  for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); ++it)
+    delete *it;
+  for (std::vector<const Unit*>::iterator it = this->unit_models.begin(); it < this->unit_models.end(); ++it)
+    delete *it;
+  for (std::vector<const Building*>::iterator it = this->building_models.begin(); it < this->building_models.end(); ++it)
+    delete *it;
 }
 
 void World::set_next_turn_callback(t_next_turn_callback callback)
@@ -72,15 +39,16 @@ void World::set_next_turn_callback(t_next_turn_callback callback)
   this->turn_handler->set_next_turn_callback(callback);
 }
 
-void World::reset_entity_iterator()
-{
-  this->entities_iterator = this->entities.begin();
-}
-
 void World::insert_unit(Unit* unit)
 {
   this->units.push_back(unit);
   this->insert_entity(unit);
+}
+
+void World::insert_building(Building* building)
+{
+  this->buildings.push_back(building);
+  this->insert_entity(building);
 }
 
 void World::insert_entity(Entity* entity)
@@ -139,6 +107,15 @@ Unit* World::create_unit(unsigned int type, const Unit& e)
   return new_unit;
 }
 
+Building* World::create_building(unsigned int type, const short x, const short y)
+{
+  const Building* model = this->building_models[type];
+  Building* new_building = new Building(*model);
+  new_building->x = x;
+  new_building->y = y;
+  return new_building;
+}
+
 void World::pause()
 {
   this->turn_handler->pause();
@@ -158,10 +135,9 @@ void World::tick(bool force)
   if (this->turn_handler->is_paused() == true)
     return ;
   Entity* entity;
-  this->reset_entity_iterator();
-  // log_error("World.tick()");
-  while ((entity = this->get_next_entity()))
+  for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); ++it)
     {
+      entity = *it;
       entity->tick(this);
     }
 }
@@ -237,9 +213,15 @@ void World::do_new_unit(ActionEvent* event)
 
 void World::do_build(ActionEvent* event)
 {
-  log_info("do_build");
   DoBuildEvent* build_event = static_cast<DoBuildEvent*>(event);
-  
+  log_info("do_build: " << build_event->x << ":" << build_event->y);
+  Position endpos(static_cast<short>(build_event->x * CELL_SIZE + CELL_SIZE / 2), static_cast<short>(build_event->y * CELL_SIZE + CELL_SIZE / 2));
+  Unit* unit = static_cast<Unit*>(this->get_entity_by_id(build_event->actor));
+  assert(unit != 0);
+  PathWork* path_work = new PathWork(unit, endpos);
+  unit->set_work(path_work);
+  BuildWork* build_work = new BuildWork(unit, build_event->type_id, build_event->x, build_event->y);
+  unit->queue_work(build_work);
 }
 
 void World::completely_validate_action(const unsigned int id)
@@ -253,9 +235,10 @@ Entity* World::get_entity_by_id(unsigned short id)
   // Should use something like this->entities[id], to optimize.
   // Entities should be placed directly in a vector, for fast access.
   Entity* entity;
-  this->reset_entity_iterator();
-  while ((entity = this->get_next_entity()))
+
+  for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); ++it)
     {
+      entity = *it;
       if (entity->get_id() == id)
 	return entity;
     }

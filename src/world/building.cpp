@@ -9,7 +9,9 @@ Building::~Building()
 }
 
 Building::Building(const Building& o):
-  cell_pos(o.cell_pos),
+  Entity(o),
+  x(o.x),
+  y(o.y),
   height(height)
 {
 }

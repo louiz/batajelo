@@ -69,6 +69,7 @@ private:
   sf::Sprite cursor_sprite;
   t_left_click on_left_click;
   t_draw_cursor_action on_cursor_draw;
+public:
   std::vector<const BuildingSprite*> building_sprites;
 };
 

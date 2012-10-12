@@ -1,6 +1,7 @@
 #include <world/entity.hpp>
 #include <cmath>
 #include <world/world.hpp>
+#include <world/work.hpp>
 
 unsigned short Entity::current_id = 0;
 unsigned short Entity::current_type_id = 0;
@@ -13,7 +14,8 @@ Entity::Entity():
 
 Entity::Entity(const Entity& model):
   id(++Entity::current_id),
-  type_id(model.type_id)
+  type_id(model.type_id),
+  name(model.name)
 {
 }
 
@@ -26,6 +28,11 @@ Entity::~Entity()
 void Entity::set_work(Work* work)
 {
   this->clear_works();
+  this->works.push(work);
+}
+
+void Entity::queue_work(Work* work)
+{
   this->works.push(work);
 }
 

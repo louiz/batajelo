@@ -40,7 +40,7 @@ class PathWork: public Work
   friend class Unit;
 public:
   PathWork(Unit*, Position);
-  ~PathWork();
+  ~PathWork() {}
 private:
   PathWork(const PathWork&);
   PathWork& operator=(const PathWork&);
@@ -58,6 +58,26 @@ private:
    * Just a bool to know if the empty path means that we are at the end of the path (thus return true directly) or that we didn’t calculate the path yet.
    */
   bool calculated;
+};
+
+class BuildWork: public Work
+{
+  friend class Unit;
+public:
+  BuildWork(Unit*, const unsigned short, const short, const short);
+  ~BuildWork() {}
+private:
+  BuildWork(const BuildWork&);
+  BuildWork& operator=(const BuildWork&);
+  const unsigned short id;
+  const short x;
+  const short y;
+  /**
+   * A pointer to the building being built during that work. It's at 0 if
+   * the build has not yet been started (so this is a new build, and the
+   * work is yet still queued in the unit).
+   */
+  Building* building;
 };
 
 #endif // __WORK_HPP__

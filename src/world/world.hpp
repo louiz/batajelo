@@ -85,18 +85,19 @@ public:
    */
   Entity* get_next_entity(const int y);
   /**
-   * Set the entity iterator at its beginning.
-   */
-  /**
    * Insert a unit in the unit list. It will also be added into the entity list.
    */
   void insert_unit(Unit*);
-  void reset_entity_iterator();
+  void insert_building(Building*);
   /**
    * Create an entity based on the given model.
    */
   Unit* create_unit(unsigned int type);
   /**
+   * Create a building based on the given model.
+   */
+  Building* create_building(unsigned int type, const short x, const short y);
+/**
    * Create an entity based on the given model, with the given
    * SerializableEntity to copy the initial entity position.
    */
@@ -190,7 +191,10 @@ public:
   Position get_nearest_corner(const Position&, const std::size_t, const short width) const;
   Position get_next_path_position(cell_path_t& path, const Position current,
                                          const Position& end, const short width) const;
-
+  std::size_t number_of_units_models() const
+  {
+    return this->unit_models.size();
+  }
   bool is_started() const;
   /**
    * the list of other occupants of the game, when a new client connects to
@@ -204,9 +208,13 @@ public:
    */
   std::list<Entity*> entities;
   /**
-   * The list of all existing entities in the world.
+   * The list of all existing units in the world.
    */
   std::list<Unit*> units;
+  /**
+   * The list of all existing buildings in the world.
+   */
+  std::list<Building*> buildings;
 
 private:
   /**
@@ -227,11 +235,6 @@ protected:
    */
   std::vector<const Unit*> unit_models;
   std::vector<const Building*> building_models;
-  /**
-   * An iterator to help other classes get the entities one by
-   * one without having to play with an iterator themselve, etc.
-   */
-  std::list<Entity*>::iterator entities_iterator;
   /**
    * The list of all action generated that needs to be sent to the
    * the remote server or the clients.

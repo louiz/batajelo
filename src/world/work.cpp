@@ -8,9 +8,13 @@ PathWork::PathWork(Unit* unit, Position pos):
   path(0),
   end_position(pos),
   calculated(false)
-{
-}
+{}
 
-PathWork::~PathWork()
-{
-}
+
+BuildWork::BuildWork(Unit* unit, const unsigned short id, const short x, const short y):
+  Work(boost::bind(&Unit::build, unit, _1, _2)),
+  id(id),
+  x(x),
+  y(y),
+  building(0)
+{}

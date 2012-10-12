@@ -34,9 +34,6 @@ bool Unit::contains(const Position& pos) const
 
 void Unit::tick(World* world)
 {
-  // log_error("Entity.tick(): " << this->id);
-  // this->follow_path(world);
-  // this->update_health();
   if (this->works.empty())
     return ;
   Work* current_work = this->works.front();
@@ -47,9 +44,20 @@ void Unit::tick(World* world)
     }
 }
 
+bool Unit::build(World* world, Work* w)
+{
+  BuildWork* work = static_cast<BuildWork*>(w);
+  if (work->building == 0)
+    {
+      log_info("creating building");
+      work->building = world->create_building(work->id, work->x, work->y);
+      world->insert_building(work->building);
+    }
+  return false;
+}
+
 bool Unit::follow_path(World* world, Work* w)
 {
-  log_warning("follow_path");
   PathWork* work = static_cast<PathWork*>(w);
   if (work->path.size() == 0)
     {

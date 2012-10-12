@@ -40,6 +40,7 @@ public:
 
   void clear_works();
   void set_work(Work*);
+  void queue_work(Work*);
   /**
    * Returns weither or not this entity (if not moving) makes it impossible
    * for the given entity to reach this Position. This means that this
