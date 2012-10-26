@@ -263,5 +263,65 @@ private:
   DoBuildEvent& operator=(const DoBuildEvent&);
 };
 
+class SpawnEvent: virtual public Event
+{
+public:
+  SpawnEvent(): Event() {}
+  SpawnEvent(const Command*);
+  SpawnEvent(const SpawnEvent& e):
+    Event(),
+    type_id(e.type_id),
+    actor(e.actor)
+  { }
+
+  virtual void serialize(boost::archive::text_oarchive& ar, const unsigned int v)
+  {
+    Event::serialize(ar, v);
+    ar & type_id & actor;
+  }
+  virtual void serialize(boost::archive::text_iarchive& ar, const unsigned int v)
+  {
+    Event::serialize(ar, v);
+    ar & type_id & actor;
+  }
+  /**
+   * The type_id of the unit to spawn.
+   */
+  unsigned short type_id;
+  /**
+   * The id of the building thas has to spawn the unit.
+   */
+  unsigned short actor;
+
+private:
+  SpawnEvent& operator=(const SpawnEvent&);
+};
+
+class DoSpawnEvent: public ActionEvent, public SpawnEvent
+{
+public:
+  DoSpawnEvent(const Command*);
+  DoSpawnEvent(const SpawnEvent& o):
+    ActionEvent("SPAWN"),
+    SpawnEvent(o)
+  {
+  }
+  ~DoSpawnEvent() {};
+
+  virtual void serialize(boost::archive::text_oarchive& ar, const unsigned int v)
+  {
+    ActionEvent::serialize(ar, v);
+    SpawnEvent::serialize(ar, v);
+  }
+  virtual void serialize(boost::archive::text_iarchive& ar, const unsigned int v)
+  {
+    ActionEvent::serialize(ar, v);
+    SpawnEvent::serialize(ar, v);
+  }
+private:
+  DoSpawnEvent(const DoSpawnEvent&);
+  DoSpawnEvent& operator=(const DoSpawnEvent&);
+};
+
 #endif // __EVENT_HPP__
 /**@}*/

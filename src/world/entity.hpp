@@ -36,7 +36,7 @@ public:
   /**
    * Regularly update the entity.
    */
-  virtual void tick(World*) = 0;
+  void tick(World*);
 
   void clear_works();
   void set_work(Work*);

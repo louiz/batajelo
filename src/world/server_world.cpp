@@ -91,6 +91,21 @@ void ServerWorld::build_callback(Command* command)
   this->turn_handler->insert_action(action, doevent->turn);
 }
 
+void ServerWorld::spawn_callback(Command* command)
+{
+  SpawnEvent event(command);
+  if (event.is_valid() == false)
+    {
+      log_warning("Invalid data for SPAWN command");
+      return ;
+    }
+  DoSpawnEvent* doevent = new DoSpawnEvent(event);
+  doevent->turn = this->turn_handler->get_current_turn() + 2;
+  this->generate_command("SPAWN", doevent->to_string());
+  Action* action = new Action(0, doevent, this->occupants.size());
+  this->turn_handler->insert_action(action, doevent->turn);
+}
+
 bool ServerWorld::validate_action(const unsigned int id, const unsigned long int by)
 {
   log_debug("Action " << id << " validated by " << by);

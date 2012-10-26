@@ -90,4 +90,24 @@ DoBuildEvent::DoBuildEvent(const Command* command):
   else
     this->valid = true;
 }
+
+SpawnEvent::SpawnEvent(const Command* command)
+{
+  if (this->from_string(std::string(command->body,
+				    command->body_size).c_str()) == false)
+    this->valid = false;
+  else
+    this->valid = true;
+}
+
+DoSpawnEvent::DoSpawnEvent(const Command* command):
+  ActionEvent("SPAWN")
+{
+  if (this->from_string(std::string(command->body,
+				    command->body_size).c_str()) == false)
+    this->valid = false;
+  else
+    this->valid = true;
+}
+
 unsigned long int Event::current_id = 0;

@@ -41,6 +41,7 @@ void World::set_next_turn_callback(t_next_turn_callback callback)
 
 void World::insert_unit(Unit* unit)
 {
+  log_debug("Inserting unit at position " << unit->pos);
   this->units.push_back(unit);
   this->insert_entity(unit);
 }
@@ -140,6 +141,13 @@ void World::tick(bool force)
       entity = *it;
       entity->tick(this);
     }
+  Building* building;
+  for (std::list<Building*>::iterator it = this->buildings.begin(); it != this->buildings.end(); ++it)
+    {
+      building = *it;
+      building->tick(this);
+    }
+
 }
 
 void World::advance_replay_until_paused()
@@ -184,6 +192,7 @@ Path World::calculate_path(Position endpos, Unit* unit)
   short starty;
   short endx;
   short endy;
+  log_debug("Calculating path for unit. Starting at position: " << unit->pos);
   this->get_cell_at_position(unit->pos, startx, starty);
   this->get_cell_at_position(endpos, endx, endy);
   this->current_path = this->map->do_astar(startx, starty, endx, endy);
@@ -222,6 +231,16 @@ void World::do_build(ActionEvent* event)
   unit->set_work(path_work);
   BuildWork* build_work = new BuildWork(unit, build_event->type_id, build_event->x, build_event->y);
   unit->queue_work(build_work);
+}
+
+void World::do_spawn(ActionEvent* event)
+{
+  DoSpawnEvent* spawn_event = static_cast<DoSpawnEvent*>(event);
+  log_info("do_spawn: " << spawn_event->actor << ":" << spawn_event->type_id);
+  Building* building = static_cast<Building*>(this->get_entity_by_id(spawn_event->actor));
+  assert(building);
+  SpawnWork* work = new SpawnWork(building, spawn_event->type_id);
+  building->queue_work(work);
 }
 
 void World::completely_validate_action(const unsigned int id)

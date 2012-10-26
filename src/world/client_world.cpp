@@ -163,6 +163,15 @@ bool ClientWorld::action_build(const unsigned int x, const unsigned y, const std
   return true;
 }
 
+void ClientWorld::action_spawn(const t_left_click left_click)
+{
+  assert(this->current_selection.is_empty() == false);
+  SpawnEvent event;
+  event.actor = this->current_selection.get_entities().front()->id;
+  event.type_id = left_click.id;
+  this->generate_command("SPAWN", event.to_string());
+}
+
 bool ClientWorld::action_move(const unsigned int x, const unsigned y, const std::size_t)
 {
   MoveEvent event;
@@ -213,7 +222,15 @@ void ClientWorld::add_selection_change_callback(const t_selection_changed_callba
   this->current_selection.on_modified_callbacks.push_back(callback);
 }
 
-void draw_build_cursor(const unsigned int, const unsigned int y, const std::size_t)
+void ClientWorld::spawn_callback(Command* command)
 {
-  
+  DoSpawnEvent* e = new DoSpawnEvent(command);
+  log_info("Spawn_callback: " << e->actor << " " << e->type_id);
+  if (e->is_valid() == false)
+    {
+      log_warning("Invalid data for Spawn command");
+      return ;
+    }
+  Action* action = new Action(boost::bind(&World::do_spawn, this, _1), e);
+  this->insert_received_action(action, e);
 }

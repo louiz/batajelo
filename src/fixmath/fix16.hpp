@@ -19,6 +19,7 @@ class Fix16: public Serializable
 		Fix16() { value = 0; }
 		Fix16(const Fix16 &inValue)  { value = inValue.value;             }
                 Fix16(const int inValue) { assert(inValue <= 32767); value = fix16_from_int(inValue); }
+                Fix16(const unsigned int inValue) { assert(inValue <= 32767); value = fix16_from_int(inValue); }
                 // Fix16(const unsigned int inValue) { value = fix16_from_int(inValue); }
 		// Fix16(const fix16_t inValue) { value = inValue;                   }
 		Fix16(const float inValue)   { value = fix16_from_float(inValue);  }

@@ -158,14 +158,24 @@ void Camera::set_mouse_selection_to_selection()
   mouse_pos.y += this->y;
   // First check the number of entities inside the selection. If it's 0, do
   // nothing
-  uint n = 0;
+  unsigned int number_of_units = 0;
   for (std::list<Unit*>::iterator it = this->world->units.begin(); it != this->world->units.end(); ++it)
     if (this->mouse_selection.contains(mouse_pos,
                                        this->world_to_camera_position((*it)->pos),
                                        (*it)->width + 4))
-      n++;
-  if (n > 0)
+      number_of_units++;
+  unsigned int number_of_buildings = 0;
+  for (std::list<Building*>::iterator it = this->world->buildings.begin(); it != this->world->buildings.end(); ++it)
     {
+      Position pos((*it)->x * CELL_SIZE + CELL_SIZE / 2,
+                   (*it)->y * CELL_SIZE + CELL_SIZE / 2);
+      if (this->mouse_selection.contains(mouse_pos, this->world_to_camera_position(pos)))
+        number_of_buildings++;
+    }
+  log_warning("in mouse selection: Number of units: " << number_of_units << " and buildings: " << number_of_buildings);
+  if (number_of_buildings + number_of_units > 0)
+    {
+      bool new_unit_was_selected = false;
       for (std::list<Unit*>::iterator it = this->world->units.begin(); it != this->world->units.end(); ++it)
         {
           if (this->mouse_selection.contains(mouse_pos,
@@ -173,7 +183,32 @@ void Camera::set_mouse_selection_to_selection()
                                              (*it)->width + 4))
             {
               if (this->world->is_entity_selected(*it) == false)
-                this->world->select_entity(*it);
+                {
+                  new_unit_was_selected = true;
+                  this->world->select_entity(*it);
+                }
+            }
+          else
+            {
+              if (this->world->is_entity_selected(*it) == true)
+                this->world->unselect_entity(*it);
+            }
+        }
+      for (std::list<Building*>::iterator it = this->world->buildings.begin(); it != this->world->buildings.end(); ++it)
+        {
+          Position pos((*it)->x * CELL_SIZE + CELL_SIZE / 2,
+                       (*it)->y * CELL_SIZE + CELL_SIZE / 2);
+          if (this->mouse_selection.contains(mouse_pos, this->world_to_camera_position(pos)))
+            {
+              if (this->world->is_entity_selected(*it) == false)
+                {
+                  // We select the building only if no unit was added to the
+                  // selection.  This way we can box an area and select only the units
+                  // inside it, because that's what we want most of the time when
+                  // doing that.
+                  if (new_unit_was_selected == false)
+                    this->world->select_entity(*it);
+                }
             }
           else
             {
@@ -301,6 +336,27 @@ void Camera::draw()
                   this->win->draw(tile->sprite);
                 }
             }
+          Building* building;
+          for (std::list<Building*>::iterator it = this->world->buildings.begin(); it != this->world->buildings.end(); ++it)
+            {
+              building = *it;
+              Position pos(building->x * static_cast<short>(CELL_SIZE), building->y * static_cast<short>(CELL_SIZE));
+              this->world->get_cell_at_position(pos, cellx, celly);
+              sf::Vector2u entpos = this->world_to_camera_position(pos);
+              if ((celly == y) && ((entpos.x > this->x) && (entpos.x < this->x + win_size.x) &&
+                                   (entpos.y > this->y) && (entpos.y < this->y + win_size.y)))
+                {
+                  // actually call sprite->draw. Let the BuildingSprite draw itself at the position.
+                  sf::Sprite sprite = this->screen->building_sprites[building->type_id - this->world->number_of_units_models()]->get_cursor_sprite();
+                  sprite.setPosition(entpos.x - this->x, entpos.y - this->y - LAYER_HEIGHT);
+                  this->win->draw(sprite);
+                  // this->draw_unit(entity, entpos.x - this->x, entpos.y - this->y,
+                  //                   this->mouse_selection.contains(mouse_pos,
+                  //                                                  entpos, entity->width + 4) ||
+                  //                   this->screen->is_entity_hovered(entity),
+                  //                   rectangle);
+                }
+            }
           // Draw entites on that line.
           std::vector<Entity*> entities_at_that_level = entities[level];
           int i = 0;
@@ -313,10 +369,10 @@ void Camera::draw()
                                    (entpos.y > this->y) && (entpos.y < this->y + win_size.y)))
                 {
                   this->draw_unit(entity, entpos.x - this->x, entpos.y - this->y,
-                                    this->mouse_selection.contains(mouse_pos,
-                                                                   entpos, entity->width + 4) ||
-                                    this->screen->is_entity_hovered(entity),
-                                    rectangle);
+                                  this->mouse_selection.contains(mouse_pos,
+                                                                 entpos, entity->width + 4) ||
+                                  this->screen->is_entity_hovered(entity),
+                                  rectangle);
                 }
             }
           level++;

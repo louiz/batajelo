@@ -33,6 +33,12 @@ public:
    * Check if the position is valid and the building can be built (money, the unit actually has this ability, etc).
    */
   void build_callback(Command*);
+  /**
+   * Called whenever we receive a SPAWN command from one client.  Should
+   * check if that unit can actually do that (money, capacity to do it,
+   * etc), before returning a DoSpawnEvent.
+   */
+  void spawn_callback(Command*);
   bool validate_action(const unsigned int id, const unsigned long int by);
   bool validate_turn(const unsigned int id, const unsigned long int by);
   /**

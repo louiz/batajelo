@@ -23,7 +23,6 @@ public:
   ~Unit();
   Unit(const Unit&);
   bool contains(const Position&) const;
-  void tick(World*);
 
   bool follow_path(World*, Work*);
   bool build(World*, Work*);

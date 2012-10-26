@@ -37,6 +37,8 @@ int main()
           	      boost::bind(&ClientWorld::path_callback, world, _1));
   c->install_callback("BUILD",
           	      boost::bind(&ClientWorld::build_callback, world, _1));
+  c->install_callback("SPAWN",
+          	      boost::bind(&ClientWorld::spawn_callback, world, _1));
 
   // c->connect("88.190.23.192", 7879);
   c->connect("127.0.0.1", 7879);

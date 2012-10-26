@@ -28,7 +28,7 @@ public:
    * Returns whether or not the mouse selection contains that point.
    */
   bool contains(const sf::Vector2i&,
-                const sf::Vector2u&, const uint width = 0) const;
+                const sf::Vector2u&, const uint width = 1) const;
 private:
   MouseSelection(const MouseSelection&);
   MouseSelection& operator=(const MouseSelection&);

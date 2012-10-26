@@ -279,6 +279,8 @@ bool Map::can_be_built_on(const int cellx, const int celly) const
 cell_path_t Map::do_astar(const uint startx, const uint starty,
                    const uint endx, const uint endy)
 {
+  log_debug(startx);
+  log_debug(starty);
   assert(startx < this->get_width_in_tiles());
   assert(starty < this->get_height_in_tiles());
   assert(endx < this->get_width_in_tiles());

@@ -43,7 +43,7 @@
  * world representation. This means that if you add 100 to an entity
  * position, it will move to the next cell.
  */
-#define CELL_SIZE 100.f
+const unsigned int CELL_SIZE = 100;
 #define LAYER_HEIGHT 32.f // MUST be 0.32 * CELL_SIZE
 
 class World
@@ -125,6 +125,7 @@ public:
   Path calculate_path(Position, Unit*);
   void do_new_unit(ActionEvent*);
   void do_build(ActionEvent*);
+  void do_spawn(ActionEvent*);
   Entity* get_entity_by_id(unsigned short id);
   /**
    * Sends a command to the server saying that we confirm that action.

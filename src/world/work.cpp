@@ -18,3 +18,9 @@ BuildWork::BuildWork(Unit* unit, const unsigned short id, const short x, const s
   y(y),
   building(0)
 {}
+
+SpawnWork::SpawnWork(Building* building, const unsigned short id):
+  Work(boost::bind(&Building::spawn, building, _1, _2)),
+  type_id(id),
+  elapsed_time(0)
+{}

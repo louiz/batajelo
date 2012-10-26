@@ -2,6 +2,7 @@
 - name: Tee
   speed: 3
   width: 15
+  spawn_duration: 10
   actions:
         - type: page # just goes to a different action page
           value: 1
@@ -19,6 +20,12 @@
   sprite: building_archive
   build_time: 10
   cells: 1 # size in map squares
+  actions:
+        - type: spawn
+          value: 0
+          page: 0
+          position: 0
+          image: unit60.png
 
 --- ####### Spells
 - name: boost

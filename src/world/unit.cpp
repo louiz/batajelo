@@ -32,18 +32,6 @@ bool Unit::contains(const Position& pos) const
   return false;
 }
 
-void Unit::tick(World* world)
-{
-  if (this->works.empty())
-    return ;
-  Work* current_work = this->works.front();
-  if ((*current_work)(world, current_work) == true)
-    {
-      delete current_work;
-      this->works.pop();
-    }
-}
-
 bool Unit::build(World* world, Work* w)
 {
   BuildWork* work = static_cast<BuildWork*>(w);
@@ -63,7 +51,7 @@ bool Unit::follow_path(World* world, Work* w)
     {
       if (work->calculated == false)
         {
-          log_warning("Calculating path");
+          log_warning("Calculating path: " << this->pos);
           work->path = world->calculate_path(work->end_position, this);
           work->calculated = true;
         }

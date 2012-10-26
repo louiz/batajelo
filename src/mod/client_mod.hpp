@@ -30,6 +30,7 @@ private:
   ClientMod& operator=(const ClientMod&);
 
   void fill_default_unit_actions(Screen*, ActionPanelTable*);
+  void fill_default_building_actions(Screen*, ActionPanelTable*);
   /**
    * Add empty pages until the table contains the given number of pages.
    * It may not add any pages if there are already enough of them.

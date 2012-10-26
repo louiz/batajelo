@@ -12,6 +12,7 @@
 # define __BUILDING_HPP__
 
 #include <world/entity.hpp>
+#include <world/work.hpp>
 
 class Building: public Entity
 {
@@ -20,7 +21,6 @@ public:
   ~Building();
   Building(const Building&);
   bool contains(const Position&) const;
-  void tick(World*);
 
   bool is_obstructing_position(Entity*, const Position&) const;
 
@@ -32,6 +32,8 @@ public:
   {
     ar & name & type_id & x & y;
   }
+
+  bool spawn(World*, Work*);
 
 private:
   Building& operator=(const Building&);

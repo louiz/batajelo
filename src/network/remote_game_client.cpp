@@ -27,6 +27,7 @@ void RemoteGameClient::install_callbacks()
   this->install_callback("T", boost::bind(&RemoteGameClient::turn_callback, this, _1));
   this->install_callback("MOVE", boost::bind(&ServerWorld::move_callback, world, _1));
   this->install_callback("BUILD", boost::bind(&ServerWorld::build_callback, world, _1));
+  this->install_callback("SPAWN", boost::bind(&ServerWorld::spawn_callback, world, _1));
 }
 
 boost::asio::io_service& RemoteGameClient::get_io_service()
