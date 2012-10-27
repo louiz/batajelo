@@ -1,4 +1,5 @@
 #include <logging/logging.hpp>
+#include <config/config.hpp>
 
 Logger* Logger::instance = 0;
 

@@ -1,3 +1,4 @@
+#include <config/config.hpp>
 #include <gui/ui.hpp>
 #include <gui/page/settings.hpp>
 #include <gui/page/login.hpp>
