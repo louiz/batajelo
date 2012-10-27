@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <game/action.hpp>
 
 Action::Action(t_action_callback callback,

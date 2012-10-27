@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <network/transfer_receiver.hpp>
 #include <network/client.hpp>
 

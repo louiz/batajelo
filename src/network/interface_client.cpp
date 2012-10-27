@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <network/interface_client.hpp>
 #include <boost/algorithm/string.hpp>
 #if defined(_WIN32) || defined(_WIN64)

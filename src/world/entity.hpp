@@ -3,7 +3,6 @@
 
 #include <queue>
 
-#include <logging/logging.hpp>
 #include <serialization/serializable.hpp>
 #include <world/position.hpp>
 

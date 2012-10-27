@@ -33,8 +33,6 @@
 #ifndef __COMMAND_HPP__
 # define __COMMAND_HPP__
 
-#include <logging/logging.hpp>
-
 class Command
 {
 public:

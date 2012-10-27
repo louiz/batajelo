@@ -1,5 +1,6 @@
 #include <boost/bind.hpp>
 
+#include <logging/logging.hpp>
 #include <gui/screen/screen.hpp>
 #include <mod/client_mod.hpp>
 #include <world/client_world.hpp>

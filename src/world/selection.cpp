@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <world/selection.hpp>
 
 Selection::Selection()

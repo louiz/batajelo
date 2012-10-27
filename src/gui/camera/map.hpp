@@ -15,7 +15,6 @@
 #define MINIMAPS_DIRECTORY "./data/minimaps/"
 #define TILESETS_DIRECTORY "./data/tilesets/"
 
-#include <logging/logging.hpp>
 #include <gui/camera/tile.hpp>
 #include <world/map.hpp>
 

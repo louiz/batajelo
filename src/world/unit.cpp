@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <world/unit.hpp>
 #include <world/world.hpp>
 #include <world/work.hpp>

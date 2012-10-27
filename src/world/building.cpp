@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <world/building.hpp>
 #include <world/world.hpp>
 

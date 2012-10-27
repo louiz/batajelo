@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <world/client_world.hpp>
 
 ClientWorld::ClientWorld(Map* map, Mod& mod):

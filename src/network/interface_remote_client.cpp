@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <network/interface_remote_client.hpp>
 #include <database/database.hpp>
 #include <database/db_object.hpp>

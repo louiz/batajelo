@@ -16,7 +16,6 @@
 
 #define FILES_TO_RECEIVE_DIRECTORY std::string("./receive/")
 
-#include <logging/logging.hpp>
 #include <network/command.hpp>
 
 class Client;

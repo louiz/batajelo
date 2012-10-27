@@ -1,11 +1,14 @@
-#include <world/map.hpp>
-#include <boost/algorithm/string/trim_all.hpp>
-#include <utils/base64.hpp>
-#include <utils/zlib.hpp>
-#include <boost/utility.hpp>
-#include <boost/foreach.hpp>
 #include <map>
 #include <climits>
+
+#include <boost/utility.hpp>
+#include <boost/foreach.hpp>
+#include <boost/algorithm/string/trim_all.hpp>
+
+#include <logging/logging.hpp>
+#include <world/map.hpp>
+#include <utils/base64.hpp>
+#include <utils/zlib.hpp>
 
 Map::Map():
   width(0),

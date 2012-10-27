@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <network_objects/team_serial.hpp>
 #include <database/db_object.hpp>
 
@@ -31,15 +32,15 @@ TeamSerial::TeamSerial(const std::vector<DbObject*>& teams)
           team->ladder = (*it)->get("ladder");
           log_error((*it)->get("season"));
           team->season = (*it)->get("season");
-                    log_error((*it)->get("win"));
+          log_error((*it)->get("win"));
           team->win = (*it)->get("win");
-                    log_error((*it)->get("loss"));
+          log_error((*it)->get("loss"));
           team->loss = (*it)->get("loss");
           log_error("TEAM id : " << team->id);
           this->teams.push_back(team);
           team = new Team();
         }
-  }
+    }
 }
 
 TeamSerial::TeamSerial()

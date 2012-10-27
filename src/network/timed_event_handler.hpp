@@ -13,7 +13,6 @@
 # define __TIMED_EVENT_HANDLER_HPP__
 
 #include <network/timed_event.hpp>
-#include <logging/logging.hpp>
 
 class TimedEventHandler
 {

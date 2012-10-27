@@ -24,8 +24,6 @@
 
 #define FILES_TO_SEND_DIRECTORY std::string("./send/")
 
-#include <logging/logging.hpp>
-
 class RemoteClient;
 
 class TransferSender

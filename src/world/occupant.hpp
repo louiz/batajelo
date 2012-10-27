@@ -11,7 +11,6 @@
 #ifndef __OCCUPANT_HPP__
 # define __OCCUPANT_HPP__
 
-#include <logging/logging.hpp>
 #include <serialization/serializable.hpp>
 
 class Occupant: public Serializable

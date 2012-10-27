@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <gui/hud/selection_panel.hpp>
 #include <world/client_world.hpp>
 

@@ -13,7 +13,6 @@
 #ifndef __TURN_HANDLER_HPP__
 # define __TURN_HANDLER_HPP__
 
-#include <logging/logging.hpp>
 #include <game/turn.hpp>
 #include <game/action.hpp>
 #include <game/replay.hpp>

@@ -6,7 +6,6 @@
 #ifndef __MAP_HPP__
 # define __MAP_HPP__
 
-#include <logging/logging.hpp>
 #include <world/layer.hpp>
 #include <world/position.hpp>
 

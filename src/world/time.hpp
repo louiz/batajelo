@@ -3,8 +3,6 @@
 #ifndef __TIME_HPP__
 # define __TIME_HPP__
 
-#include <logging/logging.hpp>
-
 /**
  * The number of microseconds for each world update.
  * a lower number makes everything more "fluid" (to a certain

@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <network/game_client.hpp>
 
 GameClient::GameClient()

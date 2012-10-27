@@ -9,6 +9,7 @@
  * @class CommandHandler
  */
 
+#include <deque>
 #include <map>
 #include <boost/function.hpp>
 #include <boost/asio.hpp>
@@ -17,7 +18,6 @@
 #ifndef __COMMAND_HANDLER_HPP__
 # define __COMMAND_HANDLER_HPP__
 
-#include <logging/logging.hpp>
 #include <network/transfer_sender.hpp>
 #include <network/command.hpp>
 

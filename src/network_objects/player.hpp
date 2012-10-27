@@ -10,10 +10,9 @@
 #ifndef __PLAYER_HPP__
 # define __PLAYER_HPP__
 
-#include <logging/logging.hpp>
 #include <serialization/serializable.hpp>
 
-class Player: public Serializable 
+class Player: public Serializable
 {
 public:
   Player();
@@ -32,7 +31,7 @@ public:
   std::string id;
   std::string login;
   std::string race;
-  
+
 private:
   Player(const Player&);
   Player& operator=(const Player&);

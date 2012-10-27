@@ -14,7 +14,6 @@
 #include <vector>
 #include <boost/function.hpp>
 
-#include <logging/logging.hpp>
 #include <game/event.hpp>
 
 namespace actions

@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <game/replay.hpp>
 
 Replay::Replay()

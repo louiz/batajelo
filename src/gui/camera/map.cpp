@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <gui/camera/map.hpp>
 #include <utils/string.hpp>
 #include <boost/utility.hpp>

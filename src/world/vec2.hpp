@@ -1,5 +1,3 @@
-#include <logging/logging.hpp>
-
 #ifndef __VEC2_HPP__
 # define __VEC2_HPP__
 

@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <network/client.hpp>
 #include <boost/algorithm/string.hpp>
 

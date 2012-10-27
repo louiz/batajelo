@@ -10,12 +10,11 @@
 #ifndef __TEAM_SERIAL_HPP__
 # define __TEAM_SERIAL_HPP__
 
-#include <logging/logging.hpp>
 #include <serialization/serializable.hpp>
 #include <network_objects/team.hpp>
 #include <database/db_object.hpp>
 
-class TeamSerial: public Serializable 
+class TeamSerial: public Serializable
 {
 public:
   TeamSerial(const std::vector<DbObject*>&);

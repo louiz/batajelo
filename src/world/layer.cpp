@@ -25,7 +25,7 @@ void Layer::set_level(const unsigned int level)
   this->level = level;
 }
 
-uint Layer::get_level() const
+unsigned int Layer::get_level() const
 {
   return this->level;
 }

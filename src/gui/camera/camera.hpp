@@ -17,7 +17,6 @@
 #include <SFML/System.hpp>
 #include <boost/function.hpp>
 
-#include <logging/logging.hpp>
 #include <world/client_world.hpp>
 #include <world/time.hpp>
 #include <gui/camera/map.hpp>

@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <network/timed_event.hpp>
 #include <network/timed_event_handler.hpp>
 

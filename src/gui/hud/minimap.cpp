@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <gui/hud/minimap.hpp>
 
 Minimap::Minimap(sf::RenderWindow* win, GraphMap* map, Camera* camera):

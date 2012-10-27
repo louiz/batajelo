@@ -1,5 +1,7 @@
-#include <world/entity.hpp>
 #include <cmath>
+
+#include <logging/logging.hpp>
+#include <world/entity.hpp>
 #include <world/world.hpp>
 #include <world/work.hpp>
 

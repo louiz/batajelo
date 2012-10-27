@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <gui/camera/camera.hpp>
 #include <gui/screen/screen.hpp>
 #include <world/layer.hpp>

@@ -21,7 +21,6 @@
 
 #include <gui/camera/map.hpp>
 #include <gui/camera/camera.hpp>
-#include <logging/logging.hpp>
 
 class Minimap
 {

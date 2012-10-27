@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <world/server_world.hpp>
 
 ServerWorld::ServerWorld(Mod& mod):

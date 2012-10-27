@@ -3,9 +3,6 @@
 #ifndef __GUI_LAYER_HPP__
 # define __GUI_LAYER_HPP__
 
-#include <config/config.hpp>
-#include <logging/logging.hpp>
-
 class Camera;
 class GraphMap;
 
@@ -18,7 +15,7 @@ public:
   ~Layer();
   void set_size(unsigned int width, unsigned int height);
   void set_level(unsigned int level);
-  uint get_level() const;
+  unsigned int get_level() const;
   void set_cell(unsigned int cell, const unsigned int value);
   unsigned int get_cell(const unsigned int cell) const;
 

@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <network/command_handler.hpp>
 #include <network/command.hpp>
 

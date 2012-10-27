@@ -1,3 +1,4 @@
+#include <logging/logging.hpp>
 #include <gui/screen/screen.hpp>
 #include <gui/common.hpp>
 

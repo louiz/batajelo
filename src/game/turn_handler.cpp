@@ -1,4 +1,5 @@
 #include <game/turn_handler.hpp>
+#include <logging/logging.hpp>
 
 TurnHandler::TurnHandler(Replay* replay):
   current_turn(0),
