@@ -159,17 +159,6 @@ target_link_libraries(
 	utils
 )
 
-file(
-	GLOB
-	source_pathfinding
-	src/pathfinding/*.[hc]pp
-)
-add_library(pathfinding STATIC ${source_pathfinding})
-
-target_link_libraries(
-	pathfinding
-)
-
 
 file(
 	GLOB
@@ -262,7 +251,6 @@ target_Link_libraries(
 	game
 	logging
 	serialization
-        pathfinding
         mpreal
         mod
         utils
