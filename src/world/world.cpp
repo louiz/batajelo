@@ -178,13 +178,22 @@ void World::do_path(ActionEvent* event)
   assert(path_event);
   // Path path(path_event->x, path_event->y);
   Position endpos(static_cast<short>(path_event->x), static_cast<short>(path_event->y));
-  std::vector<unsigned short>::const_iterator actors_it;
-  for (actors_it = path_event->actors_ids.begin(); actors_it < path_event->actors_ids.end(); ++actors_it)
+
+  Unit* unit;
+  Building* building;
+  for (std::vector<unsigned short>::const_iterator actors_it = path_event->actors_ids.begin(); actors_it < path_event->actors_ids.end(); ++actors_it)
     {
-      Unit* entity = dynamic_cast<Unit*>(this->get_entity_by_id((*actors_it)));
-      assert(entity);
-      PathWork* work = new PathWork(entity, endpos);
-      entity->set_work(work);
+      // Entity* entity = dynamic_cast<Entity*>(this->get_entity_by_id((*actors_it)));
+      unit = this->get_unit_by_id(*actors_it);
+      if (unit)
+        {
+          PathWork* work = new PathWork(unit, endpos);
+          unit->set_work(work);
+        }
+      else
+        { // the given id is not the one of an entity. Look for a building then
+          building = this->get_building_by_id(*actors_it);
+        }
     }
 }
 
@@ -265,6 +274,30 @@ Entity* World::get_entity_by_id(unsigned short id)
       entity = *it;
       if (entity->get_id() == id)
 	return entity;
+    }
+  return 0;
+}
+
+Unit* World::get_unit_by_id(unsigned short id)
+{
+  Unit* unit;
+  for (std::list<Unit*>::iterator it = this->units.begin(); it != this->units.end(); ++it)
+    {
+      unit = *it;
+      if (unit->get_id() == id)
+	return unit;
+    }
+  return 0;
+}
+
+Building* World::get_building_by_id(unsigned short id)
+{
+  Building* building;
+  for (std::list<Building*>::iterator it = this->buildings.begin(); it != this->buildings.end(); ++it)
+    {
+      building = *it;
+      if (building->get_id() == id)
+	return building;
     }
   return 0;
 }

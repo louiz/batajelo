@@ -127,6 +127,8 @@ public:
   void do_build(ActionEvent*);
   void do_spawn(ActionEvent*);
   Entity* get_entity_by_id(unsigned short id);
+  Unit* get_unit_by_id(unsigned short id);
+  Building* get_building_by_id(unsigned short id);
   /**
    * Sends a command to the server saying that we confirm that action.
    */

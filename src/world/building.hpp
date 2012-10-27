@@ -34,6 +34,7 @@ public:
   }
 
   bool spawn(World*, Work*);
+  bool set_rally_point(World*, Work*);
 
 private:
   Building& operator=(const Building&);
@@ -60,6 +61,10 @@ public:
    * The time needed to build it
    */
   unsigned int build_time;
+  /**
+   * The rally point
+   */
+  Position rally_point;
 };
 
 #endif // __BUILDING_HPP__

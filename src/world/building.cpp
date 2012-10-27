@@ -40,3 +40,11 @@ bool Building::spawn(World* world, Work* w)
   world->insert_unit(unit);
   return true;
 }
+
+bool Building::set_rally_point(World* world, Work* w)
+{
+  RallyWork* work = dynamic_cast<RallyWork*>(w);
+  assert(work);
+  this->rally_point = work->position;
+  return true;
+}

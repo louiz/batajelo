@@ -25,6 +25,7 @@ class Work
 public:
   Work(t_work_callback callback):
     work_callback(callback) {}
+  virtual ~Work() {};
   bool operator()(World* world, Work* work)
   {
     return this->work_callback(world, work);
@@ -52,7 +53,7 @@ class PathWork: public Work
 {
   friend class Unit;
 public:
-  PathWork(Unit*, Position);
+  PathWork(Unit*, const Position);
   ~PathWork() {}
 private:
   PathWork(const PathWork&);
@@ -66,11 +67,21 @@ private:
    * We use that position only to calculate the path. Once it is calculated
    * we do not need it anymore.
    */
-  Position end_position;
+  const Position end_position;
   /**
    * Just a bool to know if the empty path means that we are at the end of the path (thus return true directly) or that we didn’t calculate the path yet.
    */
   bool calculated;
+};
+
+class RallyWork: public Work
+{
+  friend class Building;
+public:
+  RallyWork(Building*, const Position);
+  ~RallyWork() {}
+private:
+  const Position position;
 };
 
 class BuildWork: public Work
@@ -98,7 +109,7 @@ class SpawnWork: public Work
   friend class Building;
 public:
   SpawnWork(Building*, const unsigned short);
-  ~SpawnWork();
+  ~SpawnWork() {}
 private:
   SpawnWork(const SpawnWork&);
   SpawnWork& operator=(const SpawnWork&);
