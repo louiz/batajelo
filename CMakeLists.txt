@@ -390,6 +390,7 @@ if(BUILD_SERVER)
 		database
 		logging
 		config
+                ${CRYPTO++_LIBRARIES}
 		${MYSQL_LIBRARIES}
 		)
 

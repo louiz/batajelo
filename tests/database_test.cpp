@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(update_user)
   BOOST_REQUIRE(Database::inst()->update(user, "User") == true);
   delete user;
 
-  User* user1 = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  User* user1 = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
   BOOST_REQUIRE(user1 != 0);
   BOOST_REQUIRE(user1->get("password") == digest);
 
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(update_user)
   user1->set("password", digest);
   BOOST_REQUIRE(Database::inst()->update(user1, "User") == true);
 
-  User* user2 = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  User* user2 = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
   BOOST_REQUIRE(user2 != 0);
   BOOST_REQUIRE(user2->get("password") == digest);
 }
@@ -74,10 +74,10 @@ BOOST_AUTO_TEST_CASE(add_friend)
   user2->set("password", digest);
   BOOST_REQUIRE(Database::inst()->update(user2, "User") == true);
 
-  user2 = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing2'"));
+  user2 = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing2'"));
   BOOST_REQUIRE(user2 != 0);
 
-  User* user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  User* user = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
   BOOST_REQUIRE(user != 0);
 
   std::string where = "sender_id=" + user->get("id");
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(add_friend)
 
 BOOST_AUTO_TEST_CASE(add_user_achievement)
 {
-  User* user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  User* user = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
   BOOST_REQUIRE(user != 0);
 
   user->add_achievement("1");
@@ -111,8 +111,8 @@ BOOST_AUTO_TEST_CASE(add_user_achievement)
 
 BOOST_AUTO_TEST_CASE(add_and_get_replays)
 {
-  User* user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
-  User* user2 = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing2'"));
+  User* user = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  User* user2 = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing2'"));
   BOOST_REQUIRE(user != 0);
   BOOST_REQUIRE(user2 != 0);
 
@@ -136,12 +136,14 @@ BOOST_AUTO_TEST_CASE(add_and_get_replays)
 
 BOOST_AUTO_TEST_CASE(add_update_remove_ban)
 {
-  User* user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  User* user = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  BOOST_REQUIRE(user);
   user->add_ban(24);
   DbObject* user_infos = Database::inst()->get_object("*", "user", "id=" + user->get("id"));
   BOOST_REQUIRE(user_infos->get_int("is_banned") == 1);
+  user = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
 
-  user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  BOOST_REQUIRE(user);
   DbObject* user_ban = Database::inst()->get_object("*", "user_ban", "user_id=" + user->get("id"));
   boost::posix_time::ptime last_unban_time(boost::posix_time::time_from_string(user_ban->get("ban_end")));
   BOOST_REQUIRE(user_ban != 0);
@@ -158,15 +160,17 @@ BOOST_AUTO_TEST_CASE(add_update_remove_ban)
 
 BOOST_AUTO_TEST_CASE(delete_users)
 {
-  User* user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
-  User* user2 = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing2'"));
+  User* user = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  User* user2 = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing2'"));
+  BOOST_REQUIRE(user);
+  BOOST_REQUIRE(user2);
   BOOST_REQUIRE(Database::inst()->remove(user, "User") == true);
   BOOST_REQUIRE(Database::inst()->remove(user2, "User") == true);
 
-  user = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  user = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
   BOOST_REQUIRE(user == 0);
 
-  user2 = static_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
+  user2 = dynamic_cast<User*>(Database::inst()->get_object("*", "User", "login='testing'"));
   BOOST_REQUIRE(user2 == 0);
 }
 

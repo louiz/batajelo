@@ -30,7 +30,8 @@ bool Building::contains(const Position&) const
 bool Building::spawn(World* world, Work* w)
 {
   log_info("COCUOU je SPAWN");
-  SpawnWork* work = static_cast<SpawnWork*>(w);
+  SpawnWork* work = dynamic_cast<SpawnWork*>(w);
+  assert(work);
   Unit* unit = world->create_unit(work->type_id);
   // find free spawning position
   unit->pos.x = this->x * CELL_SIZE;

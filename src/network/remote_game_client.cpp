@@ -21,7 +21,9 @@ void RemoteGameClient::on_connection_closed()
 
 void RemoteGameClient::install_callbacks()
 {
-  ServerWorld* world = static_cast<GameServer*>(this->server)->get_world();
+  GameServer* game_server = dynamic_cast<GameServer*>(this->server);
+  assert(game_server);
+  ServerWorld* world = game_server->get_world();
 
   this->install_callback("OK", boost::bind(&RemoteGameClient::ok_callback, this, _1));
   this->install_callback("T", boost::bind(&RemoteGameClient::turn_callback, this, _1));
@@ -44,10 +46,12 @@ void RemoteGameClient::ok_callback(Command* command)
       log_warning("Invalid data for OK command");
       return ;
     }
-  ServerWorld* world = static_cast<GameServer*>(this->server)->get_world();
+  GameServer* game_server = dynamic_cast<GameServer*>(this->server);
+  assert(game_server);
+  ServerWorld* world = game_server->get_world();
 
   if (world->validate_action(ok_event.get_id(), this->get_number()) == true)
-    static_cast<GameServer*>(this->server)->send_ok(ok_event.get_id(), this->get_number());
+    game_server->send_ok(ok_event.get_id(), this->get_number());
 }
 
 void RemoteGameClient::turn_callback(Command* command)
@@ -55,8 +59,10 @@ void RemoteGameClient::turn_callback(Command* command)
   std::istringstream is(std::string(command->body, command->body_size));
   unsigned int number;
   is >> number;
-  ServerWorld* world = static_cast<GameServer*>(this->server)->get_world();
+  GameServer* game_server = dynamic_cast<GameServer*>(this->server);
+  assert(game_server);
+  ServerWorld* world = game_server->get_world();
 
   if (world->validate_turn(number, this->get_number()) == true)
-    static_cast<GameServer*>(this->server)->send_turn(number, this->get_number());
+    game_server->send_turn(number, this->get_number());
 }

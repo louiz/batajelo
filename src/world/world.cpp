@@ -173,14 +173,15 @@ void World::start()
 
 void World::do_path(ActionEvent* event)
 {
-  DoMoveEvent* path_event = static_cast<DoMoveEvent*>(event);
+  DoMoveEvent* path_event = dynamic_cast<DoMoveEvent*>(event);
+  assert(path_event);
   // Path path(path_event->x, path_event->y);
   Position endpos(static_cast<short>(path_event->x), static_cast<short>(path_event->y));
   std::vector<unsigned short>::const_iterator actors_it;
   for (actors_it = path_event->actors_ids.begin(); actors_it < path_event->actors_ids.end(); ++actors_it)
     {
-      Unit* entity = static_cast<Unit*>(this->get_entity_by_id((*actors_it)));
-      assert(entity != 0);
+      Unit* entity = dynamic_cast<Unit*>(this->get_entity_by_id((*actors_it)));
+      assert(entity);
       PathWork* work = new PathWork(entity, endpos);
       entity->set_work(work);
     }
@@ -206,7 +207,8 @@ Path World::calculate_path(Position endpos, Unit* unit)
 void World::do_new_unit(ActionEvent* event)
 {
   log_debug("DO NEW UNIT");
-  DoUnitEvent* unit_event = static_cast<DoUnitEvent*>(event);
+  DoUnitEvent* unit_event = dynamic_cast<DoUnitEvent*>(event);
+  assert(event);
   // This unit just contains the initial position of the unit, and it's
   // type_id because we don't need to pass all these informations, because
   // we already have all the possible unit types in our list
@@ -222,11 +224,12 @@ void World::do_new_unit(ActionEvent* event)
 
 void World::do_build(ActionEvent* event)
 {
-  DoBuildEvent* build_event = static_cast<DoBuildEvent*>(event);
+  DoBuildEvent* build_event = dynamic_cast<DoBuildEvent*>(event);
+  assert(build_event);
   log_info("do_build: " << build_event->x << ":" << build_event->y);
   Position endpos(static_cast<short>(build_event->x * CELL_SIZE + CELL_SIZE / 2), static_cast<short>(build_event->y * CELL_SIZE + CELL_SIZE / 2));
-  Unit* unit = static_cast<Unit*>(this->get_entity_by_id(build_event->actor));
-  assert(unit != 0);
+  Unit* unit = dynamic_cast<Unit*>(this->get_entity_by_id(build_event->actor));
+  assert(unit);
   PathWork* path_work = new PathWork(unit, endpos);
   unit->set_work(path_work);
   BuildWork* build_work = new BuildWork(unit, build_event->type_id, build_event->x, build_event->y);
@@ -235,9 +238,10 @@ void World::do_build(ActionEvent* event)
 
 void World::do_spawn(ActionEvent* event)
 {
-  DoSpawnEvent* spawn_event = static_cast<DoSpawnEvent*>(event);
+  DoSpawnEvent* spawn_event = dynamic_cast<DoSpawnEvent*>(event);
+  assert(spawn_event);
   log_info("do_spawn: " << spawn_event->actor << ":" << spawn_event->type_id);
-  Building* building = static_cast<Building*>(this->get_entity_by_id(spawn_event->actor));
+  Building* building = dynamic_cast<Building*>(this->get_entity_by_id(spawn_event->actor));
   assert(building);
   SpawnWork* work = new SpawnWork(building, spawn_event->type_id);
   building->queue_work(work);

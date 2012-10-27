@@ -34,7 +34,8 @@ bool Unit::contains(const Position& pos) const
 
 bool Unit::build(World* world, Work* w)
 {
-  BuildWork* work = static_cast<BuildWork*>(w);
+  BuildWork* work = dynamic_cast<BuildWork*>(w);
+  assert(work);
   if (work->building == 0)
     {
       log_info("creating building");
@@ -46,7 +47,8 @@ bool Unit::build(World* world, Work* w)
 
 bool Unit::follow_path(World* world, Work* w)
 {
-  PathWork* work = static_cast<PathWork*>(w);
+  PathWork* work = dynamic_cast<PathWork*>(w);
+  assert(work);
   if (work->path.size() == 0)
     {
       if (work->calculated == false)

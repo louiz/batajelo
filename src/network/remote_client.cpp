@@ -70,7 +70,8 @@ void RemoteClient::auth_callback(Command* received_command)
             {
               log_info("Authentication: succes for user " << login);
               body = "0";
-              this->user = static_cast<User*>(user);
+              this->user = dynamic_cast<User*>(user);
+              assert(this->user);
               success = true;
             }
         }

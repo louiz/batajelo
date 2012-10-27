@@ -20,7 +20,7 @@ class DbObject
 {
 public:
   DbObject();
-  ~DbObject();
+  virtual ~DbObject();
   /**@{*/
   /**
    * @name Getters & setters
