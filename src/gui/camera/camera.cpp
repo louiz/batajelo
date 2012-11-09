@@ -8,7 +8,7 @@ Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win, Screen*
   y(0),
   zoom(1),
   focused(true),
-  movement_speed(0.2),
+  movement_speed(0.34),
   previous_position(0, 0),
   start_drag_position(0, 0),
   world(world),
@@ -341,22 +341,22 @@ void Camera::draw()
           for (std::list<Building*>::iterator it = this->world->buildings.begin(); it != this->world->buildings.end(); ++it)
             {
               building = *it;
-              Position pos(building->x * static_cast<short>(CELL_SIZE), building->y * static_cast<short>(CELL_SIZE));
-              this->world->get_cell_at_position(pos, cellx, celly);
-              sf::Vector2u entpos = this->world_to_camera_position(pos);
-              if ((celly == y) && ((entpos.x > this->x) && (entpos.x < this->x + win_size.x) &&
-                                   (entpos.y > this->y) && (entpos.y < this->y + win_size.y)))
-                {
+              this->screen->building_sprites[building->type_id - this->world->number_of_units_models()]->draw(this, this->world, this->screen, building);
+
+              // this->world->get_cell_at_position(pos, cellx, celly);
+              // sf::Vector2u entpos = this->world_to_camera_position(pos);
+              // if ((celly == y) && ((entpos.x > this->x) && (entpos.x < this->x + win_size.x) &&
+              //                      (entpos.y > this->y) && (entpos.y < this->y + win_size.y)))
+              //   {
                   // actually call sprite->draw. Let the BuildingSprite draw itself at the position.
-                  sf::Sprite sprite = this->screen->building_sprites[building->type_id - this->world->number_of_units_models()]->get_cursor_sprite();
-                  sprite.setPosition(entpos.x - this->x, entpos.y - this->y - LAYER_HEIGHT);
-                  this->win->draw(sprite);
+                  // sf::Sprite sprite = this->screen->building_sprites[building->type_id - this->world->number_of_units_models()]->get_cursor_sprite();
+                  // this->win->draw(sprite);
                   // this->draw_unit(entity, entpos.x - this->x, entpos.y - this->y,
                   //                   this->mouse_selection.contains(mouse_pos,
                   //                                                  entpos, entity->width + 4) ||
                   //                   this->screen->is_entity_hovered(entity),
                   //                   rectangle);
-                }
+                // }
             }
           // Draw entites on that line.
           std::vector<Entity*> entities_at_that_level = entities[level];
@@ -462,4 +462,14 @@ Position Camera::camera_to_world_position(const int x,
 bool Camera::is_mouse_selection_ongoing() const
 {
   return this->mouse_selection.ongoing;
+}
+
+void Camera::draw(const sf::Drawable& drawable)
+{
+  this->win->draw(drawable);
+}
+
+const sf::Vector2u Camera::get_win_size() const
+{
+  return this->win->getSize();
 }

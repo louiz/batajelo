@@ -8,8 +8,8 @@ class ArchiveSprite: public BuildingSprite
 public:
   ArchiveSprite();
   ~ArchiveSprite();
-  void draw(const Building*) const;
-  sf::Sprite get_cursor_sprite() const;
+  void draw(Camera*, const ClientWorld*, const Screen*, const Building* const) const;
+  const sf::Sprite& get_cursor_sprite() const;
 private:
   ArchiveSprite(const ArchiveSprite&);
   ArchiveSprite& operator=(const ArchiveSprite&);

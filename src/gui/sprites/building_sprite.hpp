@@ -17,20 +17,31 @@
 # define __BUILDING_SPRITE_HPP__
 
 #include <SFML/Graphics.hpp>
+#include <gui/camera/camera.hpp>
+#include <world/client_world.hpp>
+
+class Screen;
 
 class Building;
 
 class BuildingSprite
 {
 public:
-  BuildingSprite() {};
+  BuildingSprite() {}
   virtual ~BuildingSprite() {};
-  virtual void draw(const Building*) const = 0;
+  virtual void draw(Camera*, const ClientWorld*, const Screen*, const Building*) const = 0;
   /**
    * Returns the sprite that should be drawn on the cell under the cursor we
    * the left click action is to build this building.
    */
-  virtual sf::Sprite get_cursor_sprite() const = 0;
+  virtual const sf::Sprite& get_cursor_sprite() const = 0;
+  /**
+   * Draws the rally point of the building. Called only by buildings
+   * actually using a rally point.
+   */
+  void draw_rally_point(Camera*, const Building* const);
+  void draw_selection_circle(Camera* camera, const Building* const building) const;
+  bool is_in_screen(Camera*, const Building* const) const;
 private:
   BuildingSprite(const BuildingSprite&);
   BuildingSprite& operator=(const BuildingSprite&);

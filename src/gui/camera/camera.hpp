@@ -86,14 +86,8 @@ public:
    * ongoing or not.
    */
   bool is_mouse_selection_ongoing() const;
-
-private:
-  Camera(const Camera&);
-  Camera& operator=(const Camera&);
-  /**
-   * Check if the camera is at a valid position. If not, fix it.
-   */
-  void fixup_camera_position();
+  void draw(const sf::Drawable&);
+  const sf::Vector2u get_win_size() const;
   /**
    * The left position of the camera
    */
@@ -107,6 +101,14 @@ private:
    * flipped over.
    */
   double zoom;
+
+private:
+  Camera(const Camera&);
+  Camera& operator=(const Camera&);
+  /**
+   * Check if the camera is at a valid position. If not, fix it.
+   */
+  void fixup_camera_position();
   /**
    * Weither or not the window has the focus.
    */
