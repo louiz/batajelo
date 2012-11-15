@@ -77,10 +77,15 @@ public:
    *
    * Once the Work is done (destination reached, or building complete, or
    * anything), we pop that work. Many works can be queued. For example if
-   * we do a shift-move, the PathWork is added at the end of the queue. If
-   * not, it just replaces all the works in the queue.
+   * we do a shift-move, the PathWork is added at the end of the list. If
+   * not, it just replaces all the works in the list.
+   *
+   * A list is used instead of a queue, though a queue would be almost
+   * perfect (push back, pop front only), but we need to be able to traverse
+   * the list to check their value etc. So we just use a list and push_back
+   * and pop_front instead. Should be almost as effecient.
    */
-  std::queue<Work*> works;
+  std::list<Work*> works;
 };
 
 #endif // __ENTITY_HPP__

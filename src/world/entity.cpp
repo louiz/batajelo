@@ -30,12 +30,12 @@ Entity::~Entity()
 void Entity::set_work(Work* work)
 {
   this->clear_works();
-  this->works.push(work);
+  this->works.push_back(work);
 }
 
 void Entity::queue_work(Work* work)
 {
-  this->works.push(work);
+  this->works.push_back(work);
 }
 
 void Entity::clear_works()
@@ -43,18 +43,19 @@ void Entity::clear_works()
   if (this->works.empty())
     return ;
   Work* current = this->works.front();
-  this->works.pop(); // pop the current without deleting it, in case we want
+  this->works.pop_front(); // pop the current without deleting it, in case we want
                      // to add it back.
   while (!this->works.empty())
     {
       delete this->works.front();
-      this->works.pop();
+      this->works.pop_front();
     }
   // if the current work is not interruptible, we put it back in the queue,
   // as if we didn’t removed it.
   if (!current->is_interruptible())
-    this->works.push(current);
-  else
+    this->works.push_back(current);
+  else // or we just delete it. It was already removed from the queue and
+       // now it's empty
     delete current;
 }
 
@@ -66,6 +67,6 @@ void Entity::tick(World* world)
   if ((*current_work)(world, current_work) == true)
     {
       delete current_work;
-      this->works.pop();
+      this->works.pop_front();
     }
 }
