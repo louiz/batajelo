@@ -39,7 +39,7 @@ public:
    * Draws the rally point of the building. Called only by buildings
    * actually using a rally point.
    */
-  void draw_rally_point(Camera*, const Building* const);
+  void draw_rally_point(Camera*, const Building* const) const;
   void draw_selection_circle(Camera* camera, const Building* const building) const;
   bool is_in_screen(Camera*, const Building* const) const;
 private:

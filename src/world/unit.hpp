@@ -49,7 +49,7 @@ public:
    can.
    */
   bool can_be_pushed() const;
-  bool is_obstructing_position(Entity*, const Position&) const;
+  bool is_obstructing_position(const Unit*, const Position&) const;
 
   virtual void serialize(oarchive & ar, const unsigned int)
   {
@@ -82,6 +82,10 @@ public:
    * The entity speed
    */
   mpreal speed;
+  /**
+   * The time required to spawn this unit from a building
+   */
+  unsigned int spawn_duration;
 };
 
 

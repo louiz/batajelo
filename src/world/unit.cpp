@@ -20,7 +20,8 @@ Unit::Unit(const Unit& model):
   width(model.width),
   height(model.height),
   health(model.health),
-  speed(model.speed)
+  speed(model.speed),
+  spawn_duration(model.spawn_duration)
 {
   log_debug("Creating new unit(" << this->type_id << ") of id: " << this->id);
 }
@@ -102,13 +103,13 @@ bool Unit::follow_path(World* world, Work* w)
   return false;
 }
 
-bool Unit::is_obstructing_position(Entity* entity, const Position& position) const
+bool Unit::is_obstructing_position(const Unit* unit, const Position& position) const
 {
   // if (this->path.size() == 0)
   //   return false;
-  // if (Position::distance(this->pos, position) > (entity->width + this->width))
-  return false;
-  // return true;
+  if (Position::distance(this->pos, position) > (unit->width + this->width))
+    return false;
+  return true;
 }
 
 void Unit::steer_to_avoid_obstacle(Vec2& mov, World* world) const

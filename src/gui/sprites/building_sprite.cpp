@@ -1,7 +1,20 @@
+#include <logging/logging.hpp>
 #include <gui/sprites/building_sprite.hpp>
 
-void BuildingSprite::draw_rally_point(Camera*, const Building* const building)
+void BuildingSprite::draw_rally_point(Camera* camera, const Building* const building) const
 {
+  if (building->rally_point == Vec2::zero)
+    return ;
+  const sf::Vector2u start_cam_pos = camera->world_to_camera_position(building->get_center_position());
+  const sf::Vector2f start(start_cam_pos.x - camera->x,
+                           start_cam_pos.y - camera->y);
+  const sf::Vector2u end_cam_pos = camera->world_to_camera_position(building->rally_point);
+  const sf::Vector2f end(end_cam_pos.x - camera->x,
+                         end_cam_pos.y - camera->y);
+  sf::VertexArray line(sf::Lines, 2);
+  line[0].position = start;
+  line[1].position = end;
+  camera->draw(line);
 }
 
 bool BuildingSprite::is_in_screen(Camera* camera, const Building* const building) const

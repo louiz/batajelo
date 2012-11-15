@@ -2,7 +2,7 @@
 - name: Tee
   speed: 3
   width: 15
-  spawn_duration: 10
+  spawn_duration: 400
   actions:
         - type: page # just goes to a different action page
           value: 1

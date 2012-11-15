@@ -180,7 +180,6 @@ bool ClientWorld::action_move(const unsigned int x, const unsigned y, const std:
   for (std::list<Entity*>::iterator it = this->entities.begin();
        it != this->entities.end(); ++it)
     {
-      log_error(this->entities.size());
       entity = *it;
       if (this->is_entity_selected(entity))
         event.actors_ids.push_back(entity->get_id());

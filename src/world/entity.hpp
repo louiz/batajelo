@@ -9,6 +9,7 @@
 class Camera;
 class World;
 class Work;
+class Unit;
 
 class Entity: Serializable
 {
@@ -42,11 +43,11 @@ public:
   void queue_work(Work*);
   /**
    * Returns weither or not this entity (if not moving) makes it impossible
-   * for the given entity to reach this Position. This means that this
+   * for the given unit to reach this Position. This means that this
    * entity is OVER the position, or close enough that the moving entity
    * cannot reach it because of its width.
    */
-  virtual bool is_obstructing_position(Entity*, const Position&) const = 0;
+  virtual bool is_obstructing_position(const Unit*, const Position&) const = 0;
 
   virtual void serialize(oarchive & ar, const unsigned int) = 0;
   virtual void serialize(iarchive & ar, const unsigned int) = 0;

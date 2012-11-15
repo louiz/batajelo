@@ -26,6 +26,9 @@ void ArchiveSprite::draw(Camera* camera, const ClientWorld* world, const Screen*
   sf::Sprite sprite = this->get_cursor_sprite();
   sprite.setPosition(entpos.x - camera->x, entpos.y - camera->y - LAYER_HEIGHT);
   camera->draw(sprite);
+
+  if (world->is_entity_selected(building) == true)
+    this->draw_rally_point(camera, building);
 }
 
 const sf::Sprite& ArchiveSprite::get_cursor_sprite() const

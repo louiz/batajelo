@@ -57,6 +57,7 @@ void operator >>(const YAML::Node& node, Unit& v)
   node["name"] >> v.name;
   node["speed"] >> v.speed;
   node["width"] >> v.width;
+  node["spawn_duration"] >> v.spawn_duration;
 }
 
 void operator >>(const YAML::Node& node, Building& v)

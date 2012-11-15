@@ -92,7 +92,8 @@ public:
   /**
    * Create an entity based on the given model.
    */
-  Unit* create_unit(unsigned int type);
+  Unit* create_unit(const unsigned int type);
+  const Unit* get_unit_model(unsigned int type) const;
   /**
    * Create a building based on the given model.
    */
@@ -129,6 +130,7 @@ public:
   Entity* get_entity_by_id(unsigned short id);
   Unit* get_unit_by_id(unsigned short id);
   Building* get_building_by_id(unsigned short id);
+  bool can_unit_spawn_at_pos(const Unit*, const Position&) const;
   /**
    * Sends a command to the server saying that we confirm that action.
    */

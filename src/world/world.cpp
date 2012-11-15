@@ -93,11 +93,16 @@ void World::init(Mod& mod)
   log_debug("Done.");
 }
 
-Unit* World::create_unit(unsigned int type)
+Unit* World::create_unit(const unsigned int type)
 {
   const Unit* model = this->unit_models[type];
   Unit* new_entity = new Unit(*model);
   return new_entity;
+}
+
+const Unit* World::get_unit_model(unsigned int type) const
+{
+  return this->unit_models[type];
 }
 
 Unit* World::create_unit(unsigned int type, const Unit& e)
@@ -193,6 +198,11 @@ void World::do_path(ActionEvent* event)
       else
         { // the given id is not the one of an entity. Look for a building then
           building = this->get_building_by_id(*actors_it);
+          if (building)
+            {
+              RallyWork* work = new RallyWork(building, endpos);
+              building->set_work(work);
+            }
         }
     }
 }
@@ -680,4 +690,14 @@ Position World::get_nearest_corner(const Position& pos, const std::size_t cell, 
 bool World::can_build_at_cell(const int x, const int y) const
 {
   return this->map->can_be_built_on(x, y);
+}
+
+bool World::can_unit_spawn_at_pos(const Unit* unit, const Position& pos) const
+{
+  for (std::list<Entity*>::const_iterator it = this->entities.begin(); it != this->entities.end(); ++it)
+    {
+      if ((*it)->is_obstructing_position(unit, pos))
+        return false;
+    }
+  return true;
 }
