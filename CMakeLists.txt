@@ -19,15 +19,15 @@ set(LIBRARY_OUTPUT_PATH output_lib)
 # Project compile flags
 ##########################
 
-add_definitions(-std=c++11)
-
 # This flag is very important for the fixmath library, if one client is
 # compiled without it, its world representation may not be identical with
 # the other’s one.
-set(CMAKE_CXX_FLAGS "-DFIXMATH_SIN_LUT")
+set(CMAKE_C_FLAGS "-DFIXMATH_SIN_LUT")
 
 # Link with libefence to easily catch segfaults on debug build
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -lefence")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 configure_file("${PROJECT_SOURCE_DIR}/src/config.hpp.in" "${PROJECT_SOURCE_DIR}/src/config.hpp")
 
