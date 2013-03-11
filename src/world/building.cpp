@@ -3,9 +3,6 @@
 #include <world/unit.hpp>
 #include <world/world.hpp>
 
-#include <boost/assign/std/vector.hpp> // for 'operator+=()'
-using namespace boost::assign; // bring 'operator+=()' into scope
-
 Building::Building()
 {
 }
@@ -57,8 +54,7 @@ bool Building::spawn(World* world, Work* w)
   const Vec2 bot(0, diff);
   const Vec2 left(-diff, 0);
 
-  std::vector<Vec2> directions;
-  directions += right,bot,left,left,top,top,right,right,right,bot,bot,bot,left,left,left,left,top,top,top,top,right,right,right,right,right,bot,bot,bot,bot,bot,left,left,left,left,left,left;  // Yeah, I know, right?
+  std::vector<Vec2> directions = {right, bot, left, left, top, top, right, right, right, bot, bot, bot, left, left, left, left, top, top, top, top, right, right, right, right, right, bot, bot, bot, bot, bot, left, left, left, left, left, left};  // Yeah, I know, right?
   unit->pos = Vec2::zero;
 
   for (std::vector<Vec2>::const_iterator it = directions.begin(); it != directions.end(); ++it)
