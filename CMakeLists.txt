@@ -48,7 +48,6 @@ option(BUILD_CLIENT "build the server" ${BUILD_CLIENT})
 ##########################
 
 find_package(Boost 1.48.0 COMPONENTS serialization system date_time unit_test_framework iostreams locale REQUIRED)
-# find_package(Threads REQUIRED)
 find_package(Cryptopp REQUIRED)
 find_package(Doxygen)
 
