@@ -71,6 +71,10 @@ public:
    * The uniq config instance.
    */
   static Config* instance;
+  /**
+   * Close the config file, saving it to the file is save == true.
+   */
+  static void close(bool save = false);
 
 private:
   Config(){};

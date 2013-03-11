@@ -118,6 +118,17 @@ void Config::connect(t_config_changed_callback callback)
   instance->callbacks.push_back(callback);
 }
 
+void Config::close(bool save)
+{
+  if (!instance)
+    std::cerr << "Error: Config::close() called but it was not open." << std::endl;
+  if (save)
+    instance->save_to_file();
+  instance->values.clear();
+  delete instance;
+  instance = 0;
+}
+
 void Config::trigger_configuration_change()
 {
   std::vector<t_config_changed_callback>::iterator it;

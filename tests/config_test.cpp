@@ -39,6 +39,10 @@ BOOST_AUTO_TEST_CASE(config_test1)
   BOOST_REQUIRE(Config::get_int("number", 0) == 12);
 
   BOOST_REQUIRE(a == 1);
+  Config::close(true);
+  BOOST_REQUIRE(Config::read_conf("tests/test.conf") == true);
+  BOOST_REQUIRE(Config::get_int("number", 0) == 12);
+  Config::close(true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
