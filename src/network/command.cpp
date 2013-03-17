@@ -1,9 +1,10 @@
 #include <network/command.hpp>
+#include <assert.h>
 
 Command::Command():
   body(0),
   body_size(0),
-  callback(0)
+  callback(nullptr)
 {
 }
 

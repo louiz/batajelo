@@ -15,7 +15,7 @@ Map::Map():
   height(0),
   width_in_tiles(0),
   height_in_tiles(0),
-  walking_map(0)
+  walking_map(nullptr)
 {
   for (int i = 0; i < LAYER_NUMBER; ++i)
     this->layers.push_back(new Layer);

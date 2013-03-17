@@ -20,7 +20,7 @@ BuildWork::BuildWork(Unit* unit, const unsigned short id, const short x, const s
   id(id),
   x(x),
   y(y),
-  building(0)
+  building(nullptr)
 {}
 
 SpawnWork::SpawnWork(Building* building, const unsigned short id):

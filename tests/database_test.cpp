@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(empty_user)
 {
   BOOST_TEST_MESSAGE("Testing 0 row result");
   DbObject* user1 = Database::inst()->get_object("*", "User", "id=1");
-  BOOST_REQUIRE(user1 == 0);
+  BOOST_REQUIRE(user1 == nullptr);
   delete user1;
 }
 

@@ -1,7 +1,7 @@
 #include <world/layer.hpp>
 
 Layer::Layer():
-  cells(0)
+  cells(nullptr)
 {
 }
 
@@ -37,7 +37,7 @@ void Layer::set_cell(const unsigned int cell, const unsigned int value)
 
 unsigned int Layer::get_cell(const unsigned int cell) const
 {
-  if (this->cells == 0)
+  if (!this->cells)
     return 0;
   return this->cells[cell];
 }

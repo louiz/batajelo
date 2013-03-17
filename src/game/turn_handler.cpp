@@ -5,7 +5,7 @@ TurnHandler::TurnHandler(Replay* replay):
   current_turn(0),
   turn_advancement(0),
   paused(true),
-  next_turn_callback(0),
+  next_turn_callback(nullptr),
   replay(replay)
 {
 }
@@ -47,7 +47,7 @@ void TurnHandler::tick(bool force)
 void TurnHandler::next_turn()
 {
   this->current_turn++;
-  if (this->next_turn_callback != 0)
+  if (this->next_turn_callback != nullptr)
     this->next_turn_callback(this->current_turn);
   log_debug("current turn: " << this->current_turn);
   // if the deque is empty, no action has to be taken.
@@ -59,7 +59,7 @@ void TurnHandler::next_turn()
     return ;
   log_warning("Turn number " << this->current_turn << ": ");
   Turn* turn = &(this->turns[0]);
-  if (this->replay != 0)
+  if (this->replay != nullptr)
     turn->execute(false);
   else
     turn->execute(true);
@@ -120,7 +120,7 @@ bool TurnHandler::is_next_turn_validated() const
 Turn* TurnHandler::get_turn(const unsigned int number)
 {
   if (this->turns.size() <= number - this->current_turn)
-    return 0;
+    return nullptr;
   return &this->turns[number - this->current_turn];
 }
 
@@ -133,7 +133,7 @@ bool TurnHandler::validate_action(const unsigned int id, const unsigned long int
   for (it = this->turns.begin(); it != this->turns.end(); ++it)
     {
       (*it).reset_action_iterator();
-      while ((action = (*it).get_next_action()) != 0)
+      while ((action = (*it).get_next_action()) != nullptr)
 	{
 	  if (action->get_id() == id)
 	    {
@@ -157,7 +157,7 @@ void TurnHandler::completely_validate_action(const unsigned int id)
   for (it = this->turns.begin(); it != this->turns.end(); ++it)
     {
       (*it).reset_action_iterator();
-      while ((action = (*it).get_next_action()) != 0)
+      while ((action = (*it).get_next_action()) != nullptr)
 	{
 	  if (action->get_id() == id)
 	    {
@@ -176,7 +176,7 @@ bool TurnHandler::validate_turn(const unsigned int number,
       return false;
     }
   Turn* turn = this->get_turn(number);
-  if (turn == 0)
+  if (turn == nullptr)
     return false;
   return turn->validate(by, confirmations_needed);
 }
@@ -195,7 +195,7 @@ void TurnHandler::completely_validate_turn(const unsigned int number)
 {
   this->insert_turn(number);
   Turn* turn = this->get_turn(number);
-  assert(turn != 0);
+  assert(turn != nullptr);
   return turn->validate_completely();
 }
 
@@ -228,7 +228,7 @@ Turn* TurnHandler::get_next_turn()
   if (this->turns_iterator == this->turns.end())
     {
       this->reset_turns_iterator();
-      return 0;
+      return nullptr;
     }
   std::deque<Turn>::iterator it = this->turns_iterator;
   ++this->turns_iterator;

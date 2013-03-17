@@ -6,14 +6,14 @@ RemoteClient::RemoteClient(boost::asio::io_service& io_service,
 			   Server<RemoteClient>* server):
   InterfaceRemoteClient(io_service),
   server(server),
-  user(0)
+  user(nullptr)
 {
 }
 
 RemoteClient::~RemoteClient()
 {
   log_info("Deleting remote client " << this->number);
-  if (this->user != 0)
+  if (this->user)
     delete this->user;
 }
 
@@ -44,12 +44,12 @@ void RemoteClient::auth_callback(Command* received_command)
       std::string login = arg.substr(0, pos);
       std::string password = arg.substr(pos+1);
       log_debug(login << ":" << password);
-      try 
+      try
         {
           DbObject* user = Database::inst()->get_object("*", "User",
                     std::string("`login`='" + login + "'"));
           std::cout << "USER: " << user << std::endl;
-          if (user == 0)
+          if (user == nullptr)
             {
               log_info("Authentication: User " << login << " does not exist in database.");
               body = "2";

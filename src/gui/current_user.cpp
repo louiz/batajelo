@@ -1,9 +1,11 @@
 #include <gui/current_user.hpp>
 #include <logging/logging.hpp>
 
-CurrentUser::CurrentUser() {}
+CurrentUser::CurrentUser():teams(nullptr)
+{}
 
-CurrentUser::~CurrentUser() {}
+CurrentUser::~CurrentUser()
+{}
 
 const std::map<std::string, std::string>& CurrentUser::get_current_user() const
 {

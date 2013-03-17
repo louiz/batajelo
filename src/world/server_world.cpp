@@ -17,7 +17,7 @@ void ServerWorld::spawn_unit(const size_t type, const int x, const int y)
   new_unit->pos = Position(x, y);
   DoUnitEvent* e = new DoUnitEvent(new_unit);
   e->turn = 1;
-  Action* action = new Action(0, e, 0);
+  Action* action = new Action(nullptr, e, 0);
   action->validate_completely();
   this->replay->insert_action(action);
 }
@@ -70,8 +70,8 @@ void ServerWorld::move_callback(Command* command)
   log_debug("move_callback: " << path_event->to_string());
   path_event->turn = current_turn + 2;
   this->generate_command("PATH", path_event->to_string());
-  // Action* action = new Action(boost::bind(&World::do_path, this, _1), path_event, this->occupants.size());
-  Action* action = new Action(0, path_event, this->occupants.size());
+  // Action* action = new Action(std::bind(&World::do_path, this, std::placeholders::_1), path_event, this->occupants.size());
+  Action* action = new Action(nullptr, path_event, this->occupants.size());
   this->turn_handler->insert_action(action, path_event->turn);
 }
 
@@ -88,7 +88,7 @@ void ServerWorld::build_callback(Command* command)
   DoBuildEvent* doevent = new DoBuildEvent(event);
   doevent->turn = this->turn_handler->get_current_turn() + 2;
   this->generate_command("BUILD", doevent->to_string());
-  Action* action = new Action(0, doevent, this->occupants.size());
+  Action* action = new Action(nullptr, doevent, this->occupants.size());
   this->turn_handler->insert_action(action, doevent->turn);
 }
 
@@ -103,7 +103,7 @@ void ServerWorld::spawn_callback(Command* command)
   DoSpawnEvent* doevent = new DoSpawnEvent(event);
   doevent->turn = this->turn_handler->get_current_turn() + 2;
   this->generate_command("SPAWN", doevent->to_string());
-  Action* action = new Action(0, doevent, this->occupants.size());
+  Action* action = new Action(nullptr, doevent, this->occupants.size());
   this->turn_handler->insert_action(action, doevent->turn);
 }
 

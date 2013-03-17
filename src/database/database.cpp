@@ -2,13 +2,13 @@
 #include <logging/logging.hpp>
 #include <config/config.hpp>
 
-Database* Database::instance = 0;
+Database* Database::instance = nullptr;
 
 Database::Database():
-  mysql(0),
+  mysql(NULL),
   connected(false)
 {
-  if (this->init() == 0)
+  if (this->init() == false)
     throw "5";
 }
 
@@ -30,7 +30,7 @@ bool Database::init()
 
 Database* Database::inst()
 {
-  if (instance == 0)
+  if (instance == nullptr)
     instance = new Database;
   return instance;
 }

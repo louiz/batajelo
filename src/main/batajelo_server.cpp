@@ -4,7 +4,6 @@
 #include <network/remote_game_client.hpp>
 #include <network/remote_client.hpp>
 #include <network/game_server.hpp>
-#include <cstdlib>
 
 int main()
 {

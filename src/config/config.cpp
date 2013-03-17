@@ -3,7 +3,7 @@
 
 #define CONF_DEFAULT_PATH "./batajelo.conf"
 
-Config* Config::instance = 0;
+Config* Config::instance = nullptr;
 
 bool Config::read_conf(const std::string& filename)
 {
@@ -49,7 +49,7 @@ bool Config::read_conf(const std::string& filename)
 
 std::string Config::get(const std::string& option, const std::string& def)
 {
-  if (instance == 0)
+  if (instance == nullptr)
     {
       // We can use a default path, only for testing purpose, to avoid
       // the boring Config::read_conf() at the start of every test suite
@@ -81,7 +81,7 @@ void Config::set_int(const std::string& option, const int& value, bool save)
 
 void Config::set(const std::string& option, const std::string& value, bool save)
 {
-  if (instance == 0)
+  if (instance == nullptr)
     {
       std::cerr << "Error: Config::read_conf() has never been called" << std::endl;
       return ;
@@ -110,7 +110,7 @@ void Config::save_to_file() const
 
 void Config::connect(t_config_changed_callback callback)
 {
-  if (instance == 0)
+  if (instance == nullptr)
     {
       std::cerr << "Error: Config::read_conf() has never been called" << std::endl;
       return ;

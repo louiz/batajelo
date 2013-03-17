@@ -23,7 +23,7 @@ void Replay::reset_action_iterator()
 Action* Replay::get_next_action()
 {
   if (this->actions_iterator == this->actions.end())
-    return 0;
+    return nullptr;
   Action* action = *this->actions_iterator;
   ++this->actions_iterator;
   return action;

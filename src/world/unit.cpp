@@ -151,13 +151,13 @@ Unit* Unit::get_unit_ahead(const Vec2& mov, World* world) const
           return unit;
         }
     }
-  return 0;
+  return nullptr;
 }
 
 bool Unit::will_collide_if_we_move(Vec2& mov, World* world) const
 {
   Unit* unit = this->get_unit_ahead(mov, world);
-  if (unit != 0)
+  if (unit != nullptr)
     return true;
   if (this->is_wall_ahead(mov, world) == true)
     return true;

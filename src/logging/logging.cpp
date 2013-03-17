@@ -1,7 +1,7 @@
 #include <logging/logging.hpp>
 #include <config/config.hpp>
 
-Logger* Logger::instance = 0;
+Logger* Logger::instance = nullptr;
 
 Logger::Logger():
   log_level(atoi(Config::get("log_level", "0").data())),
@@ -12,7 +12,7 @@ Logger::Logger():
 
 Logger* Logger::inst()
 {
-  if (instance == 0)
+  if (instance == nullptr)
     {
       instance = new Logger;
     }

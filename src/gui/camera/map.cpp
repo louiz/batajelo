@@ -7,7 +7,7 @@ GraphMap::GraphMap()
 {
   // A value of 0 in a cell means no tile, so the TileGraph
   // with gid 0 is NULL;
-  this->tiles.push_back(0);
+  this->tiles.push_back(nullptr);
 }
 
 GraphMap::~GraphMap()
@@ -15,7 +15,7 @@ GraphMap::~GraphMap()
   std::vector<GraphTile*>::iterator it;
   for (it = this->tiles.begin(); it < this->tiles.end(); ++it)
     {
-      if ((*it) != 0)
+      if ((*it) != nullptr)
         delete *it;
     }
   std::vector<sf::Texture*>::iterator itt;
@@ -135,9 +135,9 @@ void GraphMap::draw_full_map(sf::RenderTarget& target)
   uint level = 0;
 
   this->reset_layers_iterator();
-  while ((layer = this->get_next_layer()) != 0)
+  while ((layer = this->get_next_layer()) != nullptr)
     {
-      if (layer->cells == 0)
+      if (!layer->cells)
         continue ;
       uint yoffset = level++ * LEVEL_HEIGHT;
       for (uint y = 0;

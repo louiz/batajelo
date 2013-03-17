@@ -21,7 +21,7 @@ void Request::create(const DbObject* sender, const DbObject* receiver)
 {
   DbObject* request_pending = this->get(sender, receiver);
 
-  if (request_pending != NULL)
+  if (request_pending != nullptr)
     {
       log_error("This request is pending ! GO BAN LES FDP DE SPAMMER");
     }
@@ -41,7 +41,7 @@ void Request::deny(const DbObject* receiver, const DbObject* sender)
 {
   DbObject* request_pending = this->get(sender, receiver);
 
-  if (request_pending == NULL)
+  if (request_pending == nullptr)
     {
       log_warning("Friendship request not found !");
     }
