@@ -18,7 +18,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <boost/algorithm/string/trim_all.hpp>
 #include <functional>
 
 typedef std::function<void()> t_config_changed_callback;

@@ -6,6 +6,7 @@
 namespace utils
 {
   std::string basename(const std::string&);
+  void trim(std::string&);
 };
 
 #endif // __STRING_HPP__

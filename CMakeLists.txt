@@ -126,7 +126,7 @@ file(GLOB source_config
 add_library(config STATIC ${source_config})
 
 target_link_libraries(config
-  ${Boost_LIBRARIES}
+  utils
   )
 
 #
@@ -183,6 +183,7 @@ add_library(utils STATIC ${source_utils})
 
 target_link_libraries(
   utils
+  ${Boost_LIBRARIES}
   )
 
 #

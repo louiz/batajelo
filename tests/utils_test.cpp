@@ -1,4 +1,5 @@
 #include <utils/base64.hpp>
+#include <utils/string.hpp>
 #include <utils/zlib.hpp>
 #include <iostream>
 #include <config/config.hpp>
@@ -26,5 +27,28 @@ BOOST_AUTO_TEST_CASE(zlib_test)
   BOOST_REQUIRE(zlib_decompress(zlib_compress(original)) == "coucou coucou");
 }
 
+BOOST_AUTO_TEST_CASE(trim_test)
+{
+  std::string original("    coucou\n");
+  utils::trim(original);
+  BOOST_REQUIRE(original == "coucou");
+
+  original = "    coucou";
+  utils::trim(original);
+  BOOST_REQUIRE(original == "coucou");
+
+  original = "coucou  ";
+  utils::trim(original);
+  BOOST_REQUIRE(original == "coucou");
+
+  original = "coucou";
+  utils::trim(original);
+  BOOST_REQUIRE(original == "coucou");
+
+  original = "\n\ncoucou \r\n ";
+  utils::trim(original);
+  BOOST_REQUIRE(original == "coucou");
+
+}
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -1,5 +1,7 @@
-#include <config/config.hpp>
 #include <sstream>
+
+#include <config/config.hpp>
+#include <utils/string.hpp>
 
 #define CONF_DEFAULT_PATH "./batajelo.conf"
 
@@ -33,8 +35,8 @@ bool Config::read_conf(const std::string& filename)
             continue ;
           option = line.substr(0, pos);
           value = line.substr(pos+1);
-          boost::algorithm::trim_all(value);
-          boost::algorithm::trim_all(option);
+          utils::trim(value);
+          utils::trim(option);
           instance->values[option] = value;
         }
       file.close();
