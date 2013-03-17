@@ -12,7 +12,7 @@ Client::~Client()
 
 void Client::install_callbacks()
 {
-  this->install_callback("TRANSFER", boost::bind(&Client::transfer_init_callback, this, _1));
+  this->install_callback("TRANSFER", std::bind(&Client::transfer_init_callback, this, std::placeholders::_1));
 }
 
 void Client::transfer_init_callback(Command* received_command)

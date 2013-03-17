@@ -6,11 +6,13 @@
  * @class RemoteGameClient
  */
 
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
 
 #ifndef __REMOTE_GAME_CLIENT_HPP__
 # define __REMOTE_GAME_CLIENT_HPP__
+
+#include <functional>
+
+#include <boost/asio.hpp>
 
 #include <network/interface_remote_client.hpp>
 #include <network/server.hpp>

@@ -27,8 +27,7 @@
 #include <cstring>
 #include <fstream>
 #include <sstream>
-
-#include <boost/function.hpp>
+#include <functional>
 
 #ifndef __COMMAND_HPP__
 # define __COMMAND_HPP__
@@ -70,7 +69,7 @@ public:
   /**
    * If not 0, will be called from the send_handler.
    */
-  boost::function< void(void) > callback;
+  std::function< void(void) > callback;
 
 private:
   Command& operator=(const Command&);

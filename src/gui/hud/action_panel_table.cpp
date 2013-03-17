@@ -1,7 +1,8 @@
-#include <boost/bind.hpp>
-
+#include <functional>
 #include <gui/hud/action_panel_table.hpp>
 #include <gui/cursor.hpp>
+
+#include <assert.h>
 
 ActionPanelTable::ActionPanelTable():
   current_page(0)

@@ -3,7 +3,7 @@
 #include <logging/logging.hpp>
 #include <config/config.hpp>
 #include <SFML/System.hpp>
-#include <boost/bind.hpp>
+#include <functional>
 #include <sha.h>
 #include <base64.h>
 #include <translation/translation.hpp>
@@ -19,7 +19,7 @@ void Login::connect()
   std::string login = this->entry_login->GetText().toAnsiString();
   std::string password = this->entry_pass->GetText().toAnsiString();
   std::string digest;
-  CryptoPP::SHA256 hash;  
+  CryptoPP::SHA256 hash;
 
   if (this->entry_login->GetText() != "" && password != "")
     {
@@ -37,7 +37,7 @@ void Login::hide()
 {
   this->window_menu->Show(false);
   this->window_login->Show(false);
-  this->remember_login->Show(false); 
+  this->remember_login->Show(false);
 }
 
 void Login::show()
@@ -204,7 +204,7 @@ void Login::handle_keys_connect()
     {
       this->ui->set_event_handled(false);
       this->connect();
-    } 
+    }
   else if (this->ui->get_key() == sf::Keyboard::Tab && this->ui->get_event_handled() == true)
     {
       this->ui->set_event_handled(false);

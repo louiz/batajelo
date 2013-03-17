@@ -9,7 +9,7 @@ TimedEvent::TimedEvent(TimedEventHandler* handler,
   timer(timer),
   callback(callback)
 {
-  this->timer->async_wait(boost::bind(&TimedEvent::on_expires, this, _1));
+  this->timer->async_wait(std::bind(&TimedEvent::on_expires, this, std::placeholders::_1));
 }
 
 void TimedEvent::on_expires(const boost::system::error_code& error)

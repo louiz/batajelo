@@ -19,9 +19,9 @@
 #include <iostream>
 #include <string>
 #include <boost/algorithm/string/trim_all.hpp>
-#include <boost/function.hpp>
+#include <functional>
 
-typedef boost::function<void()> t_config_changed_callback;
+typedef std::function<void()> t_config_changed_callback;
 
 class Config
 {

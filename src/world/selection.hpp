@@ -15,9 +15,8 @@
 #include <list>
 #include <vector>
 #include <world/entity.hpp>
-#include <boost/function.hpp>
 
-typedef boost::function<void(void)> t_selection_changed_callback;
+typedef std::function<void(void)> t_selection_changed_callback;
 
 /**
  * A selection cannot contain more entities than that.

@@ -11,8 +11,7 @@
  */
 
 #include <boost/asio.hpp>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
+#include <functional>
 #include <string>
 #include <cstdlib>
 
@@ -39,8 +38,8 @@ public:
    */
   void connect(const std::string&,
 	       const short&,
-	       boost::function< void(void) > on_success = 0,
-	       boost::function< void(void) > on_failure = 0);
+	       std::function< void(void) > on_success = 0,
+	       std::function< void(void) > on_failure = 0);
   /**
    * Install all the default callbacks.
    */
@@ -56,8 +55,8 @@ public:
   virtual boost::asio::io_service& get_io_service();
 
 private:
-  void connect_handler(boost::function< void(void) >,
-		       boost::function< void(void) >,
+  void connect_handler(std::function< void(void) >,
+		       std::function< void(void) >,
 		       const boost::system::error_code&);
   /**
    * Called when the server sends us a PING request. Sends a PONG back.

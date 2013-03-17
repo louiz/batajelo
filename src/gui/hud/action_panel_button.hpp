@@ -1,7 +1,7 @@
 #ifndef __ACTION_PANEL_BUTTON_HPP__
 # define __ACTION_PANEL_BUTTON_HPP__
 
-#include <boost/function.hpp>
+#include <functional>
 #include <SFML/Graphics.hpp>
 #include <gui/cursor.hpp>
 
@@ -10,7 +10,7 @@
  * (which should be ignored in some cases, for example if we target an
  * entity) and a type_id.
  */
-typedef boost::function<bool(const unsigned int, const unsigned int, const std::size_t)> t_left_click_callback;
+typedef std::function<bool(const unsigned int, const unsigned int, const std::size_t)> t_left_click_callback;
 
 /**
  * A function that should be called when drawing the cursor. For example if
@@ -19,7 +19,7 @@ typedef boost::function<bool(const unsigned int, const unsigned int, const std::
  * may draw a building (with transparency or whatever) indicating the
  * position where the building would go if the user actually clicked.
  */
-typedef boost::function<cursor::type (const unsigned int, const unsigned int, const std::size_t)> t_draw_cursor_action;
+typedef std::function<cursor::type (const unsigned int, const unsigned int, const std::size_t)> t_draw_cursor_action;
 
 /**
  * a structure containing various elements to pass to the left click callback (for example if this is cast_spell, the structure contains the type_id of the spell).
@@ -41,7 +41,7 @@ struct t_left_click
   std::size_t id;
 };
 
-typedef boost::function<void(const t_left_click)> t_action_panel_button_callback;
+typedef std::function<void(const t_left_click)> t_action_panel_button_callback;
 
 class ActionPanelButton
 {

@@ -18,27 +18,27 @@ int main()
   map->load_from_file("test4.tmx");
   ClientMod mod("monsters.yaml");
   ClientWorld* world = new ClientWorld(map, mod);
-  world->set_next_turn_callback(boost::bind(&ClientWorld::on_next_turn, world, _1));
+  world->set_next_turn_callback(std::bind(&ClientWorld::on_next_turn, world, std::placeholders::_1));
 
 
   c->install_callback("NEW_OCCUPANT",
-          	      boost::bind(&ClientWorld::new_occupant_callback, world, _1));
+          	      std::bind(&ClientWorld::new_occupant_callback, world, std::placeholders::_1));
   c->install_callback("OCCUPANT_LEFT",
-          	      boost::bind(&ClientWorld::occupant_left_callback, world, _1));
+          	      std::bind(&ClientWorld::occupant_left_callback, world, std::placeholders::_1));
   c->install_callback("NEW_UNIT",
-          	      boost::bind(&ClientWorld::new_unit_callback, world, _1));
+          	      std::bind(&ClientWorld::new_unit_callback, world, std::placeholders::_1));
   c->install_callback("START",
-          	      boost::bind(&ClientWorld::handle_start_command, world, _1));
+          	      std::bind(&ClientWorld::handle_start_command, world, std::placeholders::_1));
   c->install_callback("OK",
-          	      boost::bind(&ClientWorld::ok_callback, world, _1));
+          	      std::bind(&ClientWorld::ok_callback, world, std::placeholders::_1));
   c->install_callback("T",
-          	      boost::bind(&ClientWorld::turn_callback, world, _1));
+          	      std::bind(&ClientWorld::turn_callback, world, std::placeholders::_1));
   c->install_callback("PATH",
-          	      boost::bind(&ClientWorld::path_callback, world, _1));
+          	      std::bind(&ClientWorld::path_callback, world, std::placeholders::_1));
   c->install_callback("BUILD",
-          	      boost::bind(&ClientWorld::build_callback, world, _1));
+          	      std::bind(&ClientWorld::build_callback, world, std::placeholders::_1));
   c->install_callback("SPAWN",
-          	      boost::bind(&ClientWorld::spawn_callback, world, _1));
+          	      std::bind(&ClientWorld::spawn_callback, world, std::placeholders::_1));
 
   // c->connect("88.190.23.192", 7879);
   c->connect("127.0.0.1", 7879);

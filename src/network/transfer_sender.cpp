@@ -64,8 +64,8 @@ void TransferSender::send_next_chunk()
     {
       // this was not the last chunk, so we'll send an other one when this one is
       // successfully sent.
-      this->client->send(command, boost::bind(&TransferSender::send_next_chunk, this));
+      this->client->send(command, std::bind(&TransferSender::send_next_chunk, this));
     }
   else
-    this->client->send(command, boost::bind(&RemoteClient::on_transfer_ended, this->client, this));
+    this->client->send(command, std::bind(&RemoteClient::on_transfer_ended, this->client, this));
 }

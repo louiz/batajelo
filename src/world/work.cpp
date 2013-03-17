@@ -4,19 +4,19 @@
 #include <world/work.hpp>
 
 PathWork::PathWork(Unit* unit, const Position pos):
-  Work(boost::bind(&Unit::follow_path, unit, _1, _2)),
-  path(0),
+  Work(std::bind(&Unit::follow_path, unit, std::placeholders::_1, std::placeholders::_2)),
+  path(),
   end_position(pos),
   calculated(false)
 {}
 
 RallyWork::RallyWork(Building* building, const Position pos):
-  Work(boost::bind(&Building::set_rally_point, building, _1, _2)),
+  Work(std::bind(&Building::set_rally_point, building, std::placeholders::_1, std::placeholders::_2)),
   position(pos)
 {}
 
 BuildWork::BuildWork(Unit* unit, const unsigned short id, const short x, const short y):
-  Work(boost::bind(&Unit::build, unit, _1, _2)),
+  Work(std::bind(&Unit::build, unit, std::placeholders::_1, std::placeholders::_2)),
   id(id),
   x(x),
   y(y),
@@ -24,7 +24,7 @@ BuildWork::BuildWork(Unit* unit, const unsigned short id, const short x, const s
 {}
 
 SpawnWork::SpawnWork(Building* building, const unsigned short id):
-  Work(boost::bind(&Building::spawn, building, _1, _2)),
+  Work(std::bind(&Building::spawn, building, std::placeholders::_1, std::placeholders::_2)),
   type_id(id),
   elapsed_time(0)
 {}

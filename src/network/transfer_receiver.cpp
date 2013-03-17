@@ -14,7 +14,7 @@ TransferReceiver::TransferReceiver(Client* client,
 {
   std::string command_name("TRANSFER_");
   command_name += sid;
-  this->client->install_callback(command_name, boost::bind(&TransferReceiver::get_next_chunk, this, _1));
+  this->client->install_callback(command_name, std::bind(&TransferReceiver::get_next_chunk, this, std::placeholders::_1));
   this->file.open(this->filename.data(), std::ofstream::binary);
 }
 

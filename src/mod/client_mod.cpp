@@ -1,5 +1,4 @@
-#include <boost/bind.hpp>
-
+#include <functional>
 #include <logging/logging.hpp>
 #include <gui/screen/screen.hpp>
 #include <mod/client_mod.hpp>
@@ -84,10 +83,10 @@ void ClientMod::fill_default_unit_actions(Screen* screen, ActionPanelTable* tabl
   t_left_click left_click = null_left;
 
   // Move button
-  left_click.callback = boost::bind(&ClientWorld::action_move, screen->get_world(), _1, _2, _3);
-  left_click.cursor_callback = boost::bind(&Screen::draw_move_cursor, screen, _1, _2, _3);
+  left_click.callback = std::bind(&ClientWorld::action_move, screen->get_world(), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+  left_click.cursor_callback = std::bind(&Screen::draw_move_cursor, screen, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
   page->add_button(new ActionPanelButton("move.png",
-                                         boost::bind(&Screen::set_left_click_callback, screen, _1), 0, left_click), 0);
+                                         std::bind(&Screen::set_left_click_callback, screen, std::placeholders::_1), 0, left_click), 0);
 
   // Empty buttons, yet
   page->add_button(new ActionPanelButton("stop.png",
@@ -117,21 +116,21 @@ void ClientMod::add_action_to_table(ActionPanelTable* table, const ModActionInfo
       this->add_empty_pages(table, infos.value + 1); // To be able to switch to the page.
       // Indicate what page we switch to when clicking the button.
       left_click.id = infos.value;
-      button = new ActionPanelButton(infos.image_filename, boost::bind(&ActionPanelTable::action_change_current_page, table, _1), infos.position, left_click);
+      button = new ActionPanelButton(infos.image_filename, std::bind(&ActionPanelTable::action_change_current_page, table, std::placeholders::_1), infos.position, left_click);
     }
   else if (infos.type == "build")
     {
       left_click.id = infos.value;
-      left_click.callback = boost::bind(&ClientWorld::action_build, screen->get_world(), _1, _2, _3);
-      left_click.cursor_callback = boost::bind(&Screen::draw_build_cursor, screen, _1, _2, _3);
-      button = new ActionPanelButton(infos.image_filename, boost::bind(&Screen::set_left_click_callback, screen, _1), infos.position, left_click);
+      left_click.callback = std::bind(&ClientWorld::action_build, screen->get_world(), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+      left_click.cursor_callback = std::bind(&Screen::draw_build_cursor, screen, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+      button = new ActionPanelButton(infos.image_filename, std::bind(&Screen::set_left_click_callback, screen, std::placeholders::_1), infos.position, left_click);
     }
   else if (infos.type == "spawn")
     {
       left_click.id = infos.value;
       left_click.callback = 0;
       left_click.cursor_callback = 0;
-      button = new ActionPanelButton(infos.image_filename, boost::bind(&ClientWorld::action_spawn, screen->get_world(), _1), infos.position, left_click);
+      button = new ActionPanelButton(infos.image_filename, std::bind(&ClientWorld::action_spawn, screen->get_world(), std::placeholders::_1), infos.position, left_click);
     }
   else
     {

@@ -8,11 +8,11 @@
  * @class RemoteClient
  */
 
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
-
 #ifndef __REMOTE_CLIENT_HPP__
 # define __REMOTE_CLIENT_HPP__
+
+#include <boost/asio.hpp>
+#include <functional>
 
 #include <network/interface_remote_client.hpp>
 #include <network/transfer_sender.hpp>

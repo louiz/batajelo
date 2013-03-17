@@ -19,8 +19,8 @@ void NetworkToUi::on_login_form_validated(const std::string& login,
                                    const short& port)
 {
   this->client.connect(host, port,
-           boost::bind(&NetworkToUi::on_connection_success, this, login, password),
-           boost::bind(&NetworkToUi::on_connection_failed, this, host, port));
+           std::bind(&NetworkToUi::on_connection_success, this, login, password),
+           std::bind(&NetworkToUi::on_connection_failed, this, host, port));
 }
 
 void NetworkToUi::on_connection_failed(const std::string& host, const short& port)
@@ -45,7 +45,7 @@ void NetworkToUi::authenticate(const std::string& login, const std::string& pass
   std::string body = login + '*' + password;
   log_error(body);
   command->set_body(body.data(), body.size());
-  this->client.request_answer(command, boost::bind(&Ui::on_authenticate, this->ui, _1));
+  this->client.request_answer(command, std::bind(&Ui::on_authenticate, this->ui, std::placeholders::_1));
 }
 
 void NetworkToUi::request_file(const std::string& filename)

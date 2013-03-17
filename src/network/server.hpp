@@ -13,13 +13,15 @@
  * @class Server
  */
 
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
-#include <istream>
-#include <vector>
-
 #ifndef __SERVER_HPP__
 # define __SERVER_HPP__
+
+
+#include <istream>
+#include <vector>
+#include <functional>
+
+#include <boost/asio.hpp>
 
 #include <logging/logging.hpp>
 #include <network/command.hpp>
@@ -193,9 +195,9 @@ private:
     T* new_client = new T(this->io_service, this);
 
     this->acceptor->async_accept(new_client->get_socket(),
-				 boost::bind(&Server<T>::handle_accept,
-					     this, new_client,
-					     boost::asio::placeholders::error));
+				 std::bind(&Server<T>::handle_accept,
+                                           this, new_client,
+                                           std::placeholders::_1));
   }
 
   void handle_accept(T* client, const boost::system::error_code& error)

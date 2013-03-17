@@ -8,17 +8,17 @@
  * @class TimedEvent
  */
 
-#include <boost/asio.hpp>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #ifndef __TIMED_EVENT_HPP__
 # define __TIMED_EVENT_HPP__
 
+#include <functional>
+
+#include <boost/asio.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 class TimedEventHandler;
 
-typedef boost::function< void(void) > t_timed_callback;
+typedef std::function< void(void) > t_timed_callback;
 
 class TimedEventHandler;
 

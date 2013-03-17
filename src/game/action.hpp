@@ -12,7 +12,7 @@
 # define __ACTION_HPP__
 
 #include <vector>
-#include <boost/function.hpp>
+#include <functional>
 
 #include <game/event.hpp>
 
@@ -29,7 +29,7 @@ namespace actions
     };
 }
 
-typedef boost::function< void(ActionEvent*) > t_action_callback;
+typedef std::function< void(ActionEvent*) > t_action_callback;
 
 class Action
 {

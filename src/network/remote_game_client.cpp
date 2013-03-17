@@ -25,11 +25,11 @@ void RemoteGameClient::install_callbacks()
   assert(game_server);
   ServerWorld* world = game_server->get_world();
 
-  this->install_callback("OK", boost::bind(&RemoteGameClient::ok_callback, this, _1));
-  this->install_callback("T", boost::bind(&RemoteGameClient::turn_callback, this, _1));
-  this->install_callback("MOVE", boost::bind(&ServerWorld::move_callback, world, _1));
-  this->install_callback("BUILD", boost::bind(&ServerWorld::build_callback, world, _1));
-  this->install_callback("SPAWN", boost::bind(&ServerWorld::spawn_callback, world, _1));
+  this->install_callback("OK", std::bind(&RemoteGameClient::ok_callback, this, std::placeholders::_1));
+  this->install_callback("T", std::bind(&RemoteGameClient::turn_callback, this, std::placeholders::_1));
+  this->install_callback("MOVE", std::bind(&ServerWorld::move_callback, world, std::placeholders::_1));
+  this->install_callback("BUILD", std::bind(&ServerWorld::build_callback, world, std::placeholders::_1));
+  this->install_callback("SPAWN", std::bind(&ServerWorld::spawn_callback, world, std::placeholders::_1));
 }
 
 boost::asio::io_service& RemoteGameClient::get_io_service()

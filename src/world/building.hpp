@@ -48,7 +48,7 @@ public:
   unsigned int get_spawn_time_elapsed() const;
 
 private:
-  Building& operator=(const Building&);
+  Building& operator=(const Building&) = delete;
 
 public:
   /**

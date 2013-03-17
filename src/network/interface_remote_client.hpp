@@ -13,7 +13,7 @@
  */
 
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
+#include <functional>
 
 #ifndef __INTERFACE_REMOTE_CLIENT_HPP__
 # define __INTERFACE_REMOTE_CLIENT_HPP__

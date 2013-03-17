@@ -45,7 +45,7 @@ void ClientWorld::new_unit_callback(Command* command)
       log_debug("Invalid data for the new entity.");
       return ;
     }
-  Action* action = new Action(boost::bind(&World::do_new_unit, this, _1), e);
+  Action* action = new Action(std::bind(&World::do_new_unit, this, std::placeholders::_1), e);
   log_debug("new entity");
   this->turn_handler->insert_action(action, e->turn);
   if (this->started == true)
@@ -101,7 +101,7 @@ void ClientWorld::path_callback(Command* command)
       log_warning("Invalid data for PATH command");
       return ;
     }
-  Action* action = new Action(boost::bind(&World::do_path, this, _1), e);
+  Action* action = new Action(std::bind(&World::do_path, this, std::placeholders::_1), e);
   this->insert_received_action(action, e);
 }
 
@@ -114,7 +114,7 @@ void ClientWorld::build_callback(Command* command)
       log_warning("Invalid data for BUILD command");
       return ;
     }
-  Action* action = new Action(boost::bind(&World::do_build, this, _1), e);
+  Action* action = new Action(std::bind(&World::do_build, this, std::placeholders::_1), e);
   this->insert_received_action(action, e);
 }
 
@@ -231,6 +231,6 @@ void ClientWorld::spawn_callback(Command* command)
       log_warning("Invalid data for Spawn command");
       return ;
     }
-  Action* action = new Action(boost::bind(&World::do_spawn, this, _1), e);
+  Action* action = new Action(std::bind(&World::do_spawn, this, std::placeholders::_1), e);
   this->insert_received_action(action, e);
 }

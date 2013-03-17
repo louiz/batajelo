@@ -11,9 +11,8 @@
 
 #include <deque>
 #include <map>
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
 
 #ifndef __COMMAND_HANDLER_HPP__
 # define __COMMAND_HANDLER_HPP__
@@ -23,7 +22,7 @@
 
 using boost::asio::ip::tcp;
 
-typedef boost::function<void(Command*)> t_read_callback;
+typedef std::function<void(Command*)> t_read_callback;
 typedef std::deque<Command*> command_queue;
 
 class CommandHandler
@@ -72,7 +71,7 @@ public:
    * command, if there's no async_write() call already running.
    * It does not necessarily actually send the command on the socket.
    */
-  void send(Command* command, boost::function< void(void) > on_sent = 0);
+  void send(Command* command, std::function< void(void) > on_sent = 0);
 
 protected:
   /**

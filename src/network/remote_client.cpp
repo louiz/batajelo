@@ -24,8 +24,8 @@ User* RemoteClient::get_user()
 
 void RemoteClient::install_callbacks()
 {
-  this->install_callback("AUTH", boost::bind(&RemoteClient::auth_callback, this, _1));
-  this->install_callback("TRANSFER", boost::bind(&RemoteClient::transfer_callback, this, _1));
+  this->install_callback("AUTH", std::bind(&RemoteClient::auth_callback, this, std::placeholders::_1));
+  this->install_callback("TRANSFER", std::bind(&RemoteClient::transfer_callback, this, std::placeholders::_1));
 }
 
 void RemoteClient::auth_callback(Command* received_command)

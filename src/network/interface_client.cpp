@@ -31,21 +31,21 @@ InterfaceClient::~InterfaceClient()
 
 // Connect, asyncly, and call one of the given callbacks
 void InterfaceClient::connect(const std::string& host,
-		     const short& port,
-		     boost::function< void(void) > on_success,
-		     boost::function< void(void) > on_failure)
+                              const short& port,
+                              std::function< void(void) > on_success,
+                              std::function< void(void) > on_failure)
 {
   // TODO use resolve and DNS
   tcp::endpoint endpoint(boost::asio::ip::address::from_string(host), port);
   this->socket->async_connect(endpoint,
-			     boost::bind(&InterfaceClient::connect_handler, this,
-					 on_success, on_failure,
-					 boost::asio::placeholders::error));
+                              std::bind(&InterfaceClient::connect_handler, this,
+                                        on_success, on_failure,
+                                        std::placeholders::_1));
   log_info("Connecting to " << host << ":" << port);
 }
 
-void InterfaceClient::connect_handler(boost::function< void(void) > on_success,
-			     boost::function< void(void) > on_failure,
+void InterfaceClient::connect_handler(std::function< void(void) > on_success,
+			     std::function< void(void) > on_failure,
 			     const boost::system::error_code& error)
 {
   if (error)
@@ -57,7 +57,7 @@ void InterfaceClient::connect_handler(boost::function< void(void) > on_success,
   else
     {
       log_info("Connected.");
-      this->install_callback("PING", boost::bind(&InterfaceClient::ping_callback, this, _1));
+      this->install_callback("PING", std::bind(&InterfaceClient::ping_callback, this, std::placeholders::_1));
       this->install_callbacks();
       this->install_read_handler();
       if (on_success)

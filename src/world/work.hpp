@@ -5,8 +5,7 @@
 #ifndef __WORK_HPP__
 # define __WORK_HPP__
 
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
+#include <functional>
 
 class Unit;
 class Building;
@@ -18,7 +17,7 @@ class Entity;
 /**
  * The function to call at each tick of the entity owning that work. It returns true if that work is complete and must be removed from the queue, false otherwise.
  */
-typedef boost::function<bool (World*, Work*)> t_work_callback;
+typedef std::function<bool (World*, Work*)> t_work_callback;
 
 class Work
 {

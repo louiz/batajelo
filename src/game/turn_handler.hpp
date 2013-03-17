@@ -8,7 +8,7 @@
  */
 
 #include <deque>
-#include <boost/function.hpp>
+#include <functional>
 
 #ifndef __TURN_HANDLER_HPP__
 # define __TURN_HANDLER_HPP__
@@ -17,7 +17,7 @@
 #include <game/action.hpp>
 #include <game/replay.hpp>
 
-typedef boost::function< void(unsigned long) > t_next_turn_callback;
+typedef std::function< void(unsigned long) > t_next_turn_callback;
 
 /**
  * The number of ticks contained in a turn

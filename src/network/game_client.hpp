@@ -29,8 +29,8 @@ public:
   void new_client_callback(Command*);
 
 private:
-  void connect_handler(boost::function< void(void) >,
-        	       boost::function< void(void) >,
+  void connect_handler(std::function< void(void) >,
+        	       std::function< void(void) >,
         	       const boost::system::error_code&);
   boost::asio::io_service io_service;
 };

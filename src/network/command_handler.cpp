@@ -106,10 +106,10 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
   boost::asio::async_read(*this->socket,
 			  this->data,
 			  boost::asio::transfer_at_least(length_to_read),
-			  boost::bind(&CommandHandler::binary_read_handler, this,
-				      boost::asio::placeholders::error,
-				      command,
-				      size, callback));
+			  std::bind(&CommandHandler::binary_read_handler, this,
+                                    std::placeholders::_1,
+                                    command,
+                                    size, callback));
 }
 
 void CommandHandler::binary_read_handler(const boost::system::error_code& error,
@@ -140,9 +140,9 @@ void CommandHandler::install_read_handler(void)
   boost::asio::async_read_until(*this->socket,
 				this->data,
 				':',
-				boost::bind(&CommandHandler::read_handler, this,
-					    boost::asio::placeholders::error,
-					    boost::asio::placeholders::bytes_transferred));
+				std::bind(&CommandHandler::read_handler, this,
+                                          std::placeholders::_1,
+                                          std::placeholders::_2));
 }
 
 void CommandHandler::request_answer(Command* command, t_read_callback on_answer, std::string name)
@@ -153,7 +153,7 @@ void CommandHandler::request_answer(Command* command, t_read_callback on_answer,
   this->send(command);
 }
 
-void CommandHandler::send(Command* command, boost::function< void(void) > on_sent)
+void CommandHandler::send(Command* command, std::function< void(void) > on_sent)
 {
   if (on_sent)
     command->callback = on_sent;
@@ -181,10 +181,10 @@ void CommandHandler::actually_send(Command* command)
   buffs.push_back(boost::asio::buffer(command->body, command->body_size));
   async_write(*this->socket,
 	      buffs,
-  	      boost::bind(&CommandHandler::send_handler, this,
-  			  boost::asio::placeholders::error,
-  			  boost::asio::placeholders::bytes_transferred,
-  			  command));
+  	      std::bind(&CommandHandler::send_handler, this,
+                        std::placeholders::_1,
+                        std::placeholders::_2,
+                        command));
 }
 
 void CommandHandler::send_handler(const boost::system::error_code& error,

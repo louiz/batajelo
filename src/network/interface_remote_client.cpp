@@ -26,7 +26,7 @@ void InterfaceRemoteClient::start()
 {
   log_debug("Starting InterfaceRemoteClient " << this->number);
   this->install_callbacks();
-  this->install_timed_event(boost::bind(&InterfaceRemoteClient::send_ping, this), 2);
+  this->install_timed_event(std::bind(&InterfaceRemoteClient::send_ping, this), 2);
   CommandHandler::install_read_handler();
 }
 
@@ -34,7 +34,7 @@ void InterfaceRemoteClient::send_ping()
 {
   Command* command = new Command;
   command->set_name("PING");
-  this->request_answer(command, boost::bind(&InterfaceRemoteClient::on_pong, this, _1), "PONG");
+  this->request_answer(command, std::bind(&InterfaceRemoteClient::on_pong, this, std::placeholders::_1), "PONG");
   this->ping_sent();
 }
 
@@ -42,5 +42,5 @@ void InterfaceRemoteClient::on_pong(Command*)
 {
   this->pong_received();
   log_debug("Current ping: " << this->get_latency() << "micro seconds.");
-  this->install_timed_event(boost::bind(&InterfaceRemoteClient::send_ping, this), 2);
+  this->install_timed_event(std::bind(&InterfaceRemoteClient::send_ping, this), 2);
 }

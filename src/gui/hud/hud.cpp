@@ -1,5 +1,4 @@
-#include <boost/bind.hpp>
-
+#include <functional>
 #include <gui/hud/hud.hpp>
 #include <world/entity.hpp>
 
@@ -12,7 +11,7 @@ Hud::Hud(GraphMap* map, ClientWorld* world, sf::RenderWindow* win, Camera* camer
 {
   // Install a callback on the selection that will reset the action_panel
   // whenever the selection is modified.
-  world->add_selection_change_callback(boost::bind(&ActionPanel::reset_all_tables, &this->action_panel));
+  world->add_selection_change_callback(std::bind(&ActionPanel::reset_all_tables, &this->action_panel));
   this->hud_texture.loadFromFile("./data/images/hud.png");
   this->hud_sprite.setTexture(this->hud_texture);
   this->hud_sprite.setPosition(0, win->getSize().y - HUD_HEIGHT);

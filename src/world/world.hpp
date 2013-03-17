@@ -14,15 +14,16 @@
  * The world, contains the list of all entities, the game time, etc.
  */
 
-#include <list>
-#include <queue>
-#include <boost/bind.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <game/event.hpp>
-
 #ifndef __WORLD_HPP__
 # define __WORLD_HPP__
 
+#include <list>
+#include <queue>
+#include <functional>
+
+#include <boost/archive/text_iarchive.hpp>
+
+#include <game/event.hpp>
 #include <world/occupant.hpp>
 #include <world/entity.hpp>
 #include <world/unit.hpp>
