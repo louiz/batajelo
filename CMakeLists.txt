@@ -25,7 +25,7 @@ set(LIBRARY_OUTPUT_PATH output_lib)
 set(CMAKE_C_FLAGS "-DFIXMATH_SIN_LUT")
 
 # Link with libefence to easily catch segfaults on debug build
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -lefence")
+# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -lefence")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
