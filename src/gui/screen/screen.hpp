@@ -19,7 +19,7 @@
 
 #include <gui/camera/camera.hpp>
 #include <gui/hud/hud.hpp>
-#include <world/client_world.hpp>
+#include <world/client_world/client_world.hpp>
 #include <gui/cursor.hpp>
 #include <mod/client_mod.hpp>
 

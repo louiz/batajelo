@@ -1,6 +1,5 @@
 #include <logging/logging.hpp>
 #include <gui/hud/selection_panel.hpp>
-#include <world/client_world.hpp>
 
 SelectionPanel::SelectionPanel(sf::RenderWindow* win, const Selection* selection):
   current_tab(0),

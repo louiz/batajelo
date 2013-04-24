@@ -20,7 +20,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <world/selection.hpp>
-#include <world/client_world.hpp>
+#include <world/client_world/client_world.hpp>
 
 #define SQUARE_SIZE 50
 #define SQUARES_PER_LINE 10

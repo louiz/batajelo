@@ -2,6 +2,8 @@
 #include <world/building.hpp>
 #include <gui/common.hpp>
 #include <gui/screen/screen.hpp>
+#include <world/client_world/client_world.hpp>
+#include <logging/logging.hpp>
 
 ArchiveSprite::ArchiveSprite()
 {

@@ -1,7 +1,7 @@
 #include <config/config.hpp>
 #include <logging/logging.hpp>
 #include <network/game_client.hpp>
-#include <world/client_world.hpp>
+#include <world/client_world/client_world.hpp>
 #include <world/time.hpp>
 #include <gui/screen/screen.hpp>
 #include <network/command.hpp>

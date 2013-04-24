@@ -17,7 +17,7 @@
 #include <SFML/System.hpp>
 #include <boost/function.hpp>
 
-#include <world/client_world.hpp>
+#include <world/client_world/client_world.hpp>
 #include <world/time.hpp>
 #include <gui/camera/map.hpp>
 #include <gui/camera/mouse_selection.hpp>

@@ -1,5 +1,6 @@
 #include <logging/logging.hpp>
 #include <gui/sprites/building_sprite.hpp>
+#include <world/client_world/client_world.hpp>
 
 void BuildingSprite::draw_rally_point(Camera* camera, const Building* const building) const
 {

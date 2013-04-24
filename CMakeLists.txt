@@ -278,6 +278,20 @@ target_Link_libraries(world
   )
 
 #
+## ClientWorld
+#
+file(GLOB source_client_world
+  src/world/client_world/*.[hc]pp
+  )
+
+add_library(client_world STATIC ${source_client_world})
+
+target_Link_libraries(client_world
+  world
+  gui
+  )
+
+#
 ## Serialization
 #
 file(GLOB source_serialization
@@ -358,7 +372,7 @@ target_link_libraries(game
   client
   logging
   config
-  world
+  client_world
   )
 
 #
