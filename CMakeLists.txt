@@ -73,20 +73,6 @@ include_directories("src/yaml-cpp/include/")
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${CRYPTO++_LIBRARIES})
 
-if(BUILD_CLIENT)
-  include_directories(${SFML_INCLUDE_DIR})
-  link_directories(${SFML_LIBRARIES})
-
-  include_directories(${SFGUI_INCLUDE_DIR})
-  link_directories(${SFGUI_LIBRARY})
-endif()
-
-if(BUILD_SERVER)
-  include_directories(${MYSQL_INCLUDE_DIR})
-  link_directories(${MYSQL_LIB_DIR})
-endif()
-
-
 ##########################
 # Targets
 ##########################
@@ -254,7 +240,6 @@ if(BUILD_CLIENT)
     ${SFML_LIBRARIES}
     ${SFGUI_LIBRARY}
     ${Boost_LIBRARIES}
-    # ${CRYPTO++_LIBRARIES}       # Useful?
     )
 endif()
 
