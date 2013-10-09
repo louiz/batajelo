@@ -58,7 +58,7 @@ std::string Config::get(const std::string& option, const std::string& def)
       Config::read_conf(CONF_DEFAULT_PATH);
     }
 
-  std::map<std::string, std::string>::iterator it = instance->values.find(option);
+  auto it = instance->values.find(option);
 
   if (it == instance->values.end())
     return def;
@@ -104,9 +104,8 @@ void Config::save_to_file() const
       std::cerr << "Could not save config file." << std::endl;
       return ;
     }
-  std::map<std::string, std::string>::const_iterator it;
-  for (it=this->values.begin(); it != this->values.end(); ++it)
-    file << it->first << "=" << it->second << std::endl;
+  for (auto& it: this->values)
+    file << it.first << "=" << it.second << std::endl;
   file.close();
 }
 
