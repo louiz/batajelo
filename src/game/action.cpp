@@ -2,8 +2,8 @@
 #include <game/action.hpp>
 
 Action::Action(t_action_callback callback,
-	       ActionEvent* event,
-	       unsigned int validations_needed):
+               ActionEvent* event,
+               unsigned int validations_needed):
   validations_needed(validations_needed),
   completely_validated(false),
   event(event),

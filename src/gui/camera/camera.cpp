@@ -23,7 +23,7 @@ Camera::~Camera()
 }
 
 void Camera::draw_unit(const Unit* unit, const uint x, const uint y,
-                         const bool in_mouse_selection, sf::RectangleShape& rectangle)
+                       const bool in_mouse_selection, sf::RectangleShape& rectangle)
 {
   if (in_mouse_selection)
     {

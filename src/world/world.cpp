@@ -66,12 +66,12 @@ void World::remove_occupant(Occupant* occupant)
   for (it = this->occupants.begin(); it < this->occupants.end(); ++it)
     {
       if ((*it)->number == occupant->number)
-	{
-	  occupant_to_remove = (*it);
-	  this->occupants.erase(it);
-	  delete occupant_to_remove;
-	  return ;
-	}
+     {
+       occupant_to_remove = (*it);
+       this->occupants.erase(it);
+       delete occupant_to_remove;
+       return ;
+     }
     }
   assert(false);
 }
@@ -172,7 +172,7 @@ void World::start()
   if (this->map == 0)
     {
       this->map = new Map();
-      this->map->load_from_file("test4.tmx");
+      this->map->load_from_file("test5.tmx");
     }
   this->started = true;
 }
@@ -283,7 +283,7 @@ Entity* World::get_entity_by_id(unsigned short id)
     {
       entity = *it;
       if (entity->get_id() == id)
-	return entity;
+     return entity;
     }
   return 0;
 }
@@ -295,7 +295,7 @@ Unit* World::get_unit_by_id(unsigned short id)
     {
       unit = *it;
       if (unit->get_id() == id)
-	return unit;
+     return unit;
     }
   return 0;
 }
@@ -307,7 +307,7 @@ Building* World::get_building_by_id(unsigned short id)
     {
       building = *it;
       if (building->get_id() == id)
-	return building;
+     return building;
     }
   return 0;
 }

@@ -51,7 +51,7 @@ boost::posix_time::ptime DbObject::get_date(const std::string& field) const
 void DbObject::print()
 {
   std::map<std::string, std::string>::iterator it;
-	std::cout << this->values.size();
+     std::cout << this->values.size();
 
   for (it = this->values.begin(); it != this->values.end(); ++it)
     log_info(it->first << " -> " << it->second);
@@ -59,9 +59,9 @@ void DbObject::print()
 
 template<typename T> void DbObject::print_vector(std::vector<T*> objs)
 {
-	// WTF, doesnt work :(
-/*	std::vector<T::template>::iterator t_it;
+     // WTF, doesnt work :(
+/*     std::vector<T::template>::iterator t_it;
 
   for (t_it = objs.begin(); it != objs.end(); t_it++)
-		(*t_it).print();*/
+          (*t_it).print();*/
 }

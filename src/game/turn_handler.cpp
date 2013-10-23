@@ -21,7 +21,7 @@ void TurnHandler::tick(bool force)
     {
       // we check if next turn is validated, to unpause.
       if (this->is_next_turn_validated() == false)
-	return ;
+        return ;
       this->unpause();
       this->turn_advancement = 0;
       this->next_turn();
@@ -31,16 +31,16 @@ void TurnHandler::tick(bool force)
   if (this->turn_advancement == TURN_TIME)
     {
       if ((this->is_next_turn_validated() == false) && (force == false))
-	{
-	  log_debug("Next turn is not validated");
-	  this->pause();
-	  return ;
-	}
+        {
+          log_debug("Next turn is not validated");
+          this->pause();
+          return ;
+        }
       else
-	{
-	  this->turn_advancement = 0;
-	  this->next_turn();
-	}
+        {
+          this->turn_advancement = 0;
+          this->next_turn();
+        }
     }
 }
 
@@ -134,15 +134,15 @@ bool TurnHandler::validate_action(const unsigned int id, const unsigned long int
     {
       (*it).reset_action_iterator();
       while ((action = (*it).get_next_action()) != nullptr)
-	{
-	  if (action->get_id() == id)
-	    {
-	      res = action->validate(by);
-	      if (res == true)
+        {
+          if (action->get_id() == id)
+            {
+              res = action->validate(by);
+              if (res == true)
                 this->replay->insert_action(action);
-	      return res;
-	    }
-	}
+              return res;
+            }
+        }
     }
   log_warning("Action to validate was not found");
   // Action was not found, so it did'nt became completely validated
@@ -158,18 +158,18 @@ void TurnHandler::completely_validate_action(const unsigned int id)
     {
       (*it).reset_action_iterator();
       while ((action = (*it).get_next_action()) != nullptr)
-	{
-	  if (action->get_id() == id)
-	    {
-	      action->validate_completely();
-	    }
-	}
+        {
+          if (action->get_id() == id)
+            {
+              action->validate_completely();
+            }
+        }
     }
 }
 
 bool TurnHandler::validate_turn(const unsigned int number,
-				const unsigned long int by,
-				const unsigned int confirmations_needed)
+                                const unsigned long int by,
+                                const unsigned int confirmations_needed)
 {
   if (this->insert_turn(number) == false)
     {

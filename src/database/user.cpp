@@ -76,7 +76,7 @@ std::vector<DbObject*> User::get_replays()
   std::vector<DbObject*> replays = Database::inst()->get_objects("replay_id, name", where, "user_id=" + this->get("id"));
   if (!replays.empty())
     {
-	    log_warning("No Replays found !");
+         log_warning("No Replays found !");
     }
   return replays;
 }

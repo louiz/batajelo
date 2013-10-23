@@ -249,7 +249,7 @@ int Map::get_max_level_for_cell(const uint cell) const
       if ((*it)->get_cell(cell) != 0)
         ret = (*it)->get_level();
     }
-  return ret;
+   return ret;
 }
 
 ushort Map::get_cell_heights(const int cellx, const int celly) const

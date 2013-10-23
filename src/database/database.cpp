@@ -39,13 +39,13 @@ bool Database::connect()
 {
   if (this->connected == true)
     return true;
-  log_debug("Connecting to database using: host:" << Config::get("db_host", "localhost").data() << " user:" << Config::get("db_user", "root").data() << " pass:" << Config::get("db_password", "").data() << " db:" << Config::get("db_database", "batajelo").data());
+  log_debug("Connecting to database using: host:" << Config::get("db_host", "localhost").c_str() << " user:" << Config::get("db_user", "root").c_str() << " pass:" << Config::get("db_password", "").c_str() << " db:" << Config::get("db_database", "batajelo").c_str());
   if (mysql_real_connect(this->mysql,
-			 Config::get("db_host", "localhost").c_str(),
-			 Config::get("db_user", "root").c_str(),
-			 Config::get("db_password", "").c_str(),
-			 Config::get("db_database", "batajelo").c_str(),
-			 DB_PORT, DB_UNIX_SOCKET, DB_CLIENT_FLAG) == NULL)
+                Config::get("db_host", "localhost").c_str(),
+                Config::get("db_user", "root").c_str(),
+                Config::get("db_password", "").c_str(),
+                Config::get("db_database", "batajelo").c_str(),
+                DB_PORT, DB_UNIX_SOCKET, DB_CLIENT_FLAG) == NULL)
     {
       throw "5";
       return false;
@@ -117,8 +117,8 @@ bool Database::do_remove(const std::string& query)
 }
 
 DbObject* Database::get_object(const std::string& columns,
-			       const std::string& table,
-			       const std::string& where)
+                      const std::string& table,
+                      const std::string& where)
 {
   MYSQL_RES* result = this->do_query("SELECT " + columns + " FROM " + table + " WHERE " + where);
   if (!result)
@@ -150,8 +150,8 @@ DbObject* Database::get_object(const std::string& columns,
 }
 
 std::vector<DbObject*> Database::get_objects(const std::string& columns,
-					     const std::string& table,
-					     const std::string& where)
+                              const std::string& table,
+                              const std::string& where)
 {
   MYSQL_RES* result = this->do_query("SELECT " + columns + " FROM " + table + " WHERE " + where);
   std::vector<DbObject*> db_objects;
@@ -169,8 +169,8 @@ std::vector<DbObject*> Database::get_objects(const std::string& columns,
     {
       DbObject* db_object = new DbObject;
       for(field_id = 0; field_id < fields_number; field_id++)
-	if (mysql_row[field_id])  // if the value is NULL, we don’t append anything
-	  db_object->values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
+     if (mysql_row[field_id])  // if the value is NULL, we don’t append anything
+       db_object->values.insert(std::make_pair(fields[field_id].name, mysql_row[field_id]));
       db_objects.push_back(db_object);
     }
   mysql_free_result(result);
@@ -196,11 +196,11 @@ bool Database::update(const DbObject* object, const std::string& table_name)
       values_str += "'" + it->second + "'";
       update_str += "`" + it->first + "`='" + it->second + "'";
       if (it != final_it)
-	{
-	  fields_str += ",";
-	  values_str += ",";
-	  update_str += ",";
-	}
+     {
+       fields_str += ",";
+       values_str += ",";
+       update_str += ",";
+     }
     }
   query += fields_str + ") " + values_str + ") " + update_str;
 

@@ -25,7 +25,7 @@ void Turn::execute(bool delete_actions)
       log_warning("Executing one action");
       (*it)->execute();
       if (delete_actions)
-	delete (*it);
+        delete (*it);
     }
   this->actions.clear();
 }
@@ -41,7 +41,7 @@ bool Turn::is_validated() const
   for (it = this->actions.begin(); it < this->actions.end(); ++it)
     {
       if ((*it)->is_completely_validated() == false)
-  	return false;
+        return false;
     }
   if (this->validated == true)
     return true;

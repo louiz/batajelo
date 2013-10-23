@@ -88,8 +88,8 @@ public:
   /**
    * Insert a unit in the unit list. It will also be added into the entity list.
    */
-  void insert_unit(Unit*);
-  void insert_building(Building*);
+  virtual void insert_unit(Unit*);
+  virtual void insert_building(Building*);
   /**
    * Create an entity based on the given model.
    */

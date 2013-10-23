@@ -11,7 +11,7 @@
 int main()
 {
   sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(1920, 1080),
-  						  "Bata");
+                                                  "Bata");
   window->setMouseCursorVisible(false);
   GameClient* c = new GameClient();
   GraphMap* map = new GraphMap;
@@ -22,23 +22,23 @@ int main()
 
 
   c->install_callback("NEW_OCCUPANT",
-          	      std::bind(&ClientWorld::new_occupant_callback, world, std::placeholders::_1));
+                      std::bind(&ClientWorld::new_occupant_callback, world, std::placeholders::_1));
   c->install_callback("OCCUPANT_LEFT",
-          	      std::bind(&ClientWorld::occupant_left_callback, world, std::placeholders::_1));
+                      std::bind(&ClientWorld::occupant_left_callback, world, std::placeholders::_1));
   c->install_callback("NEW_UNIT",
-          	      std::bind(&ClientWorld::new_unit_callback, world, std::placeholders::_1));
+                      std::bind(&ClientWorld::new_unit_callback, world, std::placeholders::_1));
   c->install_callback("START",
-          	      std::bind(&ClientWorld::handle_start_command, world, std::placeholders::_1));
+                      std::bind(&ClientWorld::handle_start_command, world, std::placeholders::_1));
   c->install_callback("OK",
-          	      std::bind(&ClientWorld::ok_callback, world, std::placeholders::_1));
+                      std::bind(&ClientWorld::ok_callback, world, std::placeholders::_1));
   c->install_callback("T",
-          	      std::bind(&ClientWorld::turn_callback, world, std::placeholders::_1));
+                      std::bind(&ClientWorld::turn_callback, world, std::placeholders::_1));
   c->install_callback("PATH",
-          	      std::bind(&ClientWorld::path_callback, world, std::placeholders::_1));
+                      std::bind(&ClientWorld::path_callback, world, std::placeholders::_1));
   c->install_callback("BUILD",
-          	      std::bind(&ClientWorld::build_callback, world, std::placeholders::_1));
+                      std::bind(&ClientWorld::build_callback, world, std::placeholders::_1));
   c->install_callback("SPAWN",
-          	      std::bind(&ClientWorld::spawn_callback, world, std::placeholders::_1));
+                      std::bind(&ClientWorld::spawn_callback, world, std::placeholders::_1));
 
   // c->connect("88.190.23.192", 7879);
   c->connect("127.0.0.1", 7879);
