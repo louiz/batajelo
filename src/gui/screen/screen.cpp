@@ -9,6 +9,7 @@ Screen::Screen(ClientWorld* world, GraphMap* map, sf::RenderWindow* win, ClientM
   hud(map, world, win, &camera, this, mod),
   current_cursor_type(cursor::Normal)
 {
+  world->camera = &this->camera;
   this->cursor_textures.resize(cursor::size);
   const std::string data_path("./data/images/");
   for (int i = 0; i < cursor::size; ++i)
@@ -18,7 +19,7 @@ Screen::Screen(ClientWorld* world, GraphMap* map, sf::RenderWindow* win, ClientM
         throw GraphInitError();
     }
   this->cursor_sprite.setTexture(this->cursor_textures[cursor::Normal]);
-  this->building_sprites = mod.get_building_sprites();
+  this->building_textures = mod.get_building_textures();
 }
 
 Screen::~Screen()
@@ -85,7 +86,8 @@ void Screen::set_left_click_callback(const t_left_click left_click)
 cursor::type Screen::draw_build_cursor(const uint x, const uint y, const std::size_t id)
 {
   log_error("id: " << id);
-  sf::Sprite sprite = this->building_sprites[id]->get_cursor_sprite();
+  sf::Sprite sprite;
+  sprite.setTexture(*(this->building_textures[id]));
   short xa, ya;
   Position world_pos = this->camera.camera_to_world_position(x, y);
   this->world->get_cell_at_position(world_pos, xa, ya);

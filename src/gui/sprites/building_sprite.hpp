@@ -8,7 +8,7 @@
  * Building object as a parameter, it gets various informations from it (its
  * position in the world, its current action (walking, attacking, etc) and
  * its current tick number in that action), from that it draws one or more
- * sf::Sprite on the screen at various position.
+ * sf::Sprite or any other Drawable on the screen at various position.
  *
  * @class BuildingSprite
  */
@@ -16,20 +16,21 @@
 #ifndef __BUILDING_SPRITE_HPP__
 # define __BUILDING_SPRITE_HPP__
 
-#include <SFML/Graphics.hpp>
-#include <gui/camera/camera.hpp>
-#include <world/client_world.hpp>
-
-class Screen;
+#include <gui/sprites/sprite.hpp>
 
 class Building;
+class ClientWorld;
+class Screen;
 
-class BuildingSprite
+class BuildingSprite: public Sprite
 {
 public:
-  BuildingSprite() {}
+  BuildingSprite(const Building*const building):
+    building(building)
+  {}
   virtual ~BuildingSprite() {};
-  virtual void draw(Camera*, const ClientWorld*, const Screen*, const Building*) const = 0;
+  virtual void draw(Camera*, const ClientWorld*, const Screen*) const = 0;
+  virtual void tick() = 0;
   /**
    * Returns the sprite that should be drawn on the cell under the cursor we
    * the left click action is to build this building.
@@ -42,6 +43,8 @@ public:
   void draw_rally_point(Camera*, const Building* const) const;
   void draw_selection_circle(Camera* camera, const Building* const building) const;
   bool is_in_screen(Camera*, const Building* const) const;
+protected:
+  const Building *const building;
 private:
   BuildingSprite(const BuildingSprite&);
   BuildingSprite& operator=(const BuildingSprite&);

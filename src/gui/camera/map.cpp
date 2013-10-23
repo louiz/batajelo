@@ -101,24 +101,31 @@ bool GraphMap::read_tileset(boost::property_tree::ptree& tileset_tree)
       log_error("Firstgid for the tileset is invalid.");
       return false;
     }
+  log_error("Image: " << image_width << ":" << image_height);
   sf::Texture* texture = new sf::Texture;
   if (texture->loadFromFile(source ,
                             sf::Rect<int>(0, 0,
-                                          image_height,
-                                          image_width)) == false)
+                                          image_width,
+                                          image_height)) == false)
     {
       log_error("Could not load image file: " << source);
       delete texture;
       return false;
     }
+  else
+    log_info("Successfuly loaded image: " << source);
   this->tileset_textures.push_back(texture);
   const uint number_of_tiles = (image_height / tile_height) *
     (image_width / tile_width);
   if (this->tiles.size() < number_of_tiles + gid)
-    this->tiles.resize(number_of_tiles + gid, 0);
+    {
+      log_debug("Resizing tiles to " << number_of_tiles + gid);
+      this->tiles.resize(number_of_tiles + gid, nullptr);
+    }
   for (uint y = 0; y < image_height; y += tile_height)
     for (uint x = 0; x < image_width; x += tile_width)
       {
+        log_debug("Cropping tile: " << x << ":" << y << ", " << tile_width << ":" << tile_height << "in " << gid);
         GraphTile* tile = new GraphTile(*texture,
                                         sf::Rect<int>(x, y,
                                                       tile_width,
@@ -130,25 +137,23 @@ bool GraphMap::read_tileset(boost::property_tree::ptree& tileset_tree)
 
 void GraphMap::draw_full_map(sf::RenderTarget& target)
 {
-  Layer* layer;
   GraphTile* tile;
   uint level = 0;
 
-  this->reset_layers_iterator();
-  while ((layer = this->get_next_layer()) != nullptr)
+  for (auto& layer: this->layers)
     {
       if (!layer->cells)
         continue ;
       uint yoffset = level++ * LEVEL_HEIGHT;
       for (uint y = 0;
-           y < layer->height;
+           y < this->theight;
            y++)
         {
           for (uint x = 0;
-               x < layer->width;
+               x < this->twidth;
                x++)
             {
-              const uint gid = layer->cells[layer->width * y + x];
+              const uint gid = layer->cells[this->width * y + x];
               tile = this->tiles[gid];
               if (tile != 0)
                 {

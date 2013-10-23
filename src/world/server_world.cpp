@@ -25,10 +25,10 @@ void ServerWorld::spawn_unit(const size_t type, const int x, const int y)
 void ServerWorld::init()
 {
   log_error("Creating initial world state");
-  this->spawn_unit(0, 353, 325);
-  this->spawn_unit(0, 154, 512);
-  this->spawn_unit(0, 254, 512);
-  this->spawn_unit(0, 154, 312);
+  this->spawn_unit(0, 100, 100);
+  // this->spawn_unit(0, 200, 200);
+  // this->spawn_unit(0, 300, 300);
+  // this->spawn_unit(0, 800, 800);
   // this->spawn_unit(0, 254, 412);
   // this->spawn_unit(0, 214, 422);
   // this->spawn_unit(0, 334, 402);

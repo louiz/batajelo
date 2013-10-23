@@ -53,6 +53,10 @@ bool Map::load_from_file(const std::string& map_name)
       log_error("Map has a wrong tile size: " << tile_width << ":" << tile_height);
       return false;
     }
+  this->theight = tree.get<unsigned int>
+    ("map.<xmlattr>.height", 0);
+  this->twidth = tree.get<unsigned int>
+    ("map.<xmlattr>.width", 0);
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
                 tree.get_child("map"))
     {

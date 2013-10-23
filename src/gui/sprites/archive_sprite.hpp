@@ -6,16 +6,17 @@
 class ArchiveSprite: public BuildingSprite
 {
 public:
-  ArchiveSprite();
+  ArchiveSprite(const Building* const building);
   ~ArchiveSprite();
-  void draw(Camera*, const ClientWorld*, const Screen*, const Building* const) const;
+  void draw(Camera*, const ClientWorld*, const Screen*) const;
+  void tick();
   const sf::Sprite& get_cursor_sprite() const;
 private:
   ArchiveSprite(const ArchiveSprite&);
   ArchiveSprite& operator=(const ArchiveSprite&);
   sf::Texture texture;
   sf::Sprite sprite;
+  sf::Color color;
 };
 
 #endif // __ARCHIVE_SPRITE_HPP__
-

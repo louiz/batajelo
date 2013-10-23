@@ -7,6 +7,9 @@
 #include <network/command.hpp>
 #include <gui/camera/map.hpp>
 #include <mod/client_mod.hpp>
+#include <cstdlib>
+#include <sys/types.h>
+#include <unistd.h>
 
 int main()
 {
@@ -15,7 +18,7 @@ int main()
   window->setMouseCursorVisible(false);
   GameClient* c = new GameClient();
   GraphMap* map = new GraphMap;
-  map->load_from_file("test4.tmx");
+  map->load_from_file("test5.tmx");
   ClientMod mod("monsters.yaml");
   ClientWorld* world = new ClientWorld(map, mod);
   world->set_next_turn_callback(std::bind(&ClientWorld::on_next_turn, world, std::placeholders::_1));
@@ -40,8 +43,11 @@ int main()
   c->install_callback("SPAWN",
                       std::bind(&ClientWorld::spawn_callback, world, std::placeholders::_1));
 
+  srandom(getpid());
   // c->connect("88.190.23.192", 7879);
   c->connect("127.0.0.1", 7879);
+
+  Screen screen(world, map, window, mod);
 
   while (world->is_started() == false)
     {
@@ -49,13 +55,16 @@ int main()
       c->poll(10);
     }
 
-  Screen screen(world, map, window, mod);
 
   sf::Clock fps_clock;
 
   Time time1 = boost::posix_time::microsec_clock::universal_time();
   Time time2;
+  Time graph_time1 = boost::posix_time::microsec_clock::universal_time();
+  Time graph_time2;
+
   Duration dt;
+  Duration graph_dt;
 
   // window->setMouseCursorVisible(false);
   while (window->isOpen())
@@ -95,16 +104,24 @@ int main()
           world->tick();
         }
 
+      graph_time2 = boost::posix_time::microsec_clock::universal_time();
+      graph_dt += graph_time2 - graph_time1;
+      graph_time1 = graph_time2;
+      i = get_number_of_graphicale_updates(graph_dt);
+      for (; i > 0; --i)
+        {
+          world->graphical_tick();
+        }
       // Draw the result on the screen. Limit to ~60 fps.
       if (fps_clock.getElapsedTime().asMicroseconds() > 10000)
         {
-  	  window->clear(sf::Color(70, 80, 80));
+          window->clear(sf::Color(70, 80, 80));
           // sf::View view(sf::FloatRect(0, 0, 960, 540));
           // window->setView(view);
-  	  screen.draw();
-  	  window->display();
-  	  fps_clock.restart();
-  	}
+          screen.draw();
+          window->display();
+          fps_clock.restart();
+        }
     }
   delete c;
   delete world;

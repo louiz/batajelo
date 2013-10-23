@@ -23,7 +23,7 @@ class ClientMod: public Mod
 {
 public:
   std::vector<ActionPanelTable*> get_action_tables(Screen*);
-  std::vector<const BuildingSprite*> get_building_sprites();
+  std::vector<const sf::Texture*> get_building_textures();
   ClientMod(const std::string& filename);
 private:
   ClientMod(const ClientMod&);
@@ -37,8 +37,6 @@ private:
    */
   void add_empty_pages(ActionPanelTable*, const std::size_t);
   void add_action_to_table(ActionPanelTable*, const ModActionInfos&, Screen*);
-
-  std::map<const std::string, BuildingSprite*> building_sprites;
 };
 
 void operator >>(const YAML::Node& node, ModActionInfos& v);

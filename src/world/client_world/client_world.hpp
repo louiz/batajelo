@@ -4,8 +4,11 @@
 #include <world/world.hpp>
 #include <world/selection.hpp>
 
+class Camera;
+
 class ClientWorld: public World
 {
+  friend class Screen;
 public:
   ClientWorld(Map*, Mod&);
   ~ClientWorld();
@@ -70,6 +73,14 @@ public:
    * (meaning that it comes from the server replay).
    */
   void insert_received_action(Action* action, ActionEvent* event);
+  /**
+   * Insert a sprite for the unit, as well, and then call world->insert_unit()
+   */
+  virtual void insert_unit(Unit*);
+  /**
+   * Insert a sprite for the unit, as well, and then call world->insert_unit()
+   */
+  virtual void insert_building(Building*);
 
   void on_next_turn(unsigned long turn);
   /**
@@ -80,6 +91,11 @@ public:
    * If an action is generated with this event, generate_action() is called.
    */
   // void handle_event(actions::Type type, unsigned int x, unsigned y);
+
+  /**
+   * Update all graphical object states (tiles etc)
+   */
+  void graphical_tick();
 
   /**
    * Give the order to all selected and movable units to move to the given
@@ -109,6 +125,7 @@ private:
   ClientWorld(const ClientWorld&);
   ClientWorld& operator=(const ClientWorld&);
   Selection current_selection;
+  Camera* camera;
 };
 
 #endif // __CLIENT_WORLD_HPP__

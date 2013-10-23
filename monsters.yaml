@@ -2,7 +2,7 @@
 - name: Tee
   speed: 3
   width: 15
-  spawn_duration: 400
+  spawn_duration: 40
   actions:
         - type: page # just goes to a different action page
           value: 1
@@ -17,7 +17,7 @@
 
 --- ###### BUILDINGS
 - name: Archive
-  sprite: building_archive
+  sprite: archive
   build_time: 10
   cells: 1 # size in map squares
   actions:

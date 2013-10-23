@@ -4,7 +4,8 @@
 #include <gui/sprites/sprite.hpp>
 
 ClientWorld::ClientWorld(Map* map, Mod& mod):
-  World(map, mod)
+  World(map, mod),
+  camera(0)
 {
 }
 
@@ -235,4 +236,21 @@ void ClientWorld::spawn_callback(Command* command)
     }
   Action* action = new Action(std::bind(&World::do_spawn, this, std::placeholders::_1), e);
   this->insert_received_action(action, e);
+}
+
+void ClientWorld::insert_unit(Unit* unit)
+{
+  this->camera->on_new_unit(unit);
+  World::insert_unit(unit);
+}
+
+void ClientWorld::insert_building(Building* building)
+{
+  this->camera->on_new_building(building);
+  World::insert_building(building);
+}
+
+void ClientWorld::graphical_tick()
+{
+  this->camera->graphical_tick();
 }

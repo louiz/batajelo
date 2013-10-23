@@ -5,11 +5,13 @@
 #include <world/client_world/client_world.hpp>
 
 #include <gui/sprites/archive_sprite.hpp>
+#include <gui/common.hpp>
+
+const std::string building_texture_path("data/images/buildings/");
 
 ClientMod::ClientMod(const std::string& filename):
   Mod(filename)
 {
-  this->building_sprites["building_archive"] = new ArchiveSprite;
 }
 
 
@@ -49,23 +51,28 @@ std::vector<ActionPanelTable*> ClientMod::get_action_tables(Screen* screen)
 
   return tables;
 }
-std::vector<const BuildingSprite*> ClientMod::get_building_sprites()
+std::vector<const sf::Texture*> ClientMod::get_building_textures()
 {
-  std::vector<const BuildingSprite*> sprites;
+  sf::Texture* texture;
+
+  std::vector<const sf::Texture*> building_textures;
   std::map<const std::string, BuildingSprite*>::iterator it;
   std::string sprite_name;
   for (unsigned int i=0; i < this->buildings_doc->size(); i++)
     {
       (*this->buildings_doc)[i]["sprite"] >> sprite_name;
-      it = this->building_sprites.find(sprite_name);
-      if (it == this->building_sprites.end())
-        {
-          log_error("Can not find the sprite for building: " << sprite_name << ". Will probably segfault later on because of that.");
-          continue ;
-        }
-      sprites.push_back(it->second);
+      texture = new sf::Texture;
+      if (!texture->loadFromFile(building_texture_path + sprite_name + ".png"))
+        throw GraphInitError();
+      // it = this->building_sprites.find(sprite_name);
+      // if (it == this->building_sprites.end())
+      //   {
+      //     log_error("Can not find the sprite for building: " << sprite_name << ". Will probably segfault later on because of that.");
+      //     continue ;
+      //   }
+      building_textures.push_back(texture);
     }
-  return sprites;
+  return building_textures;
 }
 
 void ClientMod::add_empty_pages(ActionPanelTable* table, const std::size_t size)

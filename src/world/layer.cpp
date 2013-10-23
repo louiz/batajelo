@@ -13,8 +13,6 @@ Layer::~Layer()
 
 void Layer::set_size(unsigned int width, unsigned int height)
 {
-  this->width = width;
-  this->height = height;
   if (this->cells)
     delete [] this->cells;
   this->cells = new unsigned int[width*height];

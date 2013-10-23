@@ -10,9 +10,9 @@
 #include <world/position.hpp>
 
 #define LAYER_NUMBER 5
-#define LEVEL_HEIGHT 32
-#define TILE_WIDTH 128
-#define TILE_HEIGHT 96
+#define LEVEL_HEIGHT 24
+#define TILE_WIDTH 96
+#define TILE_HEIGHT 72
 
 // In tiles.
 #define TILESET_WIDTH 8
@@ -91,6 +91,14 @@ protected:
    * The height (in pixels) of the map.
    */
   uint height;
+  /**
+   * The width (in tiles) of the map.
+   */
+  uint twidth;
+  /**
+   * The height (in tiles) of the map.
+   */
+  uint theight;
   /**
    * The number of tiles, horizontally.
    */

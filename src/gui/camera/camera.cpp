@@ -2,13 +2,15 @@
 #include <gui/camera/camera.hpp>
 #include <gui/screen/screen.hpp>
 #include <world/layer.hpp>
+#include <gui/sprites/archive_sprite.hpp>
+#include <gui/sprites/pic_sprite.hpp>
 
 Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win, Screen* screen):
   x(0),
   y(0),
   zoom(1),
   focused(true),
-  movement_speed(0.34),
+  movement_speed(0.023),
   previous_position(0, 0),
   start_drag_position(0, 0),
   world(world),
@@ -88,18 +90,6 @@ bool Camera::handle_event(const sf::Event& event)
           log_debug("Mouse button not implemented.");
         }
     }
-  // if (event.type == sf::Event::MouseButtonPressed &&
-  //     event.mouseButton.button == sf::Mouse::Middle)
-  //   {
-  //     this->previous_position = sf::Mouse::getPosition(*this->win);
-  //     this->start_drag_position = this->previous_position;
-  //   }
-  // else if (event.type == sf::Event::MouseButtonReleased &&
-  //          event.mouseButton.button == sf::Mouse::Middle)
-  //   {
-  //     sf::Mouse::setPosition(this->start_drag_position);
-  //     this->previous_position = sf::Vector2i(0, 0);
-  //   }
   this->fixup_camera_position();
   if (this->mouse_selection.ongoing == true)
     return true;
@@ -274,109 +264,60 @@ void Camera::update(const Duration& dt)
 void Camera::draw()
 {
   const sf::Vector2u win_size = this->win->getSize();
-  Layer* layer;
-  uint yoffset;
-  uint xoffset = 0;
-  // The position of the layer tile containing the top left corner of the
-  //camera.
-  uint start_y = static_cast<uint>(this->y) / TILE_HEIGHT;
-  uint end_y = start_y + win_size.y / TILE_HEIGHT + 2;
-  uint start_x = static_cast<uint>(this->x) / TILE_WIDTH;
-  uint end_x = start_x + win_size.x / TILE_WIDTH + 2;
-  short cellx;
-  short celly;
-  this->world->sort_entities();
-
   GraphTile* tile;
-  std::vector<std::vector<Entity*> > entities;
-  entities.resize(5);
-  Unit* entity;
 
-  sf::Vector2i mouse_pos = sf::Mouse::getPosition(*this->win);
-  mouse_pos.x += this->x;
-  mouse_pos.y += this->y;
+  uint layer_width = this->map->twidth;
+  uint layer_height = this->map->theight;
+  uint row_number = layer_height + layer_width - 1;
 
-  sf::RectangleShape rectangle(sf::Vector2f(30, 30));
-  rectangle.setOutlineColor(sf::Color::Blue);
-  rectangle.setOutlineThickness(1);
+  auto unit_it = this->world->units.begin();
 
-  int level;
-  for (uint y = start_y;
-       y < end_y;
-       y++)
+  uint row;
+  bool upper_part;
+  for (row = 0; row < row_number; ++row)
     {
-      this->map->reset_layers_iterator();
-      level = 0;
-      yoffset = (level * LEVEL_HEIGHT);
-
-      while ((layer = this->map->get_next_layer()) != 0)
+      upper_part = row < layer_height;
+      uint yoffset = -LEVEL_HEIGHT;
+      for (Layer* layer: this->map->layers)
         {
-          if (layer->cells == 0)
+          yoffset += LEVEL_HEIGHT;
+          if (!layer->cells)
+            continue;
+          uint col = 0;
+          int start_col;
+          int end_col;
+          const int step = layer_width - 1;
+          if (upper_part)
             {
-              level++;
-              continue;
+              start_col = row * layer_width;
+              end_col = 0;
             }
-          yoffset = (level * LEVEL_HEIGHT);
-          for (uint x = start_x;
-               x < end_x;
-               x++)
+          else
             {
-              const uint gid = layer->cells[layer->width * y + x];
+              start_col = (layer_height - 1) * layer_width + row - layer_width + 1;
+              end_col = layer_width - 1 + (row - layer_height + 1) * layer_width - 1;
+            }
+          if (start_col == 0)
+            end_col = -1;
+          for (int n = start_col; n > end_col; n -= step)
+            {
+              ++col;
+              std::size_t gid = layer->cells[n];
               tile = this->map->tiles[gid];
-              if (tile != 0)
+              if (tile)
                 {
-                  tile->sprite.setColor(sf::Color::White);
-                  for (std::list<std::size_t>::iterator it = this->world->current_path.begin();
-                       it != this->world->current_path.end(); ++it)
-                    {
-                      if ((*it) == layer->width * y + x)
-                        tile->sprite.setColor(sf::Color::Blue);
-                    }
-                  tile->sprite.setPosition(x * TILE_WIDTH - this->x,
-                                           -64 + y * TILE_HEIGHT - yoffset - this->y);
+                  uint sx = ((96 * layer_width) / 2) - (row * 96/2) + col * 96;
+                  if (!upper_part)
+                    sx += 96 * (row - layer_height + 1);
+                  const uint sy = (72 / 2) * row;
+                  tile->sprite.setPosition(sx - this->x, sy - this->y - yoffset);
                   this->win->draw(tile->sprite);
                 }
             }
-          Building* building;
-          for (std::list<Building*>::iterator it = this->world->buildings.begin(); it != this->world->buildings.end(); ++it)
-            {
-              building = *it;
-              this->screen->building_sprites[building->type_id - this->world->number_of_units_models()]->draw(this, this->world, this->screen, building);
-
-              // this->world->get_cell_at_position(pos, cellx, celly);
-              // sf::Vector2u entpos = this->world_to_camera_position(pos);
-              // if ((celly == y) && ((entpos.x > this->x) && (entpos.x < this->x + win_size.x) &&
-              //                      (entpos.y > this->y) && (entpos.y < this->y + win_size.y)))
-              //   {
-                  // actually call sprite->draw. Let the BuildingSprite draw itself at the position.
-                  // sf::Sprite sprite = this->screen->building_sprites[building->type_id - this->world->number_of_units_models()]->get_cursor_sprite();
-                  // this->win->draw(sprite);
-                  // this->draw_unit(entity, entpos.x - this->x, entpos.y - this->y,
-                  //                   this->mouse_selection.contains(mouse_pos,
-                  //                                                  entpos, entity->width + 4) ||
-                  //                   this->screen->is_entity_hovered(entity),
-                  //                   rectangle);
-                // }
-            }
-          // Draw entites on that line.
-          std::vector<Entity*> entities_at_that_level = entities[level];
-          int i = 0;
-          for (std::list<Unit*>::iterator it = this->world->units.begin(); it != this->world->units.end(); ++it)
-            {
-              entity = *it;
-              this->world->get_cell_at_position(entity->pos, cellx, celly);
-              sf::Vector2u entpos = this->world_to_camera_position(entity->pos);
-              if ((celly == y) && ((entpos.x > this->x) && (entpos.x < this->x + win_size.x) &&
-                                   (entpos.y > this->y) && (entpos.y < this->y + win_size.y)))
-                {
-                  this->draw_unit(entity, entpos.x - this->x, entpos.y - this->y,
-                                  this->mouse_selection.contains(mouse_pos,
-                                                                 entpos, entity->width + 4) ||
-                                  this->screen->is_entity_hovered(entity),
-                                  rectangle);
-                }
-            }
-          level++;
+        }
+      for (Sprite* sprite: this->sprites)
+        {
+          sprite->draw(this, this->world, this->screen);
         }
     }
   this->draw_mouse_selection();
@@ -469,7 +410,30 @@ void Camera::draw(const sf::Drawable& drawable)
   this->win->draw(drawable);
 }
 
+void Camera::on_new_unit(const Unit* unit)
+{
+  this->sprites.push_back(new PicpicSprite(unit));
+}
+
+void Camera::on_new_building(const Building* building)
+{
+  this->sprites.push_back(new ArchiveSprite(building));
+}
+
 const sf::Vector2u Camera::get_win_size() const
 {
   return this->win->getSize();
+}
+
+void Camera::graphical_tick()
+{
+  for (Sprite*& sprite: this->sprites)
+    {
+      sprite->tick();
+    }
+}
+
+const sf::Vector2i Camera::get_mouse_position() const
+{
+  return sf::Mouse::getPosition(*this->win);
 }

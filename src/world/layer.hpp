@@ -20,8 +20,6 @@ public:
   unsigned int get_cell(const unsigned int cell) const;
 
 private:
-  unsigned int width;
-  unsigned int height;
   unsigned int* cells;
   unsigned int level;
 };

@@ -10,6 +10,7 @@
  * requires more CPU speed.
  */
 #define WORLD_UPDATE_DURATION 10000
+#define GRAPHICAL_UPDATE_DURATION 16
 
 typedef boost::posix_time::ptime Time;
 typedef boost::posix_time::time_duration Duration;
@@ -21,7 +22,7 @@ typedef boost::posix_time::time_duration Duration;
  * 245 ms, the duration becomes 45 and the function returns 2.
  */
 long get_number_of_updates(Duration& duration);
-
+long get_number_of_graphicale_updates(Duration& duration);
 long sec(const Duration&);
 
 #endif // __TIME_HPP__

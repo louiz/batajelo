@@ -186,7 +186,7 @@ void Ui::switch_to_settings()
 }
 
 void Ui::switch_to_login()
-{ 
+{
   this->switch_to_page(this->login);
 }
 

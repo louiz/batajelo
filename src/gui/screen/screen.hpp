@@ -69,7 +69,7 @@ private:
   t_left_click on_left_click;
   t_draw_cursor_action on_cursor_draw;
 public:
-  std::vector<const BuildingSprite*> building_sprites;
+  std::vector<const sf::Texture*> building_textures;
 };
 
 #endif // __SCREEN_HPP__

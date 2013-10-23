@@ -13,6 +13,8 @@
 # define __CAMERA__HPP__
 
 #include <cstdlib>
+#include <chrono>
+#include <list>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <boost/function.hpp>
@@ -26,6 +28,7 @@
 
 class Minimap;
 class Screen;
+class Sprite;
 
 class Camera
 {
@@ -87,6 +90,11 @@ public:
    */
   bool is_mouse_selection_ongoing() const;
   void draw(const sf::Drawable&);
+  void on_new_unit(const Unit*);
+  void on_new_building(const Building*);
+  void graphical_tick();
+
+  const sf::Vector2i get_mouse_position() const;
   const sf::Vector2u get_win_size() const;
   /**
    * The left position of the camera
@@ -134,6 +142,7 @@ private:
   sf::RenderWindow* win;
   MouseSelection mouse_selection;
   Screen* screen;
+  std::list<Sprite*> sprites;
 };
 
 #endif // __CAMERA__HPP__
