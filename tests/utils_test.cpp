@@ -1,6 +1,8 @@
 #include <utils/base64.hpp>
 #include <utils/string.hpp>
+#include <utils/scopeguard.hpp>
 #include <utils/zlib.hpp>
+
 #include <iostream>
 #include <config/config.hpp>
 #include <logging/logging.hpp>
@@ -49,6 +51,33 @@ BOOST_AUTO_TEST_CASE(trim_test)
   utils::trim(original);
   BOOST_REQUIRE(original == "coucou");
 
+}
+
+BOOST_AUTO_TEST_CASE(scopeguard_test)
+{
+  int i = 5;
+  {
+    BOOST_REQUIRE(i == 5);
+    utils::ScopeGuard guard([&i]() {--i;});
+    BOOST_REQUIRE(i == 5);
+  }
+  BOOST_REQUIRE(i == 4);
+  {
+    BOOST_REQUIRE(i == 4);
+    utils::ScopeGuard guard;
+    guard.add_callback([&i]() {--i;});
+    guard.add_callback([&i]() {--i;});
+    BOOST_REQUIRE(i == 4);
+  }
+  BOOST_REQUIRE(i == 2);
+  {
+    BOOST_REQUIRE(i == 2);
+    utils::ScopeGuard guard;
+    guard.add_callback([&i]() {--i;});
+    BOOST_REQUIRE(i == 2);
+    guard.disable();
+  }
+  BOOST_REQUIRE(i == 2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
