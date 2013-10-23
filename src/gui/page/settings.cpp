@@ -159,7 +159,7 @@ void Settings::build_ui()
   this->table_account->SetRowSpacing(1, 30);
   this->table_account->Attach(button_settings_account, sf::Rect<sf::Uint32>(1, 2, 1, 1), sfg::Table::NORMAL, sfg::Table::NORMAL);
   // Create the notebook
-	this->notebook = sfg::Notebook::Create();
+     this->notebook = sfg::Notebook::Create();
   this->notebook->SetId("notebook_settings");
   this->label_table_video = sfg::Label::Create(tr("Video"));
   this->label_table_account = sfg::Label::Create(tr("Account"));

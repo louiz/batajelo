@@ -63,7 +63,7 @@ void Home::build_ui()
   if (img.loadFromFile(this->ui->img_path + "bronze.png"))
     {
       this->img_league->SetImage(img);
-   //   this->img_league->GetSignal(sfg::Widget::OnLeftClick).Connect(&Ladder::display, this);
+      //   this->img_league->GetSignal(sfg::Widget::OnLeftClick).Connect(&Ladder::display, this);
       this->img_league->Show();
     }
   else
@@ -120,10 +120,10 @@ void Home::build_ui()
   sfg::Button::Ptr button_europe_chan = sfg::Button::Create(tr("Channel Europe"));
   sfg::Button::Ptr button_pm = sfg::Button::Create(tr("Privates messages"));
   sfg::Button::Ptr button_friend_one = sfg::Button::Create("friend 1");
-	sfg::ScrolledWindow::Ptr chat_window = sfg::ScrolledWindow::Create();
+  sfg::ScrolledWindow::Ptr chat_window = sfg::ScrolledWindow::Create();
   chat_window->SetScrollbarPolicy(sfg::ScrolledWindow::HORIZONTAL_NEVER|sfg::ScrolledWindow::VERTICAL_ALWAYS);
   sfg::Entry::Ptr chat_entry = sfg::Entry::Create();
-//  chat_entry->SetRequisition(sf::Vector2f(1300.f, 0.f));
+  //  chat_entry->SetRequisition(sf::Vector2f(1300.f, 0.f));
   table_footer->Attach(button_europe_chan, sf::Rect<sf::Uint32>(0, 0, 1, 1), sfg::Table::FILL, sfg::Table::FILL);
   table_footer->Attach(button_pm, sf::Rect<sf::Uint32>(0, 1, 1, 1), sfg::Table::FILL, sfg::Table::FILL);
   table_footer->Attach(chat_window, sf::Rect<sf::Uint32>(1, 0, 1, 4), sfg::Table::FILL|sfg::Table::EXPAND, sfg::Table::FILL|sfg::Table::EXPAND);
