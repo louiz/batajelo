@@ -3,9 +3,9 @@
 #include <network/client.hpp>
 
 TransferReceiver::TransferReceiver(Client* client,
-				   const std::string& sid,
-				   const std::string& filename,
-				   int length):
+                       const std::string& sid,
+                       const std::string& filename,
+                       int length):
   client(client),
   id(sid),
   filename(FILES_TO_RECEIVE_DIRECTORY + filename),

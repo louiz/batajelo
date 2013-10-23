@@ -3,8 +3,8 @@
 #include <network/timed_event_handler.hpp>
 
 TimedEvent::TimedEvent(TimedEventHandler* handler,
-		       boost::asio::deadline_timer* timer,
-		       const t_timed_callback callback):
+                 boost::asio::deadline_timer* timer,
+                 const t_timed_callback callback):
   handler(handler),
   timer(timer),
   callback(callback)

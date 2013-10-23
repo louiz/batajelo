@@ -3,7 +3,7 @@
 #include <database/db_object.hpp>
 
 RemoteClient::RemoteClient(boost::asio::io_service& io_service,
-			   Server<RemoteClient>* server):
+                  Server<RemoteClient>* server):
   InterfaceRemoteClient(io_service),
   server(server),
   user(nullptr)
@@ -61,11 +61,11 @@ void RemoteClient::auth_callback(Command* received_command)
               delete user;
             }
         // else if (this->server->find_client_by_login(login) != 0)
-        // 	{
-        // 	  log_info("Authentication: user already logged in from an other location: " << login);
-        // 	  body = "4";
-        // 	  delete user;
-        // 	}
+        //      {
+        //        log_info("Authentication: user already logged in from an other location: " << login);
+        //        body = "4";
+        //        delete user;
+        //      }
           else
             {
               log_info("Authentication: succes for user " << login);
@@ -126,8 +126,8 @@ void RemoteClient::on_transfer_ended(const TransferSender* transfer)
   for (it = this->senders.begin(); it < this->senders.end(); ++it)
     if (*it == transfer)
       {
-	this->senders.erase(it);
-	break ;
+     this->senders.erase(it);
+     break ;
       }
   delete transfer;
 }

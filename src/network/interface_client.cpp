@@ -52,7 +52,7 @@ void InterfaceClient::connect_handler(std::function< void(void) > on_success,
     {
       log_info("Connection failed: " << error);
       if (on_failure)
-	on_failure();
+     on_failure();
     }
   else
     {
@@ -61,7 +61,7 @@ void InterfaceClient::connect_handler(std::function< void(void) > on_success,
       this->install_callbacks();
       this->install_read_handler();
       if (on_success)
-	on_success();
+     on_success();
     }
 }
 

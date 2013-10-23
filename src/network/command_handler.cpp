@@ -12,14 +12,14 @@ CommandHandler::~CommandHandler()
 }
 
 void CommandHandler::install_callback(const std::string& command,
-				      t_read_callback callback)
+                          t_read_callback callback)
 {
   log_debug("installing callback for command " << command);
   this->callbacks[command] = callback;
 }
 
 void CommandHandler::install_callback_once(const std::string& command,
-					   t_read_callback callback)
+                            t_read_callback callback)
 {
   log_debug("installing ONCE callback for command " << command);
   this->callbacks_once[command] = callback;
@@ -104,18 +104,18 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
   const std::size_t length_to_read = this->data.size() >= size ? 0 : size - this->data.size();
 
   boost::asio::async_read(*this->socket,
-			  this->data,
-			  boost::asio::transfer_at_least(length_to_read),
-			  std::bind(&CommandHandler::binary_read_handler, this,
+                 this->data,
+                 boost::asio::transfer_at_least(length_to_read),
+                 std::bind(&CommandHandler::binary_read_handler, this,
                                     std::placeholders::_1,
                                     command,
                                     size, callback));
 }
 
 void CommandHandler::binary_read_handler(const boost::system::error_code& error,
-					 Command* command,
-					 std::size_t bytes_transferred,
-					 t_read_callback callback)
+                          Command* command,
+                          std::size_t bytes_transferred,
+                          t_read_callback callback)
 {
   if (error)
     {
@@ -138,9 +138,9 @@ void CommandHandler::binary_read_handler(const boost::system::error_code& error,
 void CommandHandler::install_read_handler(void)
 {
   boost::asio::async_read_until(*this->socket,
-				this->data,
-				':',
-				std::bind(&CommandHandler::read_handler, this,
+                    this->data,
+                    ':',
+                    std::bind(&CommandHandler::read_handler, this,
                                           std::placeholders::_1,
                                           std::placeholders::_2));
 }
@@ -180,16 +180,16 @@ void CommandHandler::actually_send(Command* command)
   buffs.push_back(boost::asio::buffer(command->header.data(), command->header.length()));
   buffs.push_back(boost::asio::buffer(command->body, command->body_size));
   async_write(*this->socket,
-	      buffs,
-  	      std::bind(&CommandHandler::send_handler, this,
+           buffs,
+             std::bind(&CommandHandler::send_handler, this,
                         std::placeholders::_1,
                         std::placeholders::_2,
                         command));
 }
 
 void CommandHandler::send_handler(const boost::system::error_code& error,
-				  std::size_t bytes_transferred,
-				  Command* command)
+                      std::size_t bytes_transferred,
+                      Command* command)
 {
   this->writing = false;
   assert(bytes_transferred == command->header.length() + command->body_size);

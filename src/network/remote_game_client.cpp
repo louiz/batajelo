@@ -4,7 +4,7 @@
 #include <world/server_world.hpp>
 
 RemoteGameClient::RemoteGameClient(boost::asio::io_service& io_service,
-			   Server<RemoteGameClient>* server):
+                  Server<RemoteGameClient>* server):
   InterfaceRemoteClient(io_service),
   server(server)
 {
