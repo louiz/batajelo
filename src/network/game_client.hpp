@@ -11,11 +11,11 @@
 #ifndef __GAME_CLIENT_HPP__
 # define __GAME_CLIENT_HPP__
 
-#include <network/interface_client.hpp>
+#include <network/client_base.hpp>
 
 using boost::asio::ip::tcp;
 
-class GameClient: public InterfaceClient
+class GameClient: public ClientBase
 {
 public:
   GameClient();
@@ -32,7 +32,6 @@ private:
   void connect_handler(std::function< void(void) >,
         	       std::function< void(void) >,
         	       const boost::system::error_code&);
-  boost::asio::io_service io_service;
 };
 
 #endif /*__CLIENT_HPP__ */

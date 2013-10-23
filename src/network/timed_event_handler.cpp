@@ -16,11 +16,12 @@ TimedEventHandler::~TimedEventHandler()
     }
 }
 
-void TimedEventHandler::install_timed_event(const t_timed_callback callback,
-                             const int delay)
+void TimedEventHandler::install_timed_event(boost::asio::io_service& io_service,
+                                            const t_timed_callback callback,
+                                            const int delay)
 {
   log_debug("installing timed_event");
-  boost::asio::deadline_timer* timer = new boost::asio::deadline_timer(this->get_io_service(), boost::posix_time::seconds(delay));
+  boost::asio::deadline_timer* timer = new boost::asio::deadline_timer(io_service, boost::posix_time::seconds(delay));
   TimedEvent* event = new TimedEvent(this, timer, callback);
   this->events.push_back(event);
 }

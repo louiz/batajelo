@@ -9,27 +9,27 @@
  * @class CommandHandler
  */
 
-#include <deque>
-#include <map>
-#include <functional>
-#include <boost/asio.hpp>
-
 #ifndef __COMMAND_HANDLER_HPP__
 # define __COMMAND_HANDLER_HPP__
 
-#include <network/transfer_sender.hpp>
-#include <network/command.hpp>
+#include <deque>
+#include <map>
+#include <functional>
 
-using boost::asio::ip::tcp;
+#include <boost/asio.hpp>
+
+#include <network/transfer_sender.hpp>
+#include <network/base_socket.hpp>
+#include <network/command.hpp>
 
 typedef std::function<void(Command*)> t_read_callback;
 typedef std::deque<Command*> command_queue;
 
-class CommandHandler
+class CommandHandler: public BaseSocket
 {
   friend void TransferSender::send_next_chunk();
 public:
-  CommandHandler();
+  explicit CommandHandler(boost::asio::io_service&);
   virtual ~CommandHandler();
 
   void install_read_handler();
@@ -103,8 +103,6 @@ protected:
    * What happens when a read error occurs.
    */
   virtual void on_connection_closed() = 0;
-
-  tcp::socket* socket;
 
 private:
   CommandHandler(const CommandHandler&);

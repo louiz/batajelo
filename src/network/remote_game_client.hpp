@@ -14,19 +14,18 @@
 
 #include <boost/asio.hpp>
 
-#include <network/interface_remote_client.hpp>
+#include <network/remote_client_base.hpp>
 #include <network/server.hpp>
 #include <database/user.hpp>
 
 using boost::asio::ip::tcp;
 
-class RemoteGameClient: public InterfaceRemoteClient
+class RemoteGameClient: public RemoteClientBase
 {
 public:
   RemoteGameClient(boost::asio::io_service&, Server<RemoteGameClient>*);
   ~RemoteGameClient();
   virtual void on_connection_closed();
-  virtual boost::asio::io_service& get_io_service();
 
 private:
   /**

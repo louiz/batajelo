@@ -2,7 +2,8 @@
 #include <network/command_handler.hpp>
 #include <network/command.hpp>
 
-CommandHandler::CommandHandler():
+CommandHandler::CommandHandler(boost::asio::io_service& io_service):
+  BaseSocket(io_service),
   writing(false)
 {
 }
@@ -103,7 +104,7 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
   // We check what we need to read on the socket to have the rest of the binary datas
   const std::size_t length_to_read = this->data.size() >= size ? 0 : size - this->data.size();
 
-  boost::asio::async_read(*this->socket,
+  boost::asio::async_read(this->socket,
                  this->data,
                  boost::asio::transfer_at_least(length_to_read),
                  std::bind(&CommandHandler::binary_read_handler, this,
@@ -137,7 +138,7 @@ void CommandHandler::binary_read_handler(const boost::system::error_code& error,
 
 void CommandHandler::install_read_handler(void)
 {
-  boost::asio::async_read_until(*this->socket,
+  boost::asio::async_read_until(this->socket,
                     this->data,
                     ':',
                     std::bind(&CommandHandler::read_handler, this,
@@ -179,7 +180,7 @@ void CommandHandler::actually_send(Command* command)
   std::vector<boost::asio::const_buffer> buffs;
   buffs.push_back(boost::asio::buffer(command->header.data(), command->header.length()));
   buffs.push_back(boost::asio::buffer(command->body, command->body_size));
-  async_write(*this->socket,
+  async_write(this->socket,
            buffs,
              std::bind(&CommandHandler::send_handler, this,
                         std::placeholders::_1,

@@ -4,8 +4,8 @@
 #include <world/server_world.hpp>
 
 RemoteGameClient::RemoteGameClient(boost::asio::io_service& io_service,
-                  Server<RemoteGameClient>* server):
-  InterfaceRemoteClient(io_service),
+                                   Server<RemoteGameClient>* server):
+  RemoteClientBase(io_service),
   server(server)
 {
 }
@@ -30,11 +30,6 @@ void RemoteGameClient::install_callbacks()
   this->install_callback("MOVE", std::bind(&ServerWorld::move_callback, world, std::placeholders::_1));
   this->install_callback("BUILD", std::bind(&ServerWorld::build_callback, world, std::placeholders::_1));
   this->install_callback("SPAWN", std::bind(&ServerWorld::spawn_callback, world, std::placeholders::_1));
-}
-
-boost::asio::io_service& RemoteGameClient::get_io_service()
-{
-  return this->server->io_service;
 }
 
 void RemoteGameClient::ok_callback(Command* command)

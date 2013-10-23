@@ -1,5 +1,5 @@
 #include <logging/logging.hpp>
-#include <network/interface_client.hpp>
+#include <network/client_base.hpp>
 #include <boost/algorithm/string.hpp>
 #if defined(_WIN32) || defined(_WIN64)
 # include <WinBase.h>
@@ -13,59 +13,59 @@ static void poll_timeout_handler(const boost::system::error_code&)
 {
 }
 
-InterfaceClient::InterfaceClient():
+ClientBase::ClientBase():
+  BaseIoservice(),
+  CommandHandler(io_service),
   timeout(io_service)
 {
-  this->socket = new tcp::socket(io_service);
 }
 
-InterfaceClient::~InterfaceClient()
+ClientBase::~ClientBase()
 {
-  if (this->socket->is_open())
+  if (this->socket.is_open())
     {
       log_debug("Closing connection");
-      this->socket->close();
+      this->socket.close();
     }
-  delete this->socket;
 }
 
 // Connect, asyncly, and call one of the given callbacks
-void InterfaceClient::connect(const std::string& host,
+void ClientBase::connect(const std::string& host,
                               const short& port,
                               std::function< void(void) > on_success,
                               std::function< void(void) > on_failure)
 {
   // TODO use resolve and DNS
-  tcp::endpoint endpoint(boost::asio::ip::address::from_string(host), port);
-  this->socket->async_connect(endpoint,
-                              std::bind(&InterfaceClient::connect_handler, this,
+  boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(host), port);
+  this->socket.async_connect(endpoint,
+                              std::bind(&ClientBase::connect_handler, this,
                                         on_success, on_failure,
                                         std::placeholders::_1));
   log_info("Connecting to " << host << ":" << port);
 }
 
-void InterfaceClient::connect_handler(std::function< void(void) > on_success,
-			     std::function< void(void) > on_failure,
-			     const boost::system::error_code& error)
+void ClientBase::connect_handler(std::function< void(void) > on_success,
+                                 std::function< void(void) > on_failure,
+                                 const boost::system::error_code& error)
 {
   if (error)
     {
       log_info("Connection failed: " << error);
       if (on_failure)
-     on_failure();
+        on_failure();
     }
   else
     {
       log_info("Connected.");
-      this->install_callback("PING", std::bind(&InterfaceClient::ping_callback, this, std::placeholders::_1));
+      this->install_callback("PING", std::bind(&ClientBase::ping_callback, this, std::placeholders::_1));
       this->install_callbacks();
       this->install_read_handler();
       if (on_success)
-     on_success();
+        on_success();
     }
 }
 
-void InterfaceClient::ping_callback(Command*)
+void ClientBase::ping_callback(Command*)
 {
   log_debug("Received PING");
 
@@ -74,12 +74,7 @@ void InterfaceClient::ping_callback(Command*)
   this->send(command);
 }
 
-boost::asio::io_service& InterfaceClient::get_io_service()
-{
-  return this->io_service;
-}
-
-void InterfaceClient::poll(long timeout)
+void ClientBase::poll(long timeout)
 {
   if (timeout == 0)
     {

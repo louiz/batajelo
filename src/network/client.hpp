@@ -9,12 +9,12 @@
 #ifndef __CLIENT_HPP__
 # define __CLIENT_HPP__
 
-#include <network/interface_client.hpp>
+#include <network/client_base.hpp>
 #include <network/transfer_receiver.hpp>
 
 using boost::asio::ip::tcp;
 
-class Client: public InterfaceClient
+class Client: public ClientBase
 {
 public:
   Client();

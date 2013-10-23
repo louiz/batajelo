@@ -7,30 +7,29 @@
  * Connects to the remote server, sends requests to it and
  * calls the appropriate callbacks when the answer is received (or
  * when a standalone command is received from the server)
- * @class InterfaceClient
+ * @class ClientBase
  */
 
-#include <boost/asio.hpp>
 #include <functional>
 #include <string>
 #include <cstdlib>
 
-#ifndef __INTERFACE_CLIENT_HPP__
-# define __INTERFACE_CLIENT_HPP__
+#ifndef __CLIENT_BASE_HPP__
+# define __CLIENT_BASE_HPP__
 
+#include <network/base_ioservice.hpp>
 #include <network/command_handler.hpp>
 #include <network/ping_handler.hpp>
 #include <network/timed_event_handler.hpp>
 #include <network/command.hpp>
 #include <network/timed_event.hpp>
 
-using boost::asio::ip::tcp;
-
-class InterfaceClient: public CommandHandler, public TimedEventHandler, public PingHandler
+class ClientBase: public BaseIoservice, public CommandHandler,
+                  public TimedEventHandler, public PingHandler
 {
 public:
-  InterfaceClient();
-  ~InterfaceClient();
+  ClientBase();
+  ~ClientBase();
   /**
    * Tries to connect to the remote server. Calls one of the given callbacks, if it
    * succeeds or fails.
@@ -52,7 +51,6 @@ public:
   void poll(long timeout = 0);
 
   virtual void on_connection_closed() = 0;
-  virtual boost::asio::io_service& get_io_service();
 
 private:
   void connect_handler(std::function< void(void) >,
@@ -63,7 +61,6 @@ private:
    */
   void ping_callback(Command*);
 
-  boost::asio::io_service io_service;
   boost::asio::deadline_timer timeout;
 };
 

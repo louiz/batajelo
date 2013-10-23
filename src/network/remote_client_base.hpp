@@ -9,14 +9,14 @@
  * we need to communicate something to it.
  * The derived classes must install their own callback, install a transfer handler
  * in it or not, etc.
- * @class InterfaceRemoteClient
+ * @class RemoteClientBase
  */
 
 #include <boost/asio.hpp>
 #include <functional>
 
-#ifndef __INTERFACE_REMOTE_CLIENT_HPP__
-# define __INTERFACE_REMOTE_CLIENT_HPP__
+#ifndef REMOTE_CLIENT_BASE
+# define REMOTE_CLIENT_BASE
 
 #include <network/command_handler.hpp>
 #include <network/command.hpp>
@@ -24,21 +24,15 @@
 #include <network/timed_event.hpp>
 #include <network/ping_handler.hpp>
 
-using boost::asio::ip::tcp;
-
-class InterfaceRemoteClient: public CommandHandler, public TimedEventHandler, public PingHandler
+class RemoteClientBase: public CommandHandler, public TimedEventHandler, public PingHandler
 {
 public:
-  InterfaceRemoteClient(boost::asio::io_service&);
-  ~InterfaceRemoteClient();
+  explicit RemoteClientBase(boost::asio::io_service&);
+  ~RemoteClientBase();
   /**
    * starts the client (install the read handler, etc)
    */
   void start();
-  /**
-   * @return tcp::socket&
-   */
-  tcp::socket& get_socket(void);
   /**
    * Send a ping request to the remote client.
    */
@@ -63,8 +57,6 @@ public:
 
   virtual void on_connection_closed() = 0;
 
-  virtual boost::asio::io_service& get_io_service() = 0;
-
 protected:
   /**
    * The client number (aka id).
@@ -77,7 +69,14 @@ protected:
    */
   virtual void install_callbacks() = 0;
   void install_read_handler(void);
+private:
+  /**
+   * We keep a reference on the io_service that was passed to us by the
+   * Server, for convenience.
+   */
+  boost::asio::io_service& io_service;
 };
 
-#endif
+#endif // REMOTE_CLIENT_BASE
+
 /**@}*/

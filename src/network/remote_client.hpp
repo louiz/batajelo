@@ -14,21 +14,18 @@
 #include <boost/asio.hpp>
 #include <functional>
 
-#include <network/interface_remote_client.hpp>
+#include <network/remote_client_base.hpp>
 #include <network/transfer_sender.hpp>
 #include <network/server.hpp>
 #include <database/user.hpp>
 
-using boost::asio::ip::tcp;
-
-class RemoteClient: public InterfaceRemoteClient
+class RemoteClient: public RemoteClientBase
 {
 public:
-  RemoteClient(boost::asio::io_service&, Server<RemoteClient>*);
+  explicit RemoteClient(boost::asio::io_service&, Server<RemoteClient>*);
   ~RemoteClient();
   virtual void on_connection_closed();
 
-  virtual boost::asio::io_service& get_io_service();
   /**
    * Sends a file to the remote client.
    * @param filename The file to send.

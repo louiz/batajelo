@@ -16,7 +16,6 @@
 #ifndef __SERVER_HPP__
 # define __SERVER_HPP__
 
-
 #include <istream>
 #include <vector>
 #include <functional>
@@ -24,10 +23,10 @@
 #include <boost/asio.hpp>
 
 #include <logging/logging.hpp>
+#include <network/base_ioservice.hpp>
+#include <network/base_socket.hpp>
 #include <network/command.hpp>
 #include <world/time.hpp>
-
-using boost::asio::ip::tcp;
 
 /**
  * Does nothing, it is just used to exit the io_service.run_one() after
@@ -38,7 +37,7 @@ static void poll_timeout_handler(const boost::system::error_code&)
 }
 
 template <class T>
-class Server
+class Server: public BaseIoservice, public BaseSocket
 {
 public:
   /**
@@ -46,14 +45,16 @@ public:
    * @param port The port on which the servers accepts new connections.
    */
   Server(short port):
+    BaseIoservice(),
+    BaseSocket(io_service),
     port(port),
-    timeout(io_service)
+    timeout(io_service),
+    acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
   {
   }
   ~Server()
   {
     log_debug("closing socket");
-    delete this->acceptor;
   }
   /**
    * Starts the server
@@ -187,17 +188,15 @@ public:
     assert(false);
   }
 
-  boost::asio::io_service io_service;
-
 private:
   void install_accept_handler(void)
   {
     T* new_client = new T(this->io_service, this);
 
-    this->acceptor->async_accept(new_client->get_socket(),
-				 std::bind(&Server<T>::handle_accept,
-                                           this, new_client,
-                                           std::placeholders::_1));
+    this->acceptor.async_accept(new_client->get_socket(),
+                                std::bind(&Server<T>::handle_accept,
+                                          this, new_client,
+                                          std::placeholders::_1));
   }
 
   void handle_accept(T* client, const boost::system::error_code& error)
@@ -216,8 +215,7 @@ private:
   void accept(void)
   {
     boost::system::error_code error;
-    this->acceptor = new tcp::acceptor(this->io_service, tcp::endpoint(tcp::v4(), this->port));
-    error = this->acceptor->listen(512, error);
+    error = this->acceptor.listen(512, error);
     if (error)
       {
 	log_error("Error on listen() [" << error << "]. Exiting.");
@@ -227,9 +225,9 @@ private:
   }
 
   std::vector<T*> clients;
-  tcp::acceptor* acceptor;
-  short port;
+  const short port;
   boost::asio::deadline_timer timeout;
+  boost::asio::ip::tcp::acceptor acceptor;
 };
 
 #endif /*__SERVER_HPP__ */

@@ -3,8 +3,8 @@
 #include <database/db_object.hpp>
 
 RemoteClient::RemoteClient(boost::asio::io_service& io_service,
-                  Server<RemoteClient>* server):
-  InterfaceRemoteClient(io_service),
+                           Server<RemoteClient>* server):
+  RemoteClientBase(io_service),
   server(server),
   user(nullptr)
 {
@@ -112,11 +112,6 @@ void RemoteClient::send_file(const std::string& filename)
 void RemoteClient::on_connection_closed()
 {
   this->server->remove_client(this);
-}
-
-boost::asio::io_service& RemoteClient::get_io_service()
-{
-  return this->server->io_service;
 }
 
 void RemoteClient::on_transfer_ended(const TransferSender* transfer)
