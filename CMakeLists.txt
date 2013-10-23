@@ -297,7 +297,7 @@ target_Link_libraries(serialization
 
 file(GLOB source_server
   src/network/command_handler.*
-  src/network/interface_remote_client.*
+  src/network/remote_client_base.*
   src/network/remote_client.*
   src/network/remote_game_client.*
   src/network/server.*
@@ -325,7 +325,7 @@ target_link_libraries(server
 file(GLOB source_client
   src/network/client.*
   src/network/game_client.*
-  src/network/interface_client.*
+  src/network/client_base.*
   src/network/command_handler.*
   src/network/transfer_receiver.*
   src/network/command.*
