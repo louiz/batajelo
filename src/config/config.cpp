@@ -2,6 +2,9 @@
 
 #include <config/config.hpp>
 #include <utils/string.hpp>
+#include <utils/scopeguard.hpp>
+
+#include <iostream>
 
 #define CONF_DEFAULT_PATH "./batajelo.conf"
 
@@ -18,6 +21,7 @@ bool Config::read_conf(const std::string& filename)
           std::cerr << "Error: cannot open config file " << filename << std::endl;
           return false;
         }
+      utils::ScopeGuard guard([&file]() {file.close();});
       instance = new Config();
       instance->filename = filename;
 
@@ -39,7 +43,6 @@ bool Config::read_conf(const std::string& filename)
           utils::trim(option);
           instance->values[option] = value;
         }
-      file.close();
       return true;
     }
   else
@@ -127,7 +130,7 @@ void Config::close(bool save)
     instance->save_to_file();
   instance->values.clear();
   delete instance;
-  instance = 0;
+  instance = nullptr;
 }
 
 void Config::trigger_configuration_change()
