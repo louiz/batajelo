@@ -361,11 +361,38 @@ void Camera::fixup_camera_position()
     this->y = this->map->get_height_in_pixels() - win_size.y;
 }
 
+/**
+ * Values used to make an angular rotation
+ * See http://en.wikipedia.org/wiki/Rotation_%28mathematics%29#Matrix_algebra
+ * or your school lessons.
+ */
+
+// sin(7π/4)
+static const float sin_45 = 0.6496369390800625;
+// cos(7π/4)
+static const float cos_45 = 0.7602445970756301;
+
 sf::Vector2u Camera::world_to_camera_position(const Position& pos) const
 {
   sf::Vector2u res;
-  res.x = (pos.x.toLong() * TILE_WIDTH) / CELL_SIZE;
-  res.y = (pos.y.toLong() * TILE_HEIGHT) / CELL_SIZE;
+  // Do some proportionality, to convert from the size of the world to the
+  // size of the screen
+  // res.x = (pos.x.toLong() * TILE_WIDTH) / CELL_SIZE;
+  // res.y = (pos.y.toLong() * TILE_HEIGHT) / CELL_SIZE;
+
+  res.x = pos.x.toLong();
+  res.y = pos.y.toLong();
+  // Then a rotation of a 45° angle
+  log_error("Before rotate: " << res.x << ": " << res.y);
+  res.x = res.x * cos_45 - res.y * sin_45;
+  res.y = res.y * sin_45 + res.y * cos_45;
+  log_error("After rotate: " << res.x << ": " << res.y);
+
+  // A translation to the right, because the world and the screen do not have
+  // the same origin
+  
+
+  // Then adjust y using the height of that position in the world
   mpreal height = this->world->get_position_height(pos) * 32;
   res.y -= height.toLong();
   return res;
