@@ -89,8 +89,7 @@ public:
    * Returns the turn we are currently at.
    */
   unsigned long get_current_turn();
-  void reset_turns_iterator();
-  Turn* get_next_turn();
+  std::deque<Turn>& get_turns();
 
 private:
   TurnHandler(const TurnHandler&);
@@ -103,7 +102,6 @@ private:
   void next_turn();
 
   std::deque<Turn> turns;
-  std::deque<Turn>::iterator turns_iterator;
   unsigned long current_turn;
   unsigned int turn_advancement;
 

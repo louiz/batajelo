@@ -23,18 +23,13 @@ public:
    * Insert an action at the end of the action list.
    */
   void insert_action(Action*);
-  /**
-   * Put the iterator at the begining of the action list.
-   */
-  void reset_action_iterator();
-  Action* get_next_action();
+  std::vector<Action*>& get_actions();
 
 private:
   Replay(const Replay&);
   Replay& operator=(const Replay&);
 
   std::vector<Action*> actions;
-  std::vector<Action*>::iterator actions_iterator;
 };
 
 #endif // __REPLAY_HPP__

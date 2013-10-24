@@ -59,11 +59,10 @@ void GameServer::on_new_client(RemoteGameClient* new_client)
 void GameServer::send_replay(RemoteGameClient* new_client)
 {
   Replay* replay = this->world->get_replay();
-  replay->reset_action_iterator();
   Action* action;
   Command* command;
   ActionEvent* event;
-  while ((action = replay->get_next_action()) != nullptr)
+  for (auto& action: replay->get_actions())
     {
       event = action->get_event();
       command = new Command;
@@ -81,11 +80,10 @@ void GameServer::send_and_adjust_future_commands(RemoteGameClient* new_client)
   ActionEvent* event;
   TurnHandler* turn_handler = this->world->get_turn_handler();
   unsigned int occupants = this->world->get_number_of_occupants();
-  turn_handler->reset_turns_iterator();
-  while ((turn = turn_handler->get_next_turn()) != nullptr)
+
+  for (auto& turn: turn_handler->get_turns())
     {
-      turn->reset_action_iterator();
-      while ((action = turn->get_next_action()) != nullptr)
+      for (auto& action: turn.get_actions())
         {
           if (action->is_completely_validated() == false)
             {
@@ -107,17 +105,15 @@ void GameServer::adjust_and_revalidate_futur_commands()
   TurnHandler* turn_handler = this->world->get_turn_handler();
   unsigned int occupants = this->world->get_number_of_occupants();
   unsigned long turn_id = this->world->get_turn_handler()->get_current_turn();
-  turn_handler->reset_turns_iterator();
 
-  while ((turn = turn_handler->get_next_turn()) != nullptr)
+  for (auto& turn: turn_handler->get_turns())
     {
-      if (turn->get_number_of_validations() == occupants)
+      if (turn.get_number_of_validations() == occupants)
         {
           this->send_turn(turn_id, 0);
-          turn->validate_completely();
+          turn.validate_completely();
         }
-      turn->reset_action_iterator();
-      while ((action = turn->get_next_action()) != nullptr)
+      for (auto& action: turn.get_actions())
         {
           if (action->is_completely_validated() == false)
             {

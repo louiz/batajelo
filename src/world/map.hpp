@@ -51,8 +51,6 @@ public:
   uint get_width_in_pixels() const;
   uint get_height_in_tiles() const;
   uint get_width_in_tiles() const;
-  void reset_layers_iterator();
-  Layer* get_next_layer();
   int get_max_level_for_cell(const uint cell) const;
   /**
    * Generates the walking map. This structure is used to know the height of
@@ -110,8 +108,9 @@ protected:
   /**
    * The list of all layers. A layer can be NULL.
    */
+public:
   std::vector<Layer*> layers;
-  std::vector<Layer*>::const_iterator layers_iterator;
+protected:
   /**
    * A representation of the map, containing 4 heights for each tile (one
    * for each corner).

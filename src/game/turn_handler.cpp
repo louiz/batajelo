@@ -127,23 +127,17 @@ Turn* TurnHandler::get_turn(const unsigned int number)
 bool TurnHandler::validate_action(const unsigned int id, const unsigned long int by)
 {
   std::deque<Turn>::iterator it;
-  Action* action;
 
   bool res;
-  for (it = this->turns.begin(); it != this->turns.end(); ++it)
-    {
-      (*it).reset_action_iterator();
-      while ((action = (*it).get_next_action()) != nullptr)
+  for (auto& turn: this->turns)
+    for (auto& action: turn.get_actions())
+      if (action->get_id() == id)
         {
-          if (action->get_id() == id)
-            {
-              res = action->validate(by);
-              if (res == true)
-                this->replay->insert_action(action);
-              return res;
-            }
+          res = action->validate(by);
+          if (res == true)
+            this->replay->insert_action(action);
+          return res;
         }
-    }
   log_warning("Action to validate was not found");
   // Action was not found, so it did'nt became completely validated
   return false;
@@ -153,18 +147,10 @@ void TurnHandler::completely_validate_action(const unsigned int id)
 {
   std::deque<Turn>::iterator it;
   Action* action;
-
-  for (it = this->turns.begin(); it != this->turns.end(); ++it)
-    {
-      (*it).reset_action_iterator();
-      while ((action = (*it).get_next_action()) != nullptr)
-        {
-          if (action->get_id() == id)
-            {
-              action->validate_completely();
-            }
-        }
-    }
+  for (auto& turn: this->turns)
+    for (auto& action: turn.get_actions())
+      if (action->get_id() == id)
+        action->validate_completely();
 }
 
 bool TurnHandler::validate_turn(const unsigned int number,
@@ -184,6 +170,11 @@ bool TurnHandler::validate_turn(const unsigned int number,
 unsigned long TurnHandler::get_current_turn()
 {
   return this->current_turn;
+}
+
+std::deque<Turn>& TurnHandler::get_turns()
+{
+  return this->turns;
 }
 
 void TurnHandler::set_next_turn_callback(t_next_turn_callback callback)
@@ -216,21 +207,4 @@ std::ostream& operator<<(std::ostream& os, TurnHandler& turn_handler)
       os << std::endl;
     }
   return os;
-}
-
-void TurnHandler::reset_turns_iterator()
-{
-  this->turns_iterator = this->turns.begin();
-}
-
-Turn* TurnHandler::get_next_turn()
-{
-  if (this->turns_iterator == this->turns.end())
-    {
-      this->reset_turns_iterator();
-      return nullptr;
-    }
-  std::deque<Turn>::iterator it = this->turns_iterator;
-  ++this->turns_iterator;
-  return &(*it);
 }

@@ -15,16 +15,7 @@ void Replay::insert_action(Action* action)
   this->actions.push_back(action);
 }
 
-void Replay::reset_action_iterator()
+std::vector<Action*>& Replay::get_actions()
 {
-  this->actions_iterator = this->actions.begin();
-}
-
-Action* Replay::get_next_action()
-{
-  if (this->actions_iterator == this->actions.end())
-    return nullptr;
-  Action* action = *this->actions_iterator;
-  ++this->actions_iterator;
-  return action;
+  return this->actions;
 }

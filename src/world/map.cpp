@@ -181,23 +181,6 @@ bool Map::get_layer_data(boost::property_tree::ptree& tree, std::string& data)
   return false;
 }
 
-void Map::reset_layers_iterator()
-{
-  this->layers_iterator = this->layers.begin();
-}
-
-Layer* Map::get_next_layer()
-{
-  if (this->layers_iterator == this->layers.end())
-    {
-      this->layers_iterator = this->layers.begin();
-      return 0;
-    }
-  Layer* layer = *this->layers_iterator;
-  ++this->layers_iterator;
-  return layer;
-}
-
 uint Map::get_height_in_pixels() const
 {
   return this->height;

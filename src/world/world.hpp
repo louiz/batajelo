@@ -74,18 +74,6 @@ public:
    */
   void tick(bool force = false);
   /**
-   * returns a pointer to the next entity of the world. If it returns NULL,
-   * this means that the list is over and the next call will restart from the
-   * beginning of the list.
-   * If the list is empty, it will always return NULL.
-   */
-  Entity* get_next_entity();
-  /**
-   * Just like the other get_next_entity(), but it will also return
-   * NULL if the next entity's y is superior to the given y.
-   */
-  Entity* get_next_entity(const int y);
-  /**
    * Insert a unit in the unit list. It will also be added into the entity list.
    */
   virtual void insert_unit(Unit*);

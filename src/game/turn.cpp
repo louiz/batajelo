@@ -48,23 +48,6 @@ bool Turn::is_validated() const
   return false;
 }
 
-Action* Turn::get_next_action()
-{
-  if (this->actions_iterator == this->actions.end())
-    {
-      this->actions_iterator = this->actions.begin();
-      return 0;
-    }
-  Action* action = *this->actions_iterator;
-  ++this->actions_iterator;
-  return action;
-}
-
-void Turn::reset_action_iterator()
-{
-  this->actions_iterator = this->actions.begin();
-}
-
 bool Turn::validate(const unsigned long int by,
                     const unsigned int confirmations_needed)
 {
@@ -86,10 +69,9 @@ void Turn::validate_completely()
 
 std::ostream& operator<<(std::ostream& os, Turn& turn)
 {
-  turn.reset_action_iterator();
   const Action* action;
   os << "[" << turn.is_validated() << "]";
-  while ((action = turn.get_next_action()) != 0)
+  for (const auto& action: turn.get_actions())
     os << *action;
   return os;
 }
@@ -97,4 +79,9 @@ std::ostream& operator<<(std::ostream& os, Turn& turn)
 unsigned int Turn::get_number_of_validations() const
 {
   return this->ready_clients.size();
+}
+
+std::vector<Action*>& Turn::get_actions()
+{
+  return this->actions;
 }
