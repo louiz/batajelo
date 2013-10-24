@@ -50,13 +50,7 @@ find_package(YamlCpp REQUIRED)
 
 if(BUILD_CLIENT)
   find_package(SFML 2 REQUIRED system window graphics audio)
-  find_package(SFGUI REQUIRED)
 endif()
-
-if(BUILD_SERVER)
-  find_package(mysql REQUIRED)
-endif(BUILD_SERVER)
-
 
 ##########################
 # Includes and Linkage
@@ -206,8 +200,6 @@ target_link_libraries(clientmod
 if(BUILD_CLIENT)
   file(GLOB source_gui
     src/gui/*.[hc]pp
-    src/gui/menu/*.[hc]pp
-    src/gui/popup/*.[hc]pp
     src/gui/camera/*.[hc]pp
     src/gui/screen/*.[hc]pp
     src/gui/hud/*.[hc]pp
@@ -223,7 +215,6 @@ if(BUILD_CLIENT)
     utils
     clientmod
     ${SFML_LIBRARIES}
-    ${SFGUI_LIBRARY}
     ${Boost_LIBRARIES}
     )
 endif()
@@ -300,7 +291,6 @@ target_link_libraries(server
   logging
   config
   game
-  database
   ${Boost_LIBRARIES}
   )
 
@@ -363,7 +353,6 @@ target_link_libraries(menu_client
   game
   )
 
-
 #
 ## Server
 #
@@ -373,29 +362,8 @@ if(BUILD_SERVER)
   target_link_libraries(game_server
     logging
     config
-    database
     world
     ${Boost_LIBRARIES}
-    )
-endif()
-
-#
-## Database
-#
-if(BUILD_SERVER)
-  file(GLOB source_database
-    src/database/*.[ch]pp
-    )
-
-  add_library(database STATIC ${source_database})
-
-  set_target_properties(database PROPERTIES COMPILE_FLAGS ${MYSQL_CXXFLAGS})
-
-  target_link_libraries(database
-    logging
-    config
-    ${CRYPTO++_LIBRARIES}
-    ${MYSQL_LIBRARIES}
     )
 endif()
 

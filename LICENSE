@@ -41,14 +41,6 @@ Website:  http://www.sfml-dev.org/
 Sources:  https://github.com/LaurentGomila/SFML
 -----------------------------------------------
 
-
------------------- SFGUI ----------------------
-License:  zlib
-Website:  http://sfgui.sfml-dev.de/
-Sources:  http://sfgui.sfml-dev.de/download
------------------------------------------------
-
-
 ------------------ Base64 ---------------------
 License:  zlib
 Website:  http://www.adp-gmbh.ch/cpp/common/base64.html
