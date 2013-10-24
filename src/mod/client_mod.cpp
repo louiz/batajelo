@@ -83,10 +83,11 @@ void ClientMod::add_empty_pages(ActionPanelTable* table, const std::size_t size)
 
 void ClientMod::fill_default_unit_actions(Screen* screen, ActionPanelTable* table)
 {
+  static const t_left_click null_left = {nullptr, nullptr, nullptr};
+
   this->add_empty_pages(table, 1);
   ActionPanelPage* page = table->pages[0];
 
-  const t_left_click null_left = {0, 0, 0};
   t_left_click left_click = null_left;
 
   // Move button
