@@ -112,8 +112,6 @@ public:
     // big number during the calculation: we divide x and y by 16 before calculating their power of two. And after the sqrt we multiply by 16 again to find the correct result.
     const int m = 32;
     mpreal t = (x/m)*(x/m) + (y/m)*(y/m);
-    mpreal a = (x/m)*(x/m);
-    mpreal b = (x/m)*(x/m);
     // log_error("length(): x=" << fix16_to_float(a) << " y=" << b);
     t = t.sqrt();
     return t*m;
