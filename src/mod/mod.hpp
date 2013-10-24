@@ -50,7 +50,7 @@ protected:
     std::vector<YAML::Node> all_docs;
 };
 
-void operator >>(const YAML::Node& node, mpreal& v);
+void operator >>(const YAML::Node& node, Fix16& v);
 void operator >>(const YAML::Node& node, Unit& v);
 void operator >>(const YAML::Node& node, Building& v);
 

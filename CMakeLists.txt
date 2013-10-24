@@ -122,20 +122,6 @@ target_link_libraries(logging
   )
 
 #
-## Mpreal
-#
-file(GLOB source_mpreal
-  src/mpreal/mpreal.cpp
-  src/mpreal/mpreal.hpp
-  )
-
-add_library(mpreal STATIC ${source_mpreal})
-
-target_link_libraries(mpreal
-  fixmath
-  )
-
-#
 ## fixmath
 #
 file(GLOB source_fixmath
@@ -232,7 +218,7 @@ target_Link_libraries(world
   logging
   game
   serialization
-  mpreal
+  fixmath
   mod
   utils
   ${Boost_LIBRARIES}

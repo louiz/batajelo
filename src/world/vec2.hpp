@@ -1,21 +1,21 @@
 #ifndef __VEC2_HPP__
 # define __VEC2_HPP__
 
-#include <mpreal/mpreal.h>
+#include <fixmath/fix16.hpp>
 #include <serialization/serializable.hpp>
 
 class Vec2: public Serializable
 {
 public:
-  mpreal x;
-  mpreal y;
+  Fix16 x;
+  Fix16 y;
 
   ~Vec2() {}
   Vec2(const Vec2& v) {x=v.x; y=v.y;}
 
   // constructors
   Vec2 (): x( 0.0f ), y( 0.0f ) {}
-  Vec2 (mpreal X, mpreal Y): x( X ), y( Y ) {}
+  Vec2 (Fix16 X, Fix16 Y): x( X ), y( Y ) {}
   Vec2 (const unsigned int X, const unsigned int Y)
   {
     // See the Fix16 limits at
@@ -48,20 +48,20 @@ public:
   Vec2 operator- (void) const {return Vec2 (-x, -y);}
 
   // vector times scalar product (scale length of vector times argument)
-  Vec2 operator* (const mpreal s) const {return Vec2 (x * s, y * s);}
+  Vec2 operator* (const Fix16 s) const {return Vec2 (x * s, y * s);}
 
   // vector divided by a scalar (divide length of vector by argument)
-  Vec2 operator/ (const mpreal s) const {return Vec2 (x / s, y / s);}
+  Vec2 operator/ (const Fix16 s) const {return Vec2 (x / s, y / s);}
 
   // dot product
-  mpreal dot (const Vec2& v) const {return (x * v.x) + (y * v.y);}
+  Fix16 dot (const Vec2& v) const {return (x * v.x) + (y * v.y);}
 
 
     // assignment
   Vec2& operator= (const Vec2& v) {x=v.x; y=v.y; return *this;}
 
-  // set XY coordinates to given two mpreals
-  Vec2& set (const mpreal _x, const mpreal _y)
+  // set XY coordinates to given two Fix16s
+  Vec2& set (const Fix16 _x, const Fix16 _y)
   {x = _x; y = _y; return *this;}
 
   // +=
@@ -71,10 +71,10 @@ public:
   Vec2& operator-= (const Vec2& v) {return *this = (*this - v);}
 
   // *=
-  Vec2& operator*= (const mpreal& s) {return *this = (*this * s);}
+  Vec2& operator*= (const Fix16& s) {return *this = (*this * s);}
 
   // /=
-  Vec2& operator/=( mpreal d ) { return *this = (*this / d);}
+  Vec2& operator/=( Fix16 d ) { return *this = (*this / d);}
 
   // equality/inequality
   bool operator== (const Vec2& v) const {return x==v.x && y==v.y;}
@@ -83,47 +83,47 @@ public:
   // @todo Remove - use @c distance from the Vec2Utilitites header instead.
   // XXX experimental (4-1-03 cwr): is this the right approach?  defining
   // XXX "Vec2 distance (vec3, Vec2)" collided with STL's distance template.
-  static mpreal distance(const Vec2& a, const Vec2& b)
+  static Fix16 distance(const Vec2& a, const Vec2& b)
   {
     return (a - b).length();
   }
 
-  void rotate(const mpreal angle)
+  void rotate(const Fix16 angle)
   {
-    const mpreal l = this->length();
-    const mpreal s = angle.sin();
-    const mpreal c = angle.cos();
+    const Fix16 l = this->length();
+    const Fix16 s = angle.sin();
+    const Fix16 c = angle.cos();
     this->x = (this->x * c) - (this->y * s);
     this->y = (this->x * s) + (this->y * c);
     this->set_length(l);
   }
 
-  mpreal length() const
+  Fix16 length() const
   {
     // WORKAROUND 1: x^2 often exceeds the Fix16 limit.  We convert the values
     // to ints to do the calculation, but we lose (a lot of?) precision.
     // const int xi = x.toLong();
     // const int yi = y.toLong();
     // const int res = xi*xi + yi*yi;
-    // mpreal t = sqrt(res);
+    // Fix16 t = sqrt(res);
     // return t;
 
     // WORKAROUND 2: We go through two additional steps, to avoid having any
     // big number during the calculation: we divide x and y by 16 before calculating their power of two. And after the sqrt we multiply by 16 again to find the correct result.
     const int m = 32;
-    mpreal t = (x/m)*(x/m) + (y/m)*(y/m);
+    Fix16 t = (x/m)*(x/m) + (y/m)*(y/m);
     // log_error("length(): x=" << fix16_to_float(a) << " y=" << b);
     t = t.sqrt();
     return t*m;
 
-    // mpreal t = x*x + y*y;
+    // Fix16 t = x*x + y*y;
     // return t.sqrt();
   }
 
   // Change the vector's length but keep the same direction.
-  void set_length(mpreal new_length)
+  void set_length(Fix16 new_length)
   {
-    mpreal mult = this->length() / new_length;
+    Fix16 mult = this->length() / new_length;
     this->x /= mult;
     this->y /= mult;
   }
@@ -153,7 +153,7 @@ public:
 
 };
 
-inline Vec2 operator*(mpreal s, const Vec2& v) {return v*s;}
+inline Vec2 operator*(Fix16 s, const Vec2& v) {return v*s;}
 inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
 {
   return o << "Vec2 (" << static_cast<double>(v.x) << ", " << static_cast<double>(v.y) << ")";
@@ -170,7 +170,7 @@ inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
 
   //   inline Vec2 parallelComponent (const Vec2& unitBasis) const
   //   {
-  //     const mpreal projection = this->dot (unitBasis);
+  //     const Fix16 projection = this->dot (unitBasis);
   //     return unitBasis * projection;
   //   }
 
@@ -187,10 +187,10 @@ inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
   //   // the value returned has length of maxLength and is paralle to the
   //   // original input.
 
-  //   Vec2 truncateLength (const mpreal maxLength) const
+  //   Vec2 truncateLength (const Fix16 maxLength) const
   //   {
-  //     const mpreal maxLengthSquared = maxLength * maxLength;
-  //     const mpreal vecLengthSquared = this->lengthSquared ();
+  //     const Fix16 maxLengthSquared = maxLength * maxLength;
+  //     const Fix16 vecLengthSquared = this->lengthSquared ();
   //     if (vecLengthSquared <= maxLengthSquared)
   //       return *this;
   //     else
@@ -203,17 +203,17 @@ inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
 
   //   // rotate this vector about the global Y (up) axis by the given angle
 
-  //   Vec2 rotateAboutGlobalY (mpreal angle) const 
+  //   Vec2 rotateAboutGlobalY (Fix16 angle) const 
   //   {
-  //     const mpreal s = sinXXX (angle);
-  //     const mpreal c = cosXXX (angle);
+  //     const Fix16 s = sinXXX (angle);
+  //     const Fix16 c = cosXXX (angle);
   //     return Vec2 ((this->x * c) + (this->z * s),
   //                  (this->y),
   //                  (this->z * c) - (this->x * s));
   //   }
 
   //   // version for caching sin/cos computation
-  //   Vec2 rotateAboutGlobalY (mpreal angle, mpreal& sin, mpreal& cos) const 
+  //   Vec2 rotateAboutGlobalY (Fix16 angle, Fix16& sin, Fix16& cos) const 
   //   {
   //     // is both are zero, they have not be initialized yet
   //     if (sin==0 && cos==0)
@@ -228,10 +228,10 @@ inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
 
   //   // if this position is outside sphere, push it back in by one diameter
 
-  //   Vec2 sphericalWrapAround (const Vec2& center, mpreal radius)
+  //   Vec2 sphericalWrapAround (const Vec2& center, Fix16 radius)
   //   {
   //     const Vec2 offset = *this - center;
-  //     const mpreal r = offset.length();
+  //     const Fix16 r = offset.length();
   //     if (r > radius)
   //       return *this + ((offset/r) * radius * -2);
   //     else
@@ -247,7 +247,7 @@ inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
 
 
   // ----------------------------------------------------------------------------
-  // scalar times vector product ("mpreal * Vec2")
+  // scalar times vector product ("Fix16 * Vec2")
 
 
   // return cross product a x b
@@ -311,7 +311,7 @@ inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
 
   // Vec2 vecLimitDeviationAngleUtility (const bool insideOrOutside,
   //                                     const Vec2& source,
-  //                                     const mpreal cosineOfConeAngle,
+  //                                     const Fix16 cosineOfConeAngle,
   //                                     const Vec2& basis);
 
 
@@ -323,7 +323,7 @@ inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
 
 
   // inline Vec2 limitMaxDeviationAngle (const Vec2& source,
-  //                                     const mpreal cosineOfConeAngle,
+  //                                     const Fix16 cosineOfConeAngle,
   //                                     const Vec2& basis)
   // {
   //   return vecLimitDeviationAngleUtility (true, // force source INSIDE cone
@@ -341,7 +341,7 @@ inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
 
 
   // inline Vec2 limitMinDeviationAngle (const Vec2& source,
-  //                                     const mpreal cosineOfConeAngle,
+  //                                     const Fix16 cosineOfConeAngle,
   //                                     const Vec2& basis)
   // {    
   //   return vecLimitDeviationAngleUtility (false, // force source OUTSIDE cone
@@ -357,7 +357,7 @@ inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
   // the line ("lineUnitTangent")
 
 
-  // inline mpreal distanceFromLine (const Vec2& point,
+  // inline Fix16 distanceFromLine (const Vec2& point,
   //                                const Vec2& lineOrigin,
   //                                const Vec2& lineUnitTangent)
   // {
@@ -386,16 +386,16 @@ inline std::ostream& operator<< (std::ostream& o, const Vec2& v)
 
 
   // // length
-  // mpreal length (void) const {return sqrtXXX (lengthSquared ());}
+  // Fix16 length (void) const {return sqrtXXX (lengthSquared ());}
 
   // // length squared
-  // mpreal lengthSquared (void) const {return this->dot (*this);}
+  // Fix16 lengthSquared (void) const {return this->dot (*this);}
 
     // normalize: returns normalized version (parallel to this, length = 1)
     // Vec2 normalize (void) const
     // {
     //   // skip divide if length is zero
-    //   const mpreal len = length ();
+    //   const Fix16 len = length ();
     //   return (len>0) ? (*this)/len : (*this);
     // }
 

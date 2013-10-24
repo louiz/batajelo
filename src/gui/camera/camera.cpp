@@ -393,7 +393,7 @@ sf::Vector2u Camera::world_to_camera_position(const Position& pos) const
   
 
   // Then adjust y using the height of that position in the world
-  mpreal height = this->world->get_position_height(pos) * 32;
+  Fix16 height = this->world->get_position_height(pos) * 32;
   res.y -= height.toLong();
   return res;
 }
@@ -409,7 +409,7 @@ Position Camera::camera_to_world_position(const int x,
   uint offset = (cell_size - (res.y.toLong() % cell_size));
   uint i = 0;
   assert(offset <= 32767);
-  mpreal height_of_bottom_cell = this->world->get_position_height(Position(res.x, res.y + static_cast<short>(offset)));
+  Fix16 height_of_bottom_cell = this->world->get_position_height(Position(res.x, res.y + static_cast<short>(offset)));
   if (height_of_bottom_cell > ((offset) * (1.f/LAYER_HEIGHT)))
     res.y += (height_of_bottom_cell * LAYER_HEIGHT).toLong();
   else
@@ -420,7 +420,7 @@ Position Camera::camera_to_world_position(const int x,
         res.y += (height_of_bottom_cell * LAYER_HEIGHT).toLong();
       else
         {
-          mpreal height_of_current_cell = this->world->get_position_height(Position(res.x, res.y));
+          Fix16 height_of_current_cell = this->world->get_position_height(Position(res.x, res.y));
           res.y += (height_of_current_cell * LAYER_HEIGHT).toLong();
         }
     }

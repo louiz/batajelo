@@ -18,7 +18,7 @@
 
 #include <serialization/serializable.hpp>
 #include <network/command.hpp>
-#include <mpreal/mpreal.h>
+#include <fixmath/fix16.hpp>
 #include <world/unit.hpp>
 
 class Event: public Serializable

@@ -81,7 +81,7 @@ public:
   /**
    * The entity speed
    */
-  mpreal speed;
+  Fix16 speed;
   /**
    * The time required to spawn this unit from a building
    */

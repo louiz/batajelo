@@ -91,7 +91,7 @@ cursor::type Screen::draw_build_cursor(const uint x, const uint y, const std::si
   short xa, ya;
   Position world_pos = this->camera.camera_to_world_position(x, y);
   this->world->get_cell_at_position(world_pos, xa, ya);
-  mpreal height = this->world->get_position_height(world_pos);
+  Fix16 height = this->world->get_position_height(world_pos);
   float xpos = xa * TILE_WIDTH - this->camera.x;
   float ypos = ya * TILE_HEIGHT - this->camera.y - static_cast<int>(height) * LAYER_HEIGHT - 32;
   if (this->world->can_build_at_cell(xa, ya))

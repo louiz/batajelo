@@ -23,7 +23,7 @@
 #include <world/time.hpp>
 #include <gui/camera/map.hpp>
 #include <gui/camera/mouse_selection.hpp>
-#include <mpreal/mpreal.h>
+#include <fixmath/fix16.hpp>
 #include <world/position.hpp>
 
 class Minimap;

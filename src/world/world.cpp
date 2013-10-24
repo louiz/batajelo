@@ -366,20 +366,20 @@ void World::get_cell_at_position(const Position& pos,
   ya = static_cast<int16_t>(pos.y) / cell_size;
 }
 
-mpreal World::get_position_height(const Position& pos) const
+Fix16 World::get_position_height(const Position& pos) const
 {
   short cellx;
   short celly;
   const int cell_size = static_cast<const int>(CELL_SIZE);
   this->get_cell_at_position(pos, cellx, celly);
   ushort heights = this->map->get_cell_heights(cellx, celly);
-  mpreal cx = mpreal(int16_t(pos.x) % cell_size) / mpreal(CELL_SIZE);
-  mpreal cy = mpreal(int16_t(pos.y) % cell_size) / mpreal(CELL_SIZE);
-  mpreal a = (heights) & 15;
-  mpreal b = (heights >> 4) & 15;
-  mpreal d = (heights >> 12) & 15;
-  mpreal hx = a - (cx * (a - b));
-  mpreal hy = a - (a - (cy * (a - d)));
+  Fix16 cx = Fix16(int16_t(pos.x) % cell_size) / Fix16(CELL_SIZE);
+  Fix16 cy = Fix16(int16_t(pos.y) % cell_size) / Fix16(CELL_SIZE);
+  Fix16 a = (heights) & 15;
+  Fix16 b = (heights >> 4) & 15;
+  Fix16 d = (heights >> 12) & 15;
+  Fix16 hx = a - (cx * (a - b));
+  Fix16 hy = a - (a - (cy * (a - d)));
   return hx - hy;
 }
 
@@ -423,7 +423,7 @@ Path World::smooth_path(cell_path_t path,
 Position World::get_next_path_position(cell_path_t& path, const Position current,
                                        const Position& end, const short width) const
 {
-  const mpreal step = 2;
+  const Fix16 step = 2;
 
   bool first_cell = true;
   // First check if the whole path is just a simple straight line.
@@ -466,7 +466,7 @@ Position World::get_next_path_position(cell_path_t& path, const Position current
   // current_path_cell += length_of_straight_line + 1;
 }
 
-bool World::can_walk_in_straight_line(const Position& start, const Position& end, const mpreal step, const short width) const
+bool World::can_walk_in_straight_line(const Position& start, const Position& end, const Fix16 step, const short width) const
 {
   Vec2 forward(end - start);
   // log_error(forward);
@@ -489,7 +489,7 @@ bool World::can_walk_in_straight_line(const Position& start, const Position& end
 }
 
 bool World::has_a_line_of_sight(const Position& start, const Position& end,
-                                const mpreal step, const short width) const
+                                const Fix16 step, const short width) const
 {
   // log_error("Distance " << Position::distance(start, end));
   // The point to move along the line to check if everything is walkable.
@@ -610,9 +610,9 @@ Position World::get_nearest_corner(const Position& pos, const std::size_t cell, 
     {
       assert(y == ny);
       Position nearest_position(x * 100 + width, y * 100 + width);
-      mpreal shorter_distance = Position::distance(pos, nearest_position);
+      Fix16 shorter_distance = Position::distance(pos, nearest_position);
       Position other_position(x * 100 + width, (y + 1) * 100 - width);
-      mpreal other_distance = Position::distance(pos, other_position);
+      Fix16 other_distance = Position::distance(pos, other_position);
       if (other_distance < shorter_distance)
         return other_position;
       return nearest_position;
@@ -621,9 +621,9 @@ Position World::get_nearest_corner(const Position& pos, const std::size_t cell, 
     {
       assert(y == ny);
       Position nearest_position((x + 1) * 100 - width, y * 100 + width);
-      mpreal shorter_distance = Position::distance(pos, nearest_position);
+      Fix16 shorter_distance = Position::distance(pos, nearest_position);
       Position other_position((x + 1) * 100 - width, (y + 1) * 100 - width);
-      mpreal other_distance = Position::distance(pos, other_position);
+      Fix16 other_distance = Position::distance(pos, other_position);
       if (other_distance < shorter_distance)
         return other_position;
       return nearest_position;
@@ -632,9 +632,9 @@ Position World::get_nearest_corner(const Position& pos, const std::size_t cell, 
     {
       assert(x == nx);
       Position nearest_position(x * 100 + width, (y + 1) * 100 - width);
-      mpreal shorter_distance = Position::distance(pos, nearest_position);
+      Fix16 shorter_distance = Position::distance(pos, nearest_position);
       Position other_position((x + 1) * 100 - width, (y + 1) * 100 + width);
-      mpreal other_distance = Position::distance(pos, other_position);
+      Fix16 other_distance = Position::distance(pos, other_position);
       if (other_distance < shorter_distance)
         return other_position;
       return nearest_position;
@@ -643,9 +643,9 @@ Position World::get_nearest_corner(const Position& pos, const std::size_t cell, 
     {
       assert(x == nx);
       Position nearest_position(x * 100 + width, y * 100 + width);
-      mpreal shorter_distance = Position::distance(pos, nearest_position);
+      Fix16 shorter_distance = Position::distance(pos, nearest_position);
       Position other_position((x + 1) * 100 - width, y * 100 + width);
-      mpreal other_distance = Position::distance(pos, other_position);
+      Fix16 other_distance = Position::distance(pos, other_position);
       if (other_distance < shorter_distance)
         return other_position;
       return nearest_position;
@@ -658,9 +658,9 @@ Position World::get_nearest_corner(const Position& pos, const std::size_t cell, 
   const uint x = cell % this->map->get_width_in_tiles();
   const uint y = cell / this->map->get_width_in_tiles();
   Position nearest_position(x * 100 + width, y * 100 + width);
-  mpreal shorter_distance = Position::distance(pos, nearest_position);
+  Fix16 shorter_distance = Position::distance(pos, nearest_position);
   Position other_position(x * 100 + width, (y + 1) * 100 - width);
-  mpreal other_distance = Position::distance(pos, other_position);
+  Fix16 other_distance = Position::distance(pos, other_position);
   if (other_distance < shorter_distance)
     {
       shorter_distance = other_distance;

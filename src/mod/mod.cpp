@@ -42,7 +42,7 @@ std::vector<std::unique_ptr<Building> > Mod::get_building_models()
   return models;
 }
 
-void operator >>(const YAML::Node& node, mpreal& v)
+void operator >>(const YAML::Node& node, Fix16& v)
 {
     v = node.as<float>();
 }

@@ -35,7 +35,7 @@
 #include <game/turn_handler.hpp>
 #include <game/replay.hpp>
 #include <network/command.hpp>
-#include <mpreal/mpreal.h>
+#include <fixmath/fix16.hpp>
 #include <world/position.hpp>
 #include <world/path.hpp>
 #include <mod/mod.hpp>
@@ -150,7 +150,7 @@ public:
    * It takes into account the highest level having a tile containing this
    * position and the tile height (see tile_heights in map.hpp)
    */
-  mpreal get_position_height(const Position&) const;
+  Fix16 get_position_height(const Position&) const;
   /**
    * Convert a path made of cells by a path composed of world positions
    */
@@ -161,13 +161,13 @@ public:
    * Returns wheither or not we can walk from the start position to the end
    * position, following a single straight line.
    */
-  bool has_a_line_of_sight(const Position& start, const Position& end, const mpreal step, const short width) const;
+  bool has_a_line_of_sight(const Position& start, const Position& end, const Fix16 step, const short width) const;
   /**
    * Returns whether the entity can walk in a straight line from one point
    * to another.  This is done by checking if two parallel lines of sight
    * exist, separated by the width of the entity.
    */
-  bool can_walk_in_straight_line(const Position& start, const Position& end, const mpreal step, const short width) const;
+  bool can_walk_in_straight_line(const Position& start, const Position& end, const Fix16 step, const short width) const;
   /**
    * Returns whether or not we can move from one cell to another, according
    * to their respective heights.
