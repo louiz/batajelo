@@ -18,9 +18,9 @@ void on_conf_changed()
 BOOST_AUTO_TEST_CASE(config_test1)
 {
   std::ofstream os("tests/test.conf");
-  os << "coucou=machin" << std::endl;
-  os << "number=2" << std::endl;
-  os << "empty=" << std::endl;
+  os << "  coucou=machin" << std::endl;
+  os << "number=  2" << std::endl;
+  os << "empty  =" << std::endl;
   os.close();
 
   a = 0;
