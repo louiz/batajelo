@@ -62,9 +62,11 @@ endif(BUILD_SERVER)
 # Includes and Linkage
 ##########################
 
+include_directories("src/")
+
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${CRYPTO++_INCLUDE_DIR})
-include_directories("src/")
+include_directories(${YAML_CPP_INCLUDE_DIRS})
 
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${CRYPTO++_LIBRARIES})
@@ -178,7 +180,7 @@ file(GLOB source_mod
 add_library(mod STATIC ${source_mod})
 
 target_link_libraries(mod
-  yaml
+  ${YAML_CPP_LIBRARIES}
   world
   )
 
@@ -193,7 +195,7 @@ file(GLOB source_clientmod
 add_library(clientmod STATIC ${source_clientmod})
 
 target_link_libraries(clientmod
-  yaml
+  ${YAML_CPP_LIBRARIES}
   world
   gui
   )

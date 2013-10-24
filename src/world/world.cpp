@@ -28,10 +28,6 @@ World::~World()
     delete this->replay;
   for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); ++it)
     delete *it;
-  for (std::vector<const Unit*>::iterator it = this->unit_models.begin(); it < this->unit_models.end(); ++it)
-    delete *it;
-  for (std::vector<const Building*>::iterator it = this->building_models.begin(); it < this->building_models.end(); ++it)
-    delete *it;
 }
 
 void World::set_next_turn_callback(t_next_turn_callback callback)
@@ -95,20 +91,20 @@ void World::init(Mod& mod)
 
 Unit* World::create_unit(const unsigned int type)
 {
-  const Unit* model = this->unit_models[type];
+  const Unit* model = this->unit_models[type].get();
   Unit* new_entity = new Unit(*model);
   return new_entity;
 }
 
 const Unit* World::get_unit_model(unsigned int type) const
 {
-  return this->unit_models[type];
+  return this->unit_models[type].get();
 }
 
 Unit* World::create_unit(unsigned int type, const Unit& e)
 {
   log_debug("Creating entity of type " << type);
-  const Unit* model = this->unit_models[type];
+  const Unit* model = this->unit_models[type].get();
   Unit* new_unit = new Unit(*model);
   new_unit->pos = e.pos;
   return new_unit;
@@ -116,7 +112,7 @@ Unit* World::create_unit(unsigned int type, const Unit& e)
 
 Building* World::create_building(unsigned int type, const short x, const short y)
 {
-  const Building* model = this->building_models[type];
+  const Building* model = this->building_models[type].get();
   Building* new_building = new Building(*model);
   new_building->x = x;
   new_building->y = y;

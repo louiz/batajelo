@@ -19,6 +19,7 @@
 
 #include <list>
 #include <queue>
+#include <memory>
 #include <functional>
 
 #include <boost/archive/text_iarchive.hpp>
@@ -227,8 +228,8 @@ protected:
    * entity model is uniq, and that list does not change once the game
    * is started.
    */
-  std::vector<const Unit*> unit_models;
-  std::vector<const Building*> building_models;
+  std::vector<std::unique_ptr<Unit>> unit_models;
+  std::vector<std::unique_ptr<Building> > building_models;
   /**
    * The list of all action generated that needs to be sent to the
    * the remote server or the clients.
