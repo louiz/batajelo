@@ -22,15 +22,12 @@ set(LIBRARY_OUTPUT_PATH output_lib)
 # This flag is very important for the fixmath library, if one client is
 # compiled without it, its world representation may not be identical with
 # the other’s one.
-set(CMAKE_C_FLAGS "-DFIXMATH_SIN_LUT")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFIXMATH_SIN_LUT")
 
-# Link with libefence to easily catch segfaults on debug build
-# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -lefence")
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -pedantic -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pedantic -Wall -Wextra")
 
 configure_file("${PROJECT_SOURCE_DIR}/src/config.hpp.in" "${PROJECT_SOURCE_DIR}/src/config.hpp")
-
 
 ##########################
 # Command line options
@@ -49,7 +46,7 @@ option(BUILD_CLIENT "build the server" ${BUILD_CLIENT})
 
 find_package(Boost 1.48.0 COMPONENTS serialization system date_time unit_test_framework iostreams locale REQUIRED)
 find_package(Cryptopp REQUIRED)
-find_package(Doxygen)
+find_package(YamlCpp REQUIRED)
 
 if(BUILD_CLIENT)
   find_package(SFML 2 REQUIRED system window graphics audio)
@@ -68,7 +65,6 @@ endif(BUILD_SERVER)
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${CRYPTO++_INCLUDE_DIR})
 include_directories("src/")
-include_directories("src/yaml-cpp/include/")
 
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${CRYPTO++_LIBRARIES})
@@ -170,19 +166,6 @@ add_library(utils STATIC ${source_utils})
 target_link_libraries(
   utils
   ${Boost_LIBRARIES}
-  )
-
-#
-## Yaml
-#
-# TODO: should be an external library
-file(GLOB source_yaml
-  src/yaml-cpp/src/*.cpp
-  )
-
-add_library(yaml STATIC ${source_yaml})
-
-target_link_libraries(yaml
   )
 
 #
@@ -413,20 +396,6 @@ if(BUILD_SERVER)
     ${MYSQL_LIBRARIES}
     )
 endif()
-
-#
-## Doxygen
-#
-if(DOXYGEN_FOUND)
-  configure_file(
-    "${PROJECT_SOURCE_DIR}/doxygen/Doxyfile.in"
-    "${PROJECT_SOURCE_DIR}/doxygen/Doxyfile")
-  add_custom_target(doc
-    ${DOXYGEN_EXECUTABLE}
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doxygen
-    COMMENT "Generating API documentation with Doxygen" VERBATIM)
-endif()
-
 
 ####################
 # Tests
