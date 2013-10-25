@@ -1,7 +1,5 @@
 #include <logging/logging.hpp>
 #include <network/remote_client_base.hpp>
-#include <database/database.hpp>
-#include <database/db_object.hpp>
 
 unsigned long int RemoteClientBase::clients_number = 0;
 
