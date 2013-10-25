@@ -1,5 +1,6 @@
 #include <functional>
 #include <logging/logging.hpp>
+#include <utils/make_unique.hpp>
 #include <gui/screen/screen.hpp>
 #include <mod/client_mod.hpp>
 #include <world/client_world/client_world.hpp>
@@ -14,63 +15,51 @@ ClientMod::ClientMod(const std::string& filename):
 {
 }
 
-
-std::vector<ActionPanelTable*> ClientMod::get_action_tables(Screen* screen)
+std::vector<std::unique_ptr<ActionPanelTable>> ClientMod::get_action_tables(Screen* screen)
 {
-  ModActionInfos action_infos;
-  std::vector<ActionPanelTable*> tables;
-  for (unsigned int i=0; i < this->units_doc->size(); i++)
+  std::vector<std::unique_ptr<ActionPanelTable>> tables;
+
+  YAML::Node units_doc = this->all_docs[0];
+  for (const auto& unit: units_doc)
     {
-      const YAML::Node& unit = (*this->units_doc)[i];
-      ActionPanelTable* table = new ActionPanelTable;
-      tables.push_back(table);
+      std::unique_ptr<ActionPanelTable> table = std::make_unique<ActionPanelTable>();
       log_warning("Adding a new table, for a unit");
-      this->fill_default_unit_actions(screen, table);
-      const YAML::Node& actions = unit["actions"];
-      for (unsigned int i=0; i < actions.size(); i++)
+      this->fill_default_unit_actions(screen, table.get());
+      for (const auto& action: unit["actions"])
         {
-          const YAML::Node& action = actions[i];
-          action >> action_infos;
-          this->add_action_to_table(table, action_infos, screen);
+          ModActionInfos action_infos(action);
+          this->add_action_to_table(table.get(), action_infos, screen);
         }
+      tables.emplace_back(std::move(table));
     }
-  for (unsigned int i=0; i < this->buildings_doc->size(); i++)
+
+  YAML::Node buildings_doc = this->all_docs[1];
+  for (const auto& building: buildings_doc)
     {
-      const YAML::Node& building = (*this->buildings_doc)[i];
-      ActionPanelTable* table = new ActionPanelTable;
-      tables.push_back(table);
-      this->fill_default_building_actions(screen, table);
-      const YAML::Node& actions = building["actions"];
-      for (unsigned int i=0; i < actions.size(); i++)
+      std::unique_ptr<ActionPanelTable> table = std::make_unique<ActionPanelTable>();
+      this->fill_default_building_actions(screen, table.get());
+      for (const auto& action: building["actions"])
         {
-          const YAML::Node& action = actions[i];
-          action >> action_infos;
-          this->add_action_to_table(table, action_infos, screen);
+          ModActionInfos action_infos(action);
+          this->add_action_to_table(table.get(), action_infos, screen);
         }
+      tables.emplace_back(std::move(table));
     }
 
   return tables;
 }
-std::vector<const sf::Texture*> ClientMod::get_building_textures()
-{
-  sf::Texture* texture;
 
-  std::vector<const sf::Texture*> building_textures;
-  std::map<const std::string, BuildingSprite*>::iterator it;
-  std::string sprite_name;
-  for (unsigned int i=0; i < this->buildings_doc->size(); i++)
+std::vector<std::unique_ptr<sf::Texture>> ClientMod::get_building_textures()
+{
+  std::vector<std::unique_ptr<sf::Texture>> building_textures;
+  YAML::Node buildings_doc = this->all_docs[1];
+  for (const auto& building: buildings_doc)
     {
-      (*this->buildings_doc)[i]["sprite"] >> sprite_name;
-      texture = new sf::Texture;
+      std::string sprite_name = building["sprite"].as<std::string>();
+      std::unique_ptr<sf::Texture> texture = std::make_unique<sf::Texture>();
       if (!texture->loadFromFile(building_texture_path + sprite_name + ".png"))
         throw GraphInitError();
-      // it = this->building_sprites.find(sprite_name);
-      // if (it == this->building_sprites.end())
-      //   {
-      //     log_error("Can not find the sprite for building: " << sprite_name << ". Will probably segfault later on because of that.");
-      //     continue ;
-      //   }
-      building_textures.push_back(texture);
+      building_textures.emplace_back(std::move(texture));
     }
   return building_textures;
 }
@@ -83,7 +72,7 @@ void ClientMod::add_empty_pages(ActionPanelTable* table, const std::size_t size)
 
 void ClientMod::fill_default_unit_actions(Screen* screen, ActionPanelTable* table)
 {
-  static const t_left_click null_left = {nullptr, nullptr, nullptr};
+  static const t_left_click null_left = {nullptr, nullptr, 0};
 
   this->add_empty_pages(table, 1);
   ActionPanelPage* page = table->pages[0];
@@ -107,7 +96,7 @@ void ClientMod::fill_default_unit_actions(Screen* screen, ActionPanelTable* tabl
                                          0, 4, null_left), 4);
 }
 
-void ClientMod::fill_default_building_actions(Screen* screen, ActionPanelTable* table)
+void ClientMod::fill_default_building_actions(Screen*, ActionPanelTable* table)
 {
   this->add_empty_pages(table, 1);
 }
@@ -147,13 +136,3 @@ void ClientMod::add_action_to_table(ActionPanelTable* table, const ModActionInfo
     }
   page->add_button(button, infos.position);
 }
-
-void operator >>(const YAML::Node& node, ModActionInfos& v)
-{
-  node["type"] >> v.type;
-  node["page"] >> v.page;
-  node["position"] >> v.position;
-  node["value"] >> v.value;
-  node["image"] >> v.image_filename;
-}
-

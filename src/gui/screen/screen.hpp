@@ -14,6 +14,7 @@
 # define __SCREEN_HPP__
 
 #include <vector>
+#include <memory>
 
 #include <SFML/Graphics.hpp>
 
@@ -69,7 +70,7 @@ private:
   t_left_click on_left_click;
   t_draw_cursor_action on_cursor_draw;
 public:
-  std::vector<const sf::Texture*> building_textures;
+  std::vector<std::unique_ptr<sf::Texture>> building_textures;
 };
 
 #endif // __SCREEN_HPP__

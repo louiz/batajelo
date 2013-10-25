@@ -28,13 +28,14 @@
 // #define ACTION_TAB_HEIGHT 15
 // #define SPACE_BETWEEN_TABS 5
 
+#include <vector>
+#include <memory>
 
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
 #include <gui/hud/action_panel_table.hpp>
 #include <world/selection.hpp>
-#include <vector>
 #include <mod/client_mod.hpp>
 
 class Screen;
@@ -62,7 +63,7 @@ private:
    * A pointer to the Selection object contained in the ClientWorld object.
    */
   const Selection* const selection;
-  std::vector<ActionPanelTable*> tables;
+  std::vector<std::unique_ptr<ActionPanelTable>> tables;
 };
 
 #endif // __ACTION_PANEL_HPP__
