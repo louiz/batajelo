@@ -8,7 +8,6 @@
  */
 
 #include <map>
-#include <network_objects/team_serial.hpp>
 
 #ifndef __CURRENT_USER_HPP__
 # define __CURRENT_USER_HPP__
@@ -36,20 +35,8 @@ public:
    * @return void
    */
   void set_key(const std::string& field, const std::string& value);
-  /**
-   * Get user teams
-   * @return TeamStatsSerial*
-   */
-  const TeamSerial* get_teams() const;
- /**
-   * Set user teams
-   * @param TeamStatsSerial* the teams
-   * @return TeamStatsSerial*
-   */
-  void set_teams(TeamSerial*);
 
 private:
-  TeamSerial* teams;
   std::map<std::string, std::string> current_user;
 };
 

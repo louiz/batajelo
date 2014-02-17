@@ -1,7 +1,7 @@
 #include <gui/current_user.hpp>
 #include <logging/logging.hpp>
 
-CurrentUser::CurrentUser():teams(nullptr)
+CurrentUser::CurrentUser()
 {}
 
 CurrentUser::~CurrentUser()
@@ -30,14 +30,4 @@ void CurrentUser::set_key(const std::string& field, const std::string& value)
   if (it != this->current_user.end())
     this->current_user.erase(it);
   this->current_user.insert(std::make_pair(field, value));
-}
-
-const TeamSerial* CurrentUser::get_teams() const
-{
-  return this->teams;
-}
-
-void CurrentUser::set_teams(TeamSerial* teams)
-{
-  this->teams = teams;
 }

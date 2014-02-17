@@ -16,7 +16,6 @@
 
 #include <network/remote_client_base.hpp>
 #include <network/server.hpp>
-#include <database/user.hpp>
 
 using boost::asio::ip::tcp;
 

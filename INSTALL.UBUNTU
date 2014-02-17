@@ -11,6 +11,5 @@ libopenal-dev
 libsndfile1-dev
 
 For Batajelo:
-libmysqlclient-dev
 libboost1.48-all-dev
 libcrypto++-dev

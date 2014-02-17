@@ -17,7 +17,6 @@
 #include <network/remote_client_base.hpp>
 #include <network/transfer_sender.hpp>
 #include <network/server.hpp>
-#include <database/user.hpp>
 
 class RemoteClient: public RemoteClientBase
 {
@@ -50,11 +49,6 @@ public:
    * For example, checks if there are news to send, or offline messages, etc
    */
   void on_auth_success();
-  /**
-   * Return a pointer on the user associated with this client.
-   * If it's not null, the client is actually authenticated as this user.
-   */
-  User* get_user();
 
 private:
   /**
@@ -70,7 +64,6 @@ private:
    * has to be deleted.
    */
   Server<RemoteClient>* server;
-  User* user;
   /**
    * A list of all the current file transfers with the client.
    */
