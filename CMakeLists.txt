@@ -52,6 +52,8 @@ if(BUILD_CLIENT)
   find_package(SFML 2 REQUIRED system window graphics audio)
 endif()
 
+find_package(GTest)
+
 ##########################
 # Includes and Linkage
 ##########################
@@ -61,6 +63,9 @@ include_directories("src/")
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${CRYPTO++_INCLUDE_DIR})
 include_directories(${YAML_CPP_INCLUDE_DIRS})
+if(GTEST_FOUND)
+  include_directories(${GTEST_INCLUDE_DIRS})
+endif()
 
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${CRYPTO++_LIBRARIES})
@@ -370,6 +375,7 @@ foreach(test_src ${tests_srcs})
 
     target_link_libraries(${lib}_test
       ${lib}
+      ${GTEST_BOTH_LIBRARIES}
       )
   endif(TARGET ${lib})
 endforeach(test_src)
