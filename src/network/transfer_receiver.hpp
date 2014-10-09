@@ -7,14 +7,14 @@
  * @class TransferReceiver
  */
 
-#include <iostream>
-#include <fstream>
-#include <string>
-
 #ifndef __TRANSFER_RECEIVER_HPP__
 # define __TRANSFER_RECEIVER_HPP__
 
-#define FILES_TO_RECEIVE_DIRECTORY std::string("./receive/")
+#include <iostream>
+#include <string>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
+namespace fs = boost::filesystem;
 
 #include <network/command.hpp>
 
@@ -34,10 +34,10 @@ private:
   void get_next_chunk(Command*);
   Client* client;
   std::string id;
-  const std::string filename;
+  fs::path filename;
   int length;
   int received_length;
-  std::ofstream file;
+  fs::ofstream file;
 };
 
 #endif // __TRANSFER_RECEIVER_HPP__

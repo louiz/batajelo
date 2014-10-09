@@ -2,20 +2,22 @@
 #include <network/transfer_receiver.hpp>
 #include <network/client.hpp>
 
+using namespace std::string_literals;
+
+static const fs::path FILES_TO_RECEIVE_DIRECTORY("./receive/");
+
 TransferReceiver::TransferReceiver(Client* client,
-                       const std::string& sid,
-                       const std::string& filename,
-                       int length):
+                                   const std::string& sid,
+                                   const std::string& filename,
+                                   int length):
   client(client),
   id(sid),
-  filename(FILES_TO_RECEIVE_DIRECTORY + filename),
+  filename(FILES_TO_RECEIVE_DIRECTORY / filename),
   length(length),
   received_length(0)
 {
-  std::string command_name("TRANSFER_");
-  command_name += sid;
-  this->client->install_callback(command_name, std::bind(&TransferReceiver::get_next_chunk, this, std::placeholders::_1));
-  this->file.open(this->filename.data(), std::ofstream::binary);
+  this->client->install_callback("TRANSFER_"s + sid, std::bind(&TransferReceiver::get_next_chunk, this, std::placeholders::_1));
+  this->file.open(this->filename, std::ofstream::binary);
 }
 
 TransferReceiver::~TransferReceiver()
@@ -40,10 +42,6 @@ void TransferReceiver::get_next_chunk(Command* received_command)
 
 void TransferReceiver::stop()
 {
-  std::ostringstream sid;
-  sid << this->id;
-  std::string command_name("TRANSFER_");
-  command_name += sid.str();
-  this->client->remove_callback(command_name);
+  this->client->remove_callback("TRANSFER_"s + this->id);
   this->client->on_transfer_ended(this);
 }

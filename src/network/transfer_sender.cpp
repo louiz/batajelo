@@ -1,8 +1,11 @@
+#include <iostream>
 #include <logging/logging.hpp>
 #include <network/transfer_sender.hpp>
 #include <network/remote_client.hpp>
 
-#define CHUNK_SIZE 262144
+using namespace std::string_literals;
+
+static constexpr std::size_t CHUNK_SIZE = 262144u;
 
 unsigned long int TransferSender::current_id = 0;
 
@@ -10,11 +13,10 @@ TransferSender::TransferSender(RemoteClient* client, const std::string& filename
   client(client),
   filename(filename)
 {
-  this->file.open(std::string(FILES_TO_SEND_DIRECTORY + this->filename).data(), std::ofstream::binary);
+  fs::path file_name = FILES_TO_SEND_DIRECTORY / this->filename;
+  this->file.open(file_name, std::ofstream::binary);
 
-  std::ostringstream sid;
-  sid << TransferSender::current_id++;
-  this->id = std::string(sid.str());
+  this->id = std::to_string(TransferSender::current_id++);
 }
 
 TransferSender::~TransferSender()

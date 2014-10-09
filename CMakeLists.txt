@@ -44,7 +44,7 @@ option(BUILD_CLIENT "build the server" ${BUILD_CLIENT})
 # Libraries look up
 ##########################
 
-find_package(Boost 1.48.0 COMPONENTS serialization system date_time unit_test_framework iostreams locale REQUIRED)
+find_package(Boost 1.48.0 COMPONENTS filesystem system date_time iostreams locale serialization REQUIRED)
 find_package(Cryptopp REQUIRED)
 find_package(YamlCpp REQUIRED)
 

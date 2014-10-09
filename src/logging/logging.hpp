@@ -60,7 +60,7 @@ class nullstream: public std::ostream
 {
 public:
   nullstream():
-    std::ostream(0)
+    std::ostream(nullptr)
   { }
 };
 

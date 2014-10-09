@@ -14,15 +14,16 @@
  * @class TransferSender
  */
 
-#include <iostream>
-#include <fstream>
 #include <string>
 #include <boost/asio.hpp>
+#include <boost/filesystem/fstream.hpp>
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
 #ifndef __TRANSFER_SENDER_HPP__
 # define __TRANSFER_SENDER_HPP__
 
-#define FILES_TO_SEND_DIRECTORY std::string("./send/")
+static const fs::path FILES_TO_SEND_DIRECTORY("./send/");
 
 class RemoteClient;
 
@@ -47,7 +48,7 @@ private:
 
   RemoteClient* client;
   const std::string filename;
-  std::ifstream file;
+  fs::ifstream file;
   int length;
   std::string id;
 };
