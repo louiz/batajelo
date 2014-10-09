@@ -4,10 +4,12 @@
 #include <world/layer.hpp>
 #include <gui/sprites/archive_sprite.hpp>
 #include <gui/sprites/pic_sprite.hpp>
+#include <climits>
+#include <cstdlib>
 
 Camera::Camera(ClientWorld* world, GraphMap* map, sf::RenderWindow* win, Screen* screen):
   x(0),
-  y(0),
+  y(56),
   zoom(1),
   focused(true),
   movement_speed(0.023),
@@ -263,64 +265,74 @@ void Camera::update(const Duration& dt)
 
 void Camera::draw()
 {
-  const sf::Vector2u win_size = this->win->getSize();
-  GraphTile* tile;
+  const sf::Vector2i mouse_pos = sf::Mouse::getPosition(*this->win);
+  const unsigned int cell_on_mouse = selected_cell;
+  unsigned int mouse_row = -1;
+  unsigned int mouse_col = -1;
 
-  uint layer_width = this->map->twidth;
-  uint layer_height = this->map->theight;
-  uint row_number = layer_height + layer_width - 1;
-
-  auto unit_it = this->world->units.begin();
-
-  uint row;
-  bool upper_part;
-  for (row = 0; row < row_number; ++row)
+  if (cell_on_mouse != UINT_MAX)
     {
-      upper_part = row < layer_height;
-      uint yoffset = -LEVEL_HEIGHT;
+      mouse_row = cell_on_mouse / this->map->get_width_in_tiles();
+      mouse_col = cell_on_mouse % this->map->get_width_in_tiles();
+    }
+
+  // Draw all tiles even the ones that are not visible for the camera.
+  GraphTile* tile;
+  // Iterate all the rows, from top to bottom
+  for (unsigned int row = 0; row < this->map->get_height_in_tiles(); row++)
+    {
+      // Position where we will draw, in pixels
+      unsigned int y = row * (TILE_HEIGHT / 2);
+      unsigned int x;
+      // Draw the current row of all layers, from bottom to top
       for (Layer* layer: this->map->layers)
         {
-          yoffset += LEVEL_HEIGHT;
-          if (!layer->cells)
-            continue;
-          uint col = 0;
-          int start_col;
-          int end_col;
-          const int step = layer_width - 1;
-          if (upper_part)
-            {
-              start_col = row * layer_width;
-              end_col = 0;
-            }
-          else
-            {
-              start_col = (layer_height - 1) * layer_width + row - layer_width + 1;
-              end_col = layer_width - 1 + (row - layer_height + 1) * layer_width - 1;
-            }
-          if (start_col == 0)
-            end_col = -1;
-          for (int n = start_col; n > end_col; n -= step)
-            {
-              ++col;
-              std::size_t gid = layer->cells[n];
-              tile = this->map->tiles[gid];
-              if (tile)
-                {
-                  uint sx = ((96 * layer_width) / 2) - (row * 96/2) + col * 96;
-                  if (!upper_part)
-                    sx += 96 * (row - layer_height + 1);
-                  const uint sy = (72 / 2) * row;
-                  tile->sprite.setPosition(sx - this->x, sy - this->y - yoffset);
-                  this->win->draw(tile->sprite);
-                }
-            }
-        }
-      for (Sprite* sprite: this->sprites)
-        {
-          sprite->draw(this, this->world, this->screen);
+          if (layer && layer->cells)
+            for (unsigned int col = 0; col < this->map->get_width_in_tiles(); col++)
+              {
+                x = col * TILE_WIDTH;
+                if (row % 2 != 0)
+                  x += HALF_TILE_W;
+                std::size_t cell = col + (row * this->map->get_height_in_tiles());
+                std::size_t gid = layer->cells[cell];
+                tile = this->map->tiles[gid];
+                if (tile)
+                  {
+                    constexpr char tile_opacity = 255;
+                    tile->sprite.setColor(sf::Color(255, 255, 255, tile_opacity));
+                    if (cell_on_mouse != UINT_MAX &&
+                        row == mouse_row && col == mouse_col)
+                      tile->sprite.setColor(sf::Color(255, 0, 255, tile_opacity));
+
+                    tile->sprite.setPosition(x - this->x, y - this->y);
+                    this->win->draw(tile->sprite);
+                  }
+              }
+          // The row for the next layer must be shifted from a few pixel to
+          // the top
+          y -= LEVEL_HEIGHT;
         }
     }
+
+  for (Sprite* sprite: this->sprites)
+    {
+      sprite->draw(this, this->world, this->screen);
+    }
   this->draw_mouse_selection();
+
+  // Debug
+  const std::string cam_pos = "Camera position: " + std::to_string(this->x) + ", " + std::to_string(this->y);
+  this->screen->get_debug_hud().add_debug_line(cam_pos);
+  this->screen->get_debug_hud().add_debug_line("Map width in pixel: " + std::to_string(this->map->get_width_in_pixels()) + ", " + std::to_string(this->map->get_height_in_pixels()));
+
+  Position world_mouse_pos = this->camera_to_world_position(mouse_pos.x, mouse_pos.y);
+  this->screen->get_debug_hud().add_debug_line("Mouse world position: " +
+                                               std::to_string(world_mouse_pos.x.toLong()) + ", " +
+                                               std::to_string(world_mouse_pos.y.toLong()));
+  this->screen->get_debug_hud().add_debug_line("Cell under the mouse: " +
+                                               std::to_string(mouse_col) + ":" +
+                                               std::to_string(mouse_row),
+                                               sf::Color::Yellow);
 }
 
 void Camera::draw_mouse_selection()
@@ -361,69 +373,202 @@ void Camera::fixup_camera_position()
     this->y = this->map->get_height_in_pixels() - win_size.y;
 }
 
-/**
- * Values used to make an angular rotation
- * See http://en.wikipedia.org/wiki/Rotation_%28mathematics%29#Matrix_algebra
- * or your school lessons.
- */
-
-// sin(7π/4)
-static const float sin_45 = 0.6496369390800625;
-// cos(7π/4)
-static const float cos_45 = 0.7602445970756301;
-
 sf::Vector2u Camera::world_to_camera_position(const Position& pos) const
 {
   sf::Vector2u res;
-  // Do some proportionality, to convert from the size of the world to the
-  // size of the screen
-  // res.x = (pos.x.toLong() * TILE_WIDTH) / CELL_SIZE;
-  // res.y = (pos.y.toLong() * TILE_HEIGHT) / CELL_SIZE;
 
   res.x = pos.x.toLong();
   res.y = pos.y.toLong();
-  // Then a rotation of a 45° angle
-  log_error("Before rotate: " << res.x << ": " << res.y);
-  res.x = res.x * cos_45 - res.y * sin_45;
-  res.y = res.y * sin_45 + res.y * cos_45;
-  log_error("After rotate: " << res.x << ": " << res.y);
 
-  // A translation to the right, because the world and the screen do not have
-  // the same origin
-  
+  static const unsigned int w = 96;
+  static const unsigned int y = 72;
+
+  res.x = (res.x * w) / CELL_SIZE;
+  res.y = (res.y * y) / CELL_SIZE;
+
 
   // Then adjust y using the height of that position in the world
-  Fix16 height = this->world->get_position_height(pos) * 32;
-  res.y -= height.toLong();
+  Fix16 height = this->world->get_position_height(pos) * 24;
+
   return res;
 }
 
-Position Camera::camera_to_world_position(const int x,
-                                          const int y) const
+CellIndex Camera::get_cell_at_coord(const unsigned int x, const unsigned int y) const
 {
-  Position res;
-  const uint cell_size = static_cast<const uint>(CELL_SIZE);
-  res.x = (x + this->x) * (CELL_SIZE / static_cast<const float>(TILE_WIDTH));
-  res.y = (y + this->y) * (CELL_SIZE / static_cast<const float>(TILE_HEIGHT));
+  const Position pos(x * CELL_SIZE / TILE_WIDTH,
+                     y * CELL_SIZE / TILE_HEIGHT);
 
-  uint offset = (cell_size - (res.y.toLong() % cell_size));
-  uint i = 0;
-  assert(offset <= 32767);
-  Fix16 height_of_bottom_cell = this->world->get_position_height(Position(res.x, res.y + static_cast<short>(offset)));
-  if (height_of_bottom_cell > ((offset) * (1.f/LAYER_HEIGHT)))
-    res.y += (height_of_bottom_cell * LAYER_HEIGHT).toLong();
+  const Cell cell = this->world->get_cell_at_position(pos);
+  return this->map->cell_to_index(cell);
+}
+
+float get_edge_height(const float x, const float left_height, const float right_height)
+{
+  if (left_height == right_height)
+    return left_height;
+
+  const float ratio = x / HALF_TILE_W;
+  if (left_height > right_height)
+    return left_height - (ratio * (left_height - right_height));
   else
+    return left_height + (ratio * (right_height - left_height));
+}
+
+Position Camera::camera_to_world_position(const int x, const int y) const
+{
+  // The empty space at the top of the world, due to tile size. In pixels
+  static const unsigned int top_offset = 56;
+
+  if (x + this->x <= 0 ||
+      y + this->y - top_offset <= 0)
+    return Position::zero;
+
+  static const float cell_size = static_cast<const float>(CELL_SIZE);
+
+  // Get the cell (at the floor level) at the position
+  const CellIndex cell_index = this->get_cell_at_coord(x + this->x,
+                                                       y + this->y - top_offset);
+
+  // DEBUG only
+  selected_cell = cell_index;
+
+  if (UINT_MAX == cell_index)
+    return Position::zero;
+
+  unsigned int col;
+  unsigned int row;
+  std::tie(col, row) = this->map->index_to_cell(cell_index);
+
+  // If the world was completely flat, this would be the result position
+  Position res;
+  res.x = (x + this->x) * (cell_size / TILE_WIDTH);
+  res.y = (y + this->y - top_offset) * (cell_size / TILE_HEIGHT);
+
+  // Now we need to check if, due to the levels of the world, this position
+  // is hidden or not by a surrounding cell. If yes, the position is
+  // actually on this other cell.
+
+  // If we are on the left side of the cell, we may be hidden by the bottom
+  // or the left cells. If we are on the right side, the bottom or the right
+  // cells.
+  unsigned int xx = x + this->x;
+  if (row % 2)
+    xx += HALF_TILE_W;
+
+  // TODO this in a (World::?) function
+  TileHeights heights = this->map->get_cell_heights(col, row);
+
+  this->screen->get_debug_hud().add_debug_line("Current cell corner heights: " +
+                                               std::to_string(heights.corners.left) + ", " +
+                                               std::to_string(heights.corners.top) + ", " +
+                                               std::to_string(heights.corners.right) + ", " +
+                                               std::to_string(heights.corners.bottom));
+
+  const Fix16 cell_size_16 = static_cast<fix16_t>(CELL_SIZE);
+  // Relative x and y position on the base square of the grid-aligned tile
+  unsigned int rel_x = (x + this->x) - (TILE_WIDTH * col);
+  unsigned int rel_y = (y + this->y - top_offset) - ((TILE_HEIGHT / 2) * row);
+  if (row % 2)
+    rel_x -= HALF_TILE_W;
+
+  float adj_rel_x;
+  float edge_height;
+  float bot_edge_height;
+  // TODO fix the height. It should not be (bot + top)/2
+  float height = 0;
+  CellIndex adj_cell;
+
+  if (xx % TILE_WIDTH >= HALF_TILE_W)
     {
-      offset += cell_size;
-      height_of_bottom_cell = this->world->get_position_height(Position(res.x, res.y + static_cast<short>(offset)));
-      if (height_of_bottom_cell > (offset * (1.f/LAYER_HEIGHT)))
-        res.y += (height_of_bottom_cell * LAYER_HEIGHT).toLong();
+      // RIGHT
+      adj_rel_x = rel_x - HALF_TILE_W;
+
+      edge_height = ::get_edge_height(adj_rel_x,
+                                      heights.corners.top, heights.corners.right);
+      bot_edge_height = ::get_edge_height(adj_rel_x,
+                                          heights.corners.bottom, heights.corners.right);
+      height = (edge_height + bot_edge_height) / 2;
+
+      // Get the bottom-right cell (adj_cell) and its heights
+      if (row % 2 == 0)
+        adj_cell = col + (row + 1) * this->map->get_width_in_tiles();
       else
+        adj_cell = col + 1 + (row + 1) * this->map->get_width_in_tiles();
+      heights = this->map->get_cell_heights(adj_cell);
+
+      edge_height = ::get_edge_height(adj_rel_x,
+                                      heights.corners.left, heights.corners.top);
+      bot_edge_height = ::get_edge_height(adj_rel_x,
+                                          heights.corners.left, heights.corners.bottom);
+
+      if ((edge_height * LAYER_HEIGHT) + adj_rel_x * TILE_HW_RATIO > (TILE_HEIGHT - rel_y))
         {
-          Fix16 height_of_current_cell = this->world->get_position_height(Position(res.x, res.y));
-          res.y += (height_of_current_cell * LAYER_HEIGHT).toLong();
+          selected_cell = adj_cell;
+          height = (edge_height + bot_edge_height) / 2;
+        }
+
+      // Now do the “same” thing with the cell at the bottom
+      adj_cell = col + (row + 2) * this->map->get_width_in_tiles();
+      heights = this->map->get_cell_heights(adj_cell);
+
+      edge_height = ::get_edge_height(adj_rel_x,
+                                       heights.corners.top, heights.corners.right);
+      bot_edge_height = ::get_edge_height(adj_rel_x,
+                                           heights.corners.bottom, heights.corners.right);
+
+      if ((edge_height * LAYER_HEIGHT) - adj_rel_x * TILE_HW_RATIO > (TILE_HEIGHT - rel_y))
+        {
+          selected_cell = adj_cell;
+          height = (edge_height + bot_edge_height) / 2;
         }
     }
+  else
+    {
+      // LEFT
+      adj_rel_x = static_cast<float>(rel_x);
+
+      edge_height = ::get_edge_height(adj_rel_x,
+                                      heights.corners.left, heights.corners.top);
+      bot_edge_height = ::get_edge_height(adj_rel_x,
+                                          heights.corners.left, heights.corners.bottom);
+      height = (edge_height + bot_edge_height) / 2;
+
+      if (row % 2 == 0)
+          adj_cell = col - 1 + (row + 1) * this->map->get_width_in_tiles();
+        else
+          adj_cell = col + (row + 1) * this->map->get_width_in_tiles();
+      heights = this->map->get_cell_heights(adj_cell);
+
+      edge_height = ::get_edge_height(adj_rel_x,
+                                      heights.corners.top, heights.corners.right);
+      bot_edge_height = ::get_edge_height(adj_rel_x,
+                                          heights.corners.bottom, heights.corners.right);
+
+      if (edge_height * LAYER_HEIGHT + (HALF_TILE_W - adj_rel_x) * TILE_HW_RATIO > TILE_HEIGHT - rel_y)
+        {
+          selected_cell = adj_cell;
+          height = (edge_height + bot_edge_height) / 2;
+        }
+
+      // Now do the “same” thing with the cell at the bottom
+      adj_cell = col + (row + 2) * this->map->get_width_in_tiles();
+      heights = this->map->get_cell_heights(adj_cell);
+
+      edge_height = ::get_edge_height(adj_rel_x,
+                                     heights.corners.left, heights.corners.top);
+      bot_edge_height = ::get_edge_height(adj_rel_x,
+                                     heights.corners.left, heights.corners.bottom);
+
+      if ((edge_height * LAYER_HEIGHT) - (HALF_TILE_W - adj_rel_x) * TILE_HW_RATIO > (TILE_HEIGHT - rel_y))
+        {
+          selected_cell = adj_cell;
+          height = (edge_height + bot_edge_height) / 2;
+        }
+    }
+
+  res.y += height / TILE_HW_RATIO * static_cast<float>(LAYER_HEIGHT);
+  this->screen->get_debug_hud().add_debug_line("World position: " + std::to_string(res.x.toLong()) + ":" + std::to_string(res.y.toLong()));
+
   return res;
 }
 
@@ -455,9 +600,7 @@ const sf::Vector2u Camera::get_win_size() const
 void Camera::graphical_tick()
 {
   for (Sprite*& sprite: this->sprites)
-    {
-      sprite->tick();
-    }
+    sprite->tick();
 }
 
 const sf::Vector2i Camera::get_mouse_position() const

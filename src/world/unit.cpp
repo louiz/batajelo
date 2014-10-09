@@ -171,10 +171,10 @@ bool Unit::is_wall_ahead(Vec2& mov, World* world) const
   // mov_with_width.set_length(mov_with_width.length() + this->width/2);
   short x;
   short y;
-  world->get_cell_at_position(this->pos, x, y);
+  std::tie(x, y) = world->get_cell_at_position(this->pos);
   short xa;
   short ya;
-  world->get_cell_at_position(pos_after, xa, ya);
+  std::tie(xa, ya) = world->get_cell_at_position(pos_after);
   if ((x != xa) || (y != ya))
     {
       if (world->can_traverse_cell(x, y, xa, ya) == false)

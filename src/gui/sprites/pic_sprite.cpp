@@ -20,6 +20,7 @@ void PicpicSprite::draw(Camera* camera, const ClientWorld* world, const Screen* 
 {
   this->draw_shadow(camera, world, screen);
   const sf::Vector2u entpos = camera->world_to_camera_position(this->unit->pos);
+
   const uint x = entpos.x - camera->x;
   const uint y = entpos.y - camera->y;
 

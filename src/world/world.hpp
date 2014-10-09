@@ -45,8 +45,12 @@
  * world representation. This means that if you add 100 to an entity
  * position, it will move to the next cell.
  */
-const unsigned int CELL_SIZE = 100;
-#define LAYER_HEIGHT 32.f // MUST be 0.32 * CELL_SIZE
+static constexpr int16_t CELL_SIZE = 100;
+static constexpr int16_t HALF_CELL_SIZE = CELL_SIZE / 2;
+/**
+ * A world-altitude of one represents this amount of pixels:
+ */
+#define LAYER_HEIGHT 24.f
 
 class World
 {
@@ -130,6 +134,8 @@ public:
    */
   Replay* get_replay() const;
 
+  Map* get_map() const;
+
   TurnHandler* get_turn_handler() const;
   /**
    * Return the current number of connected clients.
@@ -141,16 +147,15 @@ public:
    */
   void sort_entities();
   /**
-   * Sets the coordinate of the cell containing the given world position.
+   * Gets the coordinate of the cell containing the given world position.
    */
-  void get_cell_at_position(const Position& pos,
-                            short& xa, short& ya) const;
+  Cell get_cell_at_position(const Position& pos) const;
   /**
    * Returns the height (ingame) of the point at the given position.
    * It takes into account the highest level having a tile containing this
    * position and the tile height (see tile_heights in map.hpp)
    */
-  Fix16 get_position_height(const Position&) const;
+  Fix16 get_position_height(const Position& pos) const;
   /**
    * Convert a path made of cells by a path composed of world positions
    */

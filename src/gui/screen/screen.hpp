@@ -20,6 +20,7 @@
 
 #include <gui/camera/camera.hpp>
 #include <gui/hud/hud.hpp>
+#include <gui/hud/debug_hud.hpp>
 #include <world/client_world/client_world.hpp>
 #include <gui/cursor.hpp>
 #include <mod/client_mod.hpp>
@@ -50,6 +51,7 @@ public:
     return world;
   }
   void reset_left_click_action();
+  DebugHud& get_debug_hud();
 
 private:
   Screen(const Screen&);
@@ -58,6 +60,8 @@ private:
   Camera camera;
   ClientWorld* world;
   Hud hud;
+  DebugHud debug_hud;
+
   /**
    * The list of the cursors' images. We just draw them at the mouse
    * position. The texture is changed whenever needed (for example when

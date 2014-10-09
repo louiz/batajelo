@@ -146,11 +146,11 @@ void GraphMap::draw_full_map(sf::RenderTarget& target)
         continue ;
       uint yoffset = level++ * LEVEL_HEIGHT;
       for (uint y = 0;
-           y < this->theight;
+           y < this->height_in_tiles;
            y++)
         {
           for (uint x = 0;
-               x < this->twidth;
+               x < this->width_in_tiles;
                x++)
             {
               const uint gid = layer->cells[this->width * y + x];

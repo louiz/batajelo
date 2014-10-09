@@ -31,6 +31,7 @@ void Screen::draw()
   this->camera.draw();
   this->hud.draw(&this->camera);
   this->draw_mouse_cursor();
+  this->debug_hud.draw(&this->camera);
 }
 
 void Screen::update(const Duration& dt)
@@ -60,6 +61,9 @@ void Screen::set_cursor_type(const cursor::type type)
 void Screen::draw_mouse_cursor()
 {
   const sf::Vector2i pos = sf::Mouse::getPosition(*this->win);
+  this->debug_hud.add_debug_line("Cursor position: " +
+                                 std::to_string(pos.x) + ", " +
+                                 std::to_string(pos.y));
   if (this->on_left_click.cursor_callback != 0)
     this->set_cursor_type(this->on_left_click.cursor_callback(static_cast<uint>(pos.x),
                                                               static_cast<uint>(pos.y),
@@ -88,9 +92,9 @@ cursor::type Screen::draw_build_cursor(const uint x, const uint y, const std::si
   log_error("id: " << id);
   sf::Sprite sprite;
   sprite.setTexture(*(this->building_textures[id]));
-  short xa, ya;
   Position world_pos = this->camera.camera_to_world_position(x, y);
-  this->world->get_cell_at_position(world_pos, xa, ya);
+  short xa, ya;
+  std::tie(xa, ya) = this->world->get_cell_at_position(world_pos);
   Fix16 height = this->world->get_position_height(world_pos);
   float xpos = xa * TILE_WIDTH - this->camera.x;
   float ypos = ya * TILE_HEIGHT - this->camera.y - static_cast<int>(height) * LAYER_HEIGHT - 32;
@@ -107,4 +111,9 @@ cursor::type Screen::draw_build_cursor(const uint x, const uint y, const std::si
 cursor::type Screen::draw_move_cursor(const uint, const uint, const std::size_t)
 {
   return cursor::Move;
+}
+
+DebugHud& Screen::get_debug_hud()
+{
+  return this->debug_hud;
 }

@@ -205,13 +205,13 @@ void World::do_path(ActionEvent* event)
 
 Path World::calculate_path(Position endpos, Unit* unit)
 {
-  short startx;
-  short starty;
-  short endx;
-  short endy;
-  log_debug("Calculating path for unit. Starting at position: " << unit->pos);
-  this->get_cell_at_position(unit->pos, startx, starty);
-  this->get_cell_at_position(endpos, endx, endy);
+  unsigned short startx;
+  unsigned short starty;
+  unsigned short endx;
+  unsigned short endy;
+  log_debug("Calculating path for unit. Starting at position: " << unit->pos << " ending at position " << endpos);
+  std::tie(startx, starty) = this->get_cell_at_position(unit->pos);
+  std::tie(endx, endy) = this->get_cell_at_position(endpos);
   this->current_path = this->map->do_astar(startx, starty, endx, endy);
   // cell_path_t temp_path(this->current_path.front(), this->current_path.back());
   Path path;
@@ -319,7 +319,6 @@ void World::generate_command(const char* name, const std::string& archive)
   command->set_name(name);
   command->set_body(archive.data(), archive.length());
   this->commands_queue.push(command);
-  log_debug(this->commands_queue.size());
 }
 
 Command* World::get_pending_command()
@@ -334,6 +333,11 @@ Command* World::get_pending_command()
 Replay* World::get_replay() const
 {
   return this->replay;
+}
+
+Map* World::get_map() const
+{
+  return this->map;
 }
 
 TurnHandler* World::get_turn_handler() const
@@ -356,28 +360,52 @@ void World::sort_entities()
   // this->entities.sort(compare_units);
 }
 
-void World::get_cell_at_position(const Position& pos,
-                                 short& xa, short& ya) const
+Cell World::get_cell_at_position(const Position& pos) const
 {
-  const int16_t cell_size = static_cast<const int16_t>(CELL_SIZE);
-  assert(cell_size % 2 == 0);
-  assert(cell_size > 1);
-  xa = static_cast<int16_t>(pos.x) / cell_size;
-  ya = static_cast<int16_t>(pos.y) / cell_size;
+  unsigned short x =  static_cast<int16_t>(pos.x) / CELL_SIZE;
+  unsigned short y = (static_cast<int16_t>(pos.y) / CELL_SIZE) * 2;
+
+  const unsigned short rel_x = static_cast<int16_t>(pos.x) % CELL_SIZE;
+  const unsigned short rel_y = static_cast<int16_t>(pos.y) % CELL_SIZE;
+
+  if (rel_x + rel_y < HALF_CELL_SIZE)
+    { // top left
+      x--;
+      y--;
+    }
+  else if ((rel_x >= HALF_CELL_SIZE) && (rel_y < HALF_CELL_SIZE) &&
+           (rel_x - HALF_CELL_SIZE > rel_y))
+    { // top right
+      y--;
+    }
+  else if ((rel_x < HALF_CELL_SIZE) && (rel_y >= HALF_CELL_SIZE) &&
+           (rel_y - HALF_CELL_SIZE > rel_x))
+    { // bottom left
+      x--;
+      y++;
+    }
+  else if ((rel_x >= HALF_CELL_SIZE) && (rel_y >= HALF_CELL_SIZE) &&
+           (rel_x - HALF_CELL_SIZE + rel_y - HALF_CELL_SIZE > HALF_CELL_SIZE))
+    { // bottom right
+      y++;
+    }
+  return std::make_tuple(x, y);
 }
 
 Fix16 World::get_position_height(const Position& pos) const
 {
   short cellx;
   short celly;
+  std::tie(cellx, celly) = this->get_cell_at_position(pos);
+
   const int cell_size = static_cast<const int>(CELL_SIZE);
-  this->get_cell_at_position(pos, cellx, celly);
-  ushort heights = this->map->get_cell_heights(cellx, celly);
+
+  TileHeights heights = this->map->get_cell_heights(cellx, celly);
   Fix16 cx = Fix16(int16_t(pos.x) % cell_size) / Fix16(CELL_SIZE);
   Fix16 cy = Fix16(int16_t(pos.y) % cell_size) / Fix16(CELL_SIZE);
-  Fix16 a = (heights) & 15;
-  Fix16 b = (heights >> 4) & 15;
-  Fix16 d = (heights >> 12) & 15;
+  Fix16 a = heights.corners.left;
+  Fix16 b = heights.corners.top;
+  Fix16 d = heights.corners.bottom;
   Fix16 hx = a - (cx * (a - b));
   Fix16 hy = a - (a - (cy * (a - d)));
   return hx - hy;
@@ -500,9 +528,9 @@ bool World::has_a_line_of_sight(const Position& start, const Position& end,
   forward.set_length(step);
   // log_error("forward " << forward << " length: " << forward.length());
   // the cell position the pointer is at.
-  short prevx, prevy;
-  short x, y;
-  this->get_cell_at_position(pointer, prevx, prevy);
+  unsigned short prevx, prevy;
+  unsigned short x, y;
+  std::tie(prevx, prevy) = this->get_cell_at_position(pointer);
   // Move the pointer until we reach the destination, or an obstacle.
   log_error("Distance between start and end of path: "<< Position::distance(pointer, end));
   while (Position::distance(pointer, end) >= step)
@@ -510,7 +538,7 @@ bool World::has_a_line_of_sight(const Position& start, const Position& end,
       // Move the pointer forward.
       pointer += forward;
       // log_error("Pointer: " << pointer);
-      this->get_cell_at_position(pointer, x, y);
+      std::tie(x, y) = this->get_cell_at_position(pointer);
       // If the cell changed, we check if we can walk from the previous to
       // the current one. If not, it's not walkable and we return false
       if ((prevx != x) || (prevy != y))
@@ -527,7 +555,7 @@ bool World::has_a_line_of_sight(const Position& start, const Position& end,
       prevy = y;
       prevx = x;
     }
-  this->get_cell_at_position(end, x, y);
+  std::tie(x, y) = this->get_cell_at_position(end);
   if (((prevx != x) || (prevy != y)) && this->can_traverse_cell(prevx, prevy, x, y) == false)
     {
       // log_error("cannot traverse cell 2");

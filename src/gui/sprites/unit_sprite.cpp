@@ -19,7 +19,8 @@ void UnitSprite::draw_shadow(Camera* camera, const ClientWorld* world, const Scr
   const sf::Vector2u size = UnitSprite::shadow_texture.getSize();
   sf::Sprite sprite(UnitSprite::shadow_texture);
   sprite.setPosition(x - size.x/2, y - size.y/2);
-  const sf::Color color(255, 255, 255, 8);
+
+  const sf::Color color(255, 255, 255, 122);
   sprite.setColor(color);
   camera->draw(sprite);
 }

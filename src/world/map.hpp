@@ -2,6 +2,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <list>
+#include <tuple>
+#include <limits>
 
 #ifndef __MAP_HPP__
 # define __MAP_HPP__
@@ -11,32 +13,57 @@
 
 #define LAYER_NUMBER 5
 #define LEVEL_HEIGHT 24
-#define TILE_WIDTH 96
-#define TILE_HEIGHT 72
+static constexpr unsigned int TILE_HEIGHT = 72;
+static constexpr unsigned int TILE_WIDTH = 96;
+static constexpr unsigned int HALF_TILE_W = TILE_WIDTH / 2;
+static constexpr float TILE_HW_RATIO = static_cast<float>(TILE_HEIGHT) / TILE_WIDTH;
 
 // In tiles.
-#define TILESET_WIDTH 8
-#define TILESET_HEIGHT 8
+#define TILESET_WIDTH 2
+#define TILESET_HEIGHT 6
 
 #define MAPS_DIRECTORY "./data/maps/"
 
 /**
  * Defines the heights of the four corners of various tiles based on where
  * they are positionned in the tile set.  For example a tile positionned on
- * the second line of the tileset has these heights: left-top=0,
- * right-top=1, bottom-right=1, bottom-left=0, bottom=1.
+ * the second line of the tileset has these heights:
+ *
+ * left=0, top=1, right=1, bottom=0.
  */
 static const char tile_heights[6][4] =
 {
-  {1, 1, 1, 1},
-  {0, 1, 1, 0},
   {1, 0, 0, 1},
-  {0, 0, 1, 1},
+  {0, 1, 1, 0},
   {1, 1, 0, 0},
-  {0, 0, 0, 0}
+  {0, 0, 1, 1},
+  {1, 1, 1, 1},
+  {0, 0, 0, 0},
+};
+
+/**
+ * The four heights (each corner) of a cell. The special value 7 is used a
+ * “no-height” value.
+ * Since the maximum number of layers is 4, the maximum height is 5.
+ */
+
+union TileHeights
+{
+  struct
+  {
+    unsigned left:3;
+    unsigned top:3;
+    unsigned right:3;
+    unsigned bottom:3;
+  } corners;
+  unsigned int value;
 };
 
 typedef std::list<std::size_t> cell_path_t;
+
+using Cell = std::tuple<unsigned short, unsigned short>;
+using CellIndex = std::size_t;
+static constexpr CellIndex InvalidCellIndex = std::numeric_limits<CellIndex>::max();
 
 class Camera;
 
@@ -62,7 +89,8 @@ public:
   /**
    * Returns an ushort containing the 4 corners' heights of the given cell.
    */
-  ushort get_cell_heights(const int cellx, const int celly) const;
+  TileHeights get_cell_heights(const int cellx, const int celly) const;
+  TileHeights get_cell_heights(const CellIndex cell) const;
   /**
    * Returns whether or not this cell can be built on.
    */
@@ -77,6 +105,12 @@ public:
    */
   std::vector<std::size_t> get_neighbour_nodes(const std::size_t);
 
+  /**
+   * Convert a cell from one representation to the other
+   */
+  Cell index_to_cell(const CellIndex& index);
+  CellIndex cell_to_index(const Cell& cell);
+
 protected:
   bool read_layer(boost::property_tree::ptree& tree);
   bool get_layer_level(boost::property_tree::ptree& tree, unsigned int& level);
@@ -89,14 +123,6 @@ protected:
    * The height (in pixels) of the map.
    */
   uint height;
-  /**
-   * The width (in tiles) of the map.
-   */
-  uint twidth;
-  /**
-   * The height (in tiles) of the map.
-   */
-  uint theight;
   /**
    * The number of tiles, horizontally.
    */
@@ -117,7 +143,7 @@ protected:
    * The heights in each cell is based on the tile_heights value + the level
    * value.
    */
-   ushort* walking_map;
+   TileHeights* walking_map;
 
 private:
   Map(const Map&);

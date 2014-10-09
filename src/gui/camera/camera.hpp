@@ -68,6 +68,11 @@ public:
   sf::Vector2u world_to_camera_position(const Position&) const;
   Position camera_to_world_position(const int, const int) const;
   /**
+   * Return the cell at the given position. If the position is not contained
+   * by any cell, return UINT_MAX.
+   */
+  CellIndex get_cell_at_coord(const unsigned int x, const unsigned int y) const;
+  /**
    * Start a mouse selection, i.e. drawing a rectangle to select entities
    * inside it. The position is a world-static position, not a camera
    * position; this means that if the camera moves while there's an ongoing
@@ -113,6 +118,7 @@ public:
 private:
   Camera(const Camera&);
   Camera& operator=(const Camera&);
+
   /**
    * Check if the camera is at a valid position. If not, fix it.
    */
@@ -143,6 +149,16 @@ private:
   MouseSelection mouse_selection;
   Screen* screen;
   std::list<Sprite*> sprites;
+
 };
+
+ // debug
+static CellIndex selected_cell;
+
+/**
+ * Given a relative (to the cell) x and two corners heights, returns the
+ * height of the cell at the x position
+ */
+float get_edge_height();
 
 #endif // __CAMERA__HPP__

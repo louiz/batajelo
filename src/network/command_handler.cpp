@@ -77,7 +77,7 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
   c[bytes_transferred] = 0;
 
   // find the . separator
-  size_t pos = 0;
+  std::size_t pos = 0;
   while (c[pos] && c[pos] != '.')
     pos++;
 

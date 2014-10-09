@@ -26,7 +26,7 @@ Map::~Map()
   std::vector<Layer*>::iterator it;
   for (it = this->layers.begin(); it < this->layers.end(); ++it)
     delete *it;
-  if (walking_map != 0)
+  if (walking_map)
     delete[] walking_map;
 }
 
@@ -48,14 +48,15 @@ bool Map::load_from_file(const std::string& map_name)
 
   const unsigned int tile_height = tree.get<unsigned int>("map.<xmlattr>.tileheight", 0);
   const unsigned int tile_width = tree.get<unsigned int>("map.<xmlattr>.tilewidth", 0);
+  log_debug("Tile size: " << tile_width << ", " << tile_height);
   if ((tile_width != TILE_WIDTH) || (tile_height != TILE_HEIGHT))
     {
       log_error("Map has a wrong tile size: " << tile_width << ":" << tile_height);
       return false;
     }
-  this->theight = tree.get<unsigned int>
+  this->height_in_tiles = tree.get<unsigned int>
     ("map.<xmlattr>.height", 0);
-  this->twidth = tree.get<unsigned int>
+  this->width_in_tiles = tree.get<unsigned int>
     ("map.<xmlattr>.width", 0);
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
                 tree.get_child("map"))
@@ -66,6 +67,8 @@ bool Map::load_from_file(const std::string& map_name)
             return false;
         }
     }
+  log_debug("Map size in px " << this->width << ", " << this->height);
+  log_debug("Map size, in tiles: " << this->width_in_tiles << ", " << this->height_in_tiles);
   this->generate_walking_map();
   return true;
 }
@@ -90,7 +93,7 @@ bool Map::read_layer(boost::property_tree::ptree& tree)
   Layer* layer = this->layers[level];
   layer->set_level(level);
   layer->set_size(layer_width, layer_height);
-  log_error(layer_width);
+
   if ((layer_width * TILE_WIDTH) >= this->width)
     {
       this->width = layer_width * TILE_WIDTH;
@@ -98,7 +101,8 @@ bool Map::read_layer(boost::property_tree::ptree& tree)
     }
   if ((layer_height * TILE_HEIGHT) >= this->height)
     {
-      this->height = layer_height * TILE_HEIGHT;
+      // Divide by two because of the tile shifting each two rows
+      this->height = layer_height * TILE_HEIGHT / 2;
       this->height_in_tiles = layer_height;
     }
   std::string data;
@@ -204,24 +208,33 @@ uint Map::get_width_in_tiles() const
 void Map::generate_walking_map()
 {
   const uint map_size = this->get_width_in_tiles() * this->get_height_in_tiles();
-  this->walking_map = new ushort[map_size];
+  this->walking_map = new TileHeights[map_size];
   int level;
   for (uint i = 0; i < map_size; ++i)
     {
       level = this->get_max_level_for_cell(i);
       if (level == -1)
-        { // in case of a hole, we put a height of 15 in the four corners.
-          // 15 means it's not walkable at all.
-          this->walking_map[i] = ~0;
+        { // in case of a hole, we put a height of 7 in the four corners.
+          // 7 means it's not walkable at all.
+          this->walking_map[i].value = ~0;
         }
       else
         {
-          const char* tile = tile_heights[this->layers[level]->get_cell(i) / TILESET_WIDTH];
-          this->walking_map[i] = 0;
-          for (uint y = 0; y < 4; ++y)
+          if (level != 0)
             {
-              assert((tile[y] + level) < 16);
-              this->walking_map[i] |= (tile[y] + level) << (y * 4);
+              log_debug("max level for cell " << i << "=" << level);
+            }
+          const unsigned int tile_value = this->layers[level]->get_cell(i);
+          if (tile_value == 0)
+            this->walking_map[i].value = ~0;
+          else
+            {
+              const char* tile = tile_heights[(this->layers[level]->get_cell(i) - 1) / TILESET_WIDTH];
+
+              this->walking_map[i].corners.left    = tile[0] + level;
+              this->walking_map[i].corners.top     = tile[1] + level;
+              this->walking_map[i].corners.right   = tile[2] + level;
+              this->walking_map[i].corners.bottom  = tile[3] + level;
             }
         }
     }
@@ -239,30 +252,36 @@ int Map::get_max_level_for_cell(const uint cell) const
    return ret;
 }
 
-ushort Map::get_cell_heights(const int cellx, const int celly) const
+TileHeights Map::get_cell_heights(const int col, const int row) const
 {
-  assert(cellx >= 0);
-  assert(celly >= 0);
-  assert(cellx < this->get_width_in_tiles());
-  assert(celly < this->get_height_in_tiles());
-  std::size_t index = (this->get_width_in_tiles() * celly) + cellx;
+  assert(col >= 0);
+  assert(row >= 0);
+  assert(col < this->get_width_in_tiles());
+  assert(row < this->get_height_in_tiles());
+  std::size_t index = (this->get_width_in_tiles() * row) + col;
   return this->walking_map[index];
+}
+
+TileHeights Map::get_cell_heights(const CellIndex cell) const
+{
+  return this->get_cell_heights(cell % this->get_width_in_tiles(),
+                                cell / this->get_width_in_tiles());
 }
 
 bool Map::can_be_built_on(const int cellx, const int celly) const
 {
-  assert(cellx >= 0);
-  assert(celly >= 0);
-  assert(cellx < this->get_width_in_tiles());
-  assert(celly < this->get_height_in_tiles());
-  std::size_t index = (this->get_width_in_tiles() * celly) + cellx;
-  ushort heights = this->walking_map[index];
-  ushort a = (heights >> 12) & 15;
-  ushort b = (heights >> 8) & 15;
-  ushort c = (heights >> 4) & 15;
-  ushort d = (heights) & 15;
-  if (a == b && b == c && c == d)
-    return true;
+  // assert(cellx >= 0);
+  // assert(celly >= 0);
+  // assert(cellx < this->get_width_in_tiles());
+  // assert(celly < this->get_height_in_tiles());
+  // std::size_t index = (this->get_width_in_tiles() * celly) + cellx;
+  // TileHeights heights = this->walking_map[index];
+  // ushort a = (heights >> 12) & 15;
+  // ushort b = (heights >> 8) & 15;
+  // ushort c = (heights >> 4) & 15;
+  // ushort d = (heights) & 15;
+  // if (a == b && b == c && c == d)
+  //   return true;
   return false;
 }
 
@@ -439,4 +458,16 @@ cell_path_t reconstruct_path(const std::map<std::size_t, std::size_t>& came_from
       it = came_from.find((*it).second);
     }
   return res;
+}
+
+CellIndex Map::cell_to_index(const Cell& cell)
+{
+  return std::get<0>(cell) + (std::get<1>(cell) * this->get_width_in_tiles());
+}
+
+Cell Map::index_to_cell(const CellIndex& index)
+{
+  const unsigned short col = index % this->get_width_in_tiles();
+  const unsigned short row = index / this->get_width_in_tiles();
+  return std::make_tuple(col, row);
 }

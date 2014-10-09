@@ -161,7 +161,7 @@ bool ClientWorld::action_build(const unsigned int x, const unsigned y, const std
   BuildEvent event;
   event.actor = this->current_selection.get_entities().front()->id;
   Position pos(x, y);
-  this->get_cell_at_position(pos, event.x, event.y);
+  std::tie(event.x, event.y) = this->get_cell_at_position(pos);
   event.type_id = id;
   this->generate_command("BUILD", event.to_string());
   return true;

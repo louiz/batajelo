@@ -11,11 +11,19 @@ public:
   Fix16 y;
 
   ~Vec2() {}
-  Vec2(const Vec2& v) {x=v.x; y=v.y;}
 
-  // constructors
-  Vec2 (): x( 0.0f ), y( 0.0f ) {}
-  Vec2 (Fix16 X, Fix16 Y): x( X ), y( Y ) {}
+  Vec2():
+    x(0.0f),
+    y(0.0f)
+  {}
+  Vec2(const Vec2& v):
+    x(v.x),
+    y(v.y)
+  { }
+  Vec2 (const Fix16& X, const Fix16& Y):
+    x(X),
+    y(Y)
+  { }
   Vec2 (const unsigned int X, const unsigned int Y)
   {
     // See the Fix16 limits at
