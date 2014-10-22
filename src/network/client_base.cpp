@@ -31,9 +31,9 @@ ClientBase::~ClientBase()
 
 // Connect, asyncly, and call one of the given callbacks
 void ClientBase::connect(const std::string& host,
-                              const short& port,
-                              std::function< void(void) > on_success,
-                              std::function< void(void) > on_failure)
+                         const short& port,
+                         std::function<void(void)> on_success,
+                         std::function<void(void)> on_failure)
 {
   // TODO use resolve and DNS
   boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(host), port);

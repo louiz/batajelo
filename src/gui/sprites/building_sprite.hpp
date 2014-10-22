@@ -1,7 +1,3 @@
-/** @addtogroup Gui
- *  @{
- */
-
 /**
  * Defines a abstract class that we inherite to define how a specific kind
  * of building should be drawn on the screen.  The class receives the
@@ -16,20 +12,17 @@
 #ifndef __BUILDING_SPRITE_HPP__
 # define __BUILDING_SPRITE_HPP__
 
-#include <gui/sprites/sprite.hpp>
+#include <gui/sprites/world_sprite.hpp>
+#include <gui/camera/camera.hpp>
 
 class Building;
-class ClientWorld;
-class Screen;
 
-class BuildingSprite: public Sprite
+class BuildingSprite: public WorldSprite
 {
 public:
-  BuildingSprite(const Building*const building):
-    building(building)
-  {}
+  BuildingSprite(const Building* building);
   virtual ~BuildingSprite() {};
-  virtual void draw(Camera*, const ClientWorld*, const Screen*) const = 0;
+  virtual void draw(GameClient* game) const = 0;
   virtual void tick() = 0;
   /**
    * Returns the sprite that should be drawn on the cell under the cursor we
@@ -40,9 +33,10 @@ public:
    * Draws the rally point of the building. Called only by buildings
    * actually using a rally point.
    */
-  void draw_rally_point(Camera*, const Building* const) const;
-  void draw_selection_circle(Camera* camera, const Building* const building) const;
-  bool is_in_screen(Camera*, const Building* const) const;
+  void draw_rally_point(Camera& camera) const;
+  void draw_selection_circle(Camera& camera) const;
+  bool is_in_screen(Camera& camera) const;
+
 protected:
   const Building *const building;
 private:

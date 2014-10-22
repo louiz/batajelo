@@ -26,6 +26,7 @@ public:
   ~BaseSocket() {}
 protected:
   boost::asio::ip::tcp::socket socket;
+
 private:
   BaseSocket(const BaseSocket&) = delete;
   BaseSocket(BaseSocket&&) = delete;

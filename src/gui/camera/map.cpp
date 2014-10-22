@@ -32,16 +32,16 @@ bool GraphMap::load_from_file(const std::string& map_name, bool load_minimap)
   std::string filename(MAPS_DIRECTORY);
   filename += map_name;
 
-  if (load_minimap)
-    {
-      std::string minimap_filename(MINIMAPS_DIRECTORY);
-      minimap_filename += map_name;
-      if (this->minimap_texture.loadFromFile(utils::basename(minimap_filename) + ".png") == false)
-        {
-          log_error("Could not load minimap image " << minimap_filename);
-          return false;
-        }
-    }
+  // if (load_minimap)
+  //   {
+  //     std::string minimap_filename(MINIMAPS_DIRECTORY);
+  //     minimap_filename += map_name;
+  //     if (this->minimap_texture.loadFromFile(utils::basename(minimap_filename) + ".png") == false)
+  //       {
+  //         log_error("Could not load minimap image " << minimap_filename);
+  //         return false;
+  //       }
+  //   }
   boost::property_tree::ptree tree;
   try
     {

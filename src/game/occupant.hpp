@@ -1,7 +1,3 @@
-/** @addtogroup World
- *  @{
- */
-
 /**
  * Represents an other user who joined the game.
  * It can be a Player or a Viewer.

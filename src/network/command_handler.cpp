@@ -105,18 +105,18 @@ void CommandHandler::read_handler(const boost::system::error_code& error, const 
   const std::size_t length_to_read = this->data.size() >= size ? 0 : size - this->data.size();
 
   boost::asio::async_read(this->socket,
-                 this->data,
-                 boost::asio::transfer_at_least(length_to_read),
-                 std::bind(&CommandHandler::binary_read_handler, this,
+                          this->data,
+                          boost::asio::transfer_at_least(length_to_read),
+                          std::bind(&CommandHandler::binary_read_handler, this,
                                     std::placeholders::_1,
                                     command,
                                     size, callback));
 }
 
 void CommandHandler::binary_read_handler(const boost::system::error_code& error,
-                          Command* command,
-                          std::size_t bytes_transferred,
-                          t_read_callback callback)
+                                         Command* command,
+                                         std::size_t bytes_transferred,
+                                         t_read_callback callback)
 {
   if (error)
     {

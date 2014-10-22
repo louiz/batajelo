@@ -1,4 +1,4 @@
-#include <world/occupant.hpp>
+#include <game/occupant.hpp>
 
 Occupant::Occupant(unsigned long int number, const std::string& name):
   number(number),

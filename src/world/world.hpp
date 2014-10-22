@@ -17,6 +17,8 @@
 #ifndef __WORLD_HPP__
 # define __WORLD_HPP__
 
+#include <fixmath/fix16.hpp>
+
 #include <list>
 #include <queue>
 #include <memory>
@@ -25,17 +27,15 @@
 #include <boost/archive/text_iarchive.hpp>
 
 #include <game/event.hpp>
-#include <world/occupant.hpp>
 #include <world/entity.hpp>
 #include <world/unit.hpp>
-#include <world/time.hpp>
+
 #include <world/map.hpp>
 #include <game/action.hpp>
 #include <game/event.hpp>
 #include <game/turn_handler.hpp>
 #include <game/replay.hpp>
 #include <network/command.hpp>
-#include <fixmath/fix16.hpp>
 #include <world/position.hpp>
 #include <world/path.hpp>
 #include <mod/mod.hpp>
@@ -54,8 +54,9 @@ static constexpr int16_t HALF_CELL_SIZE = CELL_SIZE / 2;
 
 class World
 {
+  friend class GameServer;
+  friend class GameClient;
 public:
-  World(Mod&);
   World(Map*, Mod&);
   ~World();
   /**
@@ -102,20 +103,10 @@ public:
   void unpause();
   void completely_validate_action(const unsigned int id);
   void validate_turn_completely(const unsigned int number);
-  void generate_command(const char* name, const std::string& archive);
-  Command* get_pending_command();
   /**
    * Call tick(true) until the turn_handler is paused.
    */
   void advance_replay_until_paused();
-  /**
-   * Actually instert a occupant in the occupants list.
-   */
-  void add_new_occupant(Occupant*);
-  /**
-   * Actually remove the occupant from the occupants list.
-   */
-  void remove_occupant(Occupant*);
   void do_path(ActionEvent*);
   Path calculate_path(Position, Unit*);
   void do_new_unit(ActionEvent*);
@@ -130,17 +121,13 @@ public:
    */
   void confirm_action(const unsigned int);
   /**
-   * Returns a pointer to the replay.
+   * Returns a reference to the replay.
    */
-  Replay* get_replay() const;
+  const Replay& get_replay() const;
+  Replay& get_replay();
 
   Map* get_map() const;
 
-  TurnHandler* get_turn_handler() const;
-  /**
-   * Return the current number of connected clients.
-   */
-  unsigned int get_number_of_occupants() const;
   /**
    * Sort the entities by their y position. This
    * is used to draw them in the correct order.
@@ -197,18 +184,11 @@ public:
   }
   bool is_started() const;
   /**
-   * the list of other occupants of the game, when a new client connects to
-   * the server, we add it to the list, when it disconnects we remove it.
-   * Each occupant object contains an id corresponding to the
-   * RemoteGameClient object stored in the server.
-   */
-  std::vector<Occupant*> occupants;
-  /**
    * The list of all existing entities in the world.
    */
   std::list<Entity*> entities;
   /**
-   * The list of all existing units in the world.
+s   * The list of all existing units in the world.
    */
   std::list<Unit*> units;
   /**
@@ -224,7 +204,6 @@ private:
   World(const World&);
   World& operator=(const World&);
 
-protected:
   /**
    * The list of all models for the units in the world.
    * That list is created by loading a Mod file. To spawn a unit
@@ -236,19 +215,12 @@ protected:
   std::vector<std::unique_ptr<Unit>> unit_models;
   std::vector<std::unique_ptr<Building> > building_models;
   /**
-   * The list of all action generated that needs to be sent to the
-   * the remote server or the clients.
-   * The server may generate actions too, in case of a game versus an IA or
-   * something like that.
-   */
-  std::queue<Command*> commands_queue;
-  /**
    *
    */
-  TurnHandler* turn_handler;
-  bool started;
-  Replay* replay;
+  Replay replay;
+  TurnHandler turn_handler;
   Map* map;
+  bool started;
 
 public:
   // for debug

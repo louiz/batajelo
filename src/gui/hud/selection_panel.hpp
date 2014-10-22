@@ -19,8 +19,9 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-#include <world/selection.hpp>
-#include <world/client_world/client_world.hpp>
+#include <game/selection.hpp>
+#include <game/time.hpp>
+#include <gui/screen/screen_element.hpp>
 
 #define SQUARE_SIZE 50
 #define SQUARES_PER_LINE 10
@@ -36,23 +37,25 @@
 #define TAB_HEIGHT 15
 #define SPACE_BETWEEN_TABS 5
 
-class SelectionPanel
+class GameClient;
+
+class SelectionPanel: public ScreenElement
 {
 public:
-  SelectionPanel(sf::RenderWindow*, const Selection*);
+  SelectionPanel(GameClient* game, Screen* screen, const Selection* selection);
   ~SelectionPanel();
-  void draw();
+  void draw() override final;
+  bool handle_event(const sf::Event&) override final;
+  void update(const Duration& dt) override final;
   void draw_tab(const std::size_t);
-  bool handle_event(const sf::Event&, ClientWorld*);
   bool is_entity_hovered(const Entity*) const;
   const Entity* get_entity_under_mouse() const;
-  void update();
 
 private:
   SelectionPanel(const SelectionPanel&);
   SelectionPanel& operator=(const SelectionPanel&);
   std::size_t current_tab;
-  sf::RenderWindow* win;
+  GameClient* game;
   /**
    * A pointer to the Selection object contained in the ClientWorld object.
    */

@@ -34,6 +34,7 @@ bool Map::load_from_file(const std::string& map_name)
 {
   std::string filename(MAPS_DIRECTORY);
   filename += map_name;
+  log_debug("Loading map: " << filename);
 
   boost::property_tree::ptree tree;
   try

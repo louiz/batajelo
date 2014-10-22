@@ -19,23 +19,25 @@
 #include <SFML/System.hpp>
 #include <boost/function.hpp>
 
-#include <world/client_world/client_world.hpp>
-#include <world/time.hpp>
-#include <gui/camera/map.hpp>
+#include <world/world.hpp>
+#include <game/time.hpp>
 #include <gui/camera/mouse_selection.hpp>
 #include <fixmath/fix16.hpp>
 #include <world/position.hpp>
 
+#include <gui/screen/screen_element.hpp>
+
 class Minimap;
 class Screen;
-class Sprite;
+class WorldSprite;
+class GameClient;
 
-class Camera
+class Camera: public ScreenElement
 {
   friend class Minimap;
   friend class Screen;
 public:
-  Camera(ClientWorld*, GraphMap*, sf::RenderWindow*, Screen*);
+  Camera(GameClient*, Screen*);
   ~Camera();
   /**
    * Draw the world viewed through the camera.
@@ -99,7 +101,6 @@ public:
   void on_new_building(const Building*);
   void graphical_tick();
 
-  const sf::Vector2i get_mouse_position() const;
   const sf::Vector2u get_win_size() const;
   /**
    * The left position of the camera
@@ -143,12 +144,13 @@ private:
   /**
    * A pointer to the world object used to display stuff on the screen.
    */
-  ClientWorld* world;
-  GraphMap* map;
-  sf::RenderWindow* win;
+  GameClient* game;
+  std::list<WorldSprite*> sprites;
   MouseSelection mouse_selection;
-  Screen* screen;
-  std::list<Sprite*> sprites;
+  World& world() const;
+  GraphMap& map() const;
+  sf::RenderWindow& win();
+  sf::RenderWindow& win() const;
 
 };
 

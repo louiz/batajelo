@@ -18,33 +18,36 @@
 
 #include <world/client_world/client_world.hpp>
 #include <gui/camera/camera.hpp>
-#include <gui/hud/minimap.hpp>
-#include <gui/hud/selection_panel.hpp>
-#include <gui/hud/action_panel.hpp>
+// #include <gui/hud/minimap.hpp>
+// #include <gui/hud/selection_panel.hpp>
+// #include <gui/hud/action_panel.hpp>
 #include <mod/client_mod.hpp>
+#include <gui/screen/screen_element.hpp>
 
 class Screen;
+class GameClient;
 
-class Hud
+class Hud: public ScreenElement
 {
 public:
-  Hud(GraphMap*, ClientWorld*, sf::RenderWindow*, Camera*, Screen*, ClientMod&);
+  Hud(GameClient* game, Screen* screen);
   ~Hud();
-  void draw(Camera*);
-  bool handle_event(const sf::Event&);
+  void draw() override final;
+  bool handle_event(const sf::Event&) override final;
+  void update(const Duration& dt) override final;
   bool is_entity_hovered(const Entity*) const;
   void reset_left_click_action();
 
 private:
   Hud(const Hud&);
   Hud& operator=(const Hud&);
-  Minimap minimap;
-  sf::RenderWindow* win;
-  sf::Sprite hud_sprite;
+  // Minimap minimap;
+  // SelectionPanel selection_panel;
+  // ActionPanel action_panel;
+  GameClient* game;
+
   sf::Texture hud_texture;
-  ClientWorld* world;
-  SelectionPanel selection_panel;
-  ActionPanel action_panel;
+  sf::Sprite hud_sprite;
 };
 
 #endif // __HUP_HPP__

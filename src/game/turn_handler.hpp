@@ -7,11 +7,11 @@
  * @class TurnHandler
  */
 
-#include <deque>
-#include <functional>
-
 #ifndef __TURN_HANDLER_HPP__
 # define __TURN_HANDLER_HPP__
+
+#include <deque>
+#include <functional>
 
 #include <game/turn.hpp>
 #include <game/action.hpp>
@@ -22,7 +22,7 @@ typedef std::function< void(unsigned long) > t_next_turn_callback;
 /**
  * The number of ticks contained in a turn
  */
-#define TURN_TIME 10
+static constexpr std::size_t TURN_TIME = 10;
 
 class TurnHandler
 {
@@ -113,7 +113,7 @@ private:
   t_next_turn_callback next_turn_callback;
   /**
    * A pointer to the replay. When a turn is executed, fill the replay
-   * with the actions (if the replay is not 0)
+   * with the actions (if the replay is not nullptr)
    */
   Replay* replay;
 };

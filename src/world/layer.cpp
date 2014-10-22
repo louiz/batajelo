@@ -1,5 +1,5 @@
 #include <world/layer.hpp>
-
+#include <logging/logging.hpp>
 Layer::Layer():
   cells(nullptr)
 {

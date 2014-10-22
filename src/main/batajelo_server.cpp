@@ -1,12 +1,15 @@
 #include <config/config.hpp>
 #include <logging/logging.hpp>
 #include <network/server.hpp>
-#include <network/remote_game_client.hpp>
+#include <game/remote_game_client.hpp>
 #include <network/remote_client.hpp>
-#include <network/game_server.hpp>
+#include <game/game_server.hpp>
+#include <game/time.hpp>
+#include <iostream>
 
 int main()
 {
+  std::ios_base::sync_with_stdio(false);
   if (!Config::read_conf("./batajelo.conf"))
     return 1;
   log_debug("Starting server");
@@ -17,7 +20,8 @@ int main()
   s.start();
 
   Time time1 = boost::posix_time::microsec_clock::universal_time();
-  Time time2;
+  Time time2 = time1;
+
   Duration dt;
 
   while (true)
@@ -30,7 +34,6 @@ int main()
      {
        s.tick();
      }
-      s.send_pending_commands();
       s.poll(100);
     }
   return 0;

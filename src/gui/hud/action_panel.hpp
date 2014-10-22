@@ -35,7 +35,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <gui/hud/action_panel_table.hpp>
-#include <world/selection.hpp>
+#include <game/selection.hpp>
 #include <mod/client_mod.hpp>
 
 class Screen;

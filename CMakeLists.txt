@@ -11,10 +11,6 @@ project(batajelo)
 set(batajelo_VERSION_MAJOR 0)
 set(batajelo_VERSION_MINOR 1)
 
-set(EXECUTABLE_OUTPUT_PATH bin)
-set(LIBRARY_OUTPUT_PATH output_lib)
-
-
 ##########################
 # Project compile flags
 ##########################
@@ -221,26 +217,11 @@ add_library(world STATIC ${source_world})
 
 target_Link_libraries(world
   logging
-  game
   serialization
   fixmath
   mod
   utils
   ${Boost_LIBRARIES}
-  )
-
-#
-## ClientWorld
-#
-file(GLOB source_client_world
-  src/world/client_world/*.[hc]pp
-  )
-
-add_library(client_world STATIC ${source_client_world})
-
-target_Link_libraries(client_world
-  world
-  gui
   )
 
 #
@@ -252,11 +233,6 @@ file(GLOB source_serialization
 
 add_library(serialization STATIC ${source_serialization})
 
-target_Link_libraries(serialization
-  logging
-  world
-  ${Boost_LIBRARIES}
-  )
 
 #
 ## Network server
@@ -282,6 +258,8 @@ target_link_libraries(server
   logging
   config
   game
+  world
+  mod
   ${Boost_LIBRARIES}
   )
 
@@ -323,7 +301,6 @@ target_link_libraries(game
   client
   logging
   config
-  client_world
   )
 
 #

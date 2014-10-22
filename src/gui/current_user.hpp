@@ -21,7 +21,7 @@ public:
    * Get the object.
    * @return  const std::map<std::string, std::string>&
    */
-  const std::map<std::string, std::string>& get_current_user() const;
+  const auto& get_current_user() const;
   /**
    * Get the field value.
    * @param std::string& field

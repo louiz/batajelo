@@ -6,15 +6,15 @@
  * Defines a list of entities, as part of a selection. For example the
  * currently selected entities are inside one Selection, each control group
  * is a distinct Selection, etc.
- * @class MouseSelection
  */
 
 #ifndef __SELECTION_HPP__
 # define __SELECTION_HPP__
 
+#include <world/entity.hpp>
+
 #include <list>
 #include <vector>
-#include <world/entity.hpp>
 
 typedef std::function<void(void)> t_selection_changed_callback;
 

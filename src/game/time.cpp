@@ -1,4 +1,4 @@
-#include <world/time.hpp>
+#include <game/time.hpp>
 
 long get_number_of_updates(Duration& duration)
 {

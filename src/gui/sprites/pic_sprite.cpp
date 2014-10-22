@@ -1,5 +1,8 @@
 #include <gui/sprites/pic_sprite.hpp>
 #include <logging/logging.hpp>
+#include <gui/camera/camera.hpp>
+#include <game/game_client.hpp>
+#include <world/unit.hpp>
 
 PicpicSprite::PicpicSprite(const Unit* const unit):
   UnitSprite(unit),
@@ -16,26 +19,26 @@ PicpicSprite::PicpicSprite(const Unit* const unit):
   this->height = 1 + (5 * random() / RAND_MAX);
 }
 
-void PicpicSprite::draw(Camera* camera, const ClientWorld* world, const Screen* screen) const
+void PicpicSprite::draw(GameClient* game) const
 {
-  this->draw_shadow(camera, world, screen);
-  const sf::Vector2u entpos = camera->world_to_camera_position(this->unit->pos);
+  this->draw_shadow(game->get_camera());
+  const sf::Vector2u entpos = game->get_camera().world_to_camera_position(this->unit->pos);
 
-  const uint x = entpos.x - camera->x;
-  const uint y = entpos.y - camera->y;
+  const uint x = entpos.x - game->get_camera().x;
+  const uint y = entpos.y - game->get_camera().y;
 
   sf::Sprite sprite(PicpicSprite::body_texture);
   const sf::Vector2u size = PicpicSprite::body_texture.getSize();
   sprite.setPosition(x - size.x/2, y - size.y - this->height);
-  camera->draw(sprite);
+  game->get_camera().draw(sprite);
 
   sf::Sprite eye_sprite(PicpicSprite::eye_texture);
   const sf::Vector2u eye_size = PicpicSprite::eye_texture.getSize();
   eye_sprite.setPosition(x - 10 - eye_size.x/2, y - size.y / 5 * 3 - this->height - eye_size.y/2 + 5);
-  sf::Vector2i mouse_pos = camera->get_mouse_position();
-  camera->draw(eye_sprite);
+  sf::Vector2i mouse_pos = game->get_screen().get_mouse_position();
+  game->get_camera().draw(eye_sprite);
   eye_sprite.setPosition(x + 10 - eye_size.x/2, y - size.y / 5 * 3 - this->height - eye_size.y/2 + 5);
-  camera->draw(eye_sprite);
+  game->get_camera().draw(eye_sprite);
 }
 
 void PicpicSprite::tick()

@@ -26,7 +26,6 @@
 #include <network/base_ioservice.hpp>
 #include <network/base_socket.hpp>
 #include <network/command.hpp>
-#include <world/time.hpp>
 
 /**
  * Does nothing, it is just used to exit the io_service.run_one() after
@@ -52,7 +51,7 @@ public:
     acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
   {
   }
-  ~Server()
+  virtual ~Server()
   {
     log_debug("closing socket");
   }
@@ -191,7 +190,7 @@ public:
 private:
   void install_accept_handler(void)
   {
-    T* new_client = new T(this->io_service, this);
+    T* new_client = new T(this->io_service);
 
     this->acceptor.async_accept(new_client->get_socket(),
                                 std::bind(&Server<T>::handle_accept,

@@ -7,18 +7,19 @@ class PicpicSprite: public UnitSprite
 {
 public:
   PicpicSprite(const Unit* const);
-  virtual ~PicpicSprite() {}
-  virtual void draw(Camera*, const ClientWorld*, const Screen*) const;
-  virtual void tick();
+
+  void draw(GameClient* game) const override final;
+  void tick() override final;
   static bool init;
 
 private:
+  float height;
+  float float_direction;
+
   PicpicSprite(const PicpicSprite&);
   PicpicSprite& operator=(const PicpicSprite&);
   static sf::Texture body_texture;
   static sf::Texture eye_texture;
-  float height;
-  float float_direction;
 };
 
 #endif // __PICPIC_SPRITE_HPP__

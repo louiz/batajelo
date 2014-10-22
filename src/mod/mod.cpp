@@ -2,7 +2,6 @@
 #include <gui/hud/action_panel_page.hpp>
 #include <gui/hud/action_panel_button.hpp>
 #include <gui/screen/screen.hpp>
-#include <utils/make_unique.hpp>
 
 #include <memory>
 

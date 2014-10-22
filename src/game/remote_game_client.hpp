@@ -1,7 +1,3 @@
-/** @addtogroup Network
- *  @{
- */
-
 /**
  * @class RemoteGameClient
  */
@@ -11,20 +7,17 @@
 # define __REMOTE_GAME_CLIENT_HPP__
 
 #include <functional>
-
-#include <boost/asio.hpp>
-
 #include <network/remote_client_base.hpp>
-#include <network/server.hpp>
 
-using boost::asio::ip::tcp;
+class GameServer;
 
 class RemoteGameClient: public RemoteClientBase
 {
 public:
-  RemoteGameClient(boost::asio::io_service&, Server<RemoteGameClient>*);
+  RemoteGameClient(boost::asio::io_service& io_service);
   ~RemoteGameClient();
-  virtual void on_connection_closed();
+  void on_connection_closed() override final;
+  void set_game_server(GameServer* server);
 
 private:
   /**
@@ -32,14 +25,11 @@ private:
    * It is executed whenever that command is received.
    * See CommandHandler for details
    */
-  virtual void install_callbacks();
+  void install_callbacks() override final;
   void ok_callback(Command* command);
   void turn_callback(Command* command);
-  /**
-   * A pointer to the server, to call its method when the RemoteGameClient
-   * has to be deleted.
-   */
-  Server<RemoteGameClient>* server;
+
+  GameServer* server;
 };
 
 #endif

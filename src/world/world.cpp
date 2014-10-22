@@ -3,29 +3,17 @@
 #include <world/path.hpp>
 #include <world/work.hpp>
 
-World::World(Mod& mod):
-  started(false),
-  map(0)
-{
-  this->replay = new Replay;
-  this->turn_handler = new TurnHandler(this->replay);
-  this->init(mod);
-}
-
 World::World(Map* map, Mod& mod):
-  started(false),
-  map(map)
+  replay(),
+  turn_handler(&replay),
+  map(map),
+  started(false)
 {
-  this->replay = new Replay;
-  this->turn_handler = new TurnHandler(this->replay);
   this->init(mod);
 }
 
 World::~World()
 {
-  delete this->turn_handler;
-  if (this->replay != 0)
-    delete this->replay;
   for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); ++it)
     delete *it;
 }
@@ -33,7 +21,7 @@ World::~World()
 void World::set_next_turn_callback(t_next_turn_callback callback)
 {
   log_debug("set_next_turn_callback");
-  this->turn_handler->set_next_turn_callback(callback);
+  this->turn_handler.set_next_turn_callback(callback);
 }
 
 void World::insert_unit(Unit* unit)
@@ -52,30 +40,6 @@ void World::insert_building(Building* building)
 void World::insert_entity(Entity* entity)
 {
   this->entities.push_back(entity);
-}
-
-void World::remove_occupant(Occupant* occupant)
-{
-  std::vector<Occupant*>::iterator it;
-  Occupant* occupant_to_remove;
-
-  for (it = this->occupants.begin(); it < this->occupants.end(); ++it)
-    {
-      if ((*it)->number == occupant->number)
-     {
-       occupant_to_remove = (*it);
-       this->occupants.erase(it);
-       delete occupant_to_remove;
-       return ;
-     }
-    }
-  assert(false);
-}
-
-void World::add_new_occupant(Occupant* occupant)
-{
-  this->occupants.push_back(occupant);
-  log_debug("Adding new occupant to the world:" << occupant->name << " " << occupant->number);
 }
 
 void World::init(Mod& mod)
@@ -121,12 +85,12 @@ Building* World::create_building(unsigned int type, const short x, const short y
 
 void World::pause()
 {
-  this->turn_handler->pause();
+  this->turn_handler.pause();
 }
 
 void World::unpause()
 {
-  this->turn_handler->unpause();
+  this->turn_handler.unpause();
 }
 
 
@@ -134,8 +98,8 @@ void World::tick(bool force)
 {
   if ((this->started == false) && (force == false))
     return ;
-  this->turn_handler->tick(force);
-  if (this->turn_handler->is_paused() == true)
+  this->turn_handler.tick(force);
+  if (this->turn_handler.is_paused() == true)
     return ;
   Entity* entity;
   for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); ++it)
@@ -157,7 +121,7 @@ void World::advance_replay_until_paused()
   do
     {
       this->tick(true);
-    } while (this->turn_handler->is_paused() == false);
+    } while (this->turn_handler.is_paused() == false);
 }
 
 void World::start()
@@ -168,7 +132,7 @@ void World::start()
   if (this->map == 0)
     {
       this->map = new Map();
-      this->map->load_from_file("test5.tmx");
+      this->map->load_from_file("test6.tmx");
     }
   this->started = true;
 }
@@ -179,6 +143,7 @@ void World::do_path(ActionEvent* event)
   assert(path_event);
   // Path path(path_event->x, path_event->y);
   Position endpos(static_cast<short>(path_event->x), static_cast<short>(path_event->y));
+  log_error("Move: endpos" << endpos);
 
   Unit* unit;
   Building* building;
@@ -266,7 +231,7 @@ void World::do_spawn(ActionEvent* event)
 void World::completely_validate_action(const unsigned int id)
 {
   log_debug("Action " << id << " completely validated.");
-  return this->turn_handler->completely_validate_action(id);
+  return this->turn_handler.completely_validate_action(id);
 }
 
 Entity* World::get_entity_by_id(unsigned short id)
@@ -310,27 +275,15 @@ Building* World::get_building_by_id(unsigned short id)
 
 void World::validate_turn_completely(const unsigned int number)
 {
-  this->turn_handler->completely_validate_turn(number);
+  this->turn_handler.completely_validate_turn(number);
 }
 
-void World::generate_command(const char* name, const std::string& archive)
+const Replay& World::get_replay() const
 {
-  Command* command = new Command;
-  command->set_name(name);
-  command->set_body(archive.data(), archive.length());
-  this->commands_queue.push(command);
+  return this->replay;
 }
 
-Command* World::get_pending_command()
-{
-  if (this->commands_queue.empty())
-    return 0;
-  Command* command = this->commands_queue.front();
-  this->commands_queue.pop();
-  return command;
-}
-
-Replay* World::get_replay() const
+Replay& World::get_replay()
 {
   return this->replay;
 }
@@ -338,16 +291,6 @@ Replay* World::get_replay() const
 Map* World::get_map() const
 {
   return this->map;
-}
-
-TurnHandler* World::get_turn_handler() const
-{
-  return this->turn_handler;
-}
-
-unsigned int World::get_number_of_occupants() const
-{
-  return this->occupants.size();
 }
 
 static bool compare_units(const Unit* a, const Unit* b)
