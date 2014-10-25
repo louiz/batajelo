@@ -18,13 +18,13 @@ void RemoteClient::install_callbacks()
   this->install_callback("TRANSFER", std::bind(&RemoteClient::transfer_callback, this, std::placeholders::_1));
 }
 
-void RemoteClient::auth_callback(Command* received_command)
+void RemoteClient::auth_callback(Message* received_message)
 {
 }
 
-void RemoteClient::transfer_callback(Command* received_command)
+void RemoteClient::transfer_callback(Message* received_message)
 {
-  this->send_file(std::string(received_command->body, received_command->body_size));
+  this->send_file(std::string(received_message->body, received_message->body_size));
 }
 
 void RemoteClient::on_auth_success()

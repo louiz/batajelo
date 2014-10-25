@@ -15,9 +15,9 @@ void Client::install_callbacks()
   this->install_callback("TRANSFER", std::bind(&Client::transfer_init_callback, this, std::placeholders::_1));
 }
 
-void Client::transfer_init_callback(Command* received_command)
+void Client::transfer_init_callback(Message* received_message)
 {
-  std::string arg(received_command->body, received_command->body_size);
+  std::string arg(received_message->body, received_message->body_size);
   std::vector<std::string> args;
   boost::split(args, arg, boost::is_any_of("|"));
   if (args.size() != 3)

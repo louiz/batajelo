@@ -41,10 +41,10 @@ bool TransferSender::start()
       std::string transfer_description(sid.str());
       transfer_description += "|" + this->filename + "|"  + slength.str();
 
-      Command* command = new Command;
-      command->set_name("TRANSFER");
-      command->set_body(transfer_description.data(), transfer_description.size());
-      this->client->send(command);
+      Message* message = new Message;
+      message->set_name("TRANSFER");
+      message->set_body(transfer_description.data(), transfer_description.size());
+      this->client->send(message);
       return true;
     }
   log_warning("Could not open file to send: " << this->filename);
@@ -53,21 +53,21 @@ bool TransferSender::start()
 
 void TransferSender::send_next_chunk()
 {
-  Command* command = new Command;
+  Message* message = new Message;
 
-  command->body = new char[CHUNK_SIZE];
-  std::streamsize read_size = this->file.readsome(command->body, CHUNK_SIZE);
+  message->body = new char[CHUNK_SIZE];
+  std::streamsize read_size = this->file.readsome(message->body, CHUNK_SIZE);
   log_debug("Read from file: " << read_size);
-  command->set_body_size(read_size);
+  message->set_body_size(read_size);
 
-  std::string command_name = "TRANSFER_" + this->id;
-  command->set_name(command_name);
+  std::string message_name = "TRANSFER_" + this->id;
+  message->set_name(message_name);
   if (read_size)
     {
       // this was not the last chunk, so we'll send an other one when this one is
       // successfully sent.
-      this->client->send(command, std::bind(&TransferSender::send_next_chunk, this));
+      this->client->send(message, std::bind(&TransferSender::send_next_chunk, this));
     }
   else
-    this->client->send(command, std::bind(&RemoteClient::on_transfer_ended, this->client, this));
+    this->client->send(message, std::bind(&RemoteClient::on_transfer_ended, this->client, this));
 }

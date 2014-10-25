@@ -4,8 +4,8 @@
 
 /**
  * Represents one single remote client. It is kept in a list, by the Server
- * object. Using the CommandHandler interface, it executes callbacks
- * upon receiving command from the client, and sends commands when
+ * object. Using the MessageHandler interface, it executes callbacks
+ * upon receiving message from the client, and sends messages when
  * we need to communicate something to it.
  * The derived classes must install their own callback, install a transfer handler
  * in it or not, etc.
@@ -18,13 +18,13 @@
 #ifndef REMOTE_CLIENT_BASE
 # define REMOTE_CLIENT_BASE
 
-#include <network/command_handler.hpp>
-#include <network/command.hpp>
+#include <network/message_handler.hpp>
+#include <network/message.hpp>
 #include <network/timed_event_handler.hpp>
 #include <network/timed_event.hpp>
 #include <network/ping_handler.hpp>
 
-class RemoteClientBase: public CommandHandler, public TimedEventHandler, public PingHandler
+class RemoteClientBase: public MessageHandler, public TimedEventHandler, public PingHandler
 {
 public:
   explicit RemoteClientBase(boost::asio::io_service&);
@@ -40,7 +40,7 @@ public:
   /**
    * Called when the response to our ping request is received.
    */
-  void on_pong(Command*);
+  void on_pong(Message*);
   /**
    * The number of clients is incremented each time
    * a new client is accepted.
@@ -63,9 +63,9 @@ protected:
    */
   const unsigned long int number;
   /**
-   * Creates the default callbacks associated with a network command.
-   * It is executed whenever that command is received.
-   * See CommandHandler for details
+   * Creates the default callbacks associated with a network message.
+   * It is executed whenever that message is received.
+   * See MessageHandler for details
    */
   virtual void install_callbacks() = 0;
   void install_read_handler(void);

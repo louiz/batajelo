@@ -3,23 +3,23 @@
  */
 
 /**
- * Represents one single network command.
- * A command has a header and a body (also called binary part, which can have
+ * Represents one single network message, for the base network protocol.
+ * A message has a header and a body (also called binary part, which can have
  * size of 0).
- * The header is COMMAND_NAME.BODY_SIZE:
+ * The header is MESSAGE_NAME.BODY_SIZE:
  * The body can be anything, but it is BODY_SIZE bytes long.
  * The \n char is not used anywhere in the protocol, and there's no delimiter
  * between a body and the header of the next message.
  *
- * To send a command, a Command object must be created anywhere and filled with
- * the correct data and then passed to the CommandHandler::send() method.
+ * To send a message, a Message object must be created anywhere and filled with
+ * the correct data and then passed to the MessageHandler::send() method.
  * The object will be deleted by the send_handler, after it has been
  * succesfully sent.
  *
- * A Command object is passed by a CommandHandler to the callback associated
- * with a command name. This callback is responsible for deleting the command
+ * A Message object is passed by a MessageHandler to the callback associated
+ * with a message name. This callback is responsible for deleting the message
  * object. (MAYBE)
- * @class Command
+ * @class Message
  */
 
 #include <string>
@@ -29,15 +29,15 @@
 #include <sstream>
 #include <functional>
 
-#ifndef __COMMAND_HPP__
-# define __COMMAND_HPP__
+#ifndef MESSAGE_HPP
+# define MESSAGE_HPP
 
-class Command
+class Message
 {
 public:
-  Command();
-  Command(const Command&);
-  ~Command();
+  Message();
+  Message(const Message&);
+  ~Message();
   /**
    * Sets the body of the message. A char* will be new[]ed using the size, and
    * the data will be copied in it. To avoid that copy, see the body attribute
@@ -51,7 +51,7 @@ public:
    */
   void set_body_size(int size);
   /**
-   * This must be called before the object is passed to CommandHandler::send(),
+   * This must be called before the object is passed to MessageHandler::send(),
    * it will set the header correctly, using the body size etc.
    */
   void pack();
@@ -72,7 +72,7 @@ public:
   std::function< void(void) > callback;
 
 private:
-  Command& operator=(const Command&);
+  Message& operator=(const Message&);
 };
 
-#endif // __COMMAND_HPP__
+#endif // __MESSAGE_HPP__

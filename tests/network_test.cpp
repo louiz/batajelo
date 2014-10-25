@@ -1,85 +1,76 @@
-#include <config/config.hpp>
-#include <logging/logging.hpp>
-#include <network/command.hpp>
+#include <network/message.hpp>
 
-#include <cstring>
+#include <gtest/gtest.h>
 
-#define BOOST_TEST_MODULE network
-#include <boost/test/included/unit_test.hpp>
-
-BOOST_AUTO_TEST_SUITE(network_suite1)
-
-BOOST_AUTO_TEST_CASE(command_consistency_test1)
+TEST(Network, message_consistency_test1)
 {
-  Command* command = new Command;
-  command->set_body("coucou les amis");
-  command->set_name("FAKE_COMMAND");
-  command->pack();
+  Message* message = new Message;
+  message->set_body("coucou les amis");
+  message->set_name("FAKE_MESSAGE");
+  message->pack();
 
-  BOOST_REQUIRE(command->header == std::string("FAKE_COMMAND.15:"));
-  BOOST_REQUIRE(command->body_size == 15);
-  BOOST_REQUIRE(strncmp(command->body, "coucou les amis", 15) == 0);
+  EXPECT_EQ(message->header, std::string("FAKE_MESSAGE.15:"));
+  EXPECT_EQ(message->body_size, 15);
+  EXPECT_EQ(strncmp(message->body, "coucou les amis", 15), 0);
 
-  delete command;
+  delete message;
 }
 
-BOOST_AUTO_TEST_CASE(command_consistency_test2)
+TEST(Network, message_consistency_test2)
 {
-  Command* command = new Command;
-  command->set_body("");
-  command->set_name("G");
-  command->pack();
+  Message* message = new Message;
+  message->set_body("");
+  message->set_name("G");
+  message->pack();
 
-  BOOST_REQUIRE(command->header == std::string("G:"));
-  BOOST_REQUIRE(command->body_size == 0);
-  BOOST_REQUIRE(strncmp(command->body, "", 0) == 0);
+  EXPECT_EQ(message->header, std::string("G:"));
+  EXPECT_EQ(message->body_size, 0);
+  EXPECT_EQ(strncmp(message->body, "", 0), 0);
 
-  delete command;
+  delete message;
 }
 
-BOOST_AUTO_TEST_CASE(command_consistency_test3)
+TEST(Network, message_consistency_test3)
 {
-  Command* command = new Command;
-  command->set_body("");
-  command->set_name("GUGU");
-  command->pack();
+  Message* message = new Message;
+  message->set_body("");
+  message->set_name("GUGU");
+  message->pack();
 
-  BOOST_REQUIRE(command->header == std::string("GUGU.:"));
-  BOOST_REQUIRE(command->body_size == 0);
-  BOOST_REQUIRE(strncmp(command->body, "", 0) == 0);
+  EXPECT_EQ(message->header, std::string("GUGU.:"));
+  EXPECT_EQ(message->body_size, 0);
+  EXPECT_EQ(strncmp(message->body, "", 0), 0);
 
-  delete command;
+  delete message;
 }
 
-BOOST_AUTO_TEST_CASE(command_consistency_test4)
+TEST(Network, message_consistency_test4)
 {
-  Command* command = new Command;
-  command->set_body("salut");
-  command->set_name("G");
-  command->pack();
+  Message* message = new Message;
+  message->set_body("salut");
+  message->set_name("G");
+  message->pack();
 
-  BOOST_REQUIRE(command->header == std::string("G5:"));
-  BOOST_REQUIRE(command->body_size == 5);
-  BOOST_REQUIRE(strncmp(command->body, "salut", 5) == 0);
+  EXPECT_EQ(message->header, std::string("G5:"));
+  EXPECT_EQ(message->body_size, 5);
+  EXPECT_EQ(strncmp(message->body, "salut", 5), 0);
 
-  delete command;
+  delete message;
 }
 
-BOOST_AUTO_TEST_CASE(command_copy_test)
+TEST(Network, message_copy_test)
 {
-  Command* command = new Command;
-  command->set_body("coucou les amis");
-  command->set_name("FAKE_COMMAND");
-  command->pack();
+  Message* message = new Message;
+  message->set_body("coucou les amis");
+  message->set_name("FAKE_MESSAGE");
+  message->pack();
 
-  Command* command2 = new Command(*command);
-  command2->pack();
-  BOOST_REQUIRE(command2->header == std::string("FAKE_COMMAND.15:"));
-  BOOST_REQUIRE(command2->body_size == 15);
-  BOOST_REQUIRE(strncmp(command2->body, "coucou les amis", 15) == 0);
+  Message* message2 = new Message(*message);
+  message2->pack();
+  EXPECT_EQ(message2->header, std::string("FAKE_MESSAGE.15:"));
+  EXPECT_EQ(message2->body_size, 15);
+  EXPECT_EQ(strncmp(message2->body, "coucou les amis", 15), 0);
 
-  delete command;
-  delete command2;
+  delete message;
+  delete message2;
 }
-
-BOOST_AUTO_TEST_SUITE_END()

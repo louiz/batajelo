@@ -16,7 +16,7 @@
 #include <boost/filesystem/fstream.hpp>
 namespace fs = boost::filesystem;
 
-#include <network/command.hpp>
+#include <network/message.hpp>
 
 class Client;
 
@@ -31,7 +31,7 @@ private:
   TransferReceiver(const TransferReceiver&);
   TransferReceiver& operator=(const TransferReceiver&);
 
-  void get_next_chunk(Command*);
+  void get_next_chunk(Message*);
   Client* client;
   std::string id;
   fs::path filename;

@@ -1,27 +1,27 @@
-#include <network/command.hpp>
+#include <network/message.hpp>
 #include <assert.h>
 
-Command::Command():
+Message::Message():
   body(0),
   body_size(0),
   callback(nullptr)
 {
 }
 
-Command::Command(const Command& command)
+Message::Message(const Message& message)
 {
-  this->callback = command.callback;
-  this->header = command.header;
-  this->name = command.name;
-  this->set_body(command.body, command.body_size);
+  this->callback = message.callback;
+  this->header = message.header;
+  this->name = message.name;
+  this->set_body(message.body, message.body_size);
 }
 
-Command::~Command()
+Message::~Message()
 {
   delete[] this->body;
 }
 
-void Command::set_body(const char* body, int size)
+void Message::set_body(const char* body, int size)
 {
   if (size == -1)
     size = ::strlen(body);
@@ -30,17 +30,17 @@ void Command::set_body(const char* body, int size)
   this->set_body_size(size);
 }
 
-void Command::set_name(const std::string name)
+void Message::set_name(const std::string name)
 {
   this->name = name;
 }
 
-void Command::set_body_size(int size)
+void Message::set_body_size(int size)
 {
   this->body_size = size;
 }
 
-void Command::pack()
+void Message::pack()
 {
   assert(this->name.size() > 0);
 

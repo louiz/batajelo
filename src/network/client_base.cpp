@@ -1,9 +1,6 @@
 #include <logging/logging.hpp>
 #include <network/client_base.hpp>
 #include <boost/algorithm/string.hpp>
-#if defined(_WIN32) || defined(_WIN64)
-# include <WinBase.h>
-#endif
 
 /**
  * Does nothing, it is just used to exit the io_service.run_one() after
@@ -15,7 +12,7 @@ static void poll_timeout_handler(const boost::system::error_code&)
 
 ClientBase::ClientBase():
   BaseIoservice(),
-  CommandHandler(io_service),
+  MessageHandler(io_service),
   timeout(io_service)
 {
 }
@@ -65,13 +62,13 @@ void ClientBase::connect_handler(std::function< void(void) > on_success,
     }
 }
 
-void ClientBase::ping_callback(Command*)
+void ClientBase::ping_callback(Message*)
 {
   log_debug("Received PING");
 
-  Command* command = new Command;
-  command->set_name("PONG");
-  this->send(command);
+  Message* message = new Message;
+  message->set_name("PONG");
+  this->send(message);
 }
 
 void ClientBase::poll(long timeout)

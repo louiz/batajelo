@@ -6,7 +6,7 @@
  * The main network class for the clients.
  * Connects to the remote server, sends requests to it and
  * calls the appropriate callbacks when the answer is received (or
- * when a standalone command is received from the server)
+ * when a standalone message is received from the server)
  * @class ClientBase
  */
 
@@ -18,13 +18,13 @@
 # define __CLIENT_BASE_HPP__
 
 #include <network/base_ioservice.hpp>
-#include <network/command_handler.hpp>
+#include <network/message_handler.hpp>
 #include <network/ping_handler.hpp>
 #include <network/timed_event_handler.hpp>
-#include <network/command.hpp>
+#include <network/message.hpp>
 #include <network/timed_event.hpp>
 
-class ClientBase: public BaseIoservice, public CommandHandler,
+class ClientBase: public BaseIoservice, public MessageHandler,
                   public TimedEventHandler, public PingHandler
 {
 public:
@@ -59,7 +59,7 @@ private:
   /**
    * Called when the server sends us a PING request. Sends a PONG back.
    */
-  void ping_callback(Command*);
+  void ping_callback(Message*);
 
   boost::asio::deadline_timer timeout;
 };

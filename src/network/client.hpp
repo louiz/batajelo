@@ -37,7 +37,7 @@ private:
    * Called when the server initiate a file transfer with us.
    * Install the temporary callback to receive each file chunk.
    */
-  void transfer_init_callback(Command*);
+  void transfer_init_callback(Message*);
 
   std::vector<TransferReceiver*> receivers;
   boost::asio::io_service io_service;

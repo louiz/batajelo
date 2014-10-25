@@ -25,7 +25,7 @@
 #include <logging/logging.hpp>
 #include <network/base_ioservice.hpp>
 #include <network/base_socket.hpp>
-#include <network/command.hpp>
+#include <network/message.hpp>
 
 /**
  * Does nothing, it is just used to exit the io_service.run_one() after
@@ -138,50 +138,50 @@ public:
   }
 
   /**
-   * Sends a command to the list of the given remote clients (using their id).
+   * Sends a message to the list of the given remote clients (using their id).
    */
-  void send_to_list_of_clients(Command* command,
+  void send_to_list_of_clients(Message* message,
 			       std::vector<unsigned long int> ids)
   {
     typename std::vector<unsigned long int>::iterator it;
     for (it = ids.begin(); it < ids.end(); ++it)
       {
-	this->send_to_client(new Command(*command), *it);
+	this->send_to_client(new Message(*message), *it);
       }
-    // delete the command ourself, because we made a copy for each
+    // delete the message ourself, because we made a copy for each
     // client, and the original is still there and will not be deleted
     // by a client sending it (because it will not be sent).
-    delete command;
+    delete message;
   }
 
   /**
-   * Sends a command to all clients.
+   * Sends a message to all clients.
    */
-  void send_to_all_clients(Command* command)
+  void send_to_all_clients(Message* message)
   {
     typename std::vector<T*>::iterator it;
     for (it = this->clients.begin(); it < this->clients.end(); ++it)
       {
-	(*it)->send(new Command(*command));
+	(*it)->send(new Message(*message));
       }
-    delete command;
+    delete message;
   }
 
   /**
-   * Sends a command to a client specified by its id.
+   * Sends a message to a client specified by its id.
    */
-  void send_to_client(Command* command, unsigned long int id)
+  void send_to_client(Message* message, unsigned long int id)
   {
     typename std::vector<T*>::iterator it;
     for (it = this->clients.begin(); it < this->clients.end(); ++it)
       {
     	if ((*it)->number == id)
 	  {
-	    (*it)->send(command);
+	    (*it)->send(message);
 	    return ;
 	  }
       }
-    // The command MUST be sent by now. If the corresponding client
+    // The message MUST be sent by now. If the corresponding client
     // was not in the list, something was wrong before calling this
     // function.
     assert(false);

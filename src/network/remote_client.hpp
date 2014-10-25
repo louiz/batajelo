@@ -37,7 +37,7 @@ public:
   /**
    * Called when we receive the response to our ping.
    */
-  void on_pong(Command*);
+  void on_pong(Message*);
   /**
    * To be called whenever a file transfer ends.
    * Removes the TransferSender from the list.
@@ -52,13 +52,13 @@ public:
 
 private:
   /**
-   * Creates the default callbacks associated with a network command.
-   * It is executed whenever that command is received.
-   * See CommandHandler for details
+   * Creates the default callbacks associated with a network message.
+   * It is executed whenever that message is received.
+   * See MessageHandler for details
    */
   virtual void install_callbacks();
-  void auth_callback(Command*);
-  void transfer_callback(Command*);
+  void auth_callback(Message*);
+  void transfer_callback(Message*);
   /**
    * A pointer to the server, to call its method when the RemoteClient
    * has to be deleted.

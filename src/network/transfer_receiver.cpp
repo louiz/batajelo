@@ -26,7 +26,7 @@ TransferReceiver::~TransferReceiver()
   this->file.close();
 }
 
-void TransferReceiver::get_next_chunk(Command* received_command)
+void TransferReceiver::get_next_chunk(Message* received_message)
 {
   if (!this->file.good())
     {
@@ -34,10 +34,10 @@ void TransferReceiver::get_next_chunk(Command* received_command)
       this->stop();
       return ;
     }
-  if (received_command->body_size == 0)
+  if (received_message->body_size == 0)
     this->stop();
   else
-    this->file.write(received_command->body, received_command->body_size);
+    this->file.write(received_message->body, received_message->body_size);
 }
 
 void TransferReceiver::stop()
