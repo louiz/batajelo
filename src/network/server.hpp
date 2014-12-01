@@ -205,10 +205,10 @@ private:
 	log_error("handle_accept failed: " << error);
 	exit(1);
       }
-  client->start();
-  this->clients.push_back(client);
-  this->on_new_client(client);
-  this->install_accept_handler();
+    this->on_new_client(client);
+    this->clients.push_back(client);
+    this->install_accept_handler();
+    client->start();
   }
 
   void accept(void)

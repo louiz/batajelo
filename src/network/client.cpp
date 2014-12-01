@@ -37,8 +37,8 @@ void Client::on_transfer_ended(const TransferReceiver* receiver)
   for (it = this->receivers.begin(); it < this->receivers.end(); ++it)
     if (*it == receiver)
       {
-     this->receivers.erase(it);
-     break ;
+        this->receivers.erase(it);
+        break ;
       }
   delete receiver;
 }

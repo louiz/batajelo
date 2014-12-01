@@ -16,40 +16,36 @@ void MessageHandler::install_callback(const std::string& message,
                                       t_read_callback callback)
 {
   log_debug("installing callback for message " << message);
-  this->callbacks[message] = callback;
+  this->callbacks.emplace(message, callback);
 }
 
 void MessageHandler::install_callback_once(const std::string& message,
                                            t_read_callback callback)
 {
   log_debug("installing ONCE callback for message " << message);
-  this->callbacks_once[message] = callback;
+  this->callbacks_once.emplace(message, callback);
 }
 
 void MessageHandler::remove_callback(const std::string& message)
 {
-  auto it = this->callbacks.find(message);
-  if (it != this->callbacks.end())
-    this->callbacks.erase(it);
-  else
-    log_warning("Could not remove callback: " << message);
+  log_debug("remove_callback: " << message);
+  auto res = this->callbacks.erase(message);
+  log_warning("Removed " << res << " callbacks");
 }
 
-t_read_callback MessageHandler::get_callback(const std::string& message)
+std::vector<t_read_callback> MessageHandler::get_callbacks(const std::string& message)
 {
-  auto it = this->callbacks.find(message);
-  if (it != this->callbacks.end())
-    return it->second;
+  std::vector<t_read_callback> res;
 
-  it = this->callbacks_once.find(message);
-  if (it != this->callbacks_once.end())
-    {
-      log_debug("Removing callback for message " << message);
-      t_read_callback callback = it->second;
-      this->callbacks_once.erase(it);
-      return callback;
-    }
-  return 0;
+  auto its = this->callbacks.equal_range(message);
+  for (auto it = std::get<0>(its); it != std::get<1>(its); ++it)
+    res.push_back(it->second);
+
+  its = this->callbacks_once.equal_range(message);
+  for (auto it = std::get<0>(its); it != std::get<1>(its); ++it)
+    res.push_back(it->second);
+  this->callbacks_once.erase(std::get<0>(its), std::get<1>(its));
+  return res;
 }
 
 void MessageHandler::read_handler(const boost::system::error_code& error, const std::size_t bytes_transferred)
@@ -96,7 +92,7 @@ void MessageHandler::read_handler(const boost::system::error_code& error, const 
   delete[] c;
 
   // Find out if a callback was registered for that message.
-  t_read_callback callback = this->get_callback(message_name);
+  auto callbacks = this->get_callbacks(message_name);
   // We check what we need to read on the socket to have the rest of the binary datas
   const std::size_t length_to_read = this->data.size() >= size ? 0 : size - this->data.size();
 
@@ -106,13 +102,13 @@ void MessageHandler::read_handler(const boost::system::error_code& error, const 
                           std::bind(&MessageHandler::binary_read_handler, this,
                                     std::placeholders::_1,
                                     message,
-                                    size, callback));
+                                    size, callbacks));
 }
 
 void MessageHandler::binary_read_handler(const boost::system::error_code& error,
                                          Message* message,
                                          std::size_t bytes_transferred,
-                                         t_read_callback callback)
+                                         std::vector<t_read_callback> callbacks)
 {
   if (error)
     {
@@ -124,10 +120,15 @@ void MessageHandler::binary_read_handler(const boost::system::error_code& error,
   this->data.sgetn(message->body, bytes_transferred);
   message->set_body_size(bytes_transferred);
 
-  if (callback)
-    callback(message);
+  if (callbacks.empty())
+    {
+      log_debug("no callback");
+    }
   else
-    log_debug("no callback");
+    {
+      for (const auto& cb: callbacks)
+        cb(message);
+    }
   delete message;
   this->install_read_handler();
 }
@@ -177,8 +178,8 @@ void MessageHandler::actually_send(Message* message)
   buffs.push_back(boost::asio::buffer(message->header.data(), message->header.length()));
   buffs.push_back(boost::asio::buffer(message->body, message->body_size));
   async_write(this->socket,
-           buffs,
-             std::bind(&MessageHandler::send_handler, this,
+              buffs,
+              std::bind(&MessageHandler::send_handler, this,
                         std::placeholders::_1,
                         std::placeholders::_2,
                         message));

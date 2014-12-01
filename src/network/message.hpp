@@ -14,7 +14,7 @@
  * To send a message, a Message object must be created anywhere and filled with
  * the correct data and then passed to the MessageHandler::send() method.
  * The object will be deleted by the send_handler, after it has been
- * succesfully sent.
+ * successfully sent.
  *
  * A Message object is passed by a MessageHandler to the callback associated
  * with a message name. This callback is responsible for deleting the message
@@ -22,15 +22,19 @@
  * @class Message
  */
 
+#ifndef MESSAGE_HPP
+# define MESSAGE_HPP
+
+#include <google/protobuf/message.h>
+
+#include "logging/logging.hpp"
+
+#include <functional>
 #include <string>
-#include <iostream>
 #include <cstring>
 #include <fstream>
 #include <sstream>
 #include <functional>
-
-#ifndef MESSAGE_HPP
-# define MESSAGE_HPP
 
 class Message
 {
@@ -46,6 +50,11 @@ public:
    */
   void set_body(const char*, int size = -1);
   /**
+   * Sets the body of the message with the content of given the
+   * protobuf::Message, serialized.
+   */
+  void set_body(const google::protobuf::Message& msg);
+  /**
    * If you manually set the content of the body member, use this method to
    * set the proper body size. Do not use it after set_body() though.
    */
@@ -55,7 +64,7 @@ public:
    * it will set the header correctly, using the body size etc.
    */
   void pack();
-  void set_name(const std::string);
+  void set_name(const std::string& name);
   std::string get_name() { return this->name; }
   /**
    * Use this member to manually set the body. For example you can pass it to
@@ -67,9 +76,21 @@ public:
   std::string name;
   size_t body_size;
   /**
-   * If not 0, will be called from the send_handler.
+   * If not empty, will be called from the send_handler.
    */
-  std::function< void(void) > callback;
+  std::function<void(void)> callback;
+  /**
+   * Converts the body to a protobuf object. Does not check if it's valid
+   * nor complete.
+   */
+  template<typename ProtobufClass>
+  ProtobufClass parse_body_to_protobuf_object() const
+  {
+    ProtobufClass res;
+    res.ParseFromArray(this->body, this->body_size);
+    log_debug("parse_body_to_protobuf_object: " << res.ShortDebugString());
+    return res;
+  }
 
 private:
   Message& operator=(const Message&);

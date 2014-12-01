@@ -26,7 +26,6 @@ typedef std::function<void(Message*)> t_read_callback;
 
 class MessageHandler: public BaseSocket
 {
-  friend void TransferSender::send_next_chunk();
 public:
   explicit MessageHandler(boost::asio::io_service&);
   virtual ~MessageHandler();
@@ -42,7 +41,7 @@ public:
    * Read the arguments after a message (can read 0 bytes too) and pass that
    * to the callback that was associated with this message.
    */
-  void binary_read_handler(const boost::system::error_code&, Message*, std::size_t, t_read_callback);
+  void binary_read_handler(const boost::system::error_code&, Message*, std::size_t, std::vector<t_read_callback> callbacks);
   /**
    * Sends a message, and use install_callback_once to wait for the answer
    * and call that callback to handle it.
@@ -74,11 +73,10 @@ public:
 
 protected:
   /**
-   * Returns the callback associated with the passed message name.
-   * Returns 0 if nothing was found, in that case the execution of the
-   * return value cause a failure.
+   * Returns all the callbacks associated with the passed message name.
+   * Returns an empty vector if nothing was found.
    */
-  t_read_callback get_callback(const std::string&);
+  std::vector<t_read_callback> get_callbacks(const std::string&);
   /**
    * @todo Check if the data was correctly sent on the socket
    */
@@ -107,8 +105,8 @@ private:
   MessageHandler(const MessageHandler&);
   MessageHandler& operator=(const MessageHandler&);
 
-  std::map<const std::string, t_read_callback > callbacks;
-  std::map<const std::string, t_read_callback > callbacks_once;
+  std::multimap<const std::string, t_read_callback > callbacks;
+  std::multimap<const std::string, t_read_callback > callbacks_once;
   /**
    * A queue of messages. If there's not async_write running, we pop one
    * from it and we send it.

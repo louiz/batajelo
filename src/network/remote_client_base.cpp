@@ -5,19 +5,19 @@ unsigned long int RemoteClientBase::clients_number = 0;
 
 RemoteClientBase::RemoteClientBase(boost::asio::io_service& io_service):
   MessageHandler(io_service),
-  number(RemoteClientBase::clients_number++),
+  id(RemoteClientBase::clients_number++),
   io_service(io_service)
 {
 }
 
 RemoteClientBase::~RemoteClientBase()
 {
-  log_info("Deleting remote client " << this->number);
+  log_info("Deleting remote client " << this->id);
 }
 
 void RemoteClientBase::start()
 {
-  log_debug("Starting RemoteClientBase " << this->number);
+  log_debug("Starting RemoteClientBase " << this->id);
   this->install_callbacks();
   this->install_timed_event(this->io_service, std::bind(&RemoteClientBase::send_ping, this), 2);
   MessageHandler::install_read_handler();

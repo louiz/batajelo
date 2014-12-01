@@ -12,11 +12,14 @@
  * @class RemoteClientBase
  */
 
-#include <boost/asio.hpp>
-#include <functional>
-
 #ifndef REMOTE_CLIENT_BASE
 # define REMOTE_CLIENT_BASE
+
+#include <cstdint>
+
+#include <functional>
+
+#include <boost/asio.hpp>
 
 #include <network/message_handler.hpp>
 #include <network/message.hpp>
@@ -49,11 +52,7 @@ public:
   /**
    * Returns the client number (aka id).
    */
-  unsigned long int get_number() { return this->number; }
-  /**
-   * Returns the client number (aka id).
-   */
-  unsigned long int get_id() { return this->get_number(); }
+  uint32_t get_id() const { return this->id; }
 
   virtual void on_connection_closed() = 0;
 
@@ -61,7 +60,7 @@ protected:
   /**
    * The client number (aka id).
    */
-  const unsigned long int number;
+  const uint32_t id;
   /**
    * Creates the default callbacks associated with a network message.
    * It is executed whenever that message is received.

@@ -43,6 +43,7 @@ option(BUILD_CLIENT "build the server" ${BUILD_CLIENT})
 find_package(Boost 1.48.0 COMPONENTS filesystem system date_time iostreams locale serialization REQUIRED)
 find_package(Cryptopp REQUIRED)
 find_package(YamlCpp REQUIRED)
+find_package(Protobuf REQUIRED)
 
 if(BUILD_CLIENT)
   find_package(SFML 2 REQUIRED system window graphics audio)
@@ -59,6 +60,7 @@ include_directories("src/")
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${CRYPTO++_INCLUDE_DIR})
 include_directories(${YAML_CPP_INCLUDE_DIRS})
+include_directories(${PROTOBUF_INCLUDE_DIRS})
 if(GTEST_FOUND)
   include_directories(${GTEST_INCLUDE_DIRS})
 endif()
@@ -222,11 +224,14 @@ target_Link_libraries(world
 #
 ## Serialization
 #
-file(GLOB source_serialization
-  src/serialization/*.[hc]pp
+file(GLOB proto_files
+  src/proto/*.proto
   )
+PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HDRS ${proto_files})
 
-add_library(serialization STATIC ${source_serialization})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+add_library(serialization STATIC ${PROTO_SRC})
+target_link_libraries(serialization ${PROTOBUF_LIBRARIES})
 
 
 #
@@ -234,17 +239,7 @@ add_library(serialization STATIC ${source_serialization})
 #
 
 file(GLOB source_server
-  src/network/command_handler.*
-  src/network/remote_client_base.*
-  src/network/remote_client.*
-  src/network/remote_game_client.*
-  src/network/server.*
-  src/network/game_server.*
-  src/network/transfer_sender.*
-  src/network/command.*
-  src/network/timed_event.*
-  src/network/timed_event_handler.*
-  src/network/ping_handler.*
+  src/network/*.[hc]pp
   )
 
 add_library(server STATIC ${source_server})
@@ -293,9 +288,11 @@ add_library(game STATIC ${source_game})
 
 target_link_libraries(game
   serialization
+  network
   client
   logging
   config
+  world
   )
 
 #

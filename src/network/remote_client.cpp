@@ -9,7 +9,7 @@ RemoteClient::RemoteClient(boost::asio::io_service& io_service,
 
 RemoteClient::~RemoteClient()
 {
-  log_info("Deleting remote client " << this->number);
+  log_info("Deleting remote client " << this->id);
 }
 
 void RemoteClient::install_callbacks()
