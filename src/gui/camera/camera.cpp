@@ -18,8 +18,11 @@ Camera::Camera(GameClient* game, Screen* screen):
   previous_position(0, 0),
   start_drag_position(0, 0),
   game(game),
-  mouse_selection()
+  mouse_selection(),
+  tileset()
 {
+  this->tileset.load_from_file("test6.tmx");
+
 }
 
 Camera::~Camera()
@@ -31,9 +34,9 @@ World& Camera::world() const
   return this->game->get_world();
 }
 
-GraphMap& Camera::map() const
+Map& Camera::map() const
 {
-  return this->game->get_map();
+  return this->world().get_map();
 }
 
 sf::RenderWindow& Camera::win()
@@ -52,26 +55,26 @@ void Camera::draw_unit(const Unit* unit, const uint x, const uint y,
   if (in_mouse_selection)
     {
       sf::CircleShape in_mouse_circle;
-      in_mouse_circle.setRadius(unit->width/2 + 6);
+      in_mouse_circle.setRadius(unit->width.to_int()/2 + 6);
       in_mouse_circle.setOutlineColor(sf::Color(0xff, 0xcb, 0x36, 255));
       in_mouse_circle.setFillColor(sf::Color::Transparent);
       in_mouse_circle.setOutlineThickness(2);
-      in_mouse_circle.setPosition(x - unit->width/2 - 6, y - unit->width + 4);
+      in_mouse_circle.setPosition(x - unit->width.to_int()/2 - 6, y - unit->width.to_int() + 4);
       in_mouse_circle.setScale(sf::Vector2f(1, 3.f/4.f));
       this->win().draw(in_mouse_circle);
     }
   if (this->game->is_entity_selected(unit))
     {
       sf::CircleShape selection_circle;
-      selection_circle.setRadius(unit->width/2 + 8);
+      selection_circle.setRadius(unit->width.to_int()/2 + 8);
       selection_circle.setOutlineColor(sf::Color(0x00, 0x00, 0xff, 200));
       selection_circle.setFillColor(sf::Color::Transparent);
       selection_circle.setOutlineThickness(3);
-      selection_circle.setPosition(x - unit->width/2 - 8, y - unit->width + 5);
+      selection_circle.setPosition(x - unit->width.to_int()/2 - 8, y - unit->width.to_int() + 5);
       selection_circle.setScale(sf::Vector2f(1, 3.f/4.f));
       this->win().draw(selection_circle);
     }
-  rectangle.setPosition(x - unit->width/2, y - unit->width);
+  rectangle.setPosition(x - unit->width.to_int()/2, y - unit->width.to_int());
   this->win().draw(rectangle);
 }
 
@@ -126,12 +129,20 @@ void Camera::handle_right_click(const sf::Event& event)
 {
   const Position pos = this->camera_to_world_position(event.mouseButton.x,
                                                       event.mouseButton.y);
+  bool queue = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
+  log_debug("queue: " << queue);
   // A right click when there's an action associated with the left click
   // just resets the default action of the right click.
   if (this->screen->get_left_click().callback)
     this->screen->reset_left_click_action();
   else // otherwise it always does the move action.
-    this->game->action_move(pos.x.toLong(), pos.y.toLong());
+    {
+      std::vector<EntityId> ids;
+      for (const auto& entity: this->game->get_selection().get_entities())
+        ids.push_back(entity->get_id());
+      if (!ids.empty())
+        this->game->action_move(ids, pos, queue);
+    }
 }
 
 void Camera::handle_left_click(const sf::Event& event)
@@ -148,7 +159,7 @@ void Camera::handle_left_click(const sf::Event& event)
     {
       const Position pos = this->camera_to_world_position(event.mouseButton.x,
                                                           event.mouseButton.y);
-      if (this->screen->get_left_click().callback(pos.x.toLong(), pos.y.toLong(), this->screen->get_left_click().id) == true)
+      if (this->screen->get_left_click().callback(pos.x.to_double(), pos.y.to_double(), this->screen->get_left_click().id) == true)
         this->screen->reset_left_click_action();
     }
 }
@@ -175,7 +186,7 @@ void Camera::set_mouse_selection_to_selection()
   for (std::list<Unit*>::iterator it = this->world().units.begin(); it != this->world().units.end(); ++it)
     if (this->mouse_selection.contains(mouse_pos,
                                        this->world_to_camera_position((*it)->pos),
-                                       (*it)->width + 4))
+                                       (*it)->width.to_int() + 4))
       number_of_units++;
   unsigned int number_of_buildings = 0;
   for (std::list<Building*>::iterator it = this->world().buildings.begin(); it != this->world().buildings.end(); ++it)
@@ -193,7 +204,7 @@ void Camera::set_mouse_selection_to_selection()
         {
           if (this->mouse_selection.contains(mouse_pos,
                                              this->world_to_camera_position((*it)->pos),
-                                             (*it)->width + 4))
+                                             (*it)->width.to_int() + 4))
             {
               if (this->game->is_entity_selected(*it) == false)
                 {
@@ -243,7 +254,7 @@ void Camera::add_mouse_selection_to_selection()
     {
       if (this->mouse_selection.contains(mouse_pos,
                                          this->world_to_camera_position((*it)->pos),
-                                         (*it)->width + 4))
+                                         (*it)->width.to_int() + 4))
         {
           if (this->game->is_entity_selected(*it) == false)
             this->game->select_entity(*it);
@@ -297,10 +308,16 @@ void Camera::draw()
       mouse_col = cell_on_mouse % this->map().get_width_in_tiles();
     }
 
+  // Sort the sprites by their vertical position
+  this->sprites.sort([](const auto& a, const auto& b)
+                     {
+                       return a->get_world_pos().y < b->get_world_pos().y;
+                     });
+
   // Draw all tiles even the ones that are not visible for the camera.
   GraphTile* tile;
   // Iterate all the rows, from top to bottom
-  for (unsigned int row = 0; row < this->map().get_height_in_tiles(); row++)
+  for (unsigned short row = 0; row < this->map().get_height_in_tiles(); row++)
     {
       // Position where we will draw, in pixels
       unsigned int y = row * (TILE_HEIGHT / 2);
@@ -309,14 +326,14 @@ void Camera::draw()
       for (Layer* layer: this->map().layers)
         {
           if (layer && layer->cells)
-            for (unsigned int col = 0; col < this->map().get_width_in_tiles(); col++)
+            for (unsigned short col = 0; col < this->map().get_width_in_tiles(); col++)
               {
                 x = col * TILE_WIDTH;
                 if (row % 2 != 0)
                   x += HALF_TILE_W;
                 std::size_t cell = col + (row * this->map().get_height_in_tiles());
                 std::size_t gid = layer->cells[cell];
-                tile = this->map().tiles[gid];
+                tile = this->tileset.tiles[gid].get();
                 if (tile)
                   {
                     constexpr char tile_opacity = 255;
@@ -324,6 +341,10 @@ void Camera::draw()
                     if (cell_on_mouse != UINT_MAX &&
                         row == mouse_row && col == mouse_col)
                       tile->sprite.setColor(sf::Color(255, 0, 255, tile_opacity));
+                    if (std::find(this->world().current_path.begin(), this->world().current_path.end(),
+                                  this->map().cell_to_index(std::make_tuple(col, row)))
+                        != this->world().current_path.end())
+                      tile->sprite.setColor(sf::Color(0, 120, 255, 255));
 
                     tile->sprite.setPosition(x - this->x, y - this->y);
                     this->win().draw(tile->sprite);
@@ -333,12 +354,17 @@ void Camera::draw()
           // the top
           y -= LEVEL_HEIGHT;
         }
+      // Display all the sprites that are on this row
+      for (const auto& sprite: this->sprites)
+        {
+          unsigned short x;
+          unsigned short y;
+          std::tie(x, y) = this->world().get_cell_at_position(sprite->get_world_pos());
+          if (y == row)
+            sprite->draw(this->game);
+        }
     }
 
-  for (auto sprite: this->sprites)
-    {
-      sprite->draw(this->game);
-    }
   this->draw_mouse_selection();
 
   // Debug
@@ -348,8 +374,8 @@ void Camera::draw()
 
   Position world_mouse_pos = this->camera_to_world_position(mouse_pos.x, mouse_pos.y);
   this->game->get_debug_hud().add_debug_line("Mouse world position: " +
-                                               std::to_string(world_mouse_pos.x.toLong()) + ", " +
-                                               std::to_string(world_mouse_pos.y.toLong()));
+                                               std::to_string(world_mouse_pos.x.to_double()) + ", " +
+                                               std::to_string(world_mouse_pos.y.to_double()));
   this->game->get_debug_hud().add_debug_line("Cell under the mouse: " +
                                                std::to_string(mouse_col) + ":" +
                                                std::to_string(mouse_row),
@@ -398,18 +424,16 @@ sf::Vector2u Camera::world_to_camera_position(const Position& pos) const
 {
   sf::Vector2u res;
 
-  res.x = pos.x.toLong();
-  res.y = pos.y.toLong();
+  res.x = pos.x.to_int();
+  res.y = pos.y.to_int();
 
-  static const unsigned int w = 96;
-  static const unsigned int y = 72;
-
-  res.x = (res.x * w) / CELL_SIZE;
-  res.y = (res.y * y) / CELL_SIZE;
-
+  res.x = (res.x * TILE_WIDTH) / CELL_SIZE;
+  res.y = (res.y * TILE_HEIGHT) / CELL_SIZE;
 
   // Then adjust y using the height of that position in the world
   Fix16 height = this->world().get_position_height(pos) * 24;
+
+  res.y += TILE_TOP_OFFSET - height.to_int();
 
   return res;
 }
@@ -438,7 +462,7 @@ float get_edge_height(const float x, const float left_height, const float right_
 Position Camera::camera_to_world_position(const int x, const int y) const
 {
   // The empty space at the top of the world, due to tile size. In pixels
-  static const unsigned int top_offset = 56;
+  static const unsigned int top_offset = TILE_TOP_OFFSET;
 
   if (x + this->x <= 0 ||
       y + this->y - top_offset <= 0)
@@ -453,8 +477,8 @@ Position Camera::camera_to_world_position(const int x, const int y) const
   // DEBUG only
   selected_cell = cell_index;
 
-  if (UINT_MAX == cell_index)
-    return Position::zero;
+  if (cell_index == InvalidCellIndex)
+    return Position::invalid;
 
   unsigned int col;
   unsigned int row;
@@ -588,7 +612,7 @@ Position Camera::camera_to_world_position(const int x, const int y) const
     }
 
   res.y += height / TILE_HW_RATIO * static_cast<float>(LAYER_HEIGHT);
-  this->game->get_debug_hud().add_debug_line("World position: " + std::to_string(res.x.toLong()) + ":" + std::to_string(res.y.toLong()));
+  this->game->get_debug_hud().add_debug_line("World position: " + std::to_string(res.x.to_double()) + ":" + std::to_string(res.y.to_double()));
 
   return res;
 }

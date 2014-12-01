@@ -1,20 +1,23 @@
 #include <game/game_server.hpp>
+#include <game/turn.hpp>
 #include <algorithm>
 
-GameServer::GameServer(short port, Mod& mod):
+#include "game.pb.h"
+#include "orders.pb.h"
+#include "requests.pb.h"
+
+GameServer::GameServer(short port):
+  Game(),
   Server<RemoteGameClient>(port),
-  world(nullptr, mod),
-  occupants()
+  replay()
 {
+  this->turn_handler.set_next_turn_callback(std::bind(&GameServer::on_next_turn, this,
+                                                      std::placeholders::_1));
+  this->start_game();
 }
 
 GameServer::~GameServer()
 {
-}
-
-World* GameServer::get_world()
-{
-  return &this->world;
 }
 
 void GameServer::on_new_client(RemoteGameClient* new_client)
@@ -25,211 +28,165 @@ void GameServer::on_new_client(RemoteGameClient* new_client)
 
   // First send the new player to all connected clients.
   // (including the just-new-connected one)
-  Command* command = new Command();
-  command->set_name("NEW_OCCUPANT");
+  Message* message = new Message();
+  message->set_name("NEW_OCCUPANT");
 
-  // Occupant* occupant = new Occupant(new_client->get_number(), "coucou");
-  // this->world->add_new_occupant(occupant);
-  auto new_occupant = std::make_unique<Occupant>(new_client->get_number(), "coucou");
+  auto new_occupant = std::make_unique<Occupant>(new_client->get_id(), "coucou");
+  message->set_body(new_occupant->serialize());
+  this->send_to_all_clients(message);
 
-  command->set_body(new_occupant->to_string().c_str());
-  this->send_to_all_clients(command);
-
-  this->occupants.add(std::move(new_occupant));
-  log_debug("There are now " << this->occupants.size() << " occupants");
+  this->occupants_handler.add(std::move(new_occupant));
+  log_debug("There are now " << this->occupants_handler.size() << " occupants");
 
   // Then send the list of already-connected clients to the new
   // one.
-  for (const auto& occupant: this->occupants)
+  for (const auto& occupant: this->occupants_handler)
     {
-      if (occupant->number != new_client->get_number())
+      if (occupant->id != new_client->get_id())
      { // Do not send the information about itself, it
        // already just received that.
-       command = new Command();
-       command->set_name("NEW_OCCUPANT");
-       command->set_body(occupant->to_string().c_str());
-       new_client->send(command);
+       message = new Message();
+       message->set_name("NEW_OCCUPANT");
+       message->set_body(occupant->serialize());
+       new_client->send(message);
      }
     }
   // Send the replay to the new client.
   this->send_replay(new_client);
   // Send an action to indicate at what turn the replay ends
   // and where the game currently is.
-  this->send_start_command(new_client);
-  // Send the futur commands to the new client
-  // and change their validations_needed value, since
-  // they now require one more validation.
-  this->send_and_adjust_future_commands(new_client);
-  // TODO start it somewhere else.
-  this->start_game();
+  this->send_start_message(new_client);
+  // Send the futur actions to the new client
+  this->send_future_actions(new_client);
 }
 
 void GameServer::send_replay(RemoteGameClient* new_client)
 {
-  Action* action;
-  Command* command;
-  ActionEvent* event;
-  for (const auto& action: this->world.get_replay().get_actions())
-    {
-      event = action->get_event();
-      command = new Command;
-      command->set_name(event->name);
-      command->set_body(event->to_string().c_str());
-      new_client->send(command);
-    }
+  for (const auto& order: this->replay.get_orders())
+    new_client->send(new Message(order));
 }
 
-void GameServer::send_and_adjust_future_commands(RemoteGameClient* new_client)
+void GameServer::send_future_actions(RemoteGameClient* new_client)
 {
-  Turn* turn;
-  Action* action;
-  Command* command;
-  ActionEvent* event;
-  std::size_t occupants = this->occupants.size();
+  // Turn* turn;
+  // Action* action;
+  // Message* message;
+  // ActionEvent* event;
+  // std::size_t occupants_handler = this->occupants_handler.size();
 
-  for (auto& turn: this->world.turn_handler.get_turns())
-    {
-      for (auto& action: turn.get_actions())
-        {
-          if (action->is_completely_validated() == false)
-            {
-              action->set_validations_needed(occupants);
-              event = action->get_event();
-              command = new Command;
-              command->set_name(event->name);
-              command->set_body(event->to_string().c_str());
-              new_client->send(command);
-            }
-        }
-    }
+  // for (const auto& turn: this->turn_handler.get_turns())
+  //   {
+  //     for (const auto& action: turn.get_actions())
+  //       {
+  //         event = action->get_event();
+  //         message = new Message;
+  //         message->set_name(event->name);
+  //         message->set_body(event->to_string().c_str());
+  //         new_client->send(message);
+  //       }
+  //   }
 }
 
-void GameServer::adjust_and_revalidate_futur_commands()
+void GameServer::send_start_message(RemoteGameClient* client)
 {
-  Turn* turn;
-  Action* action;
-  std::size_t occupants = this->occupants.size();
-  unsigned long turn_id = this->world.turn_handler.get_current_turn();
-
-  for (auto& turn: this->world.turn_handler.get_turns())
-    {
-      if (turn.get_number_of_validations() == occupants)
-        {
-          this->send_turn(turn_id, 0);
-          turn.validate_completely();
-        }
-      for (auto& action: turn.get_actions())
-        {
-          if (action->is_completely_validated() == false)
-            {
-              action->set_validations_needed(occupants);
-              if (action->is_validated() == true)
-                { // If the action was validated by all clients
-                  // except the one that just left, the action is now
-                  // completely validated.
-                  action->validate_completely();
-                  this->send_ok(action->get_event()->get_id(), 0);
-                }
-            }
-        }
-      ++turn_id;
-    }
-}
-
-
-void GameServer::send_start_command(RemoteGameClient* client)
-{
-  Command* command = new Command;
-  ActionEvent start_event("START");
-  start_event.turn = this->world.turn_handler.get_current_turn() + 1;
-  command->set_name("START");
-  command->set_body(start_event.to_string().c_str());
-  client->send(command);
+  Message* message = new Message;
+  ser::order::Start start_msg;
+  start_msg.set_turn(this->turn_handler.get_current_turn());
+  message->set_name("START");
+  message->set_body(start_msg);
+  client->send(message);
 }
 
 void GameServer::on_client_left(RemoteGameClient* client)
 {
-  const auto it = std::remove_if(this->occupants.begin(), this->occupants.end(),
+  const auto it = std::remove_if(this->occupants_handler.begin(), this->occupants_handler.end(),
                            [client](const auto& occupant)
                                  {
-                                   return occupant->number == client->get_number();
+                                   return occupant->id == client->get_id();
                                  });
-  std::for_each(it, this->occupants.end(),
+  std::for_each(it, this->occupants_handler.end(),
                [this](const auto& occupant)
                {
-                 Command* command = new Command;
-                 command->set_name("OCCUPANT_LEFT");
-                 command->set_body(occupant->to_string().c_str());
-                 this->send_to_all_clients(command);
+                 Message* message = new Message;
+                 message->set_name("OCCUPANT_LEFT");
+                 message->set_body(occupant->serialize());
+                 this->send_to_all_clients(message);
                });
-  this->occupants.erase(it, this->occupants.end());
+  this->occupants_handler.erase(it, this->occupants_handler.end());
 }
 
 void GameServer::tick()
 {
+  this->turn_handler.tick();
+  if (this->turn_handler.is_paused())
+    return;
   this->world.tick();
 }
 
-void GameServer::pause_game()
-{
-  this->world.pause();
-}
+// void GameServer::pause_game()
+// {
+//   this->started = false;
+// }
 
-void GameServer::unpause_game()
-{
-  this->world.unpause();
-}
+// void GameServer::unpause_game()
+// {
+//   this->started = true;
+// }
 
 void GameServer::start_game()
 {
-  this->world.start();
+  this->send_new_unit_order(0, {300, 300});
+  this->send_new_unit_order(0, {400, 800.12});
+  this->send_new_unit_order(0, {500, 500});
+  this->send_new_unit_order(0, {320, 610});
+  this->turn_handler.mark_turn_as_ready();
 }
 
-void GameServer::send_command_to_all(const char* name, const std::string& data)
+void GameServer::on_next_turn(const TurnNb n)
 {
-  Command* command = new Command;
-  command->set_name(name);
-  command->set_body(data.data(), data.size());
-  this->send_to_all_clients(command);
+  // static int a = 100;
+  log_debug("GameServer::on_next_turn(" << n << ")");
+  // this->send_new_unit_order(0, {a, a});
+  // a += 2;
+  this->turn_handler.mark_turn_as_ready();
+  this->send_message_to_all("T", {});
 }
 
-void GameServer::send_ok(const unsigned int id, const unsigned long int by)
+void GameServer::send_order_to_all(const char* name, const google::protobuf::Message& srl)
 {
-  // TODO the 'by' value is useless here.
-  // Even the OkEvent is useless, we just need to pass an unsigned int.
-  Command* command = new Command;
-  command->set_name("OK");
-  OkEvent ok_event(id, by);
-  command->set_body(ok_event.to_string().c_str());
-  this->send_to_all_clients(command);
+  Message* message = new Message;
+  message->set_name(name);
+  message->set_body(srl);
+  this->replay.insert_order(*message);
+  this->send_to_all_clients(message);
 }
 
-void GameServer::send_turn(const unsigned int id, const unsigned long int by)
+void GameServer::send_message_to_all(const char* name, const std::string& data)
 {
-  // TODO Same here, remove the by.
-  Command* command = new Command;
-  command->set_name("T");
-  std::ostringstream os;
-  os << id;
-  command->set_body(os.str().c_str());
-  this->send_to_all_clients(command);
+  Message* message = new Message;
+  message->set_name(name);
+  message->set_body(data.data(), data.size());
+  this->send_to_all_clients(message);
 }
 
-void GameServer::spawn_unit(const size_t type, const int x, const int y)
+void GameServer::send_turn()
 {
-  Unit* new_unit = this->world.create_unit(type);
-  new_unit->pos = Position(x, y);
-  DoUnitEvent* e = new DoUnitEvent(new_unit);
-  e->turn = 1;
-  Action* action = new Action(nullptr, e, 0);
-  action->validate_completely();
-  this->world.replay.insert_action(action);
+  Message* message = new Message;
+  message->set_name("T");
+  this->send_to_all_clients(message);
+}
+
+void GameServer::spawn_unit(const EntityType type, const Position& position)
+{
+  // DoUnitEvent* e = new DoUnitEvent(new_unit);
+  // e->turn = 1;
+  // this->world.replay.insert_action(std::make_unique<Action>(nullptr, e, 0));
 }
 
 void GameServer::init()
 {
   log_error("Creating initial world state");
-  this->spawn_unit(0, 300, 300);
+  this->spawn_unit(0, {300, 300});
   // this->spawn_unit(0, 0, 400);
   // this->spawn_unit(0, 0, 600);
 
@@ -243,66 +200,45 @@ void GameServer::init()
   log_debug("done");
 }
 
-void GameServer::move_callback(Command* command)
+void GameServer::on_move_request(Message* message)
 {
-  MoveEvent event(command);
-  if (event.is_valid() == false)
+  auto srl = message->parse_body_to_protobuf_object<ser::request::Move>();
+  if (!srl.IsInitialized())
     {
-      log_warning("Invalid data for MOVE command");
+      log_error("Invalid data received for Move request : " << srl.InitializationErrorString());
       return ;
     }
-  DoMoveEvent* path_event = new DoMoveEvent(event);
-  unsigned long current_turn = this->world.turn_handler.get_current_turn();
-  log_debug("Currently at: " << current_turn);
-  log_debug("move_callback: " << path_event->to_string());
-  path_event->turn = current_turn + 2;
-  this->send_command_to_all("PATH", path_event->to_string());
-
-  Action* action = new Action(nullptr, path_event, this->occupants.size());
-  this->world.turn_handler.insert_action(action, path_event->turn);
+  std::vector<EntityId> ids;
+  for (const auto& id: srl.entity_id())
+    ids.push_back(id);
+  Position pos;
+  pos.x.raw() = srl.mutable_pos()->x();
+  pos.y.raw() = srl.mutable_pos()->y();
+  this->send_move_order(ids, pos, srl.queue());
 }
 
-void GameServer::build_callback(Command* command)
+void GameServer::send_new_unit_order(const EntityType type, const Position& pos)
 {
-  BuildEvent event(command);
-  if (event.is_valid() == false)
-    {
-      log_warning("Invalid data for BUILD command");
-      return ;
-    }
-  // Here check for command validity etc etc.
-  // if the command is valid, just return a DoBuildEvent with the same value
-  DoBuildEvent* doevent = new DoBuildEvent(event);
-  doevent->turn = this->world.turn_handler.get_current_turn() + 2;
-  this->send_command_to_all("BUILD", doevent->to_string());
-  Action* action = new Action(nullptr, doevent, this->occupants.size());
-  this->world.turn_handler.insert_action(action, doevent->turn);
+  ser::order::NewUnit srl;
+  srl.set_turn(this->turn_handler.get_current_turn() + 2);
+  srl.set_type_id(type);
+  srl.mutable_pos()->set_x(pos.x.raw());
+  srl.mutable_pos()->set_y(pos.y.raw());
+  this->send_order_to_all("NEW_UNIT", srl);
+  this->turn_handler.insert_action(std::bind(&World::do_new_unit, &this->world, type, pos),
+                                   srl.turn());
 }
 
-void GameServer::spawn_callback(Command* command)
+void GameServer::send_move_order(const std::vector<EntityId> ids, const Position& pos, const bool queue)
 {
-  SpawnEvent event(command);
-  if (event.is_valid() == false)
-    {
-      log_warning("Invalid data for SPAWN command");
-      return ;
-    }
-  DoSpawnEvent* doevent = new DoSpawnEvent(event);
-  doevent->turn = this->world.turn_handler.get_current_turn() + 2;
-  this->send_command_to_all("SPAWN", doevent->to_string());
-  Action* action = new Action(nullptr, doevent, this->occupants.size());
-  this->world.turn_handler.insert_action(action, doevent->turn);
-}
-
-bool GameServer::validate_action(const unsigned int id, const unsigned long int by)
-{
-  log_debug("Action " << id << " validated by " << by);
-  bool res = this->world.turn_handler.validate_action(id, by);
-  log_debug("This made it completely validated:" << res);
-  return res;
-}
-
-bool GameServer::validate_turn(const unsigned int id, const unsigned long int by)
-{
-  return this->world.turn_handler.validate_turn(id, by, this->occupants.size());
+  ser::order::Move srl;
+  srl.set_turn(this->turn_handler.get_current_turn() + 2);
+  for (const EntityId id: ids)
+    srl.add_entity_id(id);
+  srl.set_queue(queue);
+  srl.mutable_pos()->set_x(pos.x.raw());
+  srl.mutable_pos()->set_y(pos.y.raw());
+  this->send_order_to_all("MOVE", srl);
+  this->turn_handler.insert_action(std::bind(&World::do_move, &this->world, ids, pos, queue),
+                                   srl.turn());
 }

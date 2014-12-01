@@ -132,11 +132,6 @@ file(GLOB source_fixmath
 
 add_library(fixmath STATIC ${source_fixmath})
 
-target_link_libraries(fixmath
-  logging
-  )
-
-
 #
 ## Utils
 #

@@ -26,6 +26,7 @@
 #include <world/position.hpp>
 
 #include <gui/screen/screen_element.hpp>
+#include <gui/camera/tileset.hpp>
 
 class Minimap;
 class Screen;
@@ -147,11 +148,15 @@ private:
   GameClient* game;
   std::list<WorldSprite*> sprites;
   MouseSelection mouse_selection;
+  Tileset tileset;
+
+  /**
+   * Various accessors
+   */
   World& world() const;
-  GraphMap& map() const;
+  Map& map() const;
   sf::RenderWindow& win();
   sf::RenderWindow& win() const;
-
 };
 
  // debug

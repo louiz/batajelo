@@ -7,26 +7,21 @@
 #ifndef __OCCUPANT_HPP__
 # define __OCCUPANT_HPP__
 
-#include <serialization/serializable.hpp>
+#include <cstdint>
 
-class Occupant: public Serializable
+#include "game.pb.h"
+
+class Occupant
 {
 public:
-  Occupant(unsigned long int number, const std::string& name);
-  Occupant();
-  virtual ~Occupant();
+  Occupant(uint32_t id, const std::string& name);
+  Occupant(const ser::game::Occupant& srl);
+  ~Occupant();
 
-  virtual void serialize(oarchive & ar, const unsigned int)
-  {
-    ar & this->number & this->name & this->team;
-  }
-  virtual void serialize(iarchive & ar, const unsigned int)
-  {
-    ar & this->number & this->name & this->team;
-  }
+  ser::game::Occupant serialize() const;
 
-  unsigned long int number;
-  unsigned int team;
+  uint32_t id;
+  int team;
   std::string name;
 
 private:

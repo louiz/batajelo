@@ -28,7 +28,6 @@
 
 #include <gui/hud/action_panel_button.hpp>
 #include <gui/screen/screen_element.hpp>
-#include <gui/hud/debug_hud.hpp>
 #include <SFML/Graphics.hpp>
 #include <gui/cursor.hpp>
 #include <game/time.hpp>
@@ -72,8 +71,6 @@ public:
   sf::Vector2i get_mouse_position() const;
   const sf::Vector2u get_window_size() const;
 
-  DebugHud& get_debug_hud();
-
 private:
   Screen(const Screen&);
   Screen& operator=(const Screen&);
@@ -95,7 +92,6 @@ private:
   sf::Sprite cursor_sprite;
   t_left_click on_left_click;
   t_draw_cursor_action on_cursor_draw;
-  DebugHud debug_hud;
 
 public:
   std::vector<std::unique_ptr<sf::Texture>> building_textures;

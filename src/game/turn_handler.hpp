@@ -1,58 +1,69 @@
-/** @addtogroup Game
- *  @{
- */
-
 /**
  *
- * @class TurnHandler
  */
 
 #ifndef __TURN_HANDLER_HPP__
 # define __TURN_HANDLER_HPP__
 
 #include <deque>
+#include <memory>
+#include <cstdint>
 #include <functional>
 
 #include <game/turn.hpp>
-#include <game/action.hpp>
-#include <game/replay.hpp>
+#include <world/action.hpp>
 
-typedef std::function< void(unsigned long) > t_next_turn_callback;
+using TurnNb = std::size_t;
+using t_next_turn_callback = std::function< void(const TurnNb)>;
 
 /**
  * The number of ticks contained in a turn
  */
-static constexpr std::size_t TURN_TIME = 10;
+static constexpr std::size_t TURN_TICKS = 10;
 
 class TurnHandler
 {
 public:
-  friend std::ostream& operator<<(std::ostream& os, TurnHandler& turn_handler);
-  TurnHandler(Replay*);
+  TurnHandler();
   ~TurnHandler();
   /**
-   * Advance the current turn_advancement, and if the TURN_TIME
-   * is elapsed, we call next_turn, which in turn executes the commands
-   * associated with this turn.
+   * Advance the current turn_advancement, and if the TURN_TIME is reached,
+   * we call next_turn, which in turn executes the commands associated with
+   * this turn.
    */
-  void tick(bool force = false);
+  void tick();
   /**
    * Insert an action element into the appropriate turn vector
    * (which will contain one or more action).
-   * If there's a replay associated, add the action in the replay
-   * as well.
    */
-  bool insert_action(Action*, const unsigned long turn);
-  /**
-   * Insert a turn. If the turn is already there, does nothing but returns
-   * true.
-   * If we can not insert the turn because it's already passed, returns false.
-   */
-  bool insert_turn(const unsigned long turn);
+  void insert_action(Action&& action, const TurnNb nb);
   /**
    * Return true if the next turn has been fully validated, false otherwise.
    */
-  bool is_next_turn_validated() const;
+  bool is_next_turn_ready() const;
+  /**
+   * Find the next turn that is not marked as ready (create it, if it
+   * doesn’t exist), and mark it as ready.
+   */
+  void mark_turn_as_ready();
+  /**
+   * Mark all turns as ready until (and including) the nth
+   */
+  void mark_as_ready_until(const TurnNb n);
+
+  void set_next_turn_callback(t_next_turn_callback callback);
+
+  bool is_paused() const;
+  /**
+   * Returns the turn we are currently at.
+   */
+  TurnNb get_current_turn() const;
+  std::deque<Turn>& get_turns();
+
+private:
+  TurnHandler(const TurnHandler&);
+  TurnHandler& operator=(const TurnHandler&);
+
   /**
    * Change the state to paused.
    */
@@ -61,45 +72,15 @@ public:
    * Change the state to unpaused.
    */
   void unpause();
-
-  /**
-   * Returns the next available Action object from the currently retrieved
-   * turn.
-   */
-  Turn* get_turn(const unsigned int);
-  /**
-   * Search the action by its id, and validate it.
-   * Returns true if the action becomes completely validated, false otherwise.
-   */
-  bool validate_action(const unsigned int id, const unsigned long int by);
-  /**
-   * Search the turn, and validate it. If it does not yet exist, create
-   * it before validating it.
-   * Returns true if the turn becomes completely validated, false otherwise.
-   */
-  bool validate_turn(const unsigned int,
-		     const unsigned long int,
-		     const unsigned int);
-  void completely_validate_action(const unsigned int id);
-  void completely_validate_turn(const unsigned int id);
-  void set_next_turn_callback(t_next_turn_callback callback);
-
-  bool is_paused() const;
-  /**
-   * Returns the turn we are currently at.
-   */
-  unsigned long get_current_turn();
-  std::deque<Turn>& get_turns();
-
-private:
-  TurnHandler(const TurnHandler&);
-  TurnHandler& operator=(const TurnHandler&);
-
   /**
    * Go to the next turn, and executes the action
    * associated with this turn.
    */
   void next_turn();
+  /**
+   * Insert a turn.  If the turn already exists, does nothing.
+   */
+  void insert_turn(const TurnNb nb);
 
   std::deque<Turn> turns;
   unsigned long current_turn;
@@ -111,12 +92,6 @@ private:
    * A function that will be called whenever we go to the next turn.
    */
   t_next_turn_callback next_turn_callback;
-  /**
-   * A pointer to the replay. When a turn is executed, fill the replay
-   * with the actions (if the replay is not nullptr)
-   */
-  Replay* replay;
 };
 
 #endif // __TURN_HANDLER_HPP__
-/**@}*/

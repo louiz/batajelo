@@ -1,6 +1,5 @@
 #include <logging/logging.hpp>
 #include <gui/sprites/building_sprite.hpp>
-#include <world/client_world/client_world.hpp>
 #include <gui/camera/camera.hpp>
 
 BuildingSprite::BuildingSprite(const Building* const building):
@@ -53,4 +52,9 @@ void BuildingSprite::draw_selection_circle(Camera& camera) const
   circle.setPosition(center);
   circle.setScale(sf::Vector2f(1, 3.f/4.f));
   camera.draw(circle);
+}
+
+Position BuildingSprite::get_world_pos() const
+{
+  return Position::zero;
 }

@@ -18,7 +18,7 @@ Screen::Screen():
   this->cursor_sprite.setTexture(this->cursor_textures[cursor::Normal]);
   // this->building_textures = mod.get_building_textures();
   this->win.setPosition(sf::Vector2i(0, 0));
-  this->win.setMouseCursorVisible(false);
+  // this->win.setMouseCursorVisible(false);
 }
 
 Screen::~Screen()
@@ -37,9 +37,9 @@ void Screen::draw()
                 {
                   element->draw();
                 });
+  this->draw_mouse_cursor();
   // this->camera.draw();
   // this->hud.draw(&this->camera);
-  // this->draw_mouse_cursor();
   // this->debug_hud.draw(&this->camera);
 }
 
@@ -82,9 +82,9 @@ void Screen::set_cursor_type(const cursor::type type)
 void Screen::draw_mouse_cursor()
 {
   const sf::Vector2i pos = this->get_mouse_position();
-  this->debug_hud.add_debug_line("Cursor position: " +
-                                 std::to_string(pos.x) + ", " +
-                                 std::to_string(pos.y));
+  // this->debug_hud.add_debug_line("Cursor position: " +
+  //                                std::to_string(pos.x) + ", " +
+  //                                std::to_string(pos.y));
   if (this->on_left_click.cursor_callback != 0)
     this->set_cursor_type(this->on_left_click.cursor_callback(static_cast<uint>(pos.x),
                                                               static_cast<uint>(pos.y),
@@ -143,9 +143,3 @@ const sf::Vector2u Screen::get_window_size() const
 {
   return this->win.getSize();
 }
-
-DebugHud& Screen::get_debug_hud()
-{
-  return this->debug_hud;
-}
-

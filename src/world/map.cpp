@@ -1,5 +1,6 @@
 #include <map>
 #include <climits>
+#include <algorithm>
 
 #include <boost/utility.hpp>
 #include <boost/foreach.hpp>
@@ -286,46 +287,55 @@ bool Map::can_be_built_on(const int cellx, const int celly) const
   return false;
 }
 
-cell_path_t Map::do_astar(const uint startx, const uint starty,
-                   const uint endx, const uint endy)
+
+CellPath Map::do_astar(const Cell start, const Cell goal)
 {
-  log_debug(startx);
-  log_debug(starty);
+  unsigned short startx;
+  unsigned short starty;
+  unsigned short endx;
+  unsigned short endy;
+
+  std::tie(startx, starty) = start;
+  std::tie(endx, endy) = goal;
+
+  log_debug("do_astar");
+  log_debug(startx << " " << starty);
+  log_debug(endx << " " << endy);
+
+  CellIndex end = this->cell_to_index(goal);
+  if (end == InvalidCellIndex)
+    return {};
+
   assert(startx < this->get_width_in_tiles());
   assert(starty < this->get_height_in_tiles());
   assert(endx < this->get_width_in_tiles());
   assert(endy < this->get_height_in_tiles());
 
-  std::size_t start = (this->get_width_in_tiles() * starty) + startx;
-  std::size_t goal = (this->get_width_in_tiles() * endy) + endx;
-  t_nodes open;
-  t_closed_nodes closed;
-  insert_node(open, start, 0, 0);
-  std::map<std::size_t, std::size_t> came_from;
+  AStarNodes open;
+  std::vector<CellIndex> closed;
+  insert_node(open, this->cell_to_index(start), 0, 0);
+  std::map<CellIndex, CellIndex> came_from;
 
-  t_node current;
+  AStarNode current;
   while (open.empty() == false)
     {
       current = open.front();
-      if (current.index == goal)
+      if (current.index == end)
         {
           return reconstruct_path(came_from, current.index);
         }
       open.pop_front();
       closed.push_back(current.index);
-      std::vector<std::size_t> neighbours = this->get_neighbour_nodes(current.index);
-      for (std::vector<std::size_t>::const_iterator it = neighbours.begin();
-           it != neighbours.end(); ++it)
+      auto neighbours = this->get_neighbour_cells(current.index);
+      for (const CellIndex& neighbour: neighbours)
         {
-          if (is_in_set((*it), closed) == true)
-            {
-              continue;
-            }
+          if (is_in_set(neighbour, closed) == true)
+            continue;
           int tentative_g = current.g + 1;
-          if (is_better_than_previously_open((*it), tentative_g, open) == true)
+          if (is_better_than_previously_open(neighbour, tentative_g, open) == true)
             {
-              insert_node(open, (*it), tentative_g, tentative_g);
-              came_from[(*it)] = current.index;
+              insert_node(open, neighbour, tentative_g, tentative_g);
+              came_from[neighbour] = current.index;
             }
           else
             {
@@ -333,54 +343,69 @@ cell_path_t Map::do_astar(const uint startx, const uint starty,
             }
         }
     }
-  cell_path_t ret;
-  return ret;
+  return {};
 }
 
-std::vector<std::size_t> Map::get_neighbour_nodes(const std::size_t index)
+std::vector<CellIndex> Map::get_neighbour_cells(const CellIndex index)
 {
-  const uint x = index % this->get_width_in_tiles();
-  const uint y = index / this->get_width_in_tiles();
-  ushort heights = this->get_cell_heights(x, y);
-  std::vector<std::size_t> res;
-  if (y != 0)
-    { // Try top
-      std::size_t neighbour = index - this->get_width_in_tiles();
-      ushort neighbour_heights = this->get_cell_heights(
-                                   neighbour % this->get_width_in_tiles(),
-                                   neighbour / this->get_width_in_tiles());
-      if ((((heights) & 15) == ((neighbour_heights >> 12) & 15)) &&
-          (((heights >> 4) & 15) == ((neighbour_heights >> 8) & 15)))
+  const Cell cell = this->index_to_cell(index);
+
+  const TileHeights heights = this->get_cell_heights(index);
+
+  const unsigned short x = std::get<0>(cell);
+  const unsigned short y = std::get<1>(cell);
+
+  std::vector<CellIndex> res;
+  if (y != 0 && x != 0)
+    { // Try top left
+      CellIndex neighbour;
+      if (y % 2 == 0)
+        neighbour = this->cell_to_index(std::make_tuple(x - 1, y - 1));
+      else
+        neighbour = this->cell_to_index(std::make_tuple(x, y - 1));
+      const TileHeights neighbour_heights = this->get_cell_heights(neighbour);
+
+      if (heights.corners.left == neighbour_heights.corners.bottom &&
+          heights.corners.top == neighbour_heights.corners.right)
         res.push_back(neighbour);
     }
-  if (x != 0)
-    { // Try left
-      std::size_t neighbour = index - 1;
-      ushort neighbour_heights = this->get_cell_heights(
-                                   neighbour % this->get_width_in_tiles(),
-                                   neighbour / this->get_width_in_tiles());
-      if ((((heights) & 15) == ((neighbour_heights >> 4) & 15)) &&
-          (((heights >> 12) & 15) == ((neighbour_heights >> 8) & 15)))
+  if (y != 0 && x != this->get_width_in_tiles() - 1)
+    { // Try top right
+      CellIndex neighbour;
+      if (y % 2 == 0)
+        neighbour = this->cell_to_index(std::make_tuple(x, y - 1));
+      else
+        neighbour = this->cell_to_index(std::make_tuple(x + 1, y - 1));
+
+      const TileHeights neighbour_heights = this->get_cell_heights(neighbour);
+      if (heights.corners.right == neighbour_heights.corners.bottom &&
+          heights.corners.top == neighbour_heights.corners.left)
         res.push_back(neighbour);
     }
-  if ((x != this->get_width_in_tiles() - 1))
-    { // Try right
-      std::size_t neighbour = index + 1;
-      ushort neighbour_heights = this->get_cell_heights(
-                                   neighbour % this->get_width_in_tiles(),
-                                   neighbour / this->get_width_in_tiles());
-      if ((((heights >> 4) & 15) == ((neighbour_heights) & 15)) &&
-          (((heights >> 8) & 15) == ((neighbour_heights >> 12) & 15)))
+  if (x != this->get_width_in_tiles() - 1 && y != this->get_height_in_tiles() - 1)
+    { // Try bottom right
+      CellIndex neighbour;
+      if (y % 2 == 0)
+        neighbour = this->cell_to_index(std::make_tuple(x, y + 1));
+      else
+        neighbour = this->cell_to_index(std::make_tuple(x + 1, y + 1));
+
+      const TileHeights neighbour_heights = this->get_cell_heights(neighbour);
+      if (heights.corners.right == neighbour_heights.corners.top &&
+          heights.corners.bottom == neighbour_heights.corners.left)
         res.push_back(neighbour);
     }
-  if ((y != this->get_width_in_tiles() - 1))
-    { // Try bottom
-      std::size_t neighbour = index + this->get_width_in_tiles();
-      ushort neighbour_heights = this->get_cell_heights(
-                                   neighbour % this->get_width_in_tiles(),
-                                   neighbour / this->get_width_in_tiles());
-      if ((((heights >> 8) & 15) == ((neighbour_heights >> 4) & 15)) &&
-          (((heights >> 12) & 15) == ((neighbour_heights) & 15)))
+  if (x != 0 && y != this->get_width_in_tiles() - 1)
+    { // Try bottom left
+      CellIndex neighbour;
+      if (y % 2 == 0)
+        neighbour = this->cell_to_index(std::make_tuple(x - 1, y + 1));
+      else
+        neighbour = this->cell_to_index(std::make_tuple(x, y + 1));
+
+      const TileHeights neighbour_heights = this->get_cell_heights(neighbour);
+      if (heights.corners.left == neighbour_heights.corners.top &&
+          heights.corners.bottom == neighbour_heights.corners.right)
         res.push_back(neighbour);
     }
   return res;
@@ -391,35 +416,36 @@ int heuristic()
   return 0;
 }
 
-void insert_node(t_nodes& nodes, std::size_t index, int g, int f)
+void insert_node(AStarNodes& nodes, CellIndex index, int g, int f)
 {
-  std::list<t_node>::iterator it;
   bool inserted = false;
-  t_node node;
+
+  AStarNode node;
   node.f = f;
   node.g = g;
   node.index = index;
 
-  for (it = nodes.begin(); it != nodes.end(); ++it)
+  // Remove the node from the list if already present.
+  nodes.erase(std::remove_if(nodes.begin(), nodes.end(),
+                            [index](const auto& node)
+                            {
+                              return node.index == index;
+                            }),
+             nodes.end());
+
+  for (auto it = nodes.begin(); it != nodes.end(); ++it)
     {
-      // Remove the node from the list if already present.
-      if ((*it).index == index)
-        {
-          it = nodes.erase(it);
-        }
-    }
-  for (it = nodes.begin(); it != nodes.end(); ++it)
-    {
-      if (((*it).f >= f))
+      if ((it->f >= f))
         {
           nodes.insert(it, node);
           return ;
         }
     }
+
   nodes.insert(nodes.end(), node);
 }
 
-bool is_in_set(std::size_t index, const t_closed_nodes& nodes)
+bool is_in_set(std::size_t index, const std::vector<CellIndex>& nodes)
 {
   std::vector<std::size_t>::const_iterator it;
   for (it = nodes.begin(); it != nodes.end(); ++it)
@@ -430,14 +456,13 @@ bool is_in_set(std::size_t index, const t_closed_nodes& nodes)
   return false;
 }
 
-bool is_better_than_previously_open(const std::size_t index, const int score, const t_nodes& open)
+bool is_better_than_previously_open(const CellIndex index, const int score, const AStarNodes& open)
 {
-  std::list<t_node>::const_iterator it;
-  for (it = open.begin(); it != open.end(); ++it)
+  for (const AStarNode& node: open)
     {
-      if ((*it).index == index)
+      if (node.index == index)
         {
-          if ((*it).g < score)
+          if (node.g < score)
             return false;
           else
             return true;
@@ -446,10 +471,10 @@ bool is_better_than_previously_open(const std::size_t index, const int score, co
   return true;
 }
 
-cell_path_t reconstruct_path(const std::map<std::size_t, std::size_t>& came_from,
-                                          const std::size_t end)
+CellPath reconstruct_path(const std::map<std::size_t, std::size_t>& came_from,
+                          const std::size_t end)
 {
-  cell_path_t res;
+  CellPath res;
   std::map<std::size_t, std::size_t>::const_iterator it;
   res.push_back(end);
   it = came_from.find(end);
@@ -461,14 +486,31 @@ cell_path_t reconstruct_path(const std::map<std::size_t, std::size_t>& came_from
   return res;
 }
 
-CellIndex Map::cell_to_index(const Cell& cell)
+CellIndex Map::cell_to_index(const Cell& cell) const
 {
+  if (cell == InvalidCell)
+    return InvalidCellIndex;
   return std::get<0>(cell) + (std::get<1>(cell) * this->get_width_in_tiles());
 }
 
-Cell Map::index_to_cell(const CellIndex& index)
+Cell Map::index_to_cell(const CellIndex& index) const
 {
+  if (index == InvalidCellIndex)
+    return InvalidCell;
   const unsigned short col = index % this->get_width_in_tiles();
   const unsigned short row = index / this->get_width_in_tiles();
   return std::make_tuple(col, row);
+}
+
+std::ostream& operator<<(std::ostream& os, Cell cell)
+{
+  return os << "Cell(" << std::get<0>(cell) << ":" << std::get<1>(cell) << ")";
+}
+
+std::ostream& operator<<(std::ostream& os, TileHeights heights)
+{
+  return os << "Heights(left: " << heights.corners.left <<
+    ", top: " << heights.corners.top <<
+    ", right: " << heights.corners.right <<
+    ", bottom: " << heights.corners.bottom << ")";
 }

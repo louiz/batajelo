@@ -2,20 +2,19 @@
 #include <game/game_client.hpp>
 #include <game/time.hpp>
 
+#include "orders.pb.h"
+#include "requests.pb.h"
+
 GameClient::GameClient(const std::shared_ptr<Screen>& screen):
+  Game(),
   ClientBase(),
-  mod("monsters.yaml"),
-  map(),
-  world(&this->map, this->mod),
-  occupants_handler(),
   current_selection(),
   screen(screen),
   camera(this, this->screen.get()),
-  hud(this, this->screen.get())
+  hud(this, this->screen.get()),
+  debug_hud(this, this->screen.get())
 {
-  this->map.load_from_file("test6.tmx");
-
-  this->world.set_next_turn_callback(std::bind(&GameClient::on_next_turn,
+  this->turn_handler.set_next_turn_callback(std::bind(&GameClient::on_next_turn,
                                                this, std::placeholders::_1));
 
   this->connect("127.0.0.1", 7879);
@@ -23,15 +22,13 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
   this->install_callback("OCCUPANT_LEFT",
                          std::bind(&GameClient::occupant_left_callback, this, std::placeholders::_1));
   this->install_callback("NEW_UNIT",
-                         std::bind(&GameClient::new_unit_callback, this, std::placeholders::_1));
+                         std::bind(&Game::new_unit_callback, this, std::placeholders::_1));
   this->install_callback("START",
-                         std::bind(&GameClient::handle_start_command, this, std::placeholders::_1));
-  this->install_callback("OK",
-                         std::bind(&GameClient::ok_callback, this, std::placeholders::_1));
+                         std::bind(&GameClient::handle_start_message, this, std::placeholders::_1));
   this->install_callback("T",
                          std::bind(&GameClient::turn_callback, this, std::placeholders::_1));
-  this->install_callback("PATH",
-                         std::bind(&GameClient::path_callback, this, std::placeholders::_1));
+  this->install_callback("MOVE",
+                         std::bind(&Game::move_callback, this, std::placeholders::_1));
   this->install_callback("BUILD",
                          std::bind(&GameClient::build_callback, this, std::placeholders::_1));
   this->install_callback("SPAWN",
@@ -39,6 +36,7 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
 
   this->screen->add_element(&this->camera, 0);
   this->screen->add_element(&this->hud, 1);
+  this->screen->add_element(&this->get_debug_hud(), 2);
 }
 
 GameClient::~GameClient()
@@ -47,12 +45,6 @@ GameClient::~GameClient()
 
 void GameClient::run()
 {
-  while (this->world.is_started() == false)
-    {
-      // Here be a loading screen.
-      this->poll(10);
-    }
-
   sf::Clock fps_clock;
 
   Time time1 = boost::posix_time::microsec_clock::universal_time();
@@ -80,7 +72,17 @@ void GameClient::run()
           this->screen->handle_event(event);
         }
 
+      // recv/send from the network
       this->poll(0);
+
+      // Draw the screen. Limit to ~60 fps.
+      if (fps_clock.getElapsedTime().asMicroseconds() > 10000)
+        {
+          this->screen->window().clear(sf::Color(70, 80, 38));
+          this->screen->draw();
+          this->screen->window().display();
+          fps_clock.restart();
+        }
 
       // Get the elapsed time
       time2 = boost::posix_time::microsec_clock::universal_time();
@@ -90,9 +92,10 @@ void GameClient::run()
       this->screen->update(dt);
       // Update everything, based on the elapsed time
       long i = get_number_of_updates(dt);
+
       for (; i > 0; --i)
         {
-          this->world.tick();
+          this->tick();
         }
 
       graph_time2 = boost::posix_time::microsec_clock::universal_time();
@@ -102,16 +105,6 @@ void GameClient::run()
       for (; i > 0; --i)
         {
           this->graphical_tick();
-        }
-      // Draw the result on the screen. Limit to ~60 fps.
-      if (fps_clock.getElapsedTime().asMicroseconds() > 10000)
-        {
-          this->screen->window().clear(sf::Color(70, 80, 80));
-          // sf::View view(sf::FloatRect(0, 0, 960, 540));
-          // window->setView(view);
-          this->screen->draw();
-          this->screen->window().display();
-          fps_clock.restart();
         }
     }
 }
@@ -130,7 +123,7 @@ void GameClient::add_new_occupant(std::unique_ptr<Occupant>&& occupant)
 
 DebugHud& GameClient::get_debug_hud()
 {
-  return this->screen->get_debug_hud();
+  return this->debug_hud;
 }
 
 World& GameClient::get_world()
@@ -148,195 +141,107 @@ Screen& GameClient::get_screen()
   return *this->screen;
 }
 
-GraphMap& GameClient::get_map()
+void GameClient::send_message(const char* name, const google::protobuf::Message& msg)
 {
-  return this->map;
+  Message* message = new Message;
+  message->set_name(name);
+  message->set_body(msg);
+  this->send(message);
 }
 
-void GameClient::send_command(const char* name, const std::string& archive)
+void GameClient::send_message(const char* name, const std::string& archive)
 {
-  Command* command = new Command;
-  command->set_name(name);
-  command->set_body(archive.data(), archive.length());
-  this->send(command);
+  Message* message = new Message;
+  message->set_name(name);
+  message->set_body(archive.data(), archive.length());
+  this->send(message);
 }
 
-void GameClient::on_next_turn(unsigned long turn)
+void GameClient::on_next_turn(TurnNb turn)
 {
-  if (this->started == true)
-    this->confirm_turn(turn+1);
 }
 
-void GameClient::new_occupant_callback(Command* command)
+void GameClient::new_occupant_callback(Message* message)
 {
   log_debug("new_occupant_callback");
-  auto occupant = std::make_unique<Occupant>();
 
-  std::string data(command->body, command->body_size);
-  if (occupant->from_string(data) == false)
+  auto srl = message->parse_body_to_protobuf_object<ser::game::Occupant>();
+  if (!srl.IsInitialized())
     {
-      log_error("Invalid data received for the occupant.");
+      log_error("Invalid data received for the occupant: " << srl.InitializationErrorString());
       return ;
     }
-  log_debug("Occupant: " << occupant->name << " " << occupant->number);
+
+  auto occupant = std::make_unique<Occupant>(srl);
+
+  log_debug("Occupant: " << occupant->name << " " << occupant->id);
   this->add_new_occupant(std::move(occupant));
 }
 
-void GameClient::occupant_left_callback(Command* command)
+void GameClient::occupant_left_callback(Message* message)
 {
-  Occupant occupant;
-  if (occupant.from_string(std::string(command->body, command->body_size)) == false)
+  auto srl = message->parse_body_to_protobuf_object<ser::game::Occupant>();
+  if (!srl.IsInitialized())
     {
-      log_error("Invalid data received for the leaving occupant.");
+      log_error("Invalid data received for the leaving occupant." << srl.InitializationErrorString());
       return ;
     }
-  log_debug("Occupant to remove: " << occupant.number);
+
+  Occupant occupant(srl);
+  log_debug("Occupant to remove: " << occupant.id);
   this->occupants_handler.remove(occupant);
 }
 
-void GameClient::new_unit_callback(Command* command)
+void GameClient::handle_start_message(Message* message)
 {
-  DoUnitEvent* e = new DoUnitEvent(command);
-  if (e->is_valid() == false)
+  auto srl = message->parse_body_to_protobuf_object<ser::order::Start>();
+  if (!srl.IsInitialized())
     {
-      log_debug("Invalid data for the new entity.");
+      log_warning("Invalid data for START message " << srl.InitializationErrorString());
       return ;
     }
-  Action* action = new Action(std::bind(&World::do_new_unit, &this->world, std::placeholders::_1), e);
-  log_debug("new entity");
-  this->world.turn_handler.insert_action(action, e->turn);
-  if (this->started == true)
-    this->confirm_action(e->get_id());
-  else
-    action->validate_completely();
-}
-
-void GameClient::handle_start_command(Command* command)
-{
-  ActionEvent start_event(command);
-  if (start_event.is_valid() == false)
-    {
-      log_warning("Invalid data for START command");
-      return ;
-    }
-  log_debug("The first turn to start is " << start_event.turn);
-  this->world.unpause();
+  log_debug("The first turn to start is " << srl.turn());
+  if (srl.turn() != 0)
+    this->turn_handler.mark_as_ready_until(srl.turn());
   do
     {
-      this->world.tick(true);
-    } while (this->world.turn_handler.get_current_turn() < start_event.turn - 1);
+      this->tick();
+    } while (!this->turn_handler.is_paused());
 
-  this->confirm_turn(start_event.turn);
-  this->world.validate_turn_completely(start_event.turn);
-  this->world.start();
+  // this->world.start();
 }
 
-void GameClient::ok_callback(Command* command)
+void GameClient::turn_callback(Message*)
 {
-  OkEvent ok_event(command);
-  if (ok_event.is_valid() == false)
-    {
-      log_warning("Invalid data for OK command");
-      return ;
-    }
-  this->world.completely_validate_action(ok_event.get_id());
+  log_debug("GameClient::turn_callback");
+  this->turn_handler.mark_turn_as_ready();
 }
 
-void GameClient::turn_callback(Command* command)
+void GameClient::path_callback(Message* message)
 {
-  std::istringstream is(std::string(command->body, command->body_size));
-  unsigned int number;
-  is >> number;
-  this->world.validate_turn_completely(number);
 }
 
-void GameClient::path_callback(Command* command)
+void GameClient::build_callback(Message* message)
 {
-  DoMoveEvent* e = new DoMoveEvent(command);
-  if (e->is_valid() == false)
-    {
-      log_warning("Invalid data for PATH command");
-      return ;
-    }
-  Action* action = new Action(std::bind(&World::do_path, &this->world, std::placeholders::_1), e);
-  this->insert_received_action(action, e);
-}
-
-void GameClient::build_callback(Command* command)
-{
-  DoBuildEvent* e = new DoBuildEvent(command);
-  log_info("Build_callback: " << e->actor << " " << e->x << ":" << e->y);
-  if (e->is_valid() == false)
-    {
-      log_warning("Invalid data for BUILD command");
-      return ;
-    }
-  Action* action = new Action(std::bind(&World::do_build, &this->world, std::placeholders::_1), e);
-  this->insert_received_action(action, e);
-}
-
-void GameClient::insert_received_action(Action* action, ActionEvent* event)
-{
-  this->world.turn_handler.insert_action(action, event->turn);
-  if (this->started == true)
-    this->confirm_action(event->get_id());
-  else
-    action->validate_completely();
-}
-
-void GameClient::confirm_action(const unsigned long int id)
-{
-  Event ok_event(id);
-  this->send_command("OK", ok_event.to_string());
-}
-
-void GameClient::confirm_initial_turn()
-{
-  this->confirm_turn(1);
-}
-
-void GameClient::confirm_turn(const unsigned int number)
-{
-  std::ostringstream os;
-  os << number;
-  this->send_command("T", os.str());
 }
 
 bool GameClient::action_build(const unsigned int x, const unsigned y, const std::size_t id)
 {
-  log_info("action_build: " << x << ":" << y << "=" << id);
-  assert(this->current_selection.is_empty() == false);
-  BuildEvent event;
-  event.actor = this->current_selection.get_entities().front()->id;
-  Position pos(x, y);
-  std::tie(event.x, event.y) = this->world.get_cell_at_position(pos);
-  event.type_id = id;
-  this->send_command("BUILD", event.to_string());
-  return true;
 }
 
 void GameClient::action_spawn(const t_left_click left_click)
 {
-  assert(this->current_selection.is_empty() == false);
-  SpawnEvent event;
-  event.actor = this->current_selection.get_entities().front()->id;
-  event.type_id = left_click.id;
-  this->send_command("SPAWN", event.to_string());
 }
 
-bool GameClient::action_move(const unsigned int x, const unsigned y, const std::size_t)
+bool GameClient::action_move(std::vector<EntityId> ids, const Position& pos, const bool queue)
 {
-  MoveEvent event;
-  for (const auto entity: this->world.entities)
-    {
-      if (this->is_entity_selected(entity))
-        event.actors_ids.push_back(entity->get_id());
-    }
-  if (event.actors_ids.size() == 0)
-    return false;
-  event.x = x;
-  event.y = y;
-  this->send_command("MOVE", event.to_string());
+  ser::request::Move srl;
+  srl.set_queue(queue);
+  srl.mutable_pos()->set_x(pos.x.raw());
+  srl.mutable_pos()->set_y(pos.y.raw());
+  for (const EntityId id: ids)
+    srl.add_entity_id(id);
+  this->send_message("MOVE", srl);
   return true;
 }
 
@@ -370,31 +275,28 @@ void GameClient::add_selection_change_callback(const t_selection_changed_callbac
   this->current_selection.on_modified_callbacks.push_back(callback);
 }
 
-void GameClient::spawn_callback(Command* command)
+void GameClient::spawn_callback(Message* message)
 {
-  DoSpawnEvent* e = new DoSpawnEvent(command);
-  log_info("Spawn_callback: " << e->actor << " " << e->type_id);
-  if (e->is_valid() == false)
-    {
-      log_warning("Invalid data for Spawn command");
-      return ;
-    }
-  Action* action = new Action(std::bind(&World::do_spawn, &this->world, std::placeholders::_1), e);
-  this->insert_received_action(action, e);
 }
 
-void GameClient::insert_unit(Unit* unit)
+void GameClient::do_new_unit(const EntityType type, const Position& pos)
 {
+  Unit* unit = this->world.do_new_unit(type, pos);
   this->camera.on_new_unit(unit);
-  this->world.insert_unit(unit);
 }
 
-void GameClient::insert_building(Building* building)
+void GameClient::on_new_building(Building* building)
 {
   this->camera.on_new_building(building);
-  this->world.insert_building(building);
 }
 
+void GameClient::tick()
+{
+  this->turn_handler.tick();
+  if (this->turn_handler.is_paused())
+    return;
+  this->world.tick();
+}
 void GameClient::graphical_tick()
 {
   this->camera.graphical_tick();

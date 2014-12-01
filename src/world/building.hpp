@@ -12,7 +12,6 @@
 # define __BUILDING_HPP__
 
 #include <world/entity.hpp>
-#include <world/work.hpp>
 
 class Unit;
 
@@ -26,26 +25,9 @@ public:
 
   bool is_obstructing_position(const Unit*, const Position&) const;
 
-  virtual void serialize(oarchive & ar, const unsigned int)
-  {
-    ar & name & type_id & x & y;
-  }
-  virtual void serialize(iarchive & ar, const unsigned int)
-  {
-    ar & name & type_id & x & y;
-  }
-
-  bool spawn(World*, Work*);
-  bool set_rally_point(World*, Work*);
+  // bool spawn(World*, Work*);
+  // bool set_rally_point(World*, Work*);
   Position get_center_position() const;
-  /**
-   * return a list of type_id of the units currently waiting to be spawned.
-   */
-  std::vector<unsigned short> get_spawning_queue() const;
-  /**
-   * Return the elapsed time for the currently spawning work.
-   */
-  unsigned int get_spawn_time_elapsed() const;
 
 private:
   Building& operator=(const Building&) = delete;

@@ -10,7 +10,7 @@
  * (which should be ignored in some cases, for example if we target an
  * entity) and a type_id.
  */
-typedef std::function<bool(const unsigned int, const unsigned int, const std::size_t)> t_left_click_callback;
+typedef std::function<bool(const double, const double, const std::size_t)> t_left_click_callback;
 
 /**
  * A function that should be called when drawing the cursor. For example if

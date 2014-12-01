@@ -3,250 +3,87 @@
 #include <world/path.hpp>
 #include <world/work.hpp>
 
-World::World(Map* map, Mod& mod):
-  replay(),
-  turn_handler(&replay),
-  map(map),
-  started(false)
+World::World()
 {
-  this->init(mod);
+  this->map.load_from_file("test6.tmx");
 }
 
 World::~World()
 {
-  for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); ++it)
-    delete *it;
 }
 
-void World::set_next_turn_callback(t_next_turn_callback callback)
-{
-  log_debug("set_next_turn_callback");
-  this->turn_handler.set_next_turn_callback(callback);
-}
-
-void World::insert_unit(Unit* unit)
+void World::insert_unit(std::unique_ptr<Unit>&& unit)
 {
   log_debug("Inserting unit at position " << unit->pos);
-  this->units.push_back(unit);
-  this->insert_entity(unit);
+  this->units.push_back(unit.get());
+  this->insert_entity(std::move(unit));
 }
 
-void World::insert_building(Building* building)
+void World::insert_building(std::unique_ptr<Building>&& building)
 {
-  this->buildings.push_back(building);
-  this->insert_entity(building);
+  this->buildings.push_back(building.get());
+  this->insert_entity(std::move(building));
 }
 
-void World::insert_entity(Entity* entity)
+void World::insert_entity(std::unique_ptr<Entity>&& entity)
 {
-  this->entities.push_back(entity);
+  this->entities.push_back(std::move(entity));
 }
 
-void World::init(Mod& mod)
+void World::tick()
 {
-  log_debug("Init world");
-  // TODO, load these units from the Mod file.
-  // const Unit* unit = new Unit;
-  // this->entity_models.push_back(unit);
-  this->unit_models = mod.get_unit_models();
-  this->building_models = mod.get_building_models();
-  log_debug("Done.");
-}
-
-Unit* World::create_unit(const unsigned int type)
-{
-  const Unit* model = this->unit_models[type].get();
-  Unit* new_entity = new Unit(*model);
-  return new_entity;
-}
-
-const Unit* World::get_unit_model(unsigned int type) const
-{
-  return this->unit_models[type].get();
-}
-
-Unit* World::create_unit(unsigned int type, const Unit& e)
-{
-  log_debug("Creating entity of type " << type);
-  const Unit* model = this->unit_models[type].get();
-  Unit* new_unit = new Unit(*model);
-  new_unit->pos = e.pos;
-  return new_unit;
-}
-
-Building* World::create_building(unsigned int type, const short x, const short y)
-{
-  const Building* model = this->building_models[type].get();
-  Building* new_building = new Building(*model);
-  new_building->x = x;
-  new_building->y = y;
-  return new_building;
-}
-
-void World::pause()
-{
-  this->turn_handler.pause();
-}
-
-void World::unpause()
-{
-  this->turn_handler.unpause();
-}
-
-
-void World::tick(bool force)
-{
-  if ((this->started == false) && (force == false))
-    return ;
-  this->turn_handler.tick(force);
-  if (this->turn_handler.is_paused() == true)
-    return ;
-  Entity* entity;
-  for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); ++it)
-    {
-      entity = *it;
-      entity->tick(this);
-    }
-  Building* building;
-  for (std::list<Building*>::iterator it = this->buildings.begin(); it != this->buildings.end(); ++it)
-    {
-      building = *it;
-      building->tick(this);
-    }
-
-}
-
-void World::advance_replay_until_paused()
-{
-  do
-    {
-      this->tick(true);
-    } while (this->turn_handler.is_paused() == false);
-}
-
-void World::start()
-{
-  log_debug("start");
-  if (this->started == true)
-    return;
-  if (this->map == 0)
-    {
-      this->map = new Map();
-      this->map->load_from_file("test6.tmx");
-    }
-  this->started = true;
-}
-
-void World::do_path(ActionEvent* event)
-{
-  DoMoveEvent* path_event = dynamic_cast<DoMoveEvent*>(event);
-  assert(path_event);
-  // Path path(path_event->x, path_event->y);
-  Position endpos(static_cast<short>(path_event->x), static_cast<short>(path_event->y));
-  log_error("Move: endpos" << endpos);
-
-  Unit* unit;
-  Building* building;
-  for (std::vector<unsigned short>::const_iterator actors_it = path_event->actors_ids.begin(); actors_it < path_event->actors_ids.end(); ++actors_it)
-    {
-      // Entity* entity = dynamic_cast<Entity*>(this->get_entity_by_id((*actors_it)));
-      unit = this->get_unit_by_id(*actors_it);
-      if (unit)
-        {
-          PathWork* work = new PathWork(unit, endpos);
-          unit->set_work(work);
-        }
-      else
-        { // the given id is not the one of an entity. Look for a building then
-          building = this->get_building_by_id(*actors_it);
-          if (building)
-            {
-              RallyWork* work = new RallyWork(building, endpos);
-              building->set_work(work);
-            }
-        }
-    }
+  for (const auto& entity: this->entities)
+    entity->tick(this);
 }
 
 Path World::calculate_path(Position endpos, Unit* unit)
 {
-  unsigned short startx;
-  unsigned short starty;
-  unsigned short endx;
-  unsigned short endy;
-  log_debug("Calculating path for unit. Starting at position: " << unit->pos << " ending at position " << endpos);
-  std::tie(startx, starty) = this->get_cell_at_position(unit->pos);
-  std::tie(endx, endy) = this->get_cell_at_position(endpos);
-  this->current_path = this->map->do_astar(startx, starty, endx, endy);
-  // cell_path_t temp_path(this->current_path.front(), this->current_path.back());
-  Path path;
-  if (this->current_path.size() > 0)
-    path = this->smooth_path(this->current_path, unit->pos, endpos, unit->width);
-  return path;
+  log_debug("Calculating path for unit. Starting at position: " << unit->pos << " ending at pos: " << endpos);
+
+  CellPath cell_path = this->map.do_astar(this->get_cell_at_position(unit->pos),
+                                          this->get_cell_at_position(endpos));
+
+  // DEBUG
+  this->current_path = cell_path;
+
+  if (!cell_path.empty())
+    return this->smooth_path(cell_path, unit->pos, endpos, unit->width);
+  return {};
 }
 
-void World::do_new_unit(ActionEvent* event)
+Unit* World::do_new_unit(const EntityType type, const Position& pos)
 {
-  log_debug("DO NEW UNIT");
-  DoUnitEvent* unit_event = dynamic_cast<DoUnitEvent*>(event);
-  assert(event);
-  // This unit just contains the initial position of the unit, and it's
-  // type_id because we don't need to pass all these informations, because
-  // we already have all the possible unit types in our list
-  // (unit_models).
-  Unit* unit = unit_event->unit;
-  // We use the type id to create an unit using the corresponding model,
-  // and we pass the initial position of the unit as well.
-  Unit* new_unit = this->create_unit(unit->type_id, *unit);
-  delete unit;
-  log_debug("New_Unit: " << new_unit->pos);
-  this->insert_unit(new_unit);
+  auto entity = this->entity_factory.make_unit(type);
+  entity->pos = pos;
+  auto res = entity.get();
+  this->insert_unit(std::move(entity));
+  return res;
 }
 
-void World::do_build(ActionEvent* event)
+void World::do_move(const std::vector<EntityId> ids, const Position& pos, const bool queue)
 {
-  DoBuildEvent* build_event = dynamic_cast<DoBuildEvent*>(event);
-  assert(build_event);
-  log_info("do_build: " << build_event->x << ":" << build_event->y);
-  Position endpos(static_cast<short>(build_event->x * CELL_SIZE + CELL_SIZE / 2), static_cast<short>(build_event->y * CELL_SIZE + CELL_SIZE / 2));
-  Unit* unit = dynamic_cast<Unit*>(this->get_entity_by_id(build_event->actor));
-  assert(unit);
-  PathWork* path_work = new PathWork(unit, endpos);
-  unit->set_work(path_work);
-  BuildWork* build_work = new BuildWork(unit, build_event->type_id, build_event->x, build_event->y);
-  unit->queue_work(build_work);
-}
-
-void World::do_spawn(ActionEvent* event)
-{
-  DoSpawnEvent* spawn_event = dynamic_cast<DoSpawnEvent*>(event);
-  assert(spawn_event);
-  log_info("do_spawn: " << spawn_event->actor << ":" << spawn_event->type_id);
-  Building* building = dynamic_cast<Building*>(this->get_entity_by_id(spawn_event->actor));
-  assert(building);
-  SpawnWork* work = new SpawnWork(building, spawn_event->type_id);
-  building->queue_work(work);
-}
-
-void World::completely_validate_action(const unsigned int id)
-{
-  log_debug("Action " << id << " completely validated.");
-  return this->turn_handler.completely_validate_action(id);
+  Unit* unit;
+  for (const EntityId id: ids)
+    {
+      log_debug("Moving unit " << id << " to pos " << pos);
+      unit = this->get_unit_by_id(id);
+      if (queue)
+        unit->queue_work(std::make_unique<PathWork>(unit, pos));
+      else
+        unit->set_work(std::make_unique<PathWork>(unit, pos));
+    }
 }
 
 Entity* World::get_entity_by_id(unsigned short id)
 {
   // Should use something like this->entities[id], to optimize.
   // Entities should be placed directly in a vector, for fast access.
-  Entity* entity;
-
-  for (std::list<Entity*>::iterator it = this->entities.begin(); it != this->entities.end(); ++it)
+  for (const auto& entity: this->entities)
     {
-      entity = *it;
       if (entity->get_id() == id)
-     return entity;
+        return entity.get();
     }
-  return 0;
+  return nullptr;
 }
 
 Unit* World::get_unit_by_id(unsigned short id)
@@ -273,22 +110,7 @@ Building* World::get_building_by_id(unsigned short id)
   return 0;
 }
 
-void World::validate_turn_completely(const unsigned int number)
-{
-  this->turn_handler.completely_validate_turn(number);
-}
-
-const Replay& World::get_replay() const
-{
-  return this->replay;
-}
-
-Replay& World::get_replay()
-{
-  return this->replay;
-}
-
-Map* World::get_map() const
+Map& World::get_map()
 {
   return this->map;
 }
@@ -298,202 +120,215 @@ static bool compare_units(const Unit* a, const Unit* b)
   return (a->pos.y < b->pos.y);
 }
 
-void World::sort_entities()
-{
-  // this->entities.sort(compare_units);
-}
-
 Cell World::get_cell_at_position(const Position& pos) const
 {
-  unsigned short x =  static_cast<int16_t>(pos.x) / CELL_SIZE;
-  unsigned short y = (static_cast<int16_t>(pos.y) / CELL_SIZE) * 2;
+  unsigned short x =  std::floor(pos.x / CELL_SIZE).to_int();
+  unsigned short y =  std::floor(pos.y / CELL_SIZE).to_int() * 2;
 
-  const unsigned short rel_x = static_cast<int16_t>(pos.x) % CELL_SIZE;
-  const unsigned short rel_y = static_cast<int16_t>(pos.y) % CELL_SIZE;
+  const Fix16 rel_x = pos.x % CELL_SIZE;
+  const Fix16 rel_y = pos.y % CELL_SIZE;
 
   if (rel_x + rel_y < HALF_CELL_SIZE)
     { // top left
+      if (x == 0 || y == 0)
+        return InvalidCell;
       x--;
       y--;
     }
   else if ((rel_x >= HALF_CELL_SIZE) && (rel_y < HALF_CELL_SIZE) &&
-           (rel_x - HALF_CELL_SIZE > rel_y))
+           (rel_x - HALF_CELL_SIZE >= rel_y))
     { // top right
+      if (y == 0)
+        return InvalidCell;
       y--;
     }
   else if ((rel_x < HALF_CELL_SIZE) && (rel_y >= HALF_CELL_SIZE) &&
            (rel_y - HALF_CELL_SIZE > rel_x))
     { // bottom left
+      if (x == 0 || y == this->map.get_width_in_tiles())
+        return InvalidCell;
       x--;
       y++;
     }
   else if ((rel_x >= HALF_CELL_SIZE) && (rel_y >= HALF_CELL_SIZE) &&
            (rel_x - HALF_CELL_SIZE + rel_y - HALF_CELL_SIZE > HALF_CELL_SIZE))
     { // bottom right
+      if (y == this->map.get_width_in_tiles())
+        return InvalidCell;
       y++;
     }
+
   return std::make_tuple(x, y);
 }
 
 Fix16 World::get_position_height(const Position& pos) const
 {
+  const int cell_size = static_cast<const int>(CELL_SIZE);
+
   short cellx;
   short celly;
   std::tie(cellx, celly) = this->get_cell_at_position(pos);
 
-  const int cell_size = static_cast<const int>(CELL_SIZE);
+  TileHeights heights = this->map.get_cell_heights(cellx, celly);
 
-  TileHeights heights = this->map->get_cell_heights(cellx, celly);
-  Fix16 cx = Fix16(int16_t(pos.x) % cell_size) / Fix16(CELL_SIZE);
-  Fix16 cy = Fix16(int16_t(pos.y) % cell_size) / Fix16(CELL_SIZE);
-  Fix16 a = heights.corners.left;
-  Fix16 b = heights.corners.top;
-  Fix16 d = heights.corners.bottom;
-  Fix16 hx = a - (cx * (a - b));
-  Fix16 hy = a - (a - (cy * (a - d)));
-  return hx - hy;
-}
+  Fix16 cx = (pos.x % (cell_size)) / cell_size;
 
-bool World::is_started() const
-{
-  return this->started;
-}
+  Fix16 cy = (pos.y % (cell_size)) / (cell_size / 2);
 
-Path World::smooth_path(cell_path_t path,
-                        Position& start, const Position& end, const short width) const
-{
-  Position current_pos(start);
-  Path res;
-  // TODO experiment with other step values. Or set step to half the width
-  // of the entity?
-  Position temp_goal;
-  // TODO check if doing that without any A* would not be a lot faster.
-  // log_error("Number of cells: " << path.size());
-  Position next_pos = this->get_next_path_position(path, start, end, width);
-  res.push_back(next_pos);
-  // log_error(" ======== Next path position is " << next_pos);
-  // log_error("Remaining cells: " << path.size());
-  while (next_pos != end)
+  cy /= 2;
+
+  if (celly % 2)
     {
-      next_pos = this->get_next_path_position(path, next_pos, end, width);
-      // log_error("NEXT path position is " << next_pos);
-      res.push_back(next_pos);
-
-      // next_pos = this->get_next_path_position(path, next_pos, end, width);
-      // log_error("NEXT path position is " << next_pos);
-      // res.push_back(next_pos);
-
-      // next_pos = this->get_next_path_position(path, next_pos, end, width);
-      // log_error("NEXT path position is " << next_pos);
-      // res.push_back(next_pos);
+      cy += 0.5;
+      cx += 0.5;
     }
-  // log_error("Remaining cells: " << path.size());
+  if (cx > 1)
+    cx -= 1;
+  if (cy > 1)
+    cy -= 1;
+
+  Fix16 left = heights.corners.left;
+  Fix16 top = heights.corners.top;
+  Fix16 right = heights.corners.right;
+  Fix16 bot = heights.corners.bottom;
+
+  Fix16 hx = left + (cx * (right - left));
+
+  Fix16 hy = top + (cy * (bot - top));
+  Fix16 hy2 = top + (0.5 * (bot - top));
+
+  return hx + (hy - hy2);
+}
+
+Path World::smooth_path(CellPath path,
+                        Position& start, const Position& end, const Fix16 width) const
+{
+  Path res;
+  Position current_pos(start);
+  Position next_pos;
+
+  do
+    {
+      next_pos = this->get_next_path_position(path, current_pos, end, width);
+      res.push_back(next_pos);
+      current_pos = next_pos;
+    } while (next_pos != end);
+
   return res;
 }
 
-Position World::get_next_path_position(cell_path_t& path, const Position current,
-                                       const Position& end, const short width) const
+Position World::get_next_path_position(CellPath& path,
+                                       const Position& current, const Position& goal,
+                                       const Fix16 unit_width) const
 {
   const Fix16 step = 2;
 
-  bool first_cell = true;
   // First check if the whole path is just a simple straight line.
-  if (this->can_walk_in_straight_line(current, end, step, width) == true)
-    return end;
-  Position temp_goal;
+  if (this->can_walk_in_straight_line(current, goal, step, unit_width) == true)
+    return goal;
+
+  Position temp_goal(0, 0);
   Position prev_pos(current);
-  while (1)
+
+  bool first = true;
+
+  while (true)
     {
-      // assert(path.size() > 0);
-      if (path.size() == 0)
-        return end;
-      std::list<std::size_t>::reverse_iterator rit = path.rend();
-      // log_error("length of path in cells: " << path.size());
-      rit++;
-      std::size_t cell = *(rit);
-      if (path.size() > 1)
-        {
-          rit++;
-          std::size_t next_cell = *(rit);
-          temp_goal = this->get_nearest_corner(prev_pos,
-                                               cell, next_cell, width);
-        }
+      auto rit = path.rbegin();
+      CellIndex cell = *rit;
+      for (const auto& c: path)
+        log_debug(this->map.index_to_cell(c));
+
+      if (path.empty())
+        return goal;
+
+      if (path.size() == 1)
+        temp_goal = goal;
       else
-        temp_goal = this->get_nearest_corner(prev_pos, cell, width);
-      // log_error("Nearest corner of current position (" << prev_pos << ") is " << temp_goal);
-      if (first_cell == false && this->can_walk_in_straight_line(current, temp_goal, step, width) == false)
         {
-          // log_error("Nope.");
-          return prev_pos;
+          CellIndex next_cell = *(rit + 1);
+          temp_goal = this->get_nearest_corner(current, cell, next_cell, unit_width);
         }
-      first_cell = false;
-      // log_error("Yes.");
+
+      if (!first && this->can_walk_in_straight_line(current, temp_goal,
+                                                    step, unit_width) == false)
+        return prev_pos;
+
       prev_pos = temp_goal;
       path.pop_back();
+      first = false;
     }
-  // return temp_goal;
-  // log_error("Length of straight line = " << length_of_straight_line << " && temp_goal = " << temp_goal);
-  // return temp_goal;
-  // current_path_cell += length_of_straight_line + 1;
 }
 
-bool World::can_walk_in_straight_line(const Position& start, const Position& end, const Fix16 step, const short width) const
+bool World::can_walk_in_straight_line(const Position& start, const Position& end, const Fix16 step, const Fix16 width) const
 {
   Vec2 forward(end - start);
-  // log_error(forward);
-  forward.set_length(width/2);
-  Position start1 = start // + forward.perpendicular1()
-    ;
-  Position end1 = end // + forward.perpendicular1()
-    ;
-  Position start2 = start // + forward.perpendicular2()
-    ;
-  Position end2 = end // + forward.perpendicular2()
-    ;
-  // log_error("can_walk_in_straight_line : start = " << start << ", end=" << end << " width=" << width);
-  // log_error("From " << start1 << " to " << end1 << ". And from " << start2 << " to " << end2);
-  if (this->has_a_line_of_sight(start1, end1, step, width) == false)
-    return false;
-  if (this->has_a_line_of_sight(start2, end2, step, width) == false)
-    return false;
+
+  // TODO, use the real width value
+  forward.set_length(width);
+
+  Position start1 = start + forward.perpendicular1();
+  Position end1 = end + forward.perpendicular1();
+  Position start2 = start + forward.perpendicular2();
+  Position end2 = end + forward.perpendicular2();
+
+  log_error("can_walk_in_straight_line : start = " << start << ", end=" << end << " width=" << width);
+  log_error("From " << start1 << " to " << end1 << ". And from " << start2 << " to " << end2);
+  if (this->has_a_line_of_sight(start1, end1, step) == false)
+    {
+      log_debug("no1");
+      return false;
+    }
+  if (this->has_a_line_of_sight(start2, end2, step) == false)
+    {
+      log_debug("no2");
+      return false;
+    }
+  // if (this->has_a_line_of_sight(start, end, step) == false)
+  //   {
+  //     log_debug("no");
+  //     return false;
+  //   }
+  log_debug("yes");
   return true;
 }
 
 bool World::has_a_line_of_sight(const Position& start, const Position& end,
-                                const Fix16 step, const short width) const
+                                const Fix16 step) const
 {
-  // log_error("Distance " << Position::distance(start, end));
+  log_debug("has_a_line_of_sight: " << start << " and " << end);
   // The point to move along the line to check if everything is walkable.
   Position pointer(start);
   // A vector with a length of 'step' in the direction of the end position
   // We use this vector to move the pointor along the line.
   Vec2 forward(end - start);
   forward.set_length(step);
-  // log_error("forward " << forward << " length: " << forward.length());
+
+  log_debug("Forward: " << forward);
+
   // the cell position the pointer is at.
   unsigned short prevx, prevy;
   unsigned short x, y;
   std::tie(prevx, prevy) = this->get_cell_at_position(pointer);
+
   // Move the pointer until we reach the destination, or an obstacle.
-  log_error("Distance between start and end of path: "<< Position::distance(pointer, end));
+  log_debug("Distance between start and end of path: "<< std::to_string(Position::distance(pointer, end)));
   while (Position::distance(pointer, end) >= step)
     {
       // Move the pointer forward.
       pointer += forward;
-      // log_error("Pointer: " << pointer);
+      log_debug("pointer is at "<< pointer);
       std::tie(x, y) = this->get_cell_at_position(pointer);
+      log_debug("cell is: " << x << ":" << y);
       // If the cell changed, we check if we can walk from the previous to
       // the current one. If not, it's not walkable and we return false
       if ((prevx != x) || (prevy != y))
         {
-          // log_error("Cell changed");
           if (this->can_traverse_cell(prevx, prevy, x, y) == false)
             // we hit an obstabcle.
             {
-              // log_error("cannot traverse cell");
               return false;
             }
-          // log_error("can traverse cell");
         }
       prevy = y;
       prevx = x;
@@ -501,7 +336,6 @@ bool World::has_a_line_of_sight(const Position& start, const Position& end,
   std::tie(x, y) = this->get_cell_at_position(end);
   if (((prevx != x) || (prevy != y)) && this->can_traverse_cell(prevx, prevy, x, y) == false)
     {
-      // log_error("cannot traverse cell 2");
       return false;
     }
   return true;
@@ -510,124 +344,180 @@ bool World::has_a_line_of_sight(const Position& start, const Position& end,
 bool World::can_traverse_cell(const short x, const short y,
                               const short x2, const short y2) const
 {
+  log_debug("can_traverse_cell: " << x << ":" << y << " " << x2 << ":" << y2);
+  if (y == y2 && x == x2)
+    {
+      log_debug("same");
+      return true;
+    }
+
   // TODO in the case of a diagonal move, we currently return true.  Do a
   // more correct thing checking if (for example if we go right-down) we can
   // go right THEN down OR down THEN right. If one of those is possible,
   // return true, otherwise return false.
-  // log_error("can_traverse_cell: " << x << ":" << y << " " << x2 << ":" << y2);
-  ushort heights = this->map->get_cell_heights(x, y);
-  ushort neighbour_heights = this->map->get_cell_heights(x2, y2);
-  if (y == y2 && x == x2)
-    {
-      // log_error("same");
-      return true;
-    }
-  if (y2 == y - 1) // move up
-    {
-      // log_error("up");
-      if (x != x2)
-        return false;
-      if ((((heights) & 15) == ((neighbour_heights >> 12) & 15)) &&
-          (((heights >> 4) & 15) == ((neighbour_heights >> 8) & 15)))
+  TileHeights heights = this->map.get_cell_heights(x, y);
+  TileHeights neighbour_heights = this->map.get_cell_heights(x2, y2);
+
+  if ((y % 2 == 0 && y2 == y - 1 && x2 == x) ||
+      (y % 2 == 1 && y2 == y - 1 && x2 == x + 1))
+    { // move up-right
+      log_debug("up right");
+      if (heights.corners.top == neighbour_heights.corners.left &&
+          heights.corners.right == neighbour_heights.corners.bottom)
         return true;
       else
         return false;
     }
-  else if (y2 == y + 1) // move down
-    {
-      // log_error("down");
-      if (x != x2)
-        return false;
-      if ((((heights >> 8) & 15) == ((neighbour_heights >> 4) & 15)) &&
-          (((heights >> 12) & 15) == ((neighbour_heights) & 15)))
+  else if ((y % 2 == 0 && y2 == y - 1 && x2 == x - 1) ||
+           (y % 2 == 1 && y2 == y - 1 && x2 == x))
+    { // move up-left
+      log_debug("up left");
+      if (heights.corners.top == neighbour_heights.corners.right &&
+          heights.corners.left == neighbour_heights.corners.bottom)
         return true;
       else
         return false;
     }
-  else if (x2 == x - 1) // move left
-    {
-      // log_error("left");
-      if (y != y2)
-        return false;
-      if ((((heights) & 15) == ((neighbour_heights >> 4) & 15)) &&
-          (((heights >> 12) & 15) == ((neighbour_heights >> 8) & 15)))
+  else if ((y % 2 == 0 && y2 == y + 1 && x2 == x - 1) ||
+           (y % 2 == 1 && y2 == y + 1 && x2 == x))
+    { // bottom-left
+      log_debug("bottom left");
+      if (heights.corners.left == neighbour_heights.corners.top &&
+          heights.corners.bottom == neighbour_heights.corners.right)
         return true;
       else
         return false;
     }
-  else if (x2 == x + 1) // move right
-    {
-      // log_error("right");
-      if (y != y2)
-        return false;
-      if ((((heights >> 4) & 15) == ((neighbour_heights) & 15)) &&
-          (((heights >> 8) & 15) == ((neighbour_heights >> 12) & 15)))
+  else if ((y % 2 == 0 && y2 == y + 1 && x2 == x) ||
+           (y % 2 == 1 && y2 == y + 1 && x2 == x + 1))
+    { // bottom right
+      log_debug("bottom right");
+      if (heights.corners.right == neighbour_heights.corners.top &&
+          heights.corners.bottom == neighbour_heights.corners.left)
         return true;
       else
         return false;
     }
-  assert(false);
+  log_warning("diagonal");
+  // We move in diagonal. TODO read the TODO above
   return false;
 }
 
-Position World::get_nearest_corner(const Position& pos, const std::size_t cell, const std::size_t next_cell, const short width) const
+Position World::get_nearest_corner(const Position& pos,
+                                   const CellIndex cell, const CellIndex next_cell,
+                                   const Fix16 width) const
 {
-  const uint x = cell % this->map->get_width_in_tiles();
-  const uint y = cell / this->map->get_width_in_tiles();
-  const uint nx = next_cell % this->map->get_width_in_tiles();
-  const uint ny = next_cell / this->map->get_width_in_tiles();
-  // log_error("get_nearest_corner " << x << ":" << y << " && " << nx << ":" << ny);
-  if (nx == x - 1)
+  log_debug("get_nearest_corner " << this->map.index_to_cell(cell) << " and " << this->map.index_to_cell(next_cell) << " width: " << width);
+  unsigned short x;
+  unsigned short y;
+  std::tie(x, y) = this->map.index_to_cell(cell);
+
+  unsigned short nx;
+  unsigned short ny;
+  std::tie(nx, ny) = this->map.index_to_cell(next_cell);
+
+  log_debug("get_nearest_corner " << pos << " " << x << ":" << y << " && " << nx << ":" << ny);
+
+  if ((y % 2 == 0 && ny == y - 1 && nx == x) ||
+      (y % 2 == 1 && ny == y - 1 && nx == x + 1))
     {
-      assert(y == ny);
-      Position nearest_position(x * 100 + width, y * 100 + width);
-      Fix16 shorter_distance = Position::distance(pos, nearest_position);
-      Position other_position(x * 100 + width, (y + 1) * 100 - width);
-      Fix16 other_distance = Position::distance(pos, other_position);
+      log_debug("top_right");
+      // top right
+      Position nearest_position((x + 1) * CELL_SIZE,
+                                y * HALF_CELL_SIZE + width/2);
+      Position other_position((x + 1) * CELL_SIZE + HALF_CELL_SIZE - width/2,
+                              (y + 1) * HALF_CELL_SIZE);
+      if (y % 2 == 0)
+        {
+          nearest_position.x -= HALF_CELL_SIZE;
+          other_position.x -= HALF_CELL_SIZE;
+        }
+
+      auto shorter_distance = Position::distance(pos, nearest_position);
+      auto other_distance = Position::distance(pos, other_position);
+      log_debug("Two possible corners: " << nearest_position << " and " << other_position);
       if (other_distance < shorter_distance)
         return other_position;
       return nearest_position;
     }
-  else if (nx == x + 1)
+  else if ((y % 2 == 0 && ny == y - 1 && nx == x - 1) ||
+           (y % 2 == 1 && ny == y - 1 && nx == x))
     {
-      assert(y == ny);
-      Position nearest_position((x + 1) * 100 - width, y * 100 + width);
-      Fix16 shorter_distance = Position::distance(pos, nearest_position);
-      Position other_position((x + 1) * 100 - width, (y + 1) * 100 - width);
-      Fix16 other_distance = Position::distance(pos, other_position);
+      log_debug("top_left");
+      // up left
+      Position nearest_position(x * CELL_SIZE + HALF_CELL_SIZE + width/2,
+                                (y + 1) * HALF_CELL_SIZE);
+      Position other_position((x + 1) * CELL_SIZE,
+                              y * HALF_CELL_SIZE + width/2);
+      log_debug("Two possible corners: " << nearest_position << " and " << other_position);
+      if (y % 2 == 0)
+        {
+          nearest_position.x -= HALF_CELL_SIZE;
+          other_position.x -= HALF_CELL_SIZE;
+        }
+
+      auto shorter_distance = Position::distance(pos, nearest_position);
+      auto other_distance = Position::distance(pos, other_position);
+      log_debug("Two possible corners: " << nearest_position << " and " << other_position);
       if (other_distance < shorter_distance)
         return other_position;
       return nearest_position;
     }
-  else if (ny == y + 1)
+  else if ((y % 2 == 0 && ny == y + 1 && nx == x - 1) ||
+           (y % 2 == 1 && ny == y + 1 && nx == x))
     {
-      assert(x == nx);
-      Position nearest_position(x * 100 + width, (y + 1) * 100 - width);
-      Fix16 shorter_distance = Position::distance(pos, nearest_position);
-      Position other_position((x + 1) * 100 - width, (y + 1) * 100 + width);
-      Fix16 other_distance = Position::distance(pos, other_position);
+      log_debug("bot_left");
+      // bottom left
+      Position nearest_position(x * CELL_SIZE + HALF_CELL_SIZE + width/2,
+                                (y + 1) * HALF_CELL_SIZE);
+      Position other_position((x + 1) * CELL_SIZE,
+                              y * HALF_CELL_SIZE + CELL_SIZE - width/2);
+      if (y % 2 == 0)
+        {
+          nearest_position.x -= HALF_CELL_SIZE;
+          other_position.x -= HALF_CELL_SIZE;
+        }
+
+      auto shorter_distance = Position::distance(pos, nearest_position);
+      auto other_distance = Position::distance(pos, other_position);
+      log_debug("Two possible corners: " << nearest_position << " and " << other_position);
       if (other_distance < shorter_distance)
         return other_position;
       return nearest_position;
     }
-  else if (ny == y - 1)
+  else if ((y % 2 == 0 && ny == y + 1 && nx == x) ||
+           (y % 2 == 1 && ny == y + 1 && nx == x + 1))
     {
-      assert(x == nx);
-      Position nearest_position(x * 100 + width, y * 100 + width);
-      Fix16 shorter_distance = Position::distance(pos, nearest_position);
-      Position other_position((x + 1) * 100 - width, y * 100 + width);
-      Fix16 other_distance = Position::distance(pos, other_position);
+      log_debug("bot_right " << x << " " << y);
+      // Bottom right
+      Position nearest_position((x + 1) * CELL_SIZE,
+                                (y + 2) * HALF_CELL_SIZE - width/2);
+      Position other_position((x + 1) * CELL_SIZE + HALF_CELL_SIZE - width/2,
+                              (y + 1) * HALF_CELL_SIZE);
+      if (y % 2 == 0)
+        {
+          log_debug("subing HALF_CELL_SIZE");
+          nearest_position.x -= HALF_CELL_SIZE;
+          other_position.x -= HALF_CELL_SIZE;
+        }
+
+      auto shorter_distance = Position::distance(pos, nearest_position);
+      auto other_distance = Position::distance(pos, other_position);
+      log_debug("Two possible corners     biiiite: " << nearest_position << " and " << other_position);
       if (other_distance < shorter_distance)
         return other_position;
       return nearest_position;
+
     }
   assert(false);
 }
 
-Position World::get_nearest_corner(const Position& pos, const std::size_t cell, const short width) const
+Position World::get_nearest_corner(const Position& pos, const CellIndex cell, const Fix16 width) const
 {
-  const uint x = cell % this->map->get_width_in_tiles();
-  const uint y = cell / this->map->get_width_in_tiles();
+  log_debug("get_nearest_corner of final Cell. In cell " << this->map.index_to_cell(cell) <<
+            " find the nearest corner of pos " << pos);
+  const uint x = cell % this->map.get_width_in_tiles();
+  const uint y = cell / this->map.get_width_in_tiles();
   Position nearest_position(x * 100 + width, y * 100 + width);
   Fix16 shorter_distance = Position::distance(pos, nearest_position);
   Position other_position(x * 100 + width, (y + 1) * 100 - width);
@@ -656,14 +546,14 @@ Position World::get_nearest_corner(const Position& pos, const std::size_t cell, 
 
 bool World::can_build_at_cell(const int x, const int y) const
 {
-  return this->map->can_be_built_on(x, y);
+  return this->map.can_be_built_on(x, y);
 }
 
 bool World::can_unit_spawn_at_pos(const Unit* unit, const Position& pos) const
 {
-  for (std::list<Entity*>::const_iterator it = this->entities.begin(); it != this->entities.end(); ++it)
+  for (const auto& entity: this->entities)
     {
-      if ((*it)->is_obstructing_position(unit, pos))
+      if (entity->is_obstructing_position(unit, pos))
         return false;
     }
   return true;

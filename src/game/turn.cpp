@@ -1,87 +1,44 @@
 #include <logging/logging.hpp>
 #include <game/turn.hpp>
 
+#include <cassert>
 Turn::Turn():
-  validated(false)
+  ready(false)
 {
 }
 
 Turn::~Turn()
 {
-  std::vector<Action*>::iterator action_it;
-  for (action_it = this->actions.begin(); action_it < this->actions.end(); ++action_it)
-    {
-      delete (*action_it);
-    }
-  this->actions.clear();
 }
 
-void Turn::execute(bool delete_actions)
+void Turn::insert(Action&& action)
+{
+  assert(!this->ready);
+  this->actions.push_back(std::move(action));
+}
+
+void Turn::execute()
 {
   log_debug(this->actions.size() << " actions to execute");
-  std::vector<Action*>::iterator it;
-  for (it = this->actions.begin(); it < this->actions.end(); ++it)
+
+  for (const auto& action: this->actions )
     {
       log_warning("Executing one action");
-      (*it)->execute();
-      if (delete_actions)
-        delete (*it);
+      action();
     }
-  this->actions.clear();
 }
 
-void Turn::insert(Action* action)
+void Turn::mark_ready()
 {
-  this->actions.push_back(action);
+  this->ready = true;
 }
 
-bool Turn::is_validated() const
+bool Turn::is_ready() const
 {
-  std::vector<Action*>::const_iterator it;
-  for (it = this->actions.begin(); it < this->actions.end(); ++it)
-    {
-      if ((*it)->is_completely_validated() == false)
-        return false;
-    }
-  if (this->validated == true)
-    return true;
-  return false;
+  return this->ready;
 }
 
-bool Turn::validate(const unsigned long int by,
-                    const unsigned int confirmations_needed)
-{
-  if (this->validated == true)
-    return false;
-  this->ready_clients.push_back(by);
-  if (this->ready_clients.size() >= confirmations_needed)
-    {
-      this->validate_completely();
-      return true;
-    }
-  return false;
-}
-
-void Turn::validate_completely()
-{
-  this->validated = true;
-}
-
-std::ostream& operator<<(std::ostream& os, Turn& turn)
-{
-  const Action* action;
-  os << "[" << turn.is_validated() << "]";
-  for (const auto& action: turn.get_actions())
-    os << *action;
-  return os;
-}
-
-unsigned int Turn::get_number_of_validations() const
-{
-  return this->ready_clients.size();
-}
-
-std::vector<Action*>& Turn::get_actions()
+const std::vector<Action>& Turn::get_actions() const
 {
   return this->actions;
 }

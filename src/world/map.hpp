@@ -11,6 +11,7 @@
 
 #include <world/layer.hpp>
 #include <world/position.hpp>
+#include <world/path.hpp>
 
 #define LAYER_NUMBER 5
 #define LEVEL_HEIGHT 24
@@ -18,6 +19,7 @@ static constexpr unsigned int TILE_HEIGHT = 72;
 static constexpr unsigned int TILE_WIDTH = 96;
 static constexpr unsigned int HALF_TILE_W = TILE_WIDTH / 2;
 static constexpr float TILE_HW_RATIO = static_cast<float>(TILE_HEIGHT) / TILE_WIDTH;
+static constexpr unsigned int TILE_TOP_OFFSET = 56;
 
 // In tiles.
 #define TILESET_WIDTH 2
@@ -60,11 +62,12 @@ union TileHeights
   unsigned int value;
 };
 
-typedef std::list<std::size_t> cell_path_t;
-
 using Cell = std::tuple<unsigned short, unsigned short>;
 using CellIndex = std::size_t;
+using CellPath = std::vector<CellIndex>;
 static constexpr CellIndex InvalidCellIndex = std::numeric_limits<CellIndex>::max();
+static constexpr Cell InvalidCell(std::numeric_limits<unsigned short>::max(),
+                                  std::numeric_limits<unsigned short>::max());
 
 class Camera;
 
@@ -96,21 +99,20 @@ public:
    * Returns whether or not this cell can be built on.
    */
   bool can_be_built_on(const int cellx, const int celly) const;
-  cell_path_t do_astar(const uint startx, const uint starty,
-                                    const uint endx, const uint endy);
+  CellPath do_astar(const Cell start, const Cell end);
   /**
    * Returns the neighbour cells of the given one if it's walkable to it.
    * It's walkable if the two adjacent and corresponding heights are equal.
    * If one of them is different, it's not walkable.  The return vector can
    * contain 2, 3 or 4 values.
    */
-  std::vector<std::size_t> get_neighbour_nodes(const std::size_t);
+  std::vector<CellIndex> get_neighbour_cells(const CellIndex);
 
   /**
    * Convert a cell from one representation to the other
    */
-  Cell index_to_cell(const CellIndex& index);
-  CellIndex cell_to_index(const Cell& cell);
+  Cell index_to_cell(const CellIndex& index) const;
+  CellIndex cell_to_index(const Cell& cell) const;
 
 protected:
   bool read_layer(boost::property_tree::ptree& tree);
@@ -151,15 +153,14 @@ private:
   Map& operator=(const Map&);
 };
 
-typedef struct
+struct AStarNode
 {
-  std::size_t index;
+  CellIndex index;
   int g;
   int f;
-} t_node;
+};
 
-typedef std::vector<std::size_t> t_closed_nodes;
-typedef std::list<t_node> t_nodes;
+using AStarNodes = std::list<AStarNode>;
 
 /**
  * Insert a node in the given list, in the correct position as to have the
@@ -167,17 +168,20 @@ typedef std::list<t_node> t_nodes;
  * already present, remove it and reinsert it, updating the associated
  * score.
  */
-void insert_node(t_nodes& nodes, std::size_t index, int g, int f);
+void insert_node(AStarNodes& nodes, CellIndex index, int g, int f);
 /**
  * Just returns true if the node is in the set.
  */
-bool is_in_set(std::size_t index, const t_closed_nodes& nodes);
+bool is_in_set(CellIndex index, const std::vector<CellIndex>& nodes);
 /**
  * Returns true if the given index score is lower than the one already in
  * the set. Returns true as well if the index is not in the set already.
  */
-bool is_better_than_previously_open(const std::size_t index, const int score, const t_nodes& open);
-cell_path_t reconstruct_path(const std::map<std::size_t, std::size_t>& came_from, const std::size_t end);
+bool is_better_than_previously_open(const CellIndex index, const int score, const AStarNodes& open);
+CellPath reconstruct_path(const std::map<std::size_t, std::size_t>& came_from, const std::size_t end);
 int heuristic();
+
+std::ostream& operator<<(std::ostream& os, Cell cell);
+std::ostream& operator<<(std::ostream& os, TileHeights heights);
 
 #endif // __MAP_HPP__

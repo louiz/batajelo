@@ -3,8 +3,8 @@
  */
 
 /**
- * Just an Entity that can move itself independently, cast spell, be crated by buildings (or some special spells)
- * @class Unit
+ * Just an Entity that can move itself independently, cast spell, be crated
+ * by buildings (or some special spells)
  */
 
 #ifndef __UNIT_HPP__
@@ -24,7 +24,7 @@ public:
   Unit(const Unit&);
   bool contains(const Position&) const;
 
-  bool follow_path(World*, Work*);
+  void follow_path(Path& path, World* world);
   bool build(World*, Work*);
   void steer_to_avoid_obstacle(Vec2&, World*) const;
   /**
@@ -51,16 +51,6 @@ public:
   bool can_be_pushed() const;
   bool is_obstructing_position(const Unit*, const Position&) const;
 
-  virtual void serialize(oarchive & ar, const unsigned int)
-  {
-    ar & type_id & pos;
-  }
-  virtual void serialize(iarchive & ar, const unsigned int)
-  {
-    ar & type_id & pos;
-  }
-
-
 private:
   Unit& operator=(const Unit&);
 
@@ -69,7 +59,7 @@ public:
   /**
    * The width
    */
-  short width;
+  Fix16 width;
   /**
    * The height
    */

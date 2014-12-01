@@ -24,8 +24,10 @@ public:
   virtual ~BuildingSprite() {};
   virtual void draw(GameClient* game) const = 0;
   virtual void tick() = 0;
+  Position get_world_pos() const override final;
+
   /**
-   * Returns the sprite that should be drawn on the cell under the cursor we
+   * returns the sprite that should be drawn on the cell under the cursor we
    * the left click action is to build this building.
    */
   virtual const sf::Sprite& get_cursor_sprite() const = 0;

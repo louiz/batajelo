@@ -26,19 +26,16 @@
 
 #include <boost/archive/text_iarchive.hpp>
 
-#include <game/event.hpp>
 #include <world/entity.hpp>
+#include <world/entity_factory.hpp>
 #include <world/unit.hpp>
+#include <world/building.hpp>
 
 #include <world/map.hpp>
-#include <game/action.hpp>
-#include <game/event.hpp>
-#include <game/turn_handler.hpp>
-#include <game/replay.hpp>
-#include <network/command.hpp>
+#include <world/action.hpp>
+#include <network/message.hpp>
 #include <world/position.hpp>
 #include <world/path.hpp>
-#include <mod/mod.hpp>
 
 /**
  * From left to right, and from top to bottom, a cell has this size, in the
@@ -57,76 +54,36 @@ class World
   friend class GameServer;
   friend class GameClient;
 public:
-  World(Map*, Mod&);
+  World();
   ~World();
   /**
-   * Init the world by reading the Mod files.
-   * The initial state of the world (the map, the unit that are available
-   * and their stats, etc).
-   */
-  void init(Mod&);
-  /**
-   * Start the world and it's turn_handler.
-   * Before this method is called, tick() will do nothing.
-   */
-  void start();
-  /**
    * Advance the world by the smallest step possible. Updates every entity,
-   * timer, occupant, turn_handler etc it contains.
-   * The bool tells us to actually do the tick even if the world is not
-   * started. This is used when joining a game already started: we tick
-   * as fast as possible to get to the current game situation, and then
-   * we start the world normally to play the game at normal speed.
+   * timer, occupant etc it contains.
    */
-  void tick(bool force = false);
+  void tick();
   /**
    * Insert a unit in the unit list. It will also be added into the entity list.
    */
-  virtual void insert_unit(Unit*);
-  virtual void insert_building(Building*);
-  /**
-   * Create an entity based on the given model.
-   */
-  Unit* create_unit(const unsigned int type);
-  const Unit* get_unit_model(unsigned int type) const;
-  /**
-   * Create a building based on the given model.
-   */
-  Building* create_building(unsigned int type, const short x, const short y);
-/**
-   * Create an entity based on the given model, with the given
-   * SerializableEntity to copy the initial entity position.
-   */
-  Unit* create_unit(unsigned int type, const Unit& e);
-  void set_next_turn_callback(t_next_turn_callback);
+  void insert_unit(std::unique_ptr<Unit>&& unit);
+  void insert_building(std::unique_ptr<Building>&& building);
   void pause();
   void unpause();
-  void completely_validate_action(const unsigned int id);
-  void validate_turn_completely(const unsigned int number);
-  /**
-   * Call tick(true) until the turn_handler is paused.
-   */
-  void advance_replay_until_paused();
-  void do_path(ActionEvent*);
   Path calculate_path(Position, Unit*);
-  void do_new_unit(ActionEvent*);
-  void do_build(ActionEvent*);
-  void do_spawn(ActionEvent*);
+  Unit* do_new_unit(const EntityType type, const Position& pos);
+  void do_move(const std::vector<EntityId> ids, const Position& pos, const bool queue);
+  // void do_path(ActionEvent*);
+  // void do_new_unit(ActionEvent*);
+  // void do_build(ActionEvent*);
   Entity* get_entity_by_id(unsigned short id);
   Unit* get_unit_by_id(unsigned short id);
   Building* get_building_by_id(unsigned short id);
   bool can_unit_spawn_at_pos(const Unit*, const Position&) const;
   /**
-   * Sends a command to the server saying that we confirm that action.
+   * Sends a message to the server saying that we confirm that action.
    */
   void confirm_action(const unsigned int);
-  /**
-   * Returns a reference to the replay.
-   */
-  const Replay& get_replay() const;
-  Replay& get_replay();
 
-  Map* get_map() const;
+  Map& get_map();
 
   /**
    * Sort the entities by their y position. This
@@ -147,19 +104,19 @@ public:
    * Convert a path made of cells by a path composed of world positions
    */
   bool can_build_at_cell(const int x, const int y) const;
-  Path smooth_path(cell_path_t path, Position& start,
-                   const Position& end, const short width) const;
+  Path smooth_path(CellPath path, Position& start,
+                   const Position& end, const Fix16 width) const;
   /**
    * Returns wheither or not we can walk from the start position to the end
    * position, following a single straight line.
    */
-  bool has_a_line_of_sight(const Position& start, const Position& end, const Fix16 step, const short width) const;
+  bool has_a_line_of_sight(const Position& start, const Position& end, const Fix16 step) const;
   /**
    * Returns whether the entity can walk in a straight line from one point
    * to another.  This is done by checking if two parallel lines of sight
    * exist, separated by the width of the entity.
    */
-  bool can_walk_in_straight_line(const Position& start, const Position& end, const Fix16 step, const short width) const;
+  bool can_walk_in_straight_line(const Position& start, const Position& end, const Fix16 step, const Fix16 width) const;
   /**
    * Returns whether or not we can move from one cell to another, according
    * to their respective heights.
@@ -170,23 +127,23 @@ public:
    * Return the position of the nearest corner of the given cell, using the next
    * cell to determine the optimal corner.
    */
-  Position get_nearest_corner(const Position&, const std::size_t, const std::size_t, const short width) const;
+  Position get_nearest_corner(const Position&, const CellIndex, const CellIndex,
+                              const Fix16 width) const;
   /**
   * Return the position of the nearest corner of the given cell, in the case
   * where that is the last cell of the path.
   */
-  Position get_nearest_corner(const Position&, const std::size_t, const short width) const;
-  Position get_next_path_position(cell_path_t& path, const Position current,
-                                         const Position& end, const short width) const;
+  Position get_nearest_corner(const Position&, const std::size_t, const Fix16 width) const;
+  Position get_next_path_position(CellPath& path, const Position& current,
+                                         const Position& end, const Fix16 width) const;
   std::size_t number_of_units_models() const
   {
     return this->unit_models.size();
   }
-  bool is_started() const;
   /**
    * The list of all existing entities in the world.
    */
-  std::list<Entity*> entities;
+  std::list<std::unique_ptr<Entity>> entities;
   /**
 s   * The list of all existing units in the world.
    */
@@ -200,7 +157,7 @@ private:
   /**
    * Insert an entity at the end of the list.
    */
-  void insert_entity(Entity*);
+  void insert_entity(std::unique_ptr<Entity>&&);
   World(const World&);
   World& operator=(const World&);
 
@@ -214,17 +171,12 @@ private:
    */
   std::vector<std::unique_ptr<Unit>> unit_models;
   std::vector<std::unique_ptr<Building> > building_models;
-  /**
-   *
-   */
-  Replay replay;
-  TurnHandler turn_handler;
-  Map* map;
-  bool started;
+  Map map;
+  EntityFactory entity_factory;
 
 public:
   // for debug
-  cell_path_t current_path;
+  CellPath current_path;
 };
 
 #endif // __WORLD_HPP__

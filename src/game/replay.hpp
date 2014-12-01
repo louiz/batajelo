@@ -3,16 +3,17 @@
  */
 
 /**
- * A replay is just a list of actions associated with a turn number.
- * @class Replay
+ * A replay is just a serie a network::Message, each containing a body with
+ * some serialized order object.
  */
 
-#include <vector>
+#ifndef REPLAY_HPP_INCLUDED
+#define REPLAY_HPP_INCLUDED
 
-#ifndef __REPLAY_HPP__
-# define __REPLAY_HPP__
+#include <memory>
+#include <list>
 
-#include <game/action.hpp>
+#include <network/message.hpp>
 
 class Replay
 {
@@ -20,17 +21,17 @@ public:
   Replay();
   ~Replay();
   /**
-   * Insert an action at the end of the action list.
+   * Copy and insert an order at the end of the list.
    */
-  void insert_action(Action*);
-  std::vector<Action*>& get_actions();
+  void insert_order(const Message&);
+  std::list<Message>& get_orders();
 
 private:
+  std::list<Message> orders;
+
   Replay(const Replay&);
   Replay& operator=(const Replay&);
-
-  std::vector<Action*> actions;
 };
 
-#endif // __REPLAY_HPP__
-/**@}*/
+#endif /* REPLAY_HPP_INCLUDED */
+

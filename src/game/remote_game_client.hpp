@@ -26,8 +26,6 @@ private:
    * See CommandHandler for details
    */
   void install_callbacks() override final;
-  void ok_callback(Command* command);
-  void turn_callback(Command* command);
 
   GameServer* server;
 };

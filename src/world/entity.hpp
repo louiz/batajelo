@@ -1,17 +1,22 @@
 #ifndef __ENTITY_HPP__
 # define __ENTITY_HPP__
 
-#include <queue>
-
-#include <serialization/serializable.hpp>
 #include <world/position.hpp>
+
+#include <cstdint>
+#include <memory>
+#include <queue>
+#include <list>
+
+using EntityType = uint16_t;
+using EntityId = uint16_t;
 
 class Camera;
 class World;
 class Work;
 class Unit;
 
-class Entity: Serializable
+class Entity
 {
   friend class Camera;
   friend class World;
@@ -39,8 +44,8 @@ public:
   void tick(World*);
 
   void clear_works();
-  void set_work(Work*);
-  void queue_work(Work*);
+  void set_work(std::unique_ptr<Work>&&);
+  void queue_work(std::unique_ptr<Work>&&);
   /**
    * Returns weither or not this entity (if not moving) makes it impossible
    * for the given unit to reach this Position. This means that this
@@ -49,22 +54,19 @@ public:
    */
   virtual bool is_obstructing_position(const Unit*, const Position&) const = 0;
 
-  virtual void serialize(oarchive & ar, const unsigned int) = 0;
-  virtual void serialize(iarchive & ar, const unsigned int) = 0;
-
 private:
   Entity& operator=(const Entity&);
 public:
-  static unsigned short current_id;
-  static unsigned short current_type_id;
+  static EntityId current_id;
+  static EntityType current_type_id;
   /**
    * An uniq id for the entity.
    */
-  unsigned short id;
+  EntityId id;
   /**
    * A uniq id for the entity type.
    */
-  unsigned short type_id;
+  EntityType type_id;
   /**
    * The entity name
    */
@@ -86,7 +88,7 @@ public:
    * the list to check their value etc. So we just use a list and push_back
    * and pop_front instead. Should be almost as effecient.
    */
-  std::list<Work*> works;
+  std::list<std::unique_ptr<Work>> works;
 };
 
 #endif // __ENTITY_HPP__

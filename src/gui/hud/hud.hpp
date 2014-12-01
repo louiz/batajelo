@@ -16,7 +16,6 @@
 
 #define HUD_HEIGHT 323
 
-#include <world/client_world/client_world.hpp>
 #include <gui/camera/camera.hpp>
 // #include <gui/hud/minimap.hpp>
 // #include <gui/hud/selection_panel.hpp>

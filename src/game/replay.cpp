@@ -1,5 +1,6 @@
-#include <logging/logging.hpp>
 #include <game/replay.hpp>
+
+#include <logging/logging.hpp>
 
 Replay::Replay()
 {
@@ -9,13 +10,12 @@ Replay::~Replay()
 {
 }
 
-void Replay::insert_action(Action* action)
+void Replay::insert_order(const Message& message)
 {
-  log_warning("inserting action");
-  this->actions.push_back(action);
+  this->orders.emplace_back(message);
 }
 
-std::vector<Action*>& Replay::get_actions()
+std::list<Message>& Replay::get_orders()
 {
-  return this->actions;
+  return this->orders;
 }

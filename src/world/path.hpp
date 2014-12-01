@@ -10,6 +10,6 @@
 #include <world/position.hpp>
 #include <list>
 
-typedef std::list<Position> Path;
+using Path = std::list<Position>;
 
 #endif // __PATH_HPP__

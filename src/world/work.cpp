@@ -1,30 +1,31 @@
+#include <world/world.hpp>
 #include <world/entity.hpp>
 #include <world/unit.hpp>
 #include <world/building.hpp>
 #include <world/work.hpp>
+#include <logging/logging.hpp>
 
-PathWork::PathWork(Unit* unit, const Position pos):
-  Work(std::bind(&Unit::follow_path, unit, std::placeholders::_1, std::placeholders::_2)),
+PathWork::PathWork(Unit* unit, const Position& destination):
   path(),
-  end_position(pos),
+  destination(std::move(destination)),
+  unit(unit),
   calculated(false)
-{}
+{
+}
 
-RallyWork::RallyWork(Building* building, const Position pos):
-  Work(std::bind(&Building::set_rally_point, building, std::placeholders::_1, std::placeholders::_2)),
-  position(pos)
-{}
+PathWork::~PathWork()
+{
+}
 
-BuildWork::BuildWork(Unit* unit, const unsigned short id, const short x, const short y):
-  Work(std::bind(&Unit::build, unit, std::placeholders::_1, std::placeholders::_2)),
-  id(id),
-  x(x),
-  y(y),
-  building(nullptr)
-{}
-
-SpawnWork::SpawnWork(Building* building, const unsigned short id):
-  Work(std::bind(&Building::spawn, building, std::placeholders::_1, std::placeholders::_2)),
-  type_id(id),
-  elapsed_time(0)
-{}
+bool PathWork::tick(World* world)
+{
+  if (!this->calculated)
+    {
+      this->path = world->calculate_path(this->destination, this->unit);
+      this->calculated = true;
+    }
+  this->unit->follow_path(this->path, world);
+  if (this->calculated && this->path.empty())
+    return true;
+  return false;
+}

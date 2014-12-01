@@ -13,8 +13,9 @@
 
 #include <world/entity.hpp>
 
-#include <list>
+#include <functional>
 #include <vector>
+#include <list>
 
 typedef std::function<void(void)> t_selection_changed_callback;
 

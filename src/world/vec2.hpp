@@ -120,6 +120,7 @@ public:
 
   // The null (0, 0) vector
   static Vec2 zero;
+  static Vec2 invalid;
 };
 
 inline Vec2 operator*(Fix16 s, const Vec2& v)

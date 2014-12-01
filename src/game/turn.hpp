@@ -1,39 +1,43 @@
 #ifndef __TURN_HPP__
 # define __TURN_HPP__
 
-#include <game/action.hpp>
+#include <world/action.hpp>
+#include <vector>
+#include <memory>
 
 class Turn
 {
 public:
-  friend std::ostream& operator<<(std::ostream& os, Turn& turn);
   Turn();
+  Turn(Turn&& o) = default;
+  Turn& operator=(Turn&&) = default;
   ~Turn();
-  void execute(bool delete_actions = true);
-  void insert(Action*);
-  bool is_validated() const;
+
   /**
-   * Validate the turn for the given client id.
-   * If the number of ready clients becomes equal to the given number needed,
-   * validate_completely() is called and returns true. Returns false otherwise
+   * Insert a new Action, that will be executed by execute()
    */
-  bool validate(const unsigned long int by,
-		const unsigned int confirmations_needed);
+  void insert(Action&& action);
   /**
-   * Return the number of validations for this turn, so far.
+   * Execute all contained Actions
    */
-  unsigned int get_number_of_validations() const;
+  void execute();
   /**
-   * Just set the validated bool to true.
+   * Mark the turn as ready to be executed
    */
-  void validate_completely();
-  std::vector<Action*>& get_actions();
+  void mark_ready();
+  /**
+   * Is the turn ready to be executed
+   */
+  bool is_ready() const;
+
+  const std::vector<Action>& get_actions() const;
 
 private:
-  std::vector<Action*> actions;
+  std::vector<Action> actions;
+  bool ready;
 
-  std::vector<unsigned long int> ready_clients;
-  bool validated;
+  Turn& operator=(const Turn&) = delete;
+  Turn(const Turn&) = delete;
 };
 
 

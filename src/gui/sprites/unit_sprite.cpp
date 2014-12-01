@@ -28,3 +28,13 @@ void UnitSprite::draw_shadow(Camera& camera) const
   sprite.setColor(color);
   camera.draw(sprite);
 }
+
+const Unit* const UnitSprite::get_unit() const
+{
+  return this->unit;
+}
+
+Position UnitSprite::get_world_pos() const
+{
+  return this->unit->pos;
+}

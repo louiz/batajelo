@@ -6,16 +6,19 @@
 #ifndef GAME_CLIENT_HPP_INCLUDED
 #define GAME_CLIENT_HPP_INCLUDED
 
+#include <game/game.hpp>
 #include <game/occupants_handler.hpp>
 #include <network/client_base.hpp>
 #include <gui/screen/screen.hpp>
 #include <game/selection.hpp>
+#include <game/turn_handler.hpp>
 #include <world/world.hpp>
-#include <mod/client_mod.hpp>
-#include <gui/camera/map.hpp>
+#include <gui/hud/debug_hud.hpp>
 #include <gui/hud/hud.hpp>
 
-class GameClient: public ClientBase
+#include <memory>
+
+class GameClient: public Game, public ClientBase
 {
 public:
   explicit GameClient(const std::shared_ptr<Screen>& screen);
@@ -26,82 +29,55 @@ public:
 
   void add_new_occupant(std::unique_ptr<Occupant>&& occupant);
 
-  void send_command(const char* name, const std::string& archive);
+  void do_new_unit(const EntityType type, const Position& pos) override final;
+
+  void send_message(const char* name, const google::protobuf::Message& msg);
+  void send_message(const char* name, const std::string& archive);
 
   World& get_world();
   Camera& get_camera();
-  GraphMap& get_map();
   Screen& get_screen();
 
   DebugHud& get_debug_hud();
 
-/**
- * IMPORTED FROM CLIENTWORLD
- */
-  /**
-   * Tells the server that we received and inserted the action into
-   * our turn_handler, so we are ready to execute it when its turn comes.
-   */
-  void confirm_action(const unsigned long int id);
-  /**
-   * Sends a command to the server saying that we are ready for that turn.
-   */
-  void confirm_turn(const unsigned int);
-  /**
-   * Confirm the turn to which a START command was associated.
-   * No turn before this one should have been confirmed, because
-   * they were part of the replay, so the server doesn't want any
-   * confirmation for them.
-   */
-  void confirm_initial_turn();
   /**
    * Called whenever we receive a occupant_left message from the server.
    */
-  void occupant_left_callback(Command*);
+  void occupant_left_callback(Message*);
   /**
    * Called when a new unit has to be inserted in the world.
    */
-  void new_unit_callback(Command*);
+  // void new_unit_callback(Message*);
   /**
-   * When we receive the command from the server telling us that
+   * When we receive the message from the server telling us that
    * it is ready to start the game.
    */
-  void handle_start_command(Command*);
+  void handle_start_message(Message*);
   /**
-   * The server tells us that this action has been confirmed by all
-   * clients.
+   * The server tells us that this turn is ready to be executed (the server
+   * already executed it, and thus no more action will be added to it)
    */
-  void ok_callback(Command*);
-  /**
-   * The server tells us that this turn has been confirmed by all clients.
-   */
-  void turn_callback(Command*);
+  void turn_callback(Message*);
   /**
    * The server gives a path to follow, to one or more entities.
    */
-  void path_callback(Command*);
+  void path_callback(Message*);
   /**
    * The server tells one unit to build the given building
    */
-  void build_callback(Command*);
+  void build_callback(Message*);
   /**
    * The server tells one building to spawn the given unit
    */
-  void spawn_callback(Command*);
+  void spawn_callback(Message*);
   /**
-   * Insert an action, built from a command we received, into the turn handler,
-   * and confirm it or validate it, depending on if the game is started or not
-   * (meaning that it comes from the server replay).
+   * Insert an action, built from a message we received, into the turn handler.
    */
-  void insert_received_action(Action* action, ActionEvent* event);
+  // void insert_received_action(std::unique_ptr<Action>&&, ActionEvent* event);
   /**
    * Insert a sprite for the unit, as well, and then call world->insert_unit()
    */
-  virtual void insert_unit(Unit*);
-  /**
-   * Insert a sprite for the unit, as well, and then call world->insert_unit()
-   */
-  virtual void insert_building(Building*);
+  void on_new_building(Building*);
 
   /**
    * Handle an user event that may generate a real action, or nothing.
@@ -113,6 +89,10 @@ public:
   // void handle_event(actions::Type type, unsigned int x, unsigned y);
 
   /**
+   * Tick the TurnHandler and the World, if the TurnHandler is not paused.
+   */
+  void tick();
+  /**
    * Update all graphical object states (tiles etc)
    */
   void graphical_tick();
@@ -121,7 +101,9 @@ public:
    * Give the order to all selected and movable units to move to the given
    * world coordinates.
    */
-  bool action_move(const unsigned int x, const unsigned y, const std::size_t=0);
+  bool action_move(std::vector<EntityId> ids, const Position& pos,
+                   const bool queue);
+  // bool action_move(const unsigned int x, const unsigned y, const std::size_t=0);
   bool action_build(const unsigned int, const unsigned int, const std::size_t);
   void action_spawn(const t_left_click left_click);
   /**
@@ -145,22 +127,17 @@ private:
   /**
    * Called by the world object when a turn ends and a new one starts
    */
-  void on_next_turn(unsigned long turn);
+  void on_next_turn(TurnNb turn);
   /**
    * Called whenever we receive a new_occupant message from the server.
    */
-  void new_occupant_callback(Command*);
+  void new_occupant_callback(Message*);
 
-  ClientMod mod;
-  GraphMap map;
-  World world;
-  OccupantsHandler occupants_handler;
   Selection current_selection;
   std::shared_ptr<Screen> screen;
   Camera camera;
   Hud hud;
-
-  bool started;
+  DebugHud debug_hud;
 
   GameClient(const GameClient&) = delete;
   GameClient(GameClient&&) = delete;

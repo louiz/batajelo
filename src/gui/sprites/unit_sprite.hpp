@@ -11,6 +11,8 @@ class UnitSprite: public WorldSprite
 public:
   UnitSprite(const Unit* const unit);
   ~UnitSprite() {}
+  const Unit* const get_unit() const;
+  Position get_world_pos() const override final;
 
 protected:
   const Unit* const unit;
