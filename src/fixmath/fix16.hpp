@@ -34,12 +34,11 @@ class Fix16
    Fix16& operator=(Fix16&&) = default;
    Fix16& operator=(const Fix16&) = default;
 
-
    friend bool operator==(const Fix16& lhs, const Fix16& rhs);
    friend bool operator!=(const Fix16& lhs, const Fix16& rhs);
    friend bool operator<=(const Fix16& lhs, const Fix16& rhs);
-   friend bool operator<(const Fix16& lhs, const Fix16& rhs);
    friend bool operator>=(const Fix16& lhs, const Fix16& rhs);
+   friend bool operator<(const Fix16& lhs, const Fix16& rhs);
    friend bool operator>(const Fix16& lhs, const Fix16& rhs);
 
    friend Fix16 operator-(const Fix16& val);
@@ -55,17 +54,20 @@ class Fix16
      this->value = fix16_add(this->value, fix16_one);
      return *this;
    }
+
    Fix16 operator++(int)
    {
      Fix16 res = *this;
      this->value = fix16_add(this->value, fix16_one);
      return res;
    }
+
    Fix16& operator--()
    {
      this->value = fix16_sub(this->value, fix16_one);
      return *this;
    }
+
    Fix16 operator--(int)
    {
      Fix16 res = *this;
@@ -189,7 +191,13 @@ namespace std
 
   Fix16 sqrt(Fix16 arg);
 
+  Fix16 abs(Fix16 arg);
+
   Fix16 hypot(Fix16 x, Fix16 y);
+
+  Fix16 floor(Fix16 arg);
 }
+
+std::ostream& operator<<(std::ostream& os, const Fix16& rhs);
 
 #endif // libfixmath_fix16_hpp

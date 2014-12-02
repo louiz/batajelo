@@ -99,6 +99,13 @@ namespace std
     return arg.sqrt();
   }
 
+  Fix16 abs(Fix16 arg)
+  {
+    if (arg < 0_fix)
+      return -arg;
+    return arg;
+  }
+
   Fix16 hypot(Fix16 x, Fix16 y)
   {
     // Avoid overflow by dividing everything by m during the intermediate
@@ -108,7 +115,8 @@ namespace std
     // So, first find the ideal value of m.
     static const Fix16 max(181); // sqrt(Fix16Max)
     int m = 2;
-    while (x/m >= max || y/m >= max)
+
+    while (std::abs(x)/m + std::abs(y)/m >= max)
       m *= m;
 
     x /= m;
@@ -116,4 +124,16 @@ namespace std
     Fix16 t = x*x + y*y;
     return std::sqrt(t)*m;
   }
+
+  Fix16 floor(Fix16 val)
+  {
+    val.raw() = fix16_floor(val.value);
+    return val;
+  }
 }
+
+std::ostream& operator<<(std::ostream& os, const Fix16& rhs)
+{
+  return os << rhs.to_double();
+}
+
