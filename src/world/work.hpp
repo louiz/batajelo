@@ -19,7 +19,6 @@ class Entity;
  * returns true if that work is complete and must be removed from the queue,
  * false otherwise.
  */
-// using WorkCallback = std::function<bool (World*, Work*)>;
 
 class Work
 {

@@ -14,18 +14,6 @@ Unit::~Unit()
 {
 }
 
-Unit::Unit(const Unit& model):
-  Entity(model),
-  pos(model.pos),
-  width(model.width),
-  height(model.height),
-  health(model.health),
-  speed(model.speed),
-  spawn_duration(model.spawn_duration)
-{
-  log_debug("Creating new unit(" << this->type_id << ") of id: " << this->id);
-}
-
 bool Unit::contains(const Position& pos) const
 {
   if ((pos.x >= this->pos.x) && (pos.y >= this->pos.y) &&

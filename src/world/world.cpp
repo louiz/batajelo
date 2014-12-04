@@ -2,6 +2,7 @@
 #include <world/world.hpp>
 #include <world/path.hpp>
 #include <world/work.hpp>
+#include <world/health.hpp>
 
 World::World()
 {
@@ -33,7 +34,12 @@ void World::insert_entity(std::unique_ptr<Entity>&& entity)
 void World::tick()
 {
   for (const auto& entity: this->entities)
-    entity->tick(this);
+    {
+      entity->tick(this);
+      Health* health = entity->get<Health>();
+      if (health)
+        health->add(-0.01);
+    }
 }
 
 Path World::calculate_path(Position endpos, Unit* unit)
@@ -95,7 +101,7 @@ Unit* World::get_unit_by_id(unsigned short id)
       if (unit->get_id() == id)
      return unit;
     }
-  return 0;
+  return nullptr;
 }
 
 Building* World::get_building_by_id(unsigned short id)

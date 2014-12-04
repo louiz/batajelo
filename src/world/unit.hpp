@@ -21,7 +21,7 @@ class Unit: public Entity
 public:
   Unit();
   ~Unit();
-  Unit(const Unit&);
+  Unit(const Unit&) = default;
   bool contains(const Position&) const;
 
   void follow_path(Path& path, World* world);
@@ -65,10 +65,6 @@ public:
    */
   int16_t height;
   /**
-   * The entity health.
-   */
-  uint health;
-  /**
    * The entity speed
    */
   Fix16 speed;
@@ -77,7 +73,6 @@ public:
    */
   unsigned int spawn_duration;
 };
-
 
 #endif // __UNIT_HPP__
 

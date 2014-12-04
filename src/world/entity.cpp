@@ -9,7 +9,9 @@ EntityId Entity::current_id = 0;
 EntityType Entity::current_type_id = 0;
 
 Entity::Entity():
-  type_id(Entity::current_type_id++)
+  // type_id(Entity::current_type_id++)
+  id(++Entity::current_id)
+
 {
 }
 

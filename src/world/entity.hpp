@@ -1,12 +1,14 @@
 #ifndef __ENTITY_HPP__
 # define __ENTITY_HPP__
 
+#include <world/components.hpp>
 #include <world/position.hpp>
 
 #include <cstdint>
 #include <memory>
 #include <queue>
 #include <list>
+#include <map>
 
 using EntityType = uint16_t;
 using EntityId = uint16_t;
@@ -54,6 +56,21 @@ public:
    */
   virtual bool is_obstructing_position(const Unit*, const Position&) const = 0;
 
+  template <typename ComponentClass>
+  ComponentClass* get() const
+  {
+    auto it = this->components.find(ComponentClass::component_type);
+    if (it != this->components.end())
+      return reinterpret_cast<ComponentClass*>(it->second.get());
+    return nullptr;
+  }
+
+  template <typename ComponentClass>
+  void add_component(ComponentClass&& pointer)
+  {
+    this->components[ComponentClass::element_type::component_type] = std::move(pointer);
+  }
+
 private:
   Entity& operator=(const Entity&);
 public:
@@ -86,9 +103,18 @@ public:
    * A list is used instead of a queue, though a queue would be almost
    * perfect (push back, pop front only), but we need to be able to traverse
    * the list to check their value etc. So we just use a list and push_back
-   * and pop_front instead. Should be almost as effecient.
+   * and pop_front instead. Should be almost as efficient.
    */
   std::list<std::unique_ptr<Work>> works;
+  /**
+   * A map of components that define what the entity can do. Without a
+   * component, it's basically empty and can do nothing in the world.
+   *
+   * For example an entity that has a world position and can move has a
+   * PositionComponent, which tracks the position of the entity and has
+   * methods to alter this position.
+   */
+  std::map<ComponentType, std::unique_ptr<Component>> components;
 };
 
 #endif // __ENTITY_HPP__
