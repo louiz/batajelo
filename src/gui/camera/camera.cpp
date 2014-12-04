@@ -2,6 +2,7 @@
 #include <gui/camera/camera.hpp>
 #include <gui/screen/screen.hpp>
 #include <world/layer.hpp>
+#include <gui/utils.hpp>
 #include <gui/sprites/archive_sprite.hpp>
 #include <gui/sprites/pic_sprite.hpp>
 #include <game/game_client.hpp>
@@ -627,6 +628,39 @@ void Camera::draw(const sf::Drawable& drawable)
   this->win().draw(drawable);
 }
 
+void Camera::draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar_specs,
+                             const std::size_t max_val, int current_val)
+{
+  sf::RectangleShape rect;
+  rect.setSize(bar_specs.size);
+  rect.setOutlineColor(sf::Color::Black);
+  rect.setOutlineThickness(1);
+  rect.setFillColor({25, 25, 25, 200});
+  screen_position.x -= bar_specs.size.x/2;
+  rect.setPosition(screen_position);
+
+  this->draw(rect);
+
+  float grad_width = bar_specs.size.x / (max_val / bar_specs.little_graduation);
+
+  sf::Color color = mix(bar_specs.min_color, bar_specs.max_color,
+                        static_cast<float>(current_val) / max_val);
+
+  rect.setSize({grad_width, bar_specs.size.y});
+  while (current_val > 0)
+    {
+      if (current_val >= bar_specs.little_graduation)
+        rect.setFillColor(color);
+      else
+        rect.setFillColor(color * sf::Color(255, 255, 255, 100));
+      rect.setPosition(screen_position);
+      this->draw(rect);
+
+      current_val -= bar_specs.little_graduation;
+      screen_position.x += grad_width;
+    }
+}
+
 void Camera::on_new_unit(const Unit* unit)
 {
   this->sprites.push_back(new PicpicSprite(unit));
@@ -647,3 +681,4 @@ void Camera::graphical_tick()
   for (auto sprite: this->sprites)
     sprite->tick();
 }
+

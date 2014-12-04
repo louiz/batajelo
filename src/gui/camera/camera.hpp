@@ -28,6 +28,8 @@
 #include <gui/screen/screen_element.hpp>
 #include <gui/camera/tileset.hpp>
 
+#include <gui/sprites/energy_bar.hpp>
+
 class Minimap;
 class Screen;
 class WorldSprite;
@@ -54,6 +56,11 @@ public:
    */
   void draw_unit(const Unit*, const uint x, const uint y,
                    const bool in_mouse_selection, sf::RectangleShape& rectangle);
+  /**
+   * Draw an energy bar, centered at the given screen position.
+   */
+  void draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar,
+                       const std::size_t max_val, int current_val);
   /**
    * handle one user input event.
    */

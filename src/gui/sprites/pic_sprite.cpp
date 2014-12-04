@@ -3,6 +3,7 @@
 #include <gui/camera/camera.hpp>
 #include <game/game_client.hpp>
 #include <world/unit.hpp>
+#include <world/health.hpp>
 
 PicpicSprite::PicpicSprite(const Unit* const unit):
   UnitSprite(unit),
@@ -39,6 +40,15 @@ void PicpicSprite::draw(GameClient* game) const
   game->get_camera().draw(eye_sprite);
   eye_sprite.setPosition(x + 10 - eye_size.x/2, y - size.y / 5 * 3 - this->height - eye_size.y/2 + 5);
   game->get_camera().draw(eye_sprite);
+
+  EnergyBar bar = this->standard_health_bar;
+
+  Health* unit_health = unit->get<Health>();
+  if (unit_health)
+    {
+      game->get_debug_hud().add_debug_line("Unit health: " + std::to_string(unit_health->get()) + "/" +std::to_string(unit_health->get_max()));
+      game->get_camera().draw_energy_bar({x, y - 90}, bar, unit_health->get_max().to_int(), unit_health->get().to_int());
+    }
 }
 
 void PicpicSprite::tick()

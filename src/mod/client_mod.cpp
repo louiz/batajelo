@@ -2,7 +2,6 @@
 #include <logging/logging.hpp>
 #include <gui/screen/screen.hpp>
 #include <mod/client_mod.hpp>
-#include <world/client_world/client_world.hpp>
 
 #include <gui/sprites/archive_sprite.hpp>
 #include <gui/common.hpp>
