@@ -158,11 +158,11 @@ class Fix16
    {
      return fix16_to_dbl(this->value);
    }
-   int32_t raw() const
+   fix16_t raw() const
    {
      return this->value;
    }
-   int32_t& raw()
+   fix16_t& raw()
    {
      return this->value;
    }

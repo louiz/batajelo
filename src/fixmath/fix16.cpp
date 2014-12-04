@@ -1,5 +1,8 @@
 #include "fixmath/fix16.hpp"
 
+// Needed for operator<<(ostream, double)
+#include <ostream>
+
 Fix16 operator ""_fix(long double in)
 {
   return Fix16(static_cast<double>(in));

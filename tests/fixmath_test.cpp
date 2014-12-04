@@ -74,6 +74,21 @@ TEST(FixMath, ComparisonWithDouble)
   ASSERT_EQ(a, 7878.80);
 }
 
+TEST(FixMath, ToDouble)
+{
+  auto a = 12.001_fix;
+  ASSERT_GT(a.to_double(), 12.0);
+  ASSERT_LT(a.to_double(), 12.1);
+}
+
+TEST(FixMath, OutputToStream)
+{
+  auto a = 12.001_fix;
+  std::ostringstream os;
+  os << a;
+  ASSERT_EQ(os.str(), "12.001");
+}
+
 TEST(FixMath, FromString)
 {
   Fix16 a("-127.87");
@@ -151,6 +166,15 @@ TEST(FixMath, Addition)
   ASSERT_EQ(0_fix + 0_fix, 0.00);
 }
 
+TEST(FixMath, Mod)
+{
+  Fix16 a(88);
+  ASSERT_EQ(a % 10, 8);
+
+  Fix16 b(10.99);
+  ASSERT_EQ(b % 10, 0.99);
+}
+
 TEST(FixMath, IncrementDecrement)
 {
   Fix16 a(800.2);
@@ -215,3 +239,29 @@ TEST(FixMath, Hypot)
   ASSERT_GT(res, 7071);
   ASSERT_LT(res, 7072);
 }
+
+TEST(FixMath, ToInt)
+{
+  ASSERT_EQ((2.5_fix).to_int(), 3);
+  ASSERT_EQ((2.49999_fix).to_int(), 2);
+  ASSERT_EQ((-2.49999_fix).to_int(), -2);
+  ASSERT_EQ((-2.5_fix).to_int(), -3);
+}
+
+TEST(FixMath, Floor)
+{
+  ASSERT_EQ(4, std::floor(4.999_fix));
+  ASSERT_EQ(5, (4.999_fix).to_int());
+
+  ASSERT_EQ(-5, std::floor(-4.999_fix));
+  ASSERT_EQ(-5, (-4.999_fix).to_int());
+
+  ASSERT_EQ(5444, std::floor(5444_fix));
+}
+
+TEST(FixMath, Fuck)
+{
+  short c = (500_fix).to_int() / 100;
+  ASSERT_EQ(c, 5);
+}
+
