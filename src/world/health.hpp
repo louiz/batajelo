@@ -9,7 +9,7 @@ class Health: public Component
 {
 public:
   using type = Fix16;
-  static const ComponentType component_type;
+  static const ComponentType component_type = ComponentType::Health;
 
   Health(const type max);
   ~Health() = default;

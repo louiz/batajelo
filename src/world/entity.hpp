@@ -59,6 +59,10 @@ public:
   template <typename ComponentClass>
   ComponentClass* get() const
   {
+    static_assert(std::is_base_of<Component, ComponentClass>::value,
+                  "ComponentClass must be a Component.");
+    static_assert(ComponentClass::component_type != ComponentType::Invalid,
+                  "ComponentClass must set its own type.");
     auto it = this->components.find(ComponentClass::component_type);
     if (it != this->components.end())
       return reinterpret_cast<ComponentClass*>(it->second.get());

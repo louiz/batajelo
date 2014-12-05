@@ -1,6 +1,6 @@
 #include <world/health.hpp>
 
-const ComponentType Health::component_type = ComponentType::Health;
+const ComponentType Health::component_type;
 
 Health::Health(const Health::type max):
   max(max),
