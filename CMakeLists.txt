@@ -78,11 +78,6 @@ if(BUILD_CLIENT)
     server
     gui
     )
-
-  add_executable(minimap_generator src/main/minimap_generator.cpp)
-  target_link_libraries(minimap_generator
-    gui
-    )
 endif()
 
 if(BUILD_SERVER)
@@ -331,20 +326,30 @@ endif()
 # Tests
 ####################
 
-file(GLOB tests_srcs
-  tests/*test.cpp
-  )
+if(GTEST_FOUND)
+  enable_testing()
+  add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} -V)
 
-foreach(test_src ${tests_srcs})
-  get_filename_component(lib ${test_src} NAME_WE)
-  string(REGEX REPLACE "(.*)_test$" "\\1" lib ${lib})
+  file(GLOB tests_srcs
+    tests/*test.cpp
+    )
 
-  if(TARGET ${lib})
-    add_executable(${lib}_test  EXCLUDE_FROM_ALL ${test_src})
+  foreach(test_src ${tests_srcs})
+    get_filename_component(lib ${test_src} NAME_WE)
 
-    target_link_libraries(${lib}_test
-      ${lib}
-      ${GTEST_BOTH_LIBRARIES}
-      )
-  endif(TARGET ${lib})
-endforeach(test_src)
+    string(REGEX REPLACE "(.*)_test$" "\\1" lib ${lib})
+
+    if(TARGET ${lib})
+      add_executable(${lib}_test  EXCLUDE_FROM_ALL ${test_src})
+
+      target_link_libraries(${lib}_test
+        ${lib}
+        ${GTEST_BOTH_LIBRARIES}
+        )
+      add_test(${lib}_test ${lib}_test)
+      add_dependencies(check ${lib}_test)
+    else()
+      message("Library ${lib} does not exist, ${lib}_test.cpp will not be enabled.")
+    endif()
+  endforeach(test_src)
+endif()
