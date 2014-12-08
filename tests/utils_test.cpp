@@ -47,7 +47,7 @@ TEST(Strings, trim)
   EXPECT_EQ(original, "coucou");
 }
 
-TEST(Scopeguard, everything)
+TEST(Scopeguard,)
 {
   int i = 5;
   {
