@@ -4,6 +4,7 @@
 #include <game/game_client.hpp>
 #include <world/unit.hpp>
 #include <world/health.hpp>
+#include <world/mana.hpp>
 
 PicpicSprite::PicpicSprite(const Unit* const unit):
   UnitSprite(unit),
@@ -49,6 +50,14 @@ void PicpicSprite::draw(GameClient* game) const
       game->get_debug_hud().add_debug_line("Unit health: " + std::to_string(unit_health->get()) + "/" +std::to_string(unit_health->get_max()));
       game->get_camera().draw_energy_bar({x, y - 90}, bar, unit_health->get_max().to_int(), unit_health->get().to_int());
     }
+  EnergyBar mana_bar = this->standard_mana_bar;
+  Mana* unit_mana = unit->get<Mana>();
+  if (unit_mana)
+    {
+      game->get_debug_hud().add_debug_line("Unit mana: " + std::to_string(unit_mana->get()) + "/" +std::to_string(unit_mana->get_max()));
+      game->get_camera().draw_energy_bar({x, y - 80}, mana_bar, unit_mana->get_max().to_int(), unit_mana->get().to_int());
+    }
+
 }
 
 void PicpicSprite::tick()

@@ -19,6 +19,7 @@ public:
 
 protected:
   static const EnergyBar standard_health_bar;
+  static const EnergyBar standard_mana_bar;
 
 private:
   WorldSprite(const WorldSprite&);

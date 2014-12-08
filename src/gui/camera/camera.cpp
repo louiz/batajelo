@@ -641,6 +641,7 @@ void Camera::draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar_
 
   this->draw(rect);
 
+  rect.setOutlineThickness(1);
   float grad_width = bar_specs.size.x / (max_val / bar_specs.little_graduation);
 
   sf::Color color = mix(bar_specs.min_color, bar_specs.max_color,

@@ -19,6 +19,7 @@ public:
 
   Component() = default;
   virtual ~Component() = default;
+  virtual void tick(Entity*, World*) = 0;
 
 private:
   Component(const Component&) = delete;
