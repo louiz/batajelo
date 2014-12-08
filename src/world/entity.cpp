@@ -45,6 +45,11 @@ void Entity::clear_works()
 
 void Entity::tick(World* world)
 {
+  for (auto it = this->components.begin();
+       it != this->components.end(); ++it)
+    {
+      it->second->tick(this, world);
+    }
   if (this->works.empty())
     return ;
   auto it = this->works.begin();
