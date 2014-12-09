@@ -19,7 +19,7 @@ using t_next_turn_callback = std::function< void(const TurnNb)>;
 /**
  * The number of ticks contained in a turn
  */
-static constexpr std::size_t TURN_TICKS = 10;
+static constexpr std::size_t TURN_TICKS = 6;
 
 class TurnHandler
 {
