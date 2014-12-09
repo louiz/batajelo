@@ -1,6 +1,7 @@
 #include <world/entity_factory.hpp>
 #include <world/health.hpp>
 #include <world/mana.hpp>
+#include <world/vision.hpp>
 
 EntityFactory::EntityFactory()
 {
@@ -24,6 +25,7 @@ std::unique_ptr<Unit> EntityFactory::make_unit(const EntityType type)
   res->spawn_duration = 40;
   res->add_component(std::make_unique<Health>(100));
   res->add_component(std::make_unique<Mana>(300));
+  res->add_component(std::make_unique<Vision>(700, false));
   // return std::make_unique<Unit>(this->unit_models[type]);
   return res;
 }

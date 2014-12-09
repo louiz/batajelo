@@ -38,9 +38,6 @@ void Screen::draw()
                   element->draw();
                 });
   this->draw_mouse_cursor();
-  // this->camera.draw();
-  // this->hud.draw(&this->camera);
-  // this->debug_hud.draw(&this->camera);
 }
 
 void Screen::update(const Duration& dt)
@@ -54,9 +51,6 @@ void Screen::handle_event(const sf::Event& event)
   for (const auto& element: this->screen_elements)
     if (element->handle_event(event) == true)
       break;                  // The element “ate” the event
-
-  // if (this->hud.handle_event(event) == false)
-  //   this->camera.handle_event(event);
 }
 
 void Screen::add_element(ScreenElement* element, const int priority)

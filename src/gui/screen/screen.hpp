@@ -28,9 +28,9 @@
 
 #include <gui/hud/action_panel_button.hpp>
 #include <gui/screen/screen_element.hpp>
-#include <SFML/Graphics.hpp>
 #include <gui/cursor.hpp>
 #include <game/time.hpp>
+
 #include <vector>
 #include <memory>
 

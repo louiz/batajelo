@@ -10,6 +10,7 @@ enum class ComponentType
     Location,
     Health,
     Mana,
+    Vision,
 };
 
 class Component

@@ -20,7 +20,8 @@ Camera::Camera(GameClient* game, Screen* screen):
   start_drag_position(0, 0),
   game(game),
   mouse_selection(),
-  tileset()
+  tileset(),
+  fog(1920, 1080, this, &this->world())
 {
   this->tileset.load_from_file("test6.tmx");
 
@@ -381,6 +382,8 @@ void Camera::draw()
                                                std::to_string(mouse_col) + ":" +
                                                std::to_string(mouse_row),
                                                sf::Color::Yellow);
+
+  this->draw(this->fog.get_sprite());
 }
 
 void Camera::draw_mouse_selection()
@@ -623,9 +626,9 @@ bool Camera::is_mouse_selection_ongoing() const
   return this->mouse_selection.ongoing;
 }
 
-void Camera::draw(const sf::Drawable& drawable)
+void Camera::draw(const sf::Drawable& drawable, const sf::RenderStates& states)
 {
-  this->win().draw(drawable);
+  this->win().draw(drawable, states);
 }
 
 void Camera::draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar_specs,
@@ -681,5 +684,6 @@ void Camera::graphical_tick()
 {
   for (auto sprite: this->sprites)
     sprite->tick();
+  this->fog.invalidate();
 }
 

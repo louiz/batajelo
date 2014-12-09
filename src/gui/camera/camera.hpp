@@ -27,6 +27,7 @@
 
 #include <gui/screen/screen_element.hpp>
 #include <gui/camera/tileset.hpp>
+#include <gui/camera/fog.hpp>
 
 #include <gui/sprites/energy_bar.hpp>
 
@@ -104,7 +105,7 @@ public:
    * ongoing or not.
    */
   bool is_mouse_selection_ongoing() const;
-  void draw(const sf::Drawable&);
+  void draw(const sf::Drawable&, const sf::RenderStates& states = sf::RenderStates::Default);
   void on_new_unit(const Unit*);
   void on_new_building(const Building*);
   void graphical_tick();
@@ -156,6 +157,7 @@ private:
   std::list<WorldSprite*> sprites;
   MouseSelection mouse_selection;
   Tileset tileset;
+  Fog fog;
 
   /**
    * Various accessors
