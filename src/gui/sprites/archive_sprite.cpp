@@ -27,7 +27,7 @@ void ArchiveSprite::draw(GameClient* game) const
     this->draw_selection_circle(game->get_camera());
 
   Position pos(this->building->x * CELL_SIZE, this->building->y * CELL_SIZE);
-  sf::Vector2u entpos = game->get_camera().world_to_camera_position(pos);
+  auto entpos = game->get_camera().world_to_camera_position(pos);
   sf::Sprite sprite = this->get_cursor_sprite();
   sprite.setPosition(entpos.x - game->get_camera().x, entpos.y - game->get_camera().y - LAYER_HEIGHT);
   game->get_camera().draw(sprite);

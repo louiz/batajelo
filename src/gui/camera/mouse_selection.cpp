@@ -23,7 +23,7 @@ void MouseSelection::end()
 }
 
 bool MouseSelection::contains(const sf::Vector2i& mouse_pos,
-                              const sf::Vector2u& pos,
+                              const sf::Vector2i& pos,
                               const uint width) const
 {
   sf::Rect<uint> mouse_selection;

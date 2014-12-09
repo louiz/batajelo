@@ -17,9 +17,9 @@ UnitSprite::UnitSprite(const Unit* const unit):
 
 void UnitSprite::draw_shadow(Camera& camera) const
 {
-  const sf::Vector2u entpos = camera.world_to_camera_position(this->unit->pos);
-  const uint x = entpos.x - camera.x;
-  const uint y = entpos.y - camera.y;
+  const auto entpos = camera.world_to_camera_position(this->unit->pos);
+  const int x = entpos.x - camera.x;
+  const int y = entpos.y - camera.y;
   const sf::Vector2u size = UnitSprite::shadow_texture.getSize();
   sf::Sprite sprite(UnitSprite::shadow_texture);
   sprite.setPosition(x - size.x/2, y - size.y/2);

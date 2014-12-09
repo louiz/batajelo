@@ -18,16 +18,16 @@ PicpicSprite::PicpicSprite(const Unit* const unit):
         exit(1);
       PicpicSprite::init = true;
     }
-  this->height = 1 + (5 * random() / RAND_MAX);
+  this->height = -5 + (7 * random() / RAND_MAX);
 }
 
 void PicpicSprite::draw(GameClient* game) const
 {
   this->draw_shadow(game->get_camera());
-  const sf::Vector2u entpos = game->get_camera().world_to_camera_position(this->unit->pos);
+  const auto entpos = game->get_camera().world_to_camera_position(this->unit->pos);
 
-  const uint x = entpos.x - game->get_camera().x;
-  const uint y = entpos.y - game->get_camera().y;
+  const int x = entpos.x - game->get_camera().x;
+  const int y = entpos.y - game->get_camera().y;
 
   sf::Sprite sprite(PicpicSprite::body_texture);
   const sf::Vector2u size = PicpicSprite::body_texture.getSize();

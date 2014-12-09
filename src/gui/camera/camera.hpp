@@ -76,7 +76,7 @@ public:
    * input etc.
    */
   void update(const Duration& dt);
-  sf::Vector2u world_to_camera_position(const Position&) const;
+  sf::Vector2i world_to_camera_position(const Position&) const;
   Position camera_to_world_position(const int, const int) const;
   /**
    * Return the cell at the given position. If the position is not contained
