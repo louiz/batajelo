@@ -57,7 +57,7 @@ OccupantsList::iterator OccupantsHandler::begin()
 }
 OccupantsList::iterator OccupantsHandler::end()
 {
-  return this->occupants.begin();
+  return this->occupants.end();
 }
 
 OccupantsList::const_iterator OccupantsHandler::begin() const
