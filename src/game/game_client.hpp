@@ -29,7 +29,7 @@ public:
 
   void add_new_occupant(std::unique_ptr<Occupant>&& occupant);
 
-  void do_new_unit(const EntityType type, const Position& pos) override final;
+  void do_new_unit(const EntityType type, const Position& pos, const uint16_t team) override final;
 
   void send_message(const char* name, const google::protobuf::Message& msg);
   void send_message(const char* name, const std::string& archive);
@@ -122,6 +122,7 @@ public:
     return &this->current_selection;
   }
   void add_selection_change_callback(const t_selection_changed_callback);
+  void set_self_team(const uint16_t team);
 
 private:
   /**
@@ -138,6 +139,7 @@ private:
   Camera camera;
   Hud hud;
   DebugHud debug_hud;
+  uint16_t team;
 
   GameClient(const GameClient&) = delete;
   GameClient(GameClient&&) = delete;

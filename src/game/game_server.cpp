@@ -32,6 +32,22 @@ void GameServer::on_new_client(RemoteGameClient* new_client)
   message->set_name("NEW_OCCUPANT");
 
   auto new_occupant = std::make_unique<Occupant>(new_client->get_id(), "coucou");
+
+  // Get the first team not already taken by an other occupant
+  uint16_t team;
+  for (team = 1;; team++)
+    {
+      bool res = std::none_of(this->occupants_handler.begin(),
+                              this->occupants_handler.end(),
+                              [team](const auto& occupant)
+                              {
+                                return occupant->get_team() == team;
+                              });
+      if (res)
+        break;
+    }
+  new_occupant->set_team(team);
+
   message->set_body(new_occupant->serialize());
   this->send_to_all_clients(message);
 
@@ -135,10 +151,10 @@ void GameServer::tick()
 
 void GameServer::start_game()
 {
-  this->send_new_unit_order(0, {300, 300});
-  this->send_new_unit_order(0, {400, 800.12});
-  this->send_new_unit_order(0, {500, 500});
-  this->send_new_unit_order(0, {320, 610});
+  this->send_new_unit_order(0, {300, 300}, 1);
+  this->send_new_unit_order(0, {400, 800.12}, 1);
+  this->send_new_unit_order(0, {500, 500}, 2);
+  this->send_new_unit_order(0, {320, 610}, 2);
   this->turn_handler.mark_turn_as_ready();
 }
 
@@ -217,15 +233,17 @@ void GameServer::on_move_request(Message* message)
   this->send_move_order(ids, pos, srl.queue());
 }
 
-void GameServer::send_new_unit_order(const EntityType type, const Position& pos)
+void GameServer::send_new_unit_order(const EntityType type, const Position& pos,
+                                     const uint16_t team)
 {
   ser::order::NewUnit srl;
   srl.set_turn(this->turn_handler.get_current_turn() + 2);
   srl.set_type_id(type);
   srl.mutable_pos()->set_x(pos.x.raw());
   srl.mutable_pos()->set_y(pos.y.raw());
+  srl.set_team(team);
   this->send_order_to_all("NEW_UNIT", srl);
-  this->turn_handler.insert_action(std::bind(&World::do_new_unit, &this->world, type, pos),
+  this->turn_handler.insert_action(std::bind(&World::do_new_unit, &this->world, type, pos, team),
                                    srl.turn());
 }
 

@@ -4,6 +4,8 @@
 #include <gui/sprites/world_sprite.hpp>
 #include <gui/camera/camera.hpp>
 
+#include <vector>
+
 class Unit;
 
 class UnitSprite: public WorldSprite
@@ -16,11 +18,12 @@ public:
 
 protected:
   const Unit* const unit;
-  void draw_shadow(Camera& camera) const;
+  void draw_shadow(Camera& camera, const sf::Color color) const;
+  static const std::vector<sf::Color> team_colors;
 
 private:
-  static sf::Texture shadow_texture;
   static bool init;
+  static sf::Texture shadow_texture;
 
   UnitSprite(const UnitSprite&);
   UnitSprite& operator=(const UnitSprite&);

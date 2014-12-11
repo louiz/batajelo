@@ -3,6 +3,9 @@
 
 sf::Texture UnitSprite::shadow_texture;
 bool UnitSprite::init = false;
+const std::vector<sf::Color> UnitSprite::team_colors = {sf::Color::White,
+                                                        sf::Color::Red,
+                                                        sf::Color::Blue};
 
 UnitSprite::UnitSprite(const Unit* const unit):
   unit(unit)
@@ -15,7 +18,7 @@ UnitSprite::UnitSprite(const Unit* const unit):
     }
 }
 
-void UnitSprite::draw_shadow(Camera& camera) const
+void UnitSprite::draw_shadow(Camera& camera, const sf::Color color) const
 {
   const auto entpos = camera.world_to_camera_position(this->unit->pos);
   const int x = entpos.x - camera.x;
@@ -24,7 +27,6 @@ void UnitSprite::draw_shadow(Camera& camera) const
   sf::Sprite sprite(UnitSprite::shadow_texture);
   sprite.setPosition(x - size.x/2, y - size.y/2);
 
-  const sf::Color color(255, 255, 255, 122);
   sprite.setColor(color);
   camera.draw(sprite);
 }

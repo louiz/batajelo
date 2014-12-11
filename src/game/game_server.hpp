@@ -67,7 +67,7 @@ public:
    */
   void on_next_turn(const TurnNb nb);
 
-  void send_new_unit_order(const EntityType type, const Position& pos);
+  void send_new_unit_order(const EntityType type, const Position& pos, const uint16_t team);
   void send_move_order(const std::vector<EntityId> ids, const Position& pos, const bool queue);
   /**
    * This will create the initial game

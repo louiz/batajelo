@@ -5,6 +5,7 @@
 #include <world/unit.hpp>
 #include <world/health.hpp>
 #include <world/mana.hpp>
+#include <world/team.hpp>
 
 PicpicSprite::PicpicSprite(const Unit* const unit):
   UnitSprite(unit),
@@ -23,7 +24,9 @@ PicpicSprite::PicpicSprite(const Unit* const unit):
 
 void PicpicSprite::draw(GameClient* game) const
 {
-  this->draw_shadow(game->get_camera());
+  Team* team = this->unit->get<Team>();
+  assert(team);
+  this->draw_shadow(game->get_camera(), this->team_colors[team->get()]);
   const auto entpos = game->get_camera().world_to_camera_position(this->unit->pos);
 
   const int x = entpos.x - game->get_camera().x;

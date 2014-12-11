@@ -3,6 +3,7 @@
 #include <world/path.hpp>
 #include <world/work.hpp>
 #include <world/health.hpp>
+#include <world/team.hpp>
 
 World::World()
 {
@@ -57,10 +58,14 @@ Path World::calculate_path(Position endpos, Unit* unit)
   return {};
 }
 
-Unit* World::do_new_unit(const EntityType type, const Position& pos)
+Unit* World::do_new_unit(const EntityType type, const Position& pos, const uint16_t team_value)
 {
   auto entity = this->entity_factory.make_unit(type);
   entity->pos = pos;
+  Team* team = entity->get<Team>();
+  assert(team);
+  team->set(team_value);
+
   auto res = entity.get();
   this->insert_unit(std::move(entity));
   return res;

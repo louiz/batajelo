@@ -211,6 +211,12 @@ void GameClient::handle_start_message(Message* message)
   // this->world.start();
 }
 
+void GameClient::set_self_team(const uint16_t team)
+{
+  log_debug("Our team is number: " << team);
+  this->team = team;
+}
+
 void GameClient::turn_callback(Message*)
 {
   log_debug("GameClient::turn_callback");
@@ -279,9 +285,9 @@ void GameClient::spawn_callback(Message* message)
 {
 }
 
-void GameClient::do_new_unit(const EntityType type, const Position& pos)
+void GameClient::do_new_unit(const EntityType type, const Position& pos, const uint16_t team)
 {
-  Unit* unit = this->world.do_new_unit(type, pos);
+  Unit* unit = this->world.do_new_unit(type, pos, team);
   this->camera.on_new_unit(unit);
 }
 

@@ -18,7 +18,8 @@ public:
 
   void new_unit_callback(Message* msg);
   void move_callback(Message* msg);
-  virtual void do_new_unit(const EntityType type, const Position& pos);
+  virtual void do_new_unit(const EntityType type, const Position& pos,
+                           const uint16_t team);
 
 protected:
   World world;

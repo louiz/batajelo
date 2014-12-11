@@ -2,6 +2,7 @@
 #include <world/health.hpp>
 #include <world/mana.hpp>
 #include <world/vision.hpp>
+#include <world/team.hpp>
 
 EntityFactory::EntityFactory()
 {
@@ -26,6 +27,9 @@ std::unique_ptr<Unit> EntityFactory::make_unit(const EntityType type)
   res->add_component(std::make_unique<Health>(100));
   res->add_component(std::make_unique<Mana>(300));
   res->add_component(std::make_unique<Vision>(700, false));
+  res->add_component(std::make_unique<Team>());
+
   // return std::make_unique<Unit>(this->unit_models[type]);
+
   return res;
 }

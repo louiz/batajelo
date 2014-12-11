@@ -69,7 +69,7 @@ public:
   void pause();
   void unpause();
   Path calculate_path(Position, Unit*);
-  Unit* do_new_unit(const EntityType type, const Position& pos);
+  Unit* do_new_unit(const EntityType type, const Position& pos, const uint16_t team);
   void do_move(const std::vector<EntityId> ids, const Position& pos, const bool queue);
   // void do_path(ActionEvent*);
   // void do_new_unit(ActionEvent*);

@@ -26,7 +26,7 @@ void Game::new_unit_callback(Message* message)
   Position pos;
   pos.x.raw() = srl.pos().x();
   pos.y.raw() = srl.pos().y();
-  this->turn_handler.insert_action(std::bind(&Game::do_new_unit, this, srl.type_id(), pos),
+  this->turn_handler.insert_action(std::bind(&Game::do_new_unit, this, srl.type_id(), pos, srl.team()),
                                    srl.turn());
 }
 
@@ -52,8 +52,8 @@ void Game::move_callback(Message* message)
                                    srl.turn());
 }
 
-void Game::do_new_unit(const EntityType type, const Position& pos)
+void Game::do_new_unit(const EntityType type, const Position& pos, const uint16_t team)
 {
   log_debug("Game::do_new_unit");
-  this->world.do_new_unit(type, pos);
+  this->world.do_new_unit(type, pos, team);
 }

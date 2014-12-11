@@ -18,10 +18,13 @@ public:
   Occupant(const ser::game::Occupant& srl);
   ~Occupant();
 
+  void set_team(const uint16_t team);
+  uint16_t get_team() const;
+
   ser::game::Occupant serialize() const;
 
   uint32_t id;
-  int team;
+  uint16_t team;
   std::string name;
 
 private:

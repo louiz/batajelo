@@ -11,6 +11,7 @@ enum class ComponentType
     Health,
     Mana,
     Vision,
+    Team,
 };
 
 class Component
