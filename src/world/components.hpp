@@ -9,7 +9,7 @@ enum class ComponentType
     Invalid,
     Location,
     Health,
-    Mana,
+    ManaPool,
     Vision,
     Team,
 };

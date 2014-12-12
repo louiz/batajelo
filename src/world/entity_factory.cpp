@@ -1,6 +1,6 @@
 #include <world/entity_factory.hpp>
 #include <world/health.hpp>
-#include <world/mana.hpp>
+#include <world/manapool.hpp>
 #include <world/vision.hpp>
 #include <world/team.hpp>
 
@@ -25,7 +25,7 @@ std::unique_ptr<Unit> EntityFactory::make_unit(const EntityType type)
   res->speed = 2;
   res->spawn_duration = 40;
   res->add_component(std::make_unique<Health>(100));
-  res->add_component(std::make_unique<Mana>(300));
+  res->add_component(std::make_unique<ManaPool>(300));
   res->add_component(std::make_unique<Vision>(700, false));
   res->add_component(std::make_unique<Team>());
 
