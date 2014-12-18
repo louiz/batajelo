@@ -20,7 +20,6 @@
 // #include <gui/hud/minimap.hpp>
 // #include <gui/hud/selection_panel.hpp>
 // #include <gui/hud/action_panel.hpp>
-#include <mod/client_mod.hpp>
 #include <gui/screen/screen_element.hpp>
 
 class Screen;

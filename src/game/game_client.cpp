@@ -227,18 +227,6 @@ void GameClient::path_callback(Message* message)
 {
 }
 
-void GameClient::build_callback(Message* message)
-{
-}
-
-bool GameClient::action_build(const unsigned int x, const unsigned y, const std::size_t id)
-{
-}
-
-void GameClient::action_spawn(const t_left_click left_click)
-{
-}
-
 bool GameClient::action_move(std::vector<EntityId> ids, const Position& pos, const bool queue)
 {
   ser::request::Move srl;
@@ -281,19 +269,10 @@ void GameClient::add_selection_change_callback(const t_selection_changed_callbac
   this->current_selection.on_modified_callbacks.push_back(callback);
 }
 
-void GameClient::spawn_callback(Message* message)
+void GameClient::do_new_entity(const EntityType type, const Position& pos, const uint16_t team)
 {
-}
-
-void GameClient::do_new_unit(const EntityType type, const Position& pos, const uint16_t team)
-{
-  Unit* unit = this->world.do_new_unit(type, pos, team);
-  this->camera.on_new_unit(unit);
-}
-
-void GameClient::on_new_building(Building* building)
-{
-  this->camera.on_new_building(building);
+  Entity* entity = this->world.do_new_entity(type, pos, team);
+  this->camera.on_new_entity(entity);
 }
 
 void GameClient::tick()

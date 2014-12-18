@@ -26,13 +26,34 @@
 #ifndef __SCREEN_HPP__
 # define __SCREEN_HPP__
 
-#include <gui/hud/action_panel_button.hpp>
+#include <SFML/Graphics.hpp>
+
 #include <gui/screen/screen_element.hpp>
 #include <gui/cursor.hpp>
 #include <game/time.hpp>
 
 #include <vector>
 #include <memory>
+
+typedef std::function<bool(const double, const double, const std::size_t)> t_left_click_callback;
+typedef std::function<cursor::type (const unsigned int, const unsigned int, const std::size_t)> t_draw_cursor_action;
+
+struct t_left_click
+{
+  /**
+   * The callback called when we left click.
+   */
+  t_left_click_callback callback;
+  /**
+   * The callback called when we draw the cursor (for example to draw the
+   * area of effect of the selected spell, or the building to be built)
+   */
+  t_draw_cursor_action cursor_callback;
+  /**
+   * The type_id of the spell to cast or the unit to produce, etc
+   */
+  std::size_t id;
+};
 
 class Screen
 {

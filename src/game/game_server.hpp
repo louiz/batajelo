@@ -22,7 +22,6 @@
 #include <world/world.hpp>
 #include <game/replay.hpp>
 #include <game/turn_handler.hpp>
-#include <mod/mod.hpp>
 
 class GameServer: public Game, public Server<RemoteGameClient>
 {

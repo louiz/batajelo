@@ -144,36 +144,6 @@ target_link_libraries(
   )
 
 #
-## Mod
-#
-file(GLOB source_mod
-  src/mod/mod.cpp
-  )
-
-add_library(mod STATIC ${source_mod})
-
-target_link_libraries(mod
-  ${YAML_CPP_LIBRARIES}
-  world
-  )
-
-#
-## Client mod
-#
-file(GLOB source_clientmod
-  src/mod/mod.cpp
-  src/mod/client_mod.cpp
-  )
-
-add_library(clientmod STATIC ${source_clientmod})
-
-target_link_libraries(clientmod
-  ${YAML_CPP_LIBRARIES}
-  world
-  gui
-  )
-
-#
 ## Gui
 #
 if(BUILD_CLIENT)
@@ -192,7 +162,6 @@ if(BUILD_CLIENT)
     config
     world
     utils
-    clientmod
     ${SFML_LIBRARIES}
     ${Boost_LIBRARIES}
     )
@@ -211,7 +180,6 @@ target_Link_libraries(world
   logging
   serialization
   fixmath
-  mod
   utils
   ${Boost_LIBRARIES}
   )
@@ -244,7 +212,6 @@ target_link_libraries(server
   config
   game
   world
-  mod
   ${Boost_LIBRARIES}
   )
 
@@ -288,6 +255,7 @@ target_link_libraries(game
   logging
   config
   world
+  gui
   )
 
 #
