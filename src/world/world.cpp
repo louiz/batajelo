@@ -4,6 +4,8 @@
 #include <world/work.hpp>
 #include <world/health.hpp>
 #include <world/team.hpp>
+#include <world/path_work.hpp>
+#include <world/location.hpp>
 
 World::World()
 {
