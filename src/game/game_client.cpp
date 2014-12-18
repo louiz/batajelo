@@ -171,6 +171,11 @@ void GameClient::new_occupant_callback(Message* message)
   auto occupant = std::make_unique<Occupant>(srl);
 
   log_debug("Occupant: " << occupant->name << " " << occupant->id);
+  if (this->occupants_handler.size() == 0)
+    { // This occupant is actually us
+      auto team = srl.team();
+      this->set_self_team(team);
+    }
   this->add_new_occupant(std::move(occupant));
 }
 
