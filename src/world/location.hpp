@@ -14,6 +14,7 @@ public:
   ~Location() = default;
   void tick(Entity*, World*) override final;
   Position& position();
+  const Position& position() const;
   Fix16 get_width() const;
   void set_width(const Fix16& width);
   bool contains(const Position&) const;

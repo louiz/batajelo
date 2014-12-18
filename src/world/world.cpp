@@ -6,6 +6,8 @@
 #include <world/team.hpp>
 #include <world/path_work.hpp>
 #include <world/location.hpp>
+#include <world/team.hpp>
+#include <world/vision.hpp>
 
 World::World()
 {
@@ -316,6 +318,27 @@ bool World::has_a_line_of_sight(const Position& start, const Position& end,
       return false;
     }
   return true;
+}
+
+bool World::can_be_seen_by_team(const Position& position, const uint16_t team)
+{
+  auto res = std::find_if(this->entities.begin(),
+                          this->entities.end(),
+                          [&position, team](const std::unique_ptr<Entity>& entity)
+                          {
+                            Team* entity_team = entity->get<Team>();
+                            if (!entity_team || (entity_team->get() != team))
+                              return false;
+                            Location* entity_location = entity->get<Location>();
+                            Vision* entity_vision = entity->get<Vision>();
+                            if (!entity_vision || !entity_location)
+                              return false;
+                            Fix16 distance = Position::distance(position, entity_location->position());
+                            if (distance > entity_vision->get_range())
+                              return false;
+                            return true;
+                          });
+  return res != this->entities.end();
 }
 
 bool World::can_traverse_cell(const short x, const short y,

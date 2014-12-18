@@ -218,6 +218,11 @@ void GameClient::set_self_team(const uint16_t team)
   this->team = team;
 }
 
+uint16_t GameClient::get_self_team() const
+{
+  return this->team;
+}
+
 void GameClient::turn_callback(Message*)
 {
   log_debug("GameClient::turn_callback");

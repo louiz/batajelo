@@ -313,10 +313,12 @@ void Camera::draw()
       // Display all the sprites that are on this row
       for (const auto& sprite: this->sprites)
         {
+          Position sprite_world_position = sprite->get_world_pos();
           unsigned short x;
           unsigned short y;
-          std::tie(x, y) = this->world().get_cell_at_position(sprite->get_world_pos());
-          if (y == row)
+          std::tie(x, y) = this->world().get_cell_at_position(sprite_world_position);
+          if (y == row &&
+              this->world().can_be_seen_by_team(sprite_world_position, this->game->get_self_team()))
             sprite->draw(this->game);
         }
     }
@@ -636,3 +638,7 @@ void Camera::graphical_tick()
   this->fog.invalidate();
 }
 
+const GameClient* Camera::get_game_client() const
+{
+  return this->game;
+}

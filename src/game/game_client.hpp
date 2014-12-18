@@ -101,6 +101,7 @@ public:
   }
   void add_selection_change_callback(const t_selection_changed_callback);
   void set_self_team(const uint16_t team);
+  uint16_t get_self_team() const;
 
 private:
   /**

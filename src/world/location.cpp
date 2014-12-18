@@ -17,6 +17,11 @@ Position& Location::position()
   return this->pos;
 }
 
+const Position& Location::position() const
+{
+  return this->pos;
+}
+
 Fix16 Location::get_width() const
 {
   return this->width;

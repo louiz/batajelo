@@ -1,9 +1,12 @@
+#include <game/game_client.hpp>
+
 #include <gui/camera/fog.hpp>
 #include <gui/camera/camera.hpp>
 
 #include <world/world.hpp>
 #include <world/vision.hpp>
 #include <world/location.hpp>
+#include <world/team.hpp>
 
 #include <world/map.hpp>
 
@@ -47,7 +50,9 @@ void Fog::redraw()
     {
       Vision* vision = entity->get<Vision>();
       Location* location = entity->get<Location>();
-      if (vision && location)
+      Team* team = entity->get<Team>();
+      if (vision && location &&
+          team && (team->get() == this->camera->get_game_client()->get_self_team()))
         {
           sf::CircleShape circle(vision->get_range(),
                                  60);

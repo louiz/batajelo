@@ -32,6 +32,7 @@
 #include <world/position.hpp>
 #include <world/path.hpp>
 
+class Team;
 class Location;
 
 /**
@@ -70,7 +71,6 @@ public:
   void confirm_action(const unsigned int);
 
   Map& get_map();
-
   /**
    * Sort the entities by their y position. This
    * is used to draw them in the correct order.
@@ -90,6 +90,12 @@ public:
    * Convert a path made of cells by a path composed of world positions
    */
   bool can_build_at_cell(const int x, const int y) const;
+  /**
+   * Return true if the given location can be seen by any entity of the given
+   * team.
+   */
+  bool can_be_seen_by_team(const Position& position, const uint16_t team);
+
   Path smooth_path(CellPath path, Position& start,
                    const Position& end, const Fix16 width) const;
   /**

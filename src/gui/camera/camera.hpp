@@ -43,6 +43,7 @@ class Camera: public ScreenElement
 public:
   Camera(GameClient*, Screen*);
   ~Camera();
+  const GameClient* get_game_client() const;
   /**
    * Draw the world viewed through the camera.
    */
