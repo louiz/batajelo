@@ -1,6 +1,8 @@
 #include <logging/logging.hpp>
 #include <game/selection.hpp>
 
+#include <algorithm>
+
 Selection::Selection()
 {
 }
@@ -11,13 +13,12 @@ Selection::~Selection()
 
 bool Selection::is_in_selection(const Entity* entity) const
 {
-  std::list<const Entity*>::const_iterator it;
-  for (it = this->entities.begin(); it != this->entities.end(); ++it)
-    {
-      if ((*it) == entity)
-        return true;
-    }
-  return false;
+  return std::find_if(this->entities.begin(),
+                      this->entities.end(),
+                      [entity](const Entity* other)
+                      {
+                        return other == entity;
+                      }) != this->entities.end();
 }
 
 void Selection::add_to_selection(const Entity* entity)

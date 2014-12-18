@@ -26,3 +26,13 @@ void Location::set_width(const Fix16& width)
 {
   this->width = width;
 }
+
+bool Location::contains(const Position&) const
+{
+  return false;
+}
+
+bool Location::is_obstructing_position(const Position&) const
+{
+  return false;
+}

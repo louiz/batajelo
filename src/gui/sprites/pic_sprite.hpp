@@ -1,12 +1,12 @@
 #ifndef __PICPIC_SPRITE_HPP__
 # define __PICPIC_SPRITE_HPP__
 
-#include <gui/sprites/unit_sprite.hpp>
+#include <gui/sprites/entity_sprite.hpp>
 
-class PicpicSprite: public UnitSprite
+class PicpicSprite: public EntitySprite
 {
 public:
-  PicpicSprite(const Unit* const);
+  PicpicSprite(const Entity* const);
 
   void draw(GameClient* game) const override final;
   void tick() override final;

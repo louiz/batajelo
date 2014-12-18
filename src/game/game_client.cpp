@@ -21,22 +21,18 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
 
   this->install_callback("OCCUPANT_LEFT",
                          std::bind(&GameClient::occupant_left_callback, this, std::placeholders::_1));
-  this->install_callback("NEW_UNIT",
-                         std::bind(&Game::new_unit_callback, this, std::placeholders::_1));
+  this->install_callback("NEW_ENTITY",
+                         std::bind(&Game::new_entity_callback, this, std::placeholders::_1));
   this->install_callback("START",
                          std::bind(&GameClient::handle_start_message, this, std::placeholders::_1));
   this->install_callback("T",
                          std::bind(&GameClient::turn_callback, this, std::placeholders::_1));
   this->install_callback("MOVE",
                          std::bind(&Game::move_callback, this, std::placeholders::_1));
-  this->install_callback("BUILD",
-                         std::bind(&GameClient::build_callback, this, std::placeholders::_1));
-  this->install_callback("SPAWN",
-                         std::bind(&GameClient::spawn_callback, this, std::placeholders::_1));
 
   this->screen->add_element(&this->camera, 0);
   this->screen->add_element(&this->hud, 1);
-  this->screen->add_element(&this->get_debug_hud(), 2);
+  // this->screen->add_element(&this->get_debug_hud(), 2);
 }
 
 GameClient::~GameClient()

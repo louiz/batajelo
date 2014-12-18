@@ -16,10 +16,18 @@ public:
   Position& position();
   Fix16 get_width() const;
   void set_width(const Fix16& width);
+  bool contains(const Position&) const;
+  /**
+   * Returns weither or not this entity (if not moving) makes it impossible
+   * for the given unit to reach this Position. This means that this entity
+   * is OVER the position, or close enough that the moving entity cannot
+   * reach it because of its width.
+   */
+  bool is_obstructing_position(const Position&) const;
 
 private:
-  Position pos;
   Fix16 width;
+  Position pos;
 
   Location(const Location&) = delete;
   Location(Location&&) = delete;

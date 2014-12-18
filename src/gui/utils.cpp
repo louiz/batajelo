@@ -8,5 +8,9 @@ sf::Color mix(const sf::Color& first, const sf::Color& second,
   uint16_t g = ((first.g * (1 - coef)) + (second.g * coef));
   uint16_t b = ((first.b * (1 - coef)) + (second.b * coef));
   uint16_t a = ((first.a * (1 - coef)) + (second.a * coef));
-  return {r, g, b, a};
+  return {static_cast<uint8_t>(r),
+      static_cast<uint8_t>(g),
+      static_cast<uint8_t>(b),
+      static_cast<uint8_t>(a)};
+
 }

@@ -151,19 +151,16 @@ void GameServer::tick()
 
 void GameServer::start_game()
 {
-  this->send_new_unit_order(0, {300, 300}, 1);
-  this->send_new_unit_order(0, {400, 800.12}, 1);
-  this->send_new_unit_order(0, {500, 500}, 2);
-  this->send_new_unit_order(0, {320, 610}, 2);
+  this->send_new_entity_order(0, {300, 300}, 1);
+  this->send_new_entity_order(0, {400, 800.12}, 1);
+  this->send_new_entity_order(0, {500, 500}, 2);
+  this->send_new_entity_order(0, {320, 610}, 2);
   this->turn_handler.mark_turn_as_ready();
 }
 
 void GameServer::on_next_turn(const TurnNb n)
 {
-  // static int a = 100;
   log_debug("GameServer::on_next_turn(" << n << ")");
-  // this->send_new_unit_order(0, {a, a});
-  // a += 2;
   this->turn_handler.mark_turn_as_ready();
   this->send_message_to_all("T", {});
 }
@@ -192,28 +189,8 @@ void GameServer::send_turn()
   this->send_to_all_clients(message);
 }
 
-void GameServer::spawn_unit(const EntityType type, const Position& position)
-{
-  // DoUnitEvent* e = new DoUnitEvent(new_unit);
-  // e->turn = 1;
-  // this->world.replay.insert_action(std::make_unique<Action>(nullptr, e, 0));
-}
-
 void GameServer::init()
 {
-  log_error("Creating initial world state");
-  this->spawn_unit(0, {300, 300});
-  // this->spawn_unit(0, 0, 400);
-  // this->spawn_unit(0, 0, 600);
-
-  // this->spawn_unit(0, 200, 0);
-  // this->spawn_unit(0, 400, 0);
-  // this->spawn_unit(0, 600, 0);
-
-  // this->spawn_unit(0, 200, 200);
-  // this->spawn_unit(0, 400, 400);
-  // this->spawn_unit(0, 600, 600);
-  log_debug("done");
 }
 
 void GameServer::on_move_request(Message* message)
@@ -233,17 +210,17 @@ void GameServer::on_move_request(Message* message)
   this->send_move_order(ids, pos, srl.queue());
 }
 
-void GameServer::send_new_unit_order(const EntityType type, const Position& pos,
-                                     const uint16_t team)
+void GameServer::send_new_entity_order(const EntityType type, const Position& pos,
+                                       const uint16_t team)
 {
-  ser::order::NewUnit srl;
+  ser::order::NewEntity srl;
   srl.set_turn(this->turn_handler.get_current_turn() + 2);
   srl.set_type_id(type);
   srl.mutable_pos()->set_x(pos.x.raw());
   srl.mutable_pos()->set_y(pos.y.raw());
   srl.set_team(team);
-  this->send_order_to_all("NEW_UNIT", srl);
-  this->turn_handler.insert_action(std::bind(&World::do_new_unit, &this->world, type, pos, team),
+  this->send_order_to_all("NEW_ENTITY", srl);
+  this->turn_handler.insert_action(std::bind(&World::do_new_entity, &this->world, type, pos, team),
                                    srl.turn());
 }
 

@@ -3,6 +3,7 @@
 
 #include <world/world.hpp>
 #include <world/vision.hpp>
+#include <world/location.hpp>
 
 #include <world/map.hpp>
 
@@ -41,16 +42,17 @@ void Fog::redraw()
 {
   this->texture.clear({0, 0, 0, 150});
 
-  // For each unit, draw the vision range
-  for (const Unit* unit: this->world->units)
+  // For each entity (with a vision and position), draw the vision range
+  for (const auto& entity: this->world->entities)
     {
-      Vision* vision = unit->get<Vision>();
-      if (vision)
+      Vision* vision = entity->get<Vision>();
+      Location* location = entity->get<Location>();
+      if (vision && location)
         {
           sf::CircleShape circle(vision->get_range(),
                                  60);
           circle.setFillColor({0, 0, 0, 0});
-          auto center = this->camera->world_to_camera_position(unit->pos);
+          auto center = this->camera->world_to_camera_position(location->position());
           center.x -= this->camera->x;
           center.y -= this->camera->y;
           circle.setPosition(center.x, center.y);

@@ -37,10 +37,6 @@ public:
 
   unsigned short get_id() const { return this->id; }
   /**
-   * Returns whether or not the given position is under the entity
-   */
-  virtual bool contains(const Position&) const = 0;
-  /**
    * Regularly update the entity.
    */
   void tick(World*);
@@ -48,13 +44,6 @@ public:
   void clear_works();
   void set_work(std::unique_ptr<Work>&&);
   void queue_work(std::unique_ptr<Work>&&);
-  /**
-   * Returns weither or not this entity (if not moving) makes it impossible
-   * for the given unit to reach this Position. This means that this
-   * entity is OVER the position, or close enough that the moving entity
-   * cannot reach it because of its width.
-   */
-  virtual bool is_obstructing_position(const Unit*, const Position&) const = 0;
 
   template <typename ComponentClass>
   ComponentClass* get() const

@@ -29,7 +29,7 @@ public:
 
   void add_new_occupant(std::unique_ptr<Occupant>&& occupant);
 
-  void do_new_unit(const EntityType type, const Position& pos, const uint16_t team) override final;
+  void do_new_entity(const EntityType type, const Position& pos, const uint16_t team) override final;
 
   void send_message(const char* name, const google::protobuf::Message& msg);
   void send_message(const char* name, const std::string& archive);
@@ -45,10 +45,6 @@ public:
    */
   void occupant_left_callback(Message*);
   /**
-   * Called when a new unit has to be inserted in the world.
-   */
-  // void new_unit_callback(Message*);
-  /**
    * When we receive the message from the server telling us that
    * it is ready to start the game.
    */
@@ -62,22 +58,6 @@ public:
    * The server gives a path to follow, to one or more entities.
    */
   void path_callback(Message*);
-  /**
-   * The server tells one unit to build the given building
-   */
-  void build_callback(Message*);
-  /**
-   * The server tells one building to spawn the given unit
-   */
-  void spawn_callback(Message*);
-  /**
-   * Insert an action, built from a message we received, into the turn handler.
-   */
-  // void insert_received_action(std::unique_ptr<Action>&&, ActionEvent* event);
-  /**
-   * Insert a sprite for the unit, as well, and then call world->insert_unit()
-   */
-  void on_new_building(Building*);
 
   /**
    * Handle an user event that may generate a real action, or nothing.
@@ -103,8 +83,6 @@ public:
    */
   bool action_move(std::vector<EntityId> ids, const Position& pos,
                    const bool queue);
-  // bool action_move(const unsigned int x, const unsigned y, const std::size_t=0);
-  bool action_build(const unsigned int, const unsigned int, const std::size_t);
   void action_spawn(const t_left_click left_click);
   /**
    * Give the order to all selected and movable units to move to the given

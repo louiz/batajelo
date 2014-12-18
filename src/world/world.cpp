@@ -14,19 +14,6 @@ World::~World()
 {
 }
 
-void World::insert_unit(std::unique_ptr<Unit>&& unit)
-{
-  log_debug("Inserting unit at position " << unit->pos);
-  this->units.push_back(unit.get());
-  this->insert_entity(std::move(unit));
-}
-
-void World::insert_building(std::unique_ptr<Building>&& building)
-{
-  this->buildings.push_back(building.get());
-  this->insert_entity(std::move(building));
-}
-
 void World::insert_entity(std::unique_ptr<Entity>&& entity)
 {
   this->entities.push_back(std::move(entity));
@@ -34,54 +21,60 @@ void World::insert_entity(std::unique_ptr<Entity>&& entity)
 
 void World::tick()
 {
+  bool first = true;
   for (const auto& entity: this->entities)
     {
       entity->tick(this);
       Health* health = entity->get<Health>();
-      if (health)
-        health->add(-0.01);
+      if (health && first)
+        {
+          health->add(-0.01);
+          first = false;
+        }
     }
 }
 
-Path World::calculate_path(Position endpos, Unit* unit)
+Path World::calculate_path(Position endpos, Location* location)
 {
-  log_debug("Calculating path for unit. Starting at position: " << unit->pos << " ending at pos: " << endpos);
+  log_debug("Calculating path for entity. Starting at position: " << location->position() << " ending at pos: " << endpos);
 
-  CellPath cell_path = this->map.do_astar(this->get_cell_at_position(unit->pos),
+  CellPath cell_path = this->map.do_astar(this->get_cell_at_position(location->position()),
                                           this->get_cell_at_position(endpos));
 
   // DEBUG
   this->current_path = cell_path;
 
   if (!cell_path.empty())
-    return this->smooth_path(cell_path, unit->pos, endpos, unit->width);
+    return this->smooth_path(cell_path, location->position(), endpos, location->get_width());
   return {};
 }
 
-Unit* World::do_new_unit(const EntityType type, const Position& pos, const uint16_t team_value)
+Entity* World::do_new_entity(const EntityType type, const Position& pos, const uint16_t team_value)
 {
-  auto entity = this->entity_factory.make_unit(type);
-  entity->pos = pos;
+  auto entity = this->entity_factory.make_entity(type);
+  Location* location = entity->get<Location>();
+  assert(location);
+  location->position() = pos;
   Team* team = entity->get<Team>();
   assert(team);
   team->set(team_value);
 
   auto res = entity.get();
-  this->insert_unit(std::move(entity));
+  this->insert_entity(std::move(entity));
   return res;
 }
 
 void World::do_move(const std::vector<EntityId> ids, const Position& pos, const bool queue)
 {
-  Unit* unit;
+  Entity* entity;
   for (const EntityId id: ids)
     {
-      log_debug("Moving unit " << id << " to pos " << pos);
-      unit = this->get_unit_by_id(id);
+      log_debug("Moving entity " << id << " to pos " << pos);
+      entity = this->get_entity_by_id(id);
       if (queue)
-        unit->queue_work(std::make_unique<PathWork>(unit, pos));
+        entity->queue_work(std::make_unique<PathWork>(entity, pos));
       else
-        unit->set_work(std::make_unique<PathWork>(unit, pos));
+        entity->set_work(std::make_unique<PathWork>(entity, pos));
     }
 }
 
@@ -97,38 +90,9 @@ Entity* World::get_entity_by_id(unsigned short id)
   return nullptr;
 }
 
-Unit* World::get_unit_by_id(unsigned short id)
-{
-  Unit* unit;
-  for (std::list<Unit*>::iterator it = this->units.begin(); it != this->units.end(); ++it)
-    {
-      unit = *it;
-      if (unit->get_id() == id)
-     return unit;
-    }
-  return nullptr;
-}
-
-Building* World::get_building_by_id(unsigned short id)
-{
-  Building* building;
-  for (std::list<Building*>::iterator it = this->buildings.begin(); it != this->buildings.end(); ++it)
-    {
-      building = *it;
-      if (building->get_id() == id)
-     return building;
-    }
-  return 0;
-}
-
 Map& World::get_map()
 {
   return this->map;
-}
-
-static bool compare_units(const Unit* a, const Unit* b)
-{
-  return (a->pos.y < b->pos.y);
 }
 
 Cell World::get_cell_at_position(const Position& pos) const
@@ -558,14 +522,4 @@ Position World::get_nearest_corner(const Position& pos, const CellIndex cell, co
 bool World::can_build_at_cell(const int x, const int y) const
 {
   return this->map.can_be_built_on(x, y);
-}
-
-bool World::can_unit_spawn_at_pos(const Unit* unit, const Position& pos) const
-{
-  for (const auto& entity: this->entities)
-    {
-      if (entity->is_obstructing_position(unit, pos))
-        return false;
-    }
-  return true;
 }

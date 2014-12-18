@@ -2,13 +2,13 @@
 #include <logging/logging.hpp>
 #include <gui/camera/camera.hpp>
 #include <game/game_client.hpp>
-#include <world/unit.hpp>
 #include <world/health.hpp>
 #include <world/manapool.hpp>
 #include <world/team.hpp>
+#include <world/location.hpp>
 
-PicpicSprite::PicpicSprite(const Unit* const unit):
-  UnitSprite(unit),
+PicpicSprite::PicpicSprite(const Entity* const entity):
+  EntitySprite(entity),
   float_direction(-0.0002)
 {
   if (PicpicSprite::init == false)
@@ -24,13 +24,15 @@ PicpicSprite::PicpicSprite(const Unit* const unit):
 
 void PicpicSprite::draw(GameClient* game) const
 {
-  Team* team = this->unit->get<Team>();
+  Team* team = this->entity->get<Team>();
   assert(team);
+  Location* location = this->entity->get<Location>();
+  assert(location);
   this->draw_shadow(game->get_camera(), this->team_colors[team->get()]);
-  const auto entpos = game->get_camera().world_to_camera_position(this->unit->pos);
+  const auto entpos = game->get_camera().world_to_camera_position(location->position());
 
-  const int x = entpos.x - game->get_camera().x;
-  const int y = entpos.y - game->get_camera().y;
+  const float x = entpos.x - game->get_camera().x;
+  const float y = entpos.y - game->get_camera().y;
 
   sf::Sprite sprite(PicpicSprite::body_texture);
   const sf::Vector2u size = PicpicSprite::body_texture.getSize();
@@ -47,25 +49,25 @@ void PicpicSprite::draw(GameClient* game) const
 
   EnergyBar bar = this->standard_health_bar;
 
-  Health* unit_health = unit->get<Health>();
-  if (unit_health)
+  Health* entity_health = entity->get<Health>();
+  if (entity_health)
     {
-      game->get_debug_hud().add_debug_line("Unit health: " + std::to_string(unit_health->get()) + "/" +std::to_string(unit_health->get_max()));
-      game->get_camera().draw_energy_bar({x, y - 90}, bar, unit_health->get_max().to_int(), unit_health->get().to_int());
+      game->get_debug_hud().add_debug_line("Entity health: " + std::to_string(entity_health->get()) + "/" +std::to_string(entity_health->get_max()));
+      game->get_camera().draw_energy_bar({x, y - 90}, bar, entity_health->get_max().to_int(), entity_health->get().to_int());
     }
   EnergyBar mana_bar = this->standard_mana_bar;
-  ManaPool* unit_mana = unit->get<ManaPool>();
-  if (unit_mana)
+  ManaPool* entity_mana = entity->get<ManaPool>();
+  if (entity_mana)
     {
-      game->get_debug_hud().add_debug_line("Unit mana: " + std::to_string(unit_mana->get()) + "/" +std::to_string(unit_mana->get_max()));
-      game->get_camera().draw_energy_bar({x, y - 80}, mana_bar, unit_mana->get_max().to_int(), unit_mana->get().to_int());
+      game->get_debug_hud().add_debug_line("Entity mana: " + std::to_string(entity_mana->get()) + "/" +std::to_string(entity_mana->get_max()));
+      game->get_camera().draw_energy_bar({x, y - 80}, mana_bar, entity_mana->get_max().to_int(), entity_mana->get().to_int());
     }
 
 }
 
 void PicpicSprite::tick()
 {
-  if (this->height > 6 || this->height < 1)
+  if (this->height > 2 || this->height < -5)
     this->float_direction = -this->float_direction;
   this->height += this->float_direction;
 }

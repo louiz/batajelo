@@ -66,7 +66,7 @@ public:
    */
   void on_next_turn(const TurnNb nb);
 
-  void send_new_unit_order(const EntityType type, const Position& pos, const uint16_t team);
+  void send_new_entity_order(const EntityType type, const Position& pos, const uint16_t team);
   void send_move_order(const std::vector<EntityId> ids, const Position& pos, const bool queue);
   /**
    * This will create the initial game
@@ -98,12 +98,6 @@ public:
    * etc), before returning a DoSpawnEvent.
    */
   void spawn_callback(Message*);
-  /**
-   * Generate a unit of the given type, at the given position and adds the
-   * event of its creation to the first turn of the replay (which will be
-   * sent to any joining client).
-   */
-  void spawn_unit(const EntityType type , const Position& position);
 
 private:
   GameServer(const GameServer&);

@@ -6,7 +6,9 @@
 #define GAME_HPP_INCLUDED
 
 #include <world/world.hpp>
+#include <world/entity.hpp>
 #include <network/message.hpp>
+
 #include <game/turn_handler.hpp>
 #include <game/occupants_handler.hpp>
 
@@ -16,10 +18,10 @@ public:
   Game();
   ~Game();
 
-  void new_unit_callback(Message* msg);
+  void new_entity_callback(Message* msg);
   void move_callback(Message* msg);
-  virtual void do_new_unit(const EntityType type, const Position& pos,
-                           const uint16_t team);
+  virtual void do_new_entity(const EntityType type, const Position& pos,
+                             const uint16_t team);
 
 protected:
   World world;

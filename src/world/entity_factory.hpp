@@ -5,19 +5,19 @@
 #include <memory>
 #include <map>
 
-#include <world/unit.hpp>
+#include <world/entity.hpp>
 
-static constexpr std::size_t MaxUnitModels = 32;
+static constexpr std::size_t MaxEntityModels = 32;
 
 class EntityFactory
 {
 public:
   EntityFactory();
   ~EntityFactory();
-  std::unique_ptr<Unit> make_unit(const EntityType type);
+  std::unique_ptr<Entity> make_entity(const EntityType type);
 
 private:
-  std::vector<Unit> unit_models;
+  std::vector<Entity> entity_models;
 
   EntityFactory(const EntityFactory&) = delete;
   EntityFactory(EntityFactory&&) = delete;

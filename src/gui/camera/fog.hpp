@@ -52,7 +52,7 @@ private:
    */
   const Camera* const camera;
   /**
-   * We also need the world, to know the unit position, their vision range
+   * We also need the world, to know the entity position, their vision range
    * etc
    */
   const World* const world;

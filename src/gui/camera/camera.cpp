@@ -3,11 +3,12 @@
 #include <gui/screen/screen.hpp>
 #include <world/layer.hpp>
 #include <gui/utils.hpp>
-#include <gui/sprites/archive_sprite.hpp>
 #include <gui/sprites/pic_sprite.hpp>
 #include <game/game_client.hpp>
 #include <climits>
 #include <cstdlib>
+
+#include <world/location.hpp>
 
 Camera::Camera(GameClient* game, Screen* screen):
   ScreenElement(screen),
@@ -49,35 +50,6 @@ sf::RenderWindow& Camera::win()
 sf::RenderWindow& Camera::win() const
 {
   return this->screen->window();
-}
-
-void Camera::draw_unit(const Unit* unit, const uint x, const uint y,
-                       const bool in_mouse_selection, sf::RectangleShape& rectangle)
-{
-  if (in_mouse_selection)
-    {
-      sf::CircleShape in_mouse_circle;
-      in_mouse_circle.setRadius(unit->width.to_int()/2 + 6);
-      in_mouse_circle.setOutlineColor(sf::Color(0xff, 0xcb, 0x36, 255));
-      in_mouse_circle.setFillColor(sf::Color::Transparent);
-      in_mouse_circle.setOutlineThickness(2);
-      in_mouse_circle.setPosition(x - unit->width.to_int()/2 - 6, y - unit->width.to_int() + 4);
-      in_mouse_circle.setScale(sf::Vector2f(1, 3.f/4.f));
-      this->win().draw(in_mouse_circle);
-    }
-  if (this->game->is_entity_selected(unit))
-    {
-      sf::CircleShape selection_circle;
-      selection_circle.setRadius(unit->width.to_int()/2 + 8);
-      selection_circle.setOutlineColor(sf::Color(0x00, 0x00, 0xff, 200));
-      selection_circle.setFillColor(sf::Color::Transparent);
-      selection_circle.setOutlineThickness(3);
-      selection_circle.setPosition(x - unit->width.to_int()/2 - 8, y - unit->width.to_int() + 5);
-      selection_circle.setScale(sf::Vector2f(1, 3.f/4.f));
-      this->win().draw(selection_circle);
-    }
-  rectangle.setPosition(x - unit->width.to_int()/2, y - unit->width.to_int());
-  this->win().draw(rectangle);
 }
 
 bool Camera::handle_event(const sf::Event& event)
@@ -178,68 +150,47 @@ void Camera::handle_left_release(const sf::Event& event)
 void Camera::set_mouse_selection_to_selection()
 {
 
-  Unit* entity;
+  Entity* entity;
   sf::Vector2i mouse_pos = this->screen->get_mouse_position();
   mouse_pos.x += this->x;
   mouse_pos.y += this->y;
   // First check the number of entities inside the selection. If it's 0, do
   // nothing
-  unsigned int number_of_units = 0;
-  for (std::list<Unit*>::iterator it = this->world().units.begin(); it != this->world().units.end(); ++it)
-    if (this->mouse_selection.contains(mouse_pos,
-                                       this->world_to_camera_position((*it)->pos),
-                                       (*it)->width.to_int() + 4))
-      number_of_units++;
-  unsigned int number_of_buildings = 0;
-  for (std::list<Building*>::iterator it = this->world().buildings.begin(); it != this->world().buildings.end(); ++it)
-    {
-      Position pos((*it)->x * CELL_SIZE + CELL_SIZE / 2,
-                   (*it)->y * CELL_SIZE + CELL_SIZE / 2);
-      if (this->mouse_selection.contains(mouse_pos, this->world_to_camera_position(pos)))
-        number_of_buildings++;
-    }
-  log_warning("in mouse selection: Number of units: " << number_of_units << " and buildings: " << number_of_buildings);
-  if (number_of_buildings + number_of_units > 0)
+  auto number_of_entities = std::count_if(this->world().entities.begin(),
+                                          this->world().entities.end(),
+                                          [this, &mouse_pos](const std::unique_ptr<Entity>& entity) -> bool
+                                          {
+                                            Location* location = entity->get<Location>();
+                                            if (location)
+                                              return this->mouse_selection.contains(mouse_pos,
+                                                                                    this->world_to_camera_position(location->position()),
+                                                                                    location->get_width().to_int());
+                                            return false;
+                                          });
+  auto number_of_buildings = 0;
+  log_warning("in mouse selection: Number of entities: " << number_of_entities << " and buildings: " << number_of_buildings);
+  if (number_of_buildings + number_of_entities > 0)
     {
       bool new_unit_was_selected = false;
-      for (std::list<Unit*>::iterator it = this->world().units.begin(); it != this->world().units.end(); ++it)
+      for (const auto& entity: this->world().entities)
         {
+          Location* location = entity->get<Location>();
+          if (!location)
+            continue;
           if (this->mouse_selection.contains(mouse_pos,
-                                             this->world_to_camera_position((*it)->pos),
-                                             (*it)->width.to_int() + 4))
+                                             this->world_to_camera_position(location->position()),
+                                             location->get_width().to_int() + 4))
             {
-              if (this->game->is_entity_selected(*it) == false)
+              if (this->game->is_entity_selected(entity.get()) == false)
                 {
                   new_unit_was_selected = true;
-                  this->game->select_entity(*it);
+                  this->game->select_entity(entity.get());
                 }
             }
           else
             {
-              if (this->game->is_entity_selected(*it) == true)
-                this->game->unselect_entity(*it);
-            }
-        }
-      for (std::list<Building*>::iterator it = this->world().buildings.begin(); it != this->world().buildings.end(); ++it)
-        {
-          Position pos((*it)->x * CELL_SIZE + CELL_SIZE / 2,
-                       (*it)->y * CELL_SIZE + CELL_SIZE / 2);
-          if (this->mouse_selection.contains(mouse_pos, this->world_to_camera_position(pos)))
-            {
-              if (this->game->is_entity_selected(*it) == false)
-                {
-                  // We select the building only if no unit was added to the
-                  // selection.  This way we can box an area and select only the units
-                  // inside it, because that's what we want most of the time when
-                  // doing that.
-                  if (new_unit_was_selected == false)
-                    this->game->select_entity(*it);
-                }
-            }
-          else
-            {
-              if (this->game->is_entity_selected(*it) == true)
-                this->game->unselect_entity(*it);
+              if (this->game->is_entity_selected(entity.get()) == true)
+                this->game->unselect_entity(entity.get());
             }
         }
     }
@@ -248,18 +199,21 @@ void Camera::set_mouse_selection_to_selection()
 
 void Camera::add_mouse_selection_to_selection()
 {
-  Unit* entity;
   sf::Vector2i mouse_pos = this->screen->get_mouse_position();
   mouse_pos.x += this->x;
   mouse_pos.y += this->y;
-  for (std::list<Unit*>::iterator it = this->world().units.begin(); it != this->world().units.end(); ++it)
+
+  for (const auto& entity: this->world().entities)
     {
+      Location* location = entity->get<Location>();
+      if (!location)
+        continue;
       if (this->mouse_selection.contains(mouse_pos,
-                                         this->world_to_camera_position((*it)->pos),
-                                         (*it)->width.to_int() + 4))
+                                         this->world_to_camera_position(location->position()),
+                                         location->get_width().to_int() + 4))
         {
-          if (this->game->is_entity_selected(*it) == false)
-            this->game->select_entity(*it);
+          if (this->game->is_entity_selected(entity.get()) == false)
+            this->game->select_entity(entity.get());
         }
     }
   this->mouse_selection.end();
@@ -665,14 +619,9 @@ void Camera::draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar_
     }
 }
 
-void Camera::on_new_unit(const Unit* unit)
+void Camera::on_new_entity(const Entity* entity)
 {
-  this->sprites.push_back(new PicpicSprite(unit));
-}
-
-void Camera::on_new_building(const Building* building)
-{
-  this->sprites.push_back(new ArchiveSprite(building));
+  this->sprites.push_back(new PicpicSprite(entity));
 }
 
 const sf::Vector2u Camera::get_win_size() const

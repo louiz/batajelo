@@ -52,12 +52,6 @@ public:
    */
   void draw_mouse_selection();
   /**
-   * Draw the unit on the screen, taking the on-screen position of the
-   * unit.
-   */
-  void draw_unit(const Unit*, const uint x, const uint y,
-                   const bool in_mouse_selection, sf::RectangleShape& rectangle);
-  /**
    * Draw an energy bar, centered at the given screen position.
    */
   void draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar,
@@ -106,8 +100,7 @@ public:
    */
   bool is_mouse_selection_ongoing() const;
   void draw(const sf::Drawable&, const sf::RenderStates& states = sf::RenderStates::Default);
-  void on_new_unit(const Unit*);
-  void on_new_building(const Building*);
+  void on_new_entity(const Entity*);
   void graphical_tick();
 
   const sf::Vector2u get_win_size() const;

@@ -1,6 +1,8 @@
 #ifndef COMPONENT_HPP_INCLUDED
 #define COMPONENT_HPP_INCLUDED
 
+#include <vector>
+
 class World;
 class Entity;
 
@@ -8,6 +10,7 @@ enum class ComponentType
 {
     Invalid,
     Location,
+    Mobility,
     Health,
     ManaPool,
     Vision,
