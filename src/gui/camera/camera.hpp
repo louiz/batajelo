@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <list>
+#include <memory>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <boost/function.hpp>
@@ -148,7 +149,7 @@ private:
    * A pointer to the world object used to display stuff on the screen.
    */
   GameClient* game;
-  std::list<WorldSprite*> sprites;
+  std::list<std::unique_ptr<WorldSprite>> sprites;
   MouseSelection mouse_selection;
   Tileset tileset;
   Fog fog;

@@ -623,7 +623,7 @@ void Camera::draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar_
 
 void Camera::on_new_entity(const Entity* entity)
 {
-  this->sprites.push_back(new PicpicSprite(entity));
+  this->sprites.push_back(std::make_unique<PicpicSprite>(entity));
 }
 
 const sf::Vector2u Camera::get_win_size() const
@@ -633,7 +633,7 @@ const sf::Vector2u Camera::get_win_size() const
 
 void Camera::graphical_tick()
 {
-  for (auto sprite: this->sprites)
+  for (auto& sprite: this->sprites)
     sprite->tick();
   this->fog.invalidate();
 }
