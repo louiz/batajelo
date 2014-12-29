@@ -9,16 +9,7 @@ EntityId Entity::current_id = 0;
 EntityType Entity::current_type_id = 0;
 
 Entity::Entity():
-  // type_id(Entity::current_type_id++)
   id(++Entity::current_id)
-
-{
-}
-
-Entity::Entity(const Entity& model):
-  id(++Entity::current_id),
-  type_id(model.type_id),
-  name(model.name)
 {
 }
 
@@ -45,10 +36,10 @@ void Entity::clear_works()
 
 void Entity::tick(World* world)
 {
-  for (auto it = this->components.begin();
-       it != this->components.end(); ++it)
+  for (const auto& ptr: this->components)
     {
-      it->second->tick(this, world);
+      if (ptr)
+        ptr->tick(this, world);
     }
   if (this->works.empty())
     return ;

@@ -25,11 +25,6 @@ public:
    * This constructor is used when creating a model.
    */
   Entity();
-  /**
-   * This constructor is used when creating a unit, based
-   * on a model.
-   */
-  Entity(const Entity&);
   virtual ~Entity();
 
   unsigned short get_id() const { return this->id; }
@@ -49,20 +44,23 @@ public:
                   "ComponentClass must be a Component.");
     static_assert(ComponentClass::component_type != ComponentType::Invalid,
                   "ComponentClass must set its own type.");
-    auto it = this->components.find(ComponentClass::component_type);
-    if (it != this->components.end())
-      return reinterpret_cast<ComponentClass*>(it->second.get());
-    return nullptr;
+    auto index = static_cast<std::size_t>(ComponentClass::component_type);
+    return reinterpret_cast<ComponentClass*>(this->components[index].get());
   }
 
   template <typename ComponentClass>
   void add_component(ComponentClass&& pointer)
   {
-    this->components[ComponentClass::element_type::component_type] = std::move(pointer);
+    auto index = static_cast<std::size_t>(ComponentClass::element_type::component_type);
+    this->components[index] = std::move(pointer);
   }
 
 private:
-  Entity& operator=(const Entity&);
+  Entity& operator=(const Entity&) = delete;
+  Entity& operator=(Entity&&) = delete;
+  Entity(const Entity&) = delete;
+  Entity(Entity&&) = delete;
+
 public:
   static EntityId current_id;
   static EntityType current_type_id;
@@ -104,7 +102,7 @@ public:
    * PositionComponent, which tracks the position of the entity and has
    * methods to alter this position.
    */
-  std::map<ComponentType, std::unique_ptr<Component>> components;
+  std::array<std::unique_ptr<Component>, ComponentTypeCount> components;
 };
 
 #endif // __ENTITY_HPP__

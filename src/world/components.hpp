@@ -6,7 +6,7 @@
 class World;
 class Entity;
 
-enum class ComponentType
+enum class ComponentType: std::size_t
 {
     Invalid,
     Location,
@@ -15,7 +15,11 @@ enum class ComponentType
     ManaPool,
     Vision,
     Team,
+
+    count
 };
+
+constexpr std::size_t ComponentTypeCount = static_cast<std::size_t>(ComponentType::count);
 
 class Component
 {
