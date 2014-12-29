@@ -17,6 +17,8 @@ int main()
 
   client.run();
 
+  google::protobuf::ShutdownProtobufLibrary();
+
   return 0;
 }
 
