@@ -7,12 +7,11 @@
 #define GAME_CLIENT_HPP_INCLUDED
 
 #include <game/game.hpp>
-#include <game/occupants_handler.hpp>
+#include <game/occupant.hpp>
 #include <network/client_base.hpp>
 #include <gui/screen/screen.hpp>
 #include <game/selection.hpp>
 #include <game/turn_handler.hpp>
-#include <world/world.hpp>
 #include <gui/hud/debug_hud.hpp>
 #include <gui/hud/hud.hpp>
 

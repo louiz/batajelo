@@ -1,5 +1,6 @@
 #include <logging/logging.hpp>
 #include <game/selection.hpp>
+#include <assert.h>
 
 #include <algorithm>
 

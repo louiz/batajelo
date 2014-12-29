@@ -2,13 +2,10 @@
 # define __ENTITY_HPP__
 
 #include <world/components.hpp>
-#include <world/position.hpp>
 
 #include <cstdint>
 #include <memory>
-#include <queue>
 #include <list>
-#include <map>
 
 using EntityType = uint16_t;
 using EntityId = uint16_t;

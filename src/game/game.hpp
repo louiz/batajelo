@@ -7,10 +7,11 @@
 
 #include <world/world.hpp>
 #include <world/entity.hpp>
-#include <network/message.hpp>
 
 #include <game/turn_handler.hpp>
 #include <game/occupants_handler.hpp>
+
+class Message;
 
 class Game
 {

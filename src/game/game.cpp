@@ -1,5 +1,6 @@
 #include <game/game.hpp>
 #include <orders.pb.h>
+#include <network/message.hpp>
 
 Game::Game():
   world(),

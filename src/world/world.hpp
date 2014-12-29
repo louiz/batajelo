@@ -21,14 +21,11 @@
 
 #include <list>
 #include <memory>
-#include <functional>
 
 #include <world/entity.hpp>
 #include <world/entity_factory.hpp>
 
 #include <world/map.hpp>
-#include <world/action.hpp>
-#include <network/message.hpp>
 #include <world/position.hpp>
 #include <world/path.hpp>
 
