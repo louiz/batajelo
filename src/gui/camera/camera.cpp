@@ -151,9 +151,8 @@ void Camera::set_mouse_selection_to_selection()
 {
 
   Entity* entity;
-  sf::Vector2i mouse_pos = this->screen->get_mouse_position();
-  mouse_pos.x += this->x;
-  mouse_pos.y += this->y;
+  sf::Vector2i mouse_pos = this->get_mouse_position();
+
   // First check the number of entities inside the selection. If it's 0, do
   // nothing
   auto number_of_entities = std::count_if(this->world().entities.begin(),
@@ -199,9 +198,7 @@ void Camera::set_mouse_selection_to_selection()
 
 void Camera::add_mouse_selection_to_selection()
 {
-  sf::Vector2i mouse_pos = this->screen->get_mouse_position();
-  mouse_pos.x += this->x;
-  mouse_pos.y += this->y;
+  sf::Vector2i mouse_pos = this->get_mouse_position();
 
   for (const auto& entity: this->world().entities)
     {
@@ -226,6 +223,7 @@ void Camera::handle_middle_release(const sf::Event& event)
 void Camera::update(const Duration& dt)
 {
   sf::Vector2i pos = this->screen->get_mouse_position();
+
   const sf::Vector2u win_size = this->get_win_size();
   if (this->focused)
     {
@@ -253,16 +251,7 @@ void Camera::update(const Duration& dt)
 
 void Camera::draw()
 {
-  const sf::Vector2i mouse_pos = this->screen->get_mouse_position();
-  const unsigned int cell_on_mouse = selected_cell;
-  unsigned int mouse_row = -1;
-  unsigned int mouse_col = -1;
-
-  if (cell_on_mouse != UINT_MAX)
-    {
-      mouse_row = cell_on_mouse / this->map().get_width_in_tiles();
-      mouse_col = cell_on_mouse % this->map().get_width_in_tiles();
-    }
+  const sf::Vector2i mouse_pos = this->get_mouse_position();
 
   // Sort the sprites by their vertical position
   this->sprites.sort([](const auto& a, const auto& b)
@@ -334,10 +323,6 @@ void Camera::draw()
   this->game->get_debug_hud().add_debug_line("Mouse world position: " +
                                                std::to_string(world_mouse_pos.x.to_double()) + ", " +
                                                std::to_string(world_mouse_pos.y.to_double()));
-  this->game->get_debug_hud().add_debug_line("Cell under the mouse: " +
-                                               std::to_string(mouse_col) + ":" +
-                                               std::to_string(mouse_row),
-                                               sf::Color::Yellow);
 
   this->draw(this->fog.get_sprite());
 }
@@ -346,9 +331,8 @@ void Camera::draw_mouse_selection()
 {
   if (this->mouse_selection.ongoing == false)
     return ;
-  sf::Vector2i mouse_pos = this->screen->get_mouse_position();
-  mouse_pos.x += this->x;
-  mouse_pos.y += this->y;
+  sf::Vector2i mouse_pos = this->get_mouse_position();
+
   sf::RectangleShape rect(sf::Vector2f(::abs(mouse_pos.x - this->mouse_selection.start_pos.x),
                                        ::abs(mouse_pos.y- this->mouse_selection.start_pos.y)));
   rect.setOutlineThickness(1);
@@ -417,6 +401,14 @@ float get_edge_height(const float x, const float left_height, const float right_
     return left_height - (ratio * (left_height - right_height));
   else
     return left_height + (ratio * (right_height - left_height));
+}
+
+sf::Vector2i Camera::get_mouse_position() const
+{
+  auto res = this->screen->get_mouse_position();
+  res.x += this->x;
+  res.y += this->y;
+  return res;
 }
 
 Position Camera::camera_to_world_position(const int x, const int y) const

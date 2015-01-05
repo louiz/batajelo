@@ -29,6 +29,7 @@ public:
    */
   bool contains(const sf::Vector2i&,
                 const sf::Vector2i&, const uint width = 1) const;
+
 private:
   MouseSelection(const MouseSelection&);
   MouseSelection& operator=(const MouseSelection&);

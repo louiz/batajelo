@@ -75,6 +75,15 @@ public:
   sf::Vector2i world_to_camera_position(const Position&) const;
   Position camera_to_world_position(const int, const int) const;
   /**
+   * Return the mouse position, taking into account the position of the
+   * camera. This means that if the camera has an offset of 100px (x) and
+   * 100px (y), the result is {100, 100} if the mouse is in the top left
+   * corner of the window.
+   *
+   * Do not confuse with Screen::get_mouse_position()
+   */
+  sf::Vector2i get_mouse_position() const;
+  /**
    * Return the cell at the given position. If the position is not contained
    * by any cell, return UINT_MAX.
    */
