@@ -5,13 +5,8 @@ MouseSelection::MouseSelection():
 {
 }
 
-MouseSelection::~MouseSelection()
-{
-}
-
 void MouseSelection::start(const sf::Vector2i& pos)
 {
-  // assert(ongoing == false);
   this->start_pos = pos;
   this->ongoing = true;
 }

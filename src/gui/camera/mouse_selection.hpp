@@ -21,7 +21,7 @@ class MouseSelection
   friend class Camera;
 public:
   MouseSelection();
-  ~MouseSelection();
+  ~MouseSelection() = default;
   void start(const sf::Vector2i&);
   void end();
   /**

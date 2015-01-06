@@ -1,9 +1,11 @@
 #include <logging/logging.hpp>
 #include <gui/camera/camera.hpp>
 #include <gui/screen/screen.hpp>
-#include <world/layer.hpp>
-#include <gui/utils.hpp>
 #include <gui/sprites/pic_sprite.hpp>
+#include <world/world.hpp>
+#include <world/layer.hpp>
+#include <world/entity.hpp>
+#include <gui/utils.hpp>
 #include <game/game_client.hpp>
 #include <climits>
 #include <cstdlib>
@@ -281,11 +283,8 @@ void Camera::draw()
                 tile = this->tileset.tiles[gid].get();
                 if (tile)
                   {
-                    constexpr char tile_opacity = 255;
+                    constexpr char tile_opacity = 180;
                     tile->sprite.setColor(sf::Color(255, 255, 255, tile_opacity));
-                    if (cell_on_mouse != UINT_MAX &&
-                        row == mouse_row && col == mouse_col)
-                      tile->sprite.setColor(sf::Color(255, 0, 255, tile_opacity));
                     if (std::find(this->world().current_path.begin(), this->world().current_path.end(),
                                   this->map().cell_to_index(std::make_tuple(col, row)))
                         != this->world().current_path.end())
@@ -308,7 +307,13 @@ void Camera::draw()
           std::tie(x, y) = this->world().get_cell_at_position(sprite_world_position);
           if (y == row &&
               this->world().can_be_seen_by_team(sprite_world_position, this->game->get_self_team()))
-            sprite->draw(this->game);
+            {
+              if (this->mouse_selection.contains(mouse_pos, this->world_to_camera_position(sprite_world_position)))
+                this->draw_hover_indicator(this->world_to_camera_position(sprite_world_position), 80);
+              if (this->get_game_client()->is_entity_selected(sprite->get_entity()))
+                this->draw_selected_indicator(this->world_to_camera_position(sprite_world_position), 80);
+              sprite->draw(this->game);
+            }
         }
     }
 
@@ -349,6 +354,32 @@ void Camera::draw_mouse_selection()
     rect_pos.y = mouse_pos.y - this->y;
   rect.setPosition(rect_pos);
   this->win().draw(rect);
+}
+
+void Camera::draw_hover_indicator(const sf::Vector2i& center, const unsigned int width)
+{
+  const float radius = static_cast<float>(width) / 2.0;
+  sf::CircleShape circle(radius, 6);
+  circle.setOutlineColor(sf::Color::Red);
+  circle.setFillColor({0, 0, 0, 0});
+  circle.setOutlineThickness(2);
+  circle.scale(1.0f, 0.666f);
+  circle.setPosition(static_cast<float>(center.x) - radius - this->x,
+                     static_cast<float>(center.y) - radius * 0.666f - this->y);
+  this->draw(circle);
+}
+
+void Camera::draw_selected_indicator(const sf::Vector2i& center, const unsigned int width)
+{
+  const float radius = static_cast<float>(width) / 2.0;
+  sf::CircleShape circle(radius);
+  circle.setOutlineColor(sf::Color::Blue);
+  circle.setFillColor({0, 0, 0, 0});
+  circle.setOutlineThickness(2);
+  circle.scale(1.0f, 0.666f);
+  circle.setPosition(static_cast<float>(center.x) - radius - this->x,
+                     static_cast<float>(center.y) - radius * 0.666f - this->y);
+  this->draw(circle);
 }
 
 void Camera::fixup_camera_position()

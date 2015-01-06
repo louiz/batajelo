@@ -18,9 +18,7 @@
 #include <memory>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
-#include <boost/function.hpp>
 
-#include <world/world.hpp>
 #include <game/time.hpp>
 #include <gui/camera/mouse_selection.hpp>
 #include <fixmath/fix16.hpp>
@@ -36,6 +34,8 @@ class Minimap;
 class Screen;
 class WorldSprite;
 class GameClient;
+class Entity;
+class EntitySprite;
 
 class Camera: public ScreenElement
 {
@@ -58,6 +58,12 @@ public:
    */
   void draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar,
                        const std::size_t max_val, int current_val);
+  /**
+   * Draw an indicator, centered around `center`, the width is the diameter.
+   */
+  void draw_hover_indicator(const sf::Vector2i& center, const unsigned int width);
+  void draw_selected_indicator(const sf::Vector2i& center, const unsigned int width);
+
   /**
    * handle one user input event.
    */
@@ -158,7 +164,7 @@ private:
    * A pointer to the world object used to display stuff on the screen.
    */
   GameClient* game;
-  std::list<std::unique_ptr<WorldSprite>> sprites;
+  std::list<std::unique_ptr<EntitySprite>> sprites;
   MouseSelection mouse_selection;
   Tileset tileset;
   Fog fog;
