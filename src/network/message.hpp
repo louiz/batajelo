@@ -72,13 +72,13 @@ public:
    * copying data twice.
    */
   char* body;
-  std::string header;
-  std::string name;
   size_t body_size;
   /**
    * If not empty, will be called from the send_handler.
    */
   std::function<void(void)> callback;
+  std::string header;
+  std::string name;
   /**
    * Converts the body to a protobuf object. Does not check if it's valid
    * nor complete.

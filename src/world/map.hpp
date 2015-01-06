@@ -93,12 +93,8 @@ public:
   /**
    * Returns an ushort containing the 4 corners' heights of the given cell.
    */
-  TileHeights get_cell_heights(const int cellx, const int celly) const;
+  TileHeights get_cell_heights(const unsigned int cellx, const unsigned int celly) const;
   TileHeights get_cell_heights(const CellIndex cell) const;
-  /**
-   * Returns whether or not this cell can be built on.
-   */
-  bool can_be_built_on(const int cellx, const int celly) const;
   CellPath do_astar(const Cell start, const Cell end);
   /**
    * Returns the neighbour cells of the given one if it's walkable to it.
@@ -121,19 +117,19 @@ protected:
   /**
    * The width (in pixels) of the map.
    */
-  uint width;
+  unsigned int width;
   /**
    * The height (in pixels) of the map.
    */
-  uint height;
+  unsigned int height;
   /**
    * The number of tiles, horizontally.
    */
-  uint width_in_tiles;
+  unsigned int width_in_tiles;
   /**
    * The number of tiles, vertically.
    */
-  uint height_in_tiles;
+  unsigned int height_in_tiles;
   /**
    * The list of all layers. A layer can be NULL.
    */

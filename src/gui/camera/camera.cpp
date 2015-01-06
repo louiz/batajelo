@@ -97,7 +97,7 @@ bool Camera::handle_event(const sf::Event& event)
   return false;
 }
 
-void Camera::handle_middle_click(const sf::Event& event)
+void Camera::handle_middle_click(const sf::Event&)
 {
 }
 
@@ -140,7 +140,7 @@ void Camera::handle_left_click(const sf::Event& event)
     }
 }
 
-void Camera::handle_left_release(const sf::Event& event)
+void Camera::handle_left_release(const sf::Event&)
 {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::RShift) ||
       sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
@@ -151,8 +151,6 @@ void Camera::handle_left_release(const sf::Event& event)
 
 void Camera::set_mouse_selection_to_selection()
 {
-
-  Entity* entity;
   sf::Vector2i mouse_pos = this->get_mouse_position();
 
   // First check the number of entities inside the selection. If it's 0, do
@@ -218,7 +216,7 @@ void Camera::add_mouse_selection_to_selection()
   this->mouse_selection.end();
 }
 
-void Camera::handle_middle_release(const sf::Event& event)
+void Camera::handle_middle_release(const sf::Event&)
 {
 }
 
@@ -492,7 +490,6 @@ Position Camera::camera_to_world_position(const int x, const int y) const
                                                std::to_string(heights.corners.right) + ", " +
                                                std::to_string(heights.corners.bottom));
 
-  const Fix16 cell_size_16 = static_cast<fix16_t>(CELL_SIZE);
   // Relative x and y position on the base square of the grid-aligned tile
   unsigned int rel_x = (x + this->x) - (TILE_WIDTH * col);
   unsigned int rel_y = (y + this->y - top_offset) - ((TILE_HEIGHT / 2) * row);

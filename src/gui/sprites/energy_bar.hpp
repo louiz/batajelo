@@ -25,8 +25,8 @@ struct EnergyBar
    * the scale of the bar, in addition to the percentage of its fullness.
    * Use 0 to disable that kind of line.
    */
-  std::size_t little_graduation;
-  std::size_t big_graduation;
+  int little_graduation;
+  int big_graduation;
 };
 
 #endif /* ENERGY_BAR_HPP_INCLUDE */

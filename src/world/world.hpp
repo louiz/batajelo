@@ -84,10 +84,6 @@ public:
    */
   Fix16 get_position_height(const Position& pos) const;
   /**
-   * Convert a path made of cells by a path composed of world positions
-   */
-  bool can_build_at_cell(const int x, const int y) const;
-  /**
    * Return true if the given location can be seen by any entity of the given
    * team.
    */

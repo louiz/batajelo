@@ -42,7 +42,6 @@ void PicpicSprite::draw(GameClient* game) const
   sf::Sprite eye_sprite(PicpicSprite::eye_texture);
   const sf::Vector2u eye_size = PicpicSprite::eye_texture.getSize();
   eye_sprite.setPosition(x - 10 - eye_size.x/2, y - size.y / 5 * 3 - this->height - eye_size.y/2 + 5);
-  sf::Vector2i mouse_pos = game->get_screen().get_mouse_position();
   game->get_camera().draw(eye_sprite);
   eye_sprite.setPosition(x + 10 - eye_size.x/2, y - size.y / 5 * 3 - this->height - eye_size.y/2 + 5);
   game->get_camera().draw(eye_sprite);

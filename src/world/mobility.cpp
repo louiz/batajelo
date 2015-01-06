@@ -22,7 +22,7 @@ Fix16 Mobility::get_speed() const
   return this->speed;
 }
 
-void Mobility::follow_path(Path& path, World* world, Location* location)
+void Mobility::follow_path(Path& path, World*, Location* location)
 {
   Position goal = path.front();
   Vec2 movement(goal - location->position());

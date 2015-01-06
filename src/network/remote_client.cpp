@@ -18,7 +18,7 @@ void RemoteClient::install_callbacks()
   this->install_callback("TRANSFER", std::bind(&RemoteClient::transfer_callback, this, std::placeholders::_1));
 }
 
-void RemoteClient::auth_callback(Message* received_message)
+void RemoteClient::auth_callback(Message*)
 {
 }
 

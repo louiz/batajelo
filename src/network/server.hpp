@@ -27,14 +27,6 @@
 #include <network/base_socket.hpp>
 #include <network/message.hpp>
 
-/**
- * Does nothing, it is just used to exit the io_service.run_one() after
- * a timeout.
- */
-static void poll_timeout_handler(const boost::system::error_code&)
-{
-}
-
 template <class T>
 class Server: public BaseIoservice, public BaseSocket
 {
@@ -86,7 +78,7 @@ public:
       // we reinstall it. If that's not the case
       // (something actually happened on the socket)
       // we just need to reset the time of expiration, but not reinstall it.
-      this->timeout.async_wait(&poll_timeout_handler);
+      this->timeout.async_wait([](const boost::system::error_code&){});
     // Wait for one event to happen (either a timeout or something
     // on the socket).
     this->io_service.run_one();
@@ -119,7 +111,7 @@ public:
     for (it = this->clients.begin(); it < this->clients.end(); ++it)
       if ((*it)->get_user() && (*it)->get_user()->get("login") == login)
 	return *it;
-    return 0;
+    return nullptr;
   }
 
   /**

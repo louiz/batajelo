@@ -187,32 +187,32 @@ bool Map::get_layer_data(boost::property_tree::ptree& tree, std::string& data)
   return false;
 }
 
-uint Map::get_height_in_pixels() const
+unsigned int Map::get_height_in_pixels() const
 {
   return this->height;
 }
 
-uint Map::get_width_in_pixels() const
+unsigned int Map::get_width_in_pixels() const
 {
   return this->width;
 }
 
-uint Map::get_height_in_tiles() const
+unsigned int Map::get_height_in_tiles() const
 {
   return this->height_in_tiles;
 }
 
-uint Map::get_width_in_tiles() const
+unsigned int Map::get_width_in_tiles() const
 {
   return this->width_in_tiles;
 }
 
 void Map::generate_walking_map()
 {
-  const uint map_size = this->get_width_in_tiles() * this->get_height_in_tiles();
+  const unsigned int map_size = this->get_width_in_tiles() * this->get_height_in_tiles();
   this->walking_map = new TileHeights[map_size];
   int level;
-  for (uint i = 0; i < map_size; ++i)
+  for (unsigned int i = 0; i < map_size; ++i)
     {
       level = this->get_max_level_for_cell(i);
       if (level == -1)
@@ -254,7 +254,7 @@ int Map::get_max_level_for_cell(const uint cell) const
    return ret;
 }
 
-TileHeights Map::get_cell_heights(const int col, const int row) const
+TileHeights Map::get_cell_heights(const unsigned int col, const unsigned int row) const
 {
   assert(col >= 0);
   assert(row >= 0);
@@ -269,24 +269,6 @@ TileHeights Map::get_cell_heights(const CellIndex cell) const
   return this->get_cell_heights(cell % this->get_width_in_tiles(),
                                 cell / this->get_width_in_tiles());
 }
-
-bool Map::can_be_built_on(const int cellx, const int celly) const
-{
-  // assert(cellx >= 0);
-  // assert(celly >= 0);
-  // assert(cellx < this->get_width_in_tiles());
-  // assert(celly < this->get_height_in_tiles());
-  // std::size_t index = (this->get_width_in_tiles() * celly) + cellx;
-  // TileHeights heights = this->walking_map[index];
-  // ushort a = (heights >> 12) & 15;
-  // ushort b = (heights >> 8) & 15;
-  // ushort c = (heights >> 4) & 15;
-  // ushort d = (heights) & 15;
-  // if (a == b && b == c && c == d)
-  //   return true;
-  return false;
-}
-
 
 CellPath Map::do_astar(const Cell start, const Cell goal)
 {
@@ -418,8 +400,6 @@ int heuristic()
 
 void insert_node(AStarNodes& nodes, CellIndex index, int g, int f)
 {
-  bool inserted = false;
-
   AStarNode node;
   node.f = f;
   node.g = g;

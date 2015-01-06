@@ -2,14 +2,15 @@
 
 Occupant::Occupant(uint32_t id, const std::string& name):
   id(id),
+  team(0),
   name(name)
 {
 }
 
 Occupant::Occupant(const ser::game::Occupant& srl):
   id(srl.id()),
-  name(srl.name()),
-  team(srl.team())
+  team(srl.team()),
+  name(srl.name())
 {
 }
 

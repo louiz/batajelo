@@ -543,8 +543,3 @@ Position World::get_nearest_corner(const Position& pos, const CellIndex cell, co
     }
   return nearest_position;
 }
-
-bool World::can_build_at_cell(const int x, const int y) const
-{
-  return this->map.can_be_built_on(x, y);
-}

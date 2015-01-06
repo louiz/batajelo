@@ -14,7 +14,7 @@ EntityFactory::~EntityFactory()
 {
 }
 
-std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType type)
+std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType)
 {
   auto res = std::make_unique<Entity>();
   res->add_component(std::make_unique<Health>(100));

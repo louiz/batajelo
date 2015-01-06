@@ -84,7 +84,6 @@ public:
     return on_left_click;
   }
   void set_left_click_callback(const t_left_click left_click);
-  cursor::type draw_build_cursor(const unsigned int, const unsigned int y, const std::size_t);
   cursor::type draw_move_cursor(const uint, const uint, const std::size_t);
   void reset_left_click_action();
 

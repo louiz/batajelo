@@ -22,6 +22,6 @@ void Team::set(const Team::type number)
   this->number = number;
 }
 
-void Team::tick(Entity* entity, World* world)
+void Team::tick(Entity*, World*)
 {
 }

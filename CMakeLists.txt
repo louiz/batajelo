@@ -75,7 +75,8 @@ link_directories(${CRYPTO++_LIBRARIES})
 if(BUILD_CLIENT)
   add_executable(batajelo_client src/main/batajelo_client.cpp)
   target_link_libraries(batajelo_client
-    server
+    game_client
+    client
     gui
     )
 endif()
@@ -243,7 +244,16 @@ add_library(network STATIC ${source_server} ${source_client})
 ## Game
 #
 file(GLOB source_game
-  src/game/*.[ch]pp
+  src/game/game.[ch]pp
+  src/game/game_server.[ch]pp
+  src/game/occupant.[ch]pp
+  src/game/occupants_handler.[ch]pp
+  src/game/remote_game_client.[ch]pp
+  src/game/replay.[ch]pp
+  src/game/selection.[ch]pp
+  src/game/time.[ch]pp
+  src/game/turn.[ch]pp
+  src/game/turn_handler.[ch]pp
   )
 
 add_library(game STATIC ${source_game})
@@ -255,16 +265,20 @@ target_link_libraries(game
   logging
   config
   world
-  gui
   )
 
 #
 ## Game client
 #
-add_library(game_client STATIC ${source_game})
+file(GLOB source_game_client
+  src/game/game_client.[ch]pp
+  )
+
+add_library(game_client STATIC ${source_game_client})
 
 target_link_libraries(game_client
   game
+  gui
   )
 
 #
