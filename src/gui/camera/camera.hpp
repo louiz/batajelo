@@ -19,7 +19,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
-#include <game/time.hpp>
+#include <utils/time.hpp>
 #include <gui/camera/mouse_selection.hpp>
 #include <fixmath/fix16.hpp>
 #include <world/position.hpp>
@@ -77,7 +77,7 @@ public:
    * Update the camera position or other stuff according to previous
    * input etc.
    */
-  void update(const Duration& dt);
+  void update(const utils::Duration& dt);
   sf::Vector2i world_to_camera_position(const Position&) const;
   Position camera_to_world_position(const int, const int) const;
   /**

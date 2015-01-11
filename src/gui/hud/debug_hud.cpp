@@ -116,7 +116,7 @@ void DebugHud::draw()
   this->text_lines.clear();
 }
 
-void DebugHud::update(const Duration& dt)
+void DebugHud::update(const utils::Duration& dt)
 {
 
 }

@@ -2,7 +2,7 @@
 #define SCREEN_ELEMENT_HPP_INCLUDED
 
 #include <SFML/Window.hpp>
-#include <game/time.hpp>
+#include <utils/time.hpp>
 
 class Screen;
 
@@ -18,7 +18,7 @@ public:
   /**
    * Update the element by the given amount
    */
-  virtual void update(const Duration& dt) = 0;
+  virtual void update(const utils::Duration& dt) = 0;
   /**
    * Handle the given event.  We may decide te “eat” it by returning true in
    *  that case other ScreenElements with lower priority will not receive

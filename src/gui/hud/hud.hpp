@@ -32,7 +32,7 @@ public:
   ~Hud();
   void draw() override final;
   bool handle_event(const sf::Event&) override final;
-  void update(const Duration& dt) override final;
+  void update(const utils::Duration& dt) override final;
   bool is_entity_hovered(const Entity*) const;
   void reset_left_click_action();
 

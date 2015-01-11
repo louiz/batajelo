@@ -220,7 +220,7 @@ void Camera::handle_middle_release(const sf::Event&)
 {
 }
 
-void Camera::update(const Duration& dt)
+void Camera::update(const utils::Duration& dt)
 {
   sf::Vector2i pos = this->screen->get_mouse_position();
 
@@ -238,13 +238,13 @@ void Camera::update(const Duration& dt)
       // TODO
       // sf::Mouse::setPosition(pos, *this->win);
       if (pos.x < 20)
-        this->x -= this->movement_speed * sec(dt);
+        this->x -= this->movement_speed * utils::sec(dt).count();
       if (pos.y < 20)
-        this->y -= this->movement_speed * sec(dt);
+        this->y -= this->movement_speed * utils::sec(dt).count();
       if ((pos.y > 0) && static_cast<uint>(pos.y) > (win_size.y - 20))
-        this->y += this->movement_speed * sec(dt);
+        this->y += this->movement_speed * utils::sec(dt).count();
       if ((pos.x > 0) && static_cast<uint>(pos.x) > (win_size.x - 20))
-        this->x += this->movement_speed * sec(dt);
+        this->x += this->movement_speed * utils::sec(dt).count();
     }
   this->fixup_camera_position();
 }

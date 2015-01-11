@@ -1,28 +1,29 @@
-#include <game/time.hpp>
+#include <utils/time.hpp>
 
-long get_number_of_updates(Duration& duration)
+namespace utils
 {
-  const long ms = duration.total_microseconds();
-  if (ms < WORLD_UPDATE_DURATION)
+
+  // The duration of a world tick, in microseconds
+  constexpr Duration tick_duration{10000us};
+
+  Time now()
+  {
+    return std::chrono::steady_clock::now();
+  }
+
+  unsigned long get_number_of_ticks(Duration& duration)
+  {
+    if (duration < tick_duration)
       return 0;
 
-  long updates = ms / WORLD_UPDATE_DURATION;
-  duration -= boost::posix_time::microseconds(updates*WORLD_UPDATE_DURATION);
-  return updates;
-}
+    unsigned long updates = Duration{duration / tick_duration}.count();
+    duration -= tick_duration * updates;
+    return updates;
+  }
 
-long get_number_of_graphicale_updates(Duration& duration)
-{
-  const long ms = duration.total_microseconds();
-  if (ms < GRAPHICAL_UPDATE_DURATION)
-      return 0;
+  FloatingSeconds sec(const Duration& dt)
+  {
+    return std::chrono::duration_cast<FloatingSeconds>(dt);
+  }
 
-  long updates = ms / GRAPHICAL_UPDATE_DURATION;
-  duration -= boost::posix_time::microseconds(updates*GRAPHICAL_UPDATE_DURATION);
-  return updates;
-}
-
-long sec(const Duration& dt)
-{
-  return dt.total_milliseconds();
 }

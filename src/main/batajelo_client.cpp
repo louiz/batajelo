@@ -1,6 +1,5 @@
 #include <config/config.hpp>
 #include <logging/logging.hpp>
-#include <game/time.hpp>
 #include <game/game_client.hpp>
 #include <cstdlib>
 #include <sys/types.h>
@@ -21,4 +20,3 @@ int main()
 
   return 0;
 }
-

@@ -18,7 +18,7 @@ public:
   void add_debug_line(const std::string& line, const sf::Color& color=sf::Color::Red);
 
   void draw() override final;
-  void update(const Duration& dt) override final;
+  void update(const utils::Duration& dt) override final;
   bool handle_event(const sf::Event& event) override final;
 private:
   std::list<sf::Text> text_lines;

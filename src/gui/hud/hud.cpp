@@ -45,7 +45,7 @@ bool Hud::handle_event(const sf::Event& event)
   return false;
 }
 
-void update(const Duration& dt)
+void Hud::update(const utils::Duration& dt)
 {
 }
 

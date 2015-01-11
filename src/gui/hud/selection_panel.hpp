@@ -20,7 +20,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <game/selection.hpp>
-#include <game/time.hpp>
+#include <utils/time.hpp>
 #include <gui/screen/screen_element.hpp>
 
 #define SQUARE_SIZE 50
@@ -46,7 +46,7 @@ public:
   ~SelectionPanel();
   void draw() override final;
   bool handle_event(const sf::Event&) override final;
-  void update(const Duration& dt) override final;
+  void update(const utils::Duration& dt) override final;
   void draw_tab(const std::size_t);
   bool is_entity_hovered(const Entity*) const;
   const Entity* get_entity_under_mouse() const;

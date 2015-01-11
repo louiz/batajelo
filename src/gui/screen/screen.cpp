@@ -40,7 +40,7 @@ void Screen::draw()
   this->draw_mouse_cursor();
 }
 
-void Screen::update(const Duration& dt)
+void Screen::update(const utils::Duration& dt)
 {
   for (const auto& element: this->screen_elements)
     element->update(dt);

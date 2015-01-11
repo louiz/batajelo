@@ -1,6 +1,6 @@
 #include <logging/logging.hpp>
 #include <game/game_client.hpp>
-#include <game/time.hpp>
+#include <utils/time.hpp>
 
 #include "orders.pb.h"
 #include "requests.pb.h"
@@ -43,13 +43,9 @@ void GameClient::run()
 {
   sf::Clock fps_clock;
 
-  Time time1 = boost::posix_time::microsec_clock::universal_time();
-  Time time2;
-  Time graph_time1 = boost::posix_time::microsec_clock::universal_time();
-  Time graph_time2;
+  utils::Time last_update = utils::now();
 
-  Duration dt;
-  Duration graph_dt;
+  std::chrono::microseconds dt{0};
 
   // window->setMouseCursorVisible(false);
   while (this->screen->window().isOpen())
@@ -59,12 +55,7 @@ void GameClient::run()
       while (this->screen->window().pollEvent(event))
         {
           if (event.type == sf::Event::Closed)
-            {
-              this->screen->window().close();
-            }
-          // if (event.type == sf::Event::GainedFocus)
-          //   {
-          //   }
+            this->screen->window().close();
           this->screen->handle_event(event);
         }
 
@@ -81,25 +72,25 @@ void GameClient::run()
         }
 
       // Get the elapsed time
-      time2 = boost::posix_time::microsec_clock::universal_time();
-      dt += time2 - time1;
-      time1 = time2;
+      auto now = utils::now();
+      utils::Duration elapsed = std::chrono::duration_cast<utils::Duration>(now - last_update);
+      // Call update with the elapsed time
+      this->screen->update(elapsed);
 
-      this->screen->update(dt);
-      // Update everything, based on the elapsed time
-      long i = get_number_of_updates(dt);
+      // Update dt with the elapsed time. We add that to the remaining value
+      // that was not “consumed” by a whole tick in the previous loop
+      // iteration
+      dt += elapsed;
 
-      for (; i > 0; --i)
+      // Save the date of the last update
+      last_update = now;
+
+      // Tick everything, based on the elapsed time
+      // this “consumes” dt. For example if the returned value is 3, dt is
+      // reduced by 3 * tick_duration.
+      for (auto ticks = utils::get_number_of_ticks(dt); ticks > 0; --ticks)
         {
           this->tick();
-        }
-
-      graph_time2 = boost::posix_time::microsec_clock::universal_time();
-      graph_dt += graph_time2 - graph_time1;
-      graph_time1 = graph_time2;
-      i = get_number_of_graphicale_updates(graph_dt);
-      for (; i > 0; --i)
-        {
           this->graphical_tick();
         }
     }

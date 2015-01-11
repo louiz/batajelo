@@ -67,7 +67,7 @@ public:
   /**
    * Update all elements
    */
-  void update(const Duration&);
+  void update(const utils::Duration& dt);
   /**
    * Pass the event to all elements (until eaten)
    */

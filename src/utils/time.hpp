@@ -1,28 +1,43 @@
-#include "boost/date_time/posix_time/posix_time.hpp"
+#ifndef UTILS_TIME_HPP_INCLUDED
+# define UTILS_TIME_HPP_INCLUDED
 
-#ifndef __TIME_HPP__
-# define __TIME_HPP__
+#include <chrono>
 
-/**
- * The number of microseconds for each world update.
- * a lower number makes everything more "fluid" (to a certain
- * point where the difference would not even be noticed), but
- * requires more CPU speed.
- */
-#define WORLD_UPDATE_DURATION 10000
-#define GRAPHICAL_UPDATE_DURATION 16
+namespace utils
+{
+  using namespace std::chrono_literals;
 
-typedef boost::posix_time::ptime Time;
-typedef boost::posix_time::time_duration Duration;
+  // A timepoint, gotten from a steady_clock because we don't want time to
+  // go backward during the game
+  using Time = std::chrono::time_point<std::chrono::steady_clock>;
 
-/**
- * Takes a duration, make it % WORLD_UPDATE_DURATION
- * and returns the number of WORLD_UPDATE_DURATION it contains.
- * i.e., if WORLD_UPDATE_DURATION is 100 and the given duration is
- * 245 ms, the duration becomes 45 and the function returns 2.
- */
-long get_number_of_updates(Duration& duration);
-long get_number_of_graphicale_updates(Duration& duration);
-long sec(const Duration&);
+  // A duration is expressed in microseconds.
+  using Duration = std::chrono::microseconds;
 
-#endif // __TIME_HPP__
+  using FloatingSeconds = decltype(0.1s);
+
+  /**
+   * Returns the current time, from a steady clock
+   */
+  Time now();
+
+  /**
+   * Takes a duration, makes it “% tick_duration” and returns the number of
+   * tick_duration it contains.
+
+   * i.e. if tick_duration is 100 and the given duration is 245us, the
+   * duration becomes 45 and the function returns 2: because the given
+   * duration contains 2 whole ticks, and we keep the remaining, to be
+   * consumed later on.
+   */
+  unsigned long get_number_of_ticks(Duration& duration);
+
+  /**
+   * Convert a duration into a (float point) seconds.
+
+   * e.g 2'500'000 is converted into 2.5 seconds
+   */
+  FloatingSeconds sec(const Duration&);
+}
+
+#endif // UTILS_TIME_HPP_INCLUDED

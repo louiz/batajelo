@@ -182,6 +182,6 @@ bool SelectionPanel::is_entity_hovered(const Entity* entity) const
   return false;
 }
 
-void SelectionPanel::update(const Duration& dt)
+void SelectionPanel::update(const utils::Duration& dt)
 {
 }
