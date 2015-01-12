@@ -21,6 +21,7 @@
 // #include <gui/hud/selection_panel.hpp>
 // #include <gui/hud/action_panel.hpp>
 #include <gui/screen/screen_element.hpp>
+#include <gui/hud/info_hud.hpp>
 
 class Screen;
 class GameClient;
@@ -34,7 +35,7 @@ public:
   bool handle_event(const sf::Event&) override final;
   void update(const utils::Duration& dt) override final;
   bool is_entity_hovered(const Entity*) const;
-  void reset_left_click_action();
+  void add_info_message(std::string&& text);
 
 private:
   Hud(const Hud&);
@@ -46,6 +47,8 @@ private:
 
   sf::Texture hud_texture;
   sf::Sprite hud_sprite;
+  sf::Font font;
+  InfoHud info_hud;
 };
 
 #endif // __HUP_HPP__
