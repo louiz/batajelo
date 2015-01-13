@@ -21,7 +21,7 @@ int main()
   utils::Time last_update = utils::now();
   utils::Duration dt{0};
 
-  while (true)
+  while (s.is_started())
     {
       auto now = utils::now();
       dt += std::chrono::duration_cast<utils::Duration>(now - last_update);
@@ -32,5 +32,6 @@ int main()
         s.tick();
       s.poll(100);
     }
+  log_debug("Exiting...");
   return 0;
 }

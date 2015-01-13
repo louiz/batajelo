@@ -20,6 +20,8 @@
 #include <vector>
 #include <functional>
 
+#include <signal.h>
+
 #include <boost/asio.hpp>
 
 #include <logging/logging.hpp>
@@ -40,7 +42,9 @@ public:
     BaseSocket(io_service),
     port(port),
     timeout(io_service),
-    acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
+    acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
+    stop_signal_set(io_service),
+    started(false)
   {
   }
   virtual ~Server()
@@ -53,14 +57,27 @@ public:
   void start()
   {
     this->accept();
+    this->stop_signal_set.add(SIGINT);
+    this->install_stop_signal_handler();
+    this->started = true;
   }
-  /**
-   * Starts the main loop, blocking.
-   */
-  void run()
-  {
-    this->io_service.run();
-  }
+  void install_stop_signal_handler()
+    {
+      this->stop_signal_set.async_wait([this](const boost::system::error_code& error, int signal_number)
+                                       {
+                                         if (error)
+                                           {
+                                             log_error("Error of the stop signal handler: " << error.message());
+                                             this->install_stop_signal_handler();
+                                           }
+                                         else
+                                           {
+                                             log_info("Received signal: " << signal_number);
+                                             this->started = false;
+                                           }
+                                       });
+    }
+
   /**
    * Checks for network or timed events readiness.
    * The timeout argument makes this call block for that amount
@@ -179,6 +196,11 @@ public:
     assert(false);
   }
 
+  bool is_started() const
+  {
+    return this->started;
+  }
+
 private:
   void install_accept_handler(void)
   {
@@ -219,6 +241,8 @@ private:
   const short port;
   boost::asio::deadline_timer timeout;
   boost::asio::ip::tcp::acceptor acceptor;
+  boost::asio::signal_set stop_signal_set;
+  bool started;
 };
 
 #endif /*__SERVER_HPP__ */
