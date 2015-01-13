@@ -3,6 +3,8 @@
 
 #include <chrono>
 
+using namespace std::chrono_literals;
+
 namespace utils
 {
   using namespace std::chrono_literals;

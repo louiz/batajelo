@@ -23,11 +23,13 @@
 #include <signal.h>
 
 #include <boost/asio.hpp>
+#include <boost/asio/steady_timer.hpp>
 
 #include <logging/logging.hpp>
 #include <network/base_ioservice.hpp>
 #include <network/base_socket.hpp>
 #include <network/message.hpp>
+#include <utils/time.hpp>
 
 template <class T>
 class Server: public BaseIoservice, public BaseSocket
@@ -83,14 +85,16 @@ public:
    * The timeout argument makes this call block for that amount
    * of milliseconds.
    */
-  void poll(long timeout = 0)
+  void poll(long t)
   {
-    if (timeout == 0)
+    if (t == 0)
       {
-        this->io_service.poll();
+        while (this->io_service.poll())
+          ;
         return ;
       }
-    if (this->timeout.expires_from_now(boost::posix_time::milliseconds(timeout)) == 0)
+
+    if (this->timeout.expires_from_now(boost::chrono::milliseconds(t)) == 0)
       // The last run_one() call returned because the timeout expired, so
       // we reinstall it. If that's not the case
       // (something actually happened on the socket)
@@ -239,7 +243,7 @@ private:
 
   std::vector<T*> clients;
   const short port;
-  boost::asio::deadline_timer timeout;
+  boost::asio::steady_timer timeout;
   boost::asio::ip::tcp::acceptor acceptor;
   boost::asio::signal_set stop_signal_set;
   bool started;

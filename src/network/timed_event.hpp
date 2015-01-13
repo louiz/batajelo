@@ -14,20 +14,19 @@
 #include <functional>
 
 #include <boost/asio.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 class TimedEventHandler;
 
-typedef std::function< void(void) > t_timed_callback;
+typedef std::function< void(void) > timed_callback_t;
 
 class TimedEventHandler;
 
 class TimedEvent
 {
 public:
-  TimedEvent(TimedEventHandler*,
-	     boost::asio::deadline_timer*,
-	     const t_timed_callback);
+  TimedEvent(TimedEventHandler* handler,
+	     boost::asio::deadline_timer* timer,
+	     const timed_callback_t callback);
   ~TimedEvent();
   void cancel();
   void on_expires(const boost::system::error_code&);
@@ -38,7 +37,7 @@ private:
 
   TimedEventHandler* handler;
   boost::asio::deadline_timer* timer;
-  const t_timed_callback callback;
+  const timed_callback_t callback;
 };
 
 #endif // __TIMED_EVENT_HPP__

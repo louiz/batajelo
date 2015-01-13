@@ -17,7 +17,7 @@ TimedEventHandler::~TimedEventHandler()
 }
 
 void TimedEventHandler::install_timed_event(boost::asio::io_service& io_service,
-                                            const t_timed_callback callback,
+                                            const timed_callback_t callback,
                                             const int delay)
 {
   log_debug("installing timed_event");

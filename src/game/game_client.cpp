@@ -60,7 +60,7 @@ void GameClient::run()
         }
 
       // recv/send from the network
-      this->poll(0);
+      this->poll();
 
       // Draw the screen. Limit to ~60 fps.
       if (fps_clock.getElapsedTime().asMicroseconds() > 10000)

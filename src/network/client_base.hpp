@@ -24,6 +24,8 @@
 #include <network/message.hpp>
 #include <network/timed_event.hpp>
 
+#include <utils/time.hpp>
+
 class ClientBase: public BaseIoservice, public MessageHandler,
                   public TimedEventHandler, public PingHandler
 {
@@ -45,10 +47,8 @@ public:
   virtual void install_callbacks() = 0;
   /**
    * Checks for network or timed events readiness.
-   * The timeout argument makes this call block for that amount
-   * of milliseconds.
    */
-  void poll(long timeout = 0);
+  void poll();
 
   virtual void on_connection_closed() = 0;
 
@@ -60,8 +60,6 @@ private:
    * Called when the server sends us a PING request. Sends a PONG back.
    */
   void ping_callback(Message*);
-
-  boost::asio::deadline_timer timeout;
 };
 
 #endif /*__CLIENT_HPP__ */

@@ -4,7 +4,7 @@
 
 TimedEvent::TimedEvent(TimedEventHandler* handler,
                  boost::asio::deadline_timer* timer,
-                 const t_timed_callback callback):
+                 const timed_callback_t callback):
   handler(handler),
   timer(timer),
   callback(callback)

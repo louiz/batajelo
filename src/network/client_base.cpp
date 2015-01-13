@@ -2,18 +2,9 @@
 #include <network/client_base.hpp>
 #include <boost/algorithm/string.hpp>
 
-/**
- * Does nothing, it is just used to exit the io_service.run_one() after
- * a timeout.
- */
-static void poll_timeout_handler(const boost::system::error_code&)
-{
-}
-
 ClientBase::ClientBase():
   BaseIoservice(),
-  MessageHandler(io_service),
-  timeout(io_service)
+  MessageHandler(io_service)
 {
 }
 
@@ -71,24 +62,10 @@ void ClientBase::ping_callback(Message*)
   this->send(message);
 }
 
-void ClientBase::poll(long timeout)
+void ClientBase::poll()
 {
-  if (timeout == 0)
-    {
-      this->io_service.poll();
-      return ;
-    }
-  if (this->timeout.expires_from_now(boost::posix_time::milliseconds(timeout)) == 0)
-    // The last run_one() call returned because the timeout expired, so
-    // we reinstall it. If that's not the case
-    // (something actually happened on the socket)
-    // we just need to reset the time of expiration, but not reinstall it.
-    this->timeout.async_wait(&poll_timeout_handler);
-  // Wait for one event to happen (either a timeout or something
-  // on the socket).
-  this->io_service.run_one();
   while (this->io_service.poll() != 0)
-    ; // Execute all other available handlers, if any.
+    ;
 }
 
 
