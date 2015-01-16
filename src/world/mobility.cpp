@@ -6,8 +6,6 @@
 
 const ComponentType Mobility::component_type;
 
-const std::vector<ComponentType> Mobility::dependencies = {ComponentType::Location};
-
 Mobility::Mobility(const Fix16& speed):
   speed(speed)
 {

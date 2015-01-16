@@ -14,7 +14,6 @@ class Mobility: public Component
 {
 public:
   static const ComponentType component_type = ComponentType::Mobility;
-  static const std::vector<ComponentType> dependencies;
 
   Mobility(const Fix16& speed);
   ~Mobility() = default;
