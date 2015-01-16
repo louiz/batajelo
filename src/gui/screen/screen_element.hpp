@@ -14,17 +14,17 @@ public:
   /**
    * The element draws itself in the screen
    */
-  virtual void draw() = 0;
+  virtual void draw() {};
   /**
    * Update the element by the given amount
    */
-  virtual void update(const utils::Duration& dt) = 0;
+  virtual void update(const utils::Duration& dt) {};
   /**
    * Handle the given event.  We may decide te “eat” it by returning true in
    *  that case other ScreenElements with lower priority will not receive
    *  this event.
    */
-  virtual bool handle_event(const sf::Event& event) = 0;
+  virtual bool handle_event(const sf::Event& event) { return false; }
 
   Screen* get_screen();
 
