@@ -40,12 +40,12 @@ public:
   {
     return Vec2(-x, -y);
   }
-  Vec2 operator*(const Fix16 s) const
+  Vec2 operator*(const Fix16& s) const
   {
     return Vec2(x*s, y*s);
   }
 
-  Vec2 operator/(const Fix16 s) const
+  Vec2 operator/(const Fix16& s) const
   {
     return Vec2(x/s, y/s);
   }
@@ -60,7 +60,7 @@ public:
     this->y = v.y;
     return *this;
   }
-  Vec2& set(const Fix16 x, const Fix16 y)
+  Vec2& set(const Fix16& x, const Fix16& y)
   {
     this->x = x;
     this->y = y;
@@ -78,7 +78,7 @@ public:
   {
     return *this = (*this * s);
   }
-  Vec2& operator/=( Fix16 d)
+  Vec2& operator/=(Fix16 d)
   {
     return *this = (*this / d);
   }
@@ -86,7 +86,7 @@ public:
   {
     return (a - b).length();
   }
-  void rotate(const Fix16 angle)
+  void rotate(const Fix16& angle)
   {
     const Fix16 l = this->length();
     const Fix16 s = angle.sin();

@@ -38,6 +38,7 @@ public:
   Screen& get_screen();
 
   DebugHud& get_debug_hud();
+  Hud& get_hud();
 
   /**
    * Called whenever we receive a occupant_left message from the server.

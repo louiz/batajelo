@@ -113,6 +113,11 @@ DebugHud& GameClient::get_debug_hud()
   return this->debug_hud;
 }
 
+Hud& GameClient::get_hud()
+{
+  return this->hud;
+}
+
 World& GameClient::get_world()
 {
   return this->world;

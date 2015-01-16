@@ -60,7 +60,7 @@ public:
   void unpause();
   Path calculate_path(Position endpos, Location* location);
   Entity* do_new_entity(const EntityType type, const Position& pos, const uint16_t team);
-  void do_move(const std::vector<EntityId> ids, const Position& pos, const bool queue);
+  void do_move(const std::vector<EntityId>& ids, const Position& pos, const bool queue);
   Entity* get_entity_by_id(unsigned short id);
   /**
    * Sends a message to the server saying that we confirm that action.

@@ -68,7 +68,7 @@ Entity* World::do_new_entity(const EntityType type, const Position& pos, const u
   return res;
 }
 
-void World::do_move(const std::vector<EntityId> ids, const Position& pos, const bool queue)
+void World::do_move(const std::vector<EntityId>& ids, const Position& pos, const bool queue)
 {
   Entity* entity;
   for (const EntityId id: ids)
