@@ -32,7 +32,7 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
 
   this->screen->add_element(&this->camera, 0);
   this->screen->add_element(&this->hud, 1);
-  // this->screen->add_element(&this->get_debug_hud(), 2);
+  this->screen->add_element(&this->get_debug_hud(), 2);
 }
 
 GameClient::~GameClient()
