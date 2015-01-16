@@ -28,31 +28,32 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <world/position.hpp>
+
 #include <gui/screen/screen_element.hpp>
 #include <gui/cursor.hpp>
-#include <game/time.hpp>
 
 #include <vector>
 #include <memory>
 
-typedef std::function<bool(const double, const double, const std::size_t)> t_left_click_callback;
-typedef std::function<cursor::type (const unsigned int, const unsigned int, const std::size_t)> t_draw_cursor_action;
-
-struct t_left_click
+/**
+ * Structure containing informations about the current “left click”
+ * action. It contains a callback of what happens when the user left clicks
+ * on the camera area, and what to draw at the cursor position.
+ */
+struct LeftClick
 {
   /**
-   * The callback called when we left click.
+   * The callback called when we left click.  Returns True if the callback
+   * has been successfull and the LeftClick can be reset to LeftClick::null.
    */
-  t_left_click_callback callback;
+  std::function<bool(const Position& world_position)> callback;
   /**
    * The callback called when we draw the cursor (for example to draw the
    * area of effect of the selected spell, or the building to be built)
    */
-  t_draw_cursor_action cursor_callback;
-  /**
-   * The type_id of the spell to cast or the unit to produce, etc
-   */
-  std::size_t id;
+  std::function<cursor::type (const sf::Vector2i& mouse_pos)> cursor_callback;
+  static LeftClick null;
 };
 
 class Screen
@@ -79,13 +80,13 @@ public:
   // bool is_entity_hovered(const Entity*) const;
   void set_cursor_type(const cursor::type);
   void draw_mouse_cursor();
-  t_left_click get_left_click() const
+  const LeftClick& get_left_click() const
   {
-    return on_left_click;
+    return this->left_click;
   }
-  void set_left_click_callback(const t_left_click left_click);
+  void set_left_click(const LeftClick& left_click);
+  void reset_left_click();
   cursor::type draw_move_cursor(const uint, const uint, const std::size_t);
-  void reset_left_click_action();
 
   sf::RenderWindow& window();
   sf::Vector2i get_mouse_position() const;
@@ -107,11 +108,10 @@ private:
    * changing the on_left_click_action callback to a spell, we also set the
    * texture to the cursor::Cast one.
    */
-  std::vector<sf::Texture> cursor_textures;
+  std::array<sf::Texture, cursor::size> cursor_textures;
   cursor::type current_cursor_type;
   sf::Sprite cursor_sprite;
-  t_left_click on_left_click;
-  t_draw_cursor_action on_cursor_draw;
+  LeftClick left_click;
 
 public:
   std::vector<std::unique_ptr<sf::Texture>> building_textures;

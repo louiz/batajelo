@@ -2,12 +2,12 @@
 #include <gui/screen/screen.hpp>
 #include <gui/common.hpp>
 
+LeftClick LeftClick::null = {nullptr, nullptr};
+
 Screen::Screen():
   win{sf::VideoMode(1920, 1080), "Bata", sf::Style::Default, sf::ContextSettings{}},
   current_cursor_type(cursor::Normal)
 {
-  // world->camera = &this->camera;
-  this->cursor_textures.resize(cursor::size);
   const std::string data_path("./data/images/");
   for (int i = 0; i < cursor::size; ++i)
     {
@@ -76,13 +76,9 @@ void Screen::set_cursor_type(const cursor::type type)
 void Screen::draw_mouse_cursor()
 {
   const sf::Vector2i pos = this->get_mouse_position();
-  // this->debug_hud.add_debug_line("Cursor position: " +
-  //                                std::to_string(pos.x) + ", " +
-  //                                std::to_string(pos.y));
-  if (this->on_left_click.cursor_callback != 0)
-    this->set_cursor_type(this->on_left_click.cursor_callback(static_cast<uint>(pos.x),
-                                                              static_cast<uint>(pos.y),
-                                                              on_left_click.id));
+
+  if (this->left_click.cursor_callback)
+    this->set_cursor_type(this->left_click.cursor_callback(pos));
   else
     this->set_cursor_type(cursor::Normal);
   this->cursor_sprite.setPosition(static_cast<float>(pos.x) - 42.f,
@@ -90,16 +86,14 @@ void Screen::draw_mouse_cursor()
   this->win.draw(this->cursor_sprite);
 }
 
-void Screen::reset_left_click_action()
+void Screen::reset_left_click()
 {
-  t_left_click null = {0, 0, 0};
-  this->set_left_click_callback(null);
-  // this->hud.reset_left_click_action();
+  this->set_left_click(LeftClick::null);
 }
 
-void Screen::set_left_click_callback(const t_left_click left_click)
+void Screen::set_left_click(const LeftClick& left_click)
 {
-  this->on_left_click = left_click;
+  this->left_click = left_click;
 }
 
 cursor::type Screen::draw_move_cursor(const uint, const uint, const std::size_t)

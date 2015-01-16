@@ -83,7 +83,6 @@ public:
    */
   bool action_move(std::vector<EntityId> ids, const Position& pos,
                    const bool queue);
-  void action_spawn(const t_left_click left_click);
   /**
    * Give the order to all selected and movable units to move to the given
    * world coordinates with an attack order (will attack all encountered

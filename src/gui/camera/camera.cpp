@@ -107,10 +107,11 @@ void Camera::handle_right_click(const sf::Event& event)
                                                       event.mouseButton.y);
   bool queue = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
   log_debug("queue: " << queue);
+
   // A right click when there's an action associated with the left click
   // just resets the default action of the right click.
   if (this->screen->get_left_click().callback)
-    this->screen->reset_left_click_action();
+    this->screen->reset_left_click();
   else // otherwise it always does the move action.
     {
       std::vector<EntityId> ids;
@@ -135,8 +136,8 @@ void Camera::handle_left_click(const sf::Event& event)
     {
       const Position pos = this->camera_to_world_position(event.mouseButton.x,
                                                           event.mouseButton.y);
-      if (this->screen->get_left_click().callback(pos.x.to_double(), pos.y.to_double(), this->screen->get_left_click().id) == true)
-        this->screen->reset_left_click_action();
+      if (this->screen->get_left_click().callback(pos) == true)
+        this->screen->reset_left_click();
     }
 }
 
