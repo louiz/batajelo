@@ -45,7 +45,8 @@ void Hud::draw()
         txt.setColor(sf::Color::Red);
       else
         {
-          const float ratio = static_cast<float>(message.get_timeout().count()) / std::chrono::duration_cast<utils::Duration>(1s).count();
+          const float ratio = static_cast<float>(message.get_timeout().count()) /
+            std::chrono::duration_cast<utils::Duration>(1s).count();
           txt.setColor({255, 0, 0, static_cast<uint8_t>(255*ratio)});
         }
       this->screen->window().draw(txt);

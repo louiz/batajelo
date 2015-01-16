@@ -18,7 +18,7 @@ Camera::Camera(GameClient* game, Screen* screen):
   y(56),
   zoom(1),
   focused(true),
-  movement_speed(0.023),
+  movement_speed(1000),
   previous_position(0, 0),
   start_drag_position(0, 0),
   game(game),
