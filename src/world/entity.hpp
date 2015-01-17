@@ -45,7 +45,7 @@ public:
     static_assert(ComponentClass::component_type != ComponentType::Invalid,
                   "ComponentClass must set its own type.");
     auto index = static_cast<std::size_t>(ComponentClass::component_type);
-    return reinterpret_cast<ComponentClass*>(this->components[index].get());
+    return static_cast<ComponentClass*>(this->components[index].get());
   }
 
   template <typename ComponentClass>
