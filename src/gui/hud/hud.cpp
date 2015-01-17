@@ -4,6 +4,13 @@
 #include <gui/hud/hud.hpp>
 #include <world/entity.hpp>
 
+#include <world/abilities.hpp>
+#include <world/abilities/blink.hpp>
+
+
+#include <logging/logging.hpp>
+
+
 Hud::Hud(GameClient* game, Screen* screen):
   ScreenElement(screen),
   // minimap(game, screen),
@@ -29,7 +36,27 @@ Hud::~Hud()
 
 void Hud::draw()
 {
+  static const sf::Color debug_color = sf::Color::Black;
+
   this->screen->window().draw(this->hud_sprite);
+  auto selected_entities = this->game->get_selection().get_entities();
+  auto it = selected_entities.begin();
+  this->game->get_debug_hud().add_debug_line("======== HUD begin ===========", debug_color);
+  this->game->get_debug_hud().add_debug_line(std::to_string(selected_entities.size()) + " entities selected.", debug_color);
+  if (it != selected_entities.end())
+    {
+      this->game->get_debug_hud().add_debug_line("One (or more) unit selected. Abilities: ", debug_color);
+      auto entity = *it;
+      auto abilities = entity->get<Abilities>();
+      for (const auto& ability: abilities->get())
+        {
+          if (ability)
+            this->game->get_debug_hud().add_debug_line(ability->get_name(), debug_color);
+        }
+    }
+
+  this->game->get_debug_hud().add_debug_line("------------- HUD end -------------", debug_color);
+
   using namespace std::chrono_literals;
 
   sf::Text txt;

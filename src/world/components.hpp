@@ -15,6 +15,7 @@ enum class ComponentType: std::size_t
     ManaPool,
     Vision,
     Team,
+    Abilities,
 
     count
 };

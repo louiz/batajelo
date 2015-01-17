@@ -65,6 +65,18 @@ public:
   void draw_selected_indicator(const sf::Vector2i& center, const unsigned int width);
 
   /**
+   * Try to activate some ability with one of the selected entity. If no
+   * entity is selected, do nothing, if one or more are selected, find one
+   * that can cast it.
+   *
+   * Note that activating may only be the first step, and may not cast
+   * anything. For example, if the ability needs to be given a target, we
+   * only set the LeftClick value, and wait the user to actually select a
+   * target before casting the spell.
+   */
+  void activate_ability(const std::size_t nb);
+
+  /**
    * handle one user input event.
    */
   bool handle_event(const sf::Event&);
@@ -73,6 +85,7 @@ public:
   void handle_left_click(const sf::Event&);
   void handle_left_release(const sf::Event&);
   void handle_middle_release(const sf::Event&);
+  void handle_keypress(const sf::Event&);
   /**
    * Update the camera position or other stuff according to previous
    * input etc.
