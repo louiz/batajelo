@@ -32,7 +32,7 @@ namespace utils
    * duration contains 2 whole ticks, and we keep the remaining, to be
    * consumed later on.
    */
-  unsigned long get_number_of_ticks(Duration& duration);
+  unsigned long get_number_of_ticks(std::chrono::steady_clock::duration& duration);
 
   /**
    * Convert a duration into a (float point) seconds.

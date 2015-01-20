@@ -71,7 +71,7 @@ public:
   /**
    * Tick the TurnHandler and the World, if the TurnHandler is not paused.
    */
-  void tick();
+  bool tick();
   /**
    * Update all graphical object states (tiles etc)
    */

@@ -19,18 +19,18 @@ int main()
   s.start();
 
   utils::Time last_update = utils::now();
-  utils::Duration dt{0};
+  std::chrono::steady_clock::duration dt{0};
 
   while (s.is_started())
     {
       auto now = utils::now();
-      dt += std::chrono::duration_cast<utils::Duration>(now - last_update);
+      dt += now - last_update;
       last_update = now;
 
       auto ticks = utils::get_number_of_ticks(dt);
       for (; ticks > 0; --ticks)
         s.tick();
-      s.poll(100);
+      s.poll(10);
     }
   log_debug("Exiting...");
   return 0;

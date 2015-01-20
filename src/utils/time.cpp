@@ -11,7 +11,7 @@ namespace utils
     return std::chrono::steady_clock::now();
   }
 
-  unsigned long get_number_of_ticks(Duration& duration)
+  unsigned long get_number_of_ticks(std::chrono::steady_clock::duration& duration)
   {
     if (duration < tick_duration)
       return 0;

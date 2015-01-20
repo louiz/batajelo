@@ -41,11 +41,11 @@ GameClient::~GameClient()
 
 void GameClient::run()
 {
-  sf::Clock fps_clock;
+  auto last_update = utils::now();
 
-  utils::Time last_update = utils::now();
-
-  std::chrono::microseconds dt{0};
+  // Dirty workaround, fixme. Should be 0.
+  long ticks = -5;
+  std::chrono::steady_clock::duration dt{0};
 
   // window->setMouseCursorVisible(false);
   while (this->screen->window().isOpen())
@@ -62,20 +62,15 @@ void GameClient::run()
       // recv/send from the network
       this->poll();
 
-      // Draw the screen. Limit to ~60 fps.
-      if (fps_clock.getElapsedTime().asMicroseconds() > 10000)
-        {
-          this->screen->window().clear(sf::Color(70, 80, 38));
-          this->screen->draw();
-          this->screen->window().display();
-          fps_clock.restart();
-        }
+      this->screen->window().clear(sf::Color(70, 80, 38));
+      this->screen->draw();
+      this->screen->window().display();
 
       // Get the elapsed time
       auto now = utils::now();
-      utils::Duration elapsed = std::chrono::duration_cast<utils::Duration>(now - last_update);
+      auto elapsed = now - last_update;
       // Call update with the elapsed time
-      this->screen->update(elapsed);
+      this->screen->update(std::chrono::duration_cast<utils::Duration>(elapsed));
 
       // Update dt with the elapsed time. We add that to the remaining value
       // that was not “consumed” by a whole tick in the previous loop
@@ -88,9 +83,11 @@ void GameClient::run()
       // Tick everything, based on the elapsed time
       // this “consumes” dt. For example if the returned value is 3, dt is
       // reduced by 3 * tick_duration.
-      for (auto ticks = utils::get_number_of_ticks(dt); ticks > 0; --ticks)
+      ticks += utils::get_number_of_ticks(dt);
+      for (; ticks > 0; --ticks)
         {
-          this->tick();
+          if (!this->tick())
+            break ;
           this->graphical_tick();
         }
     }
@@ -277,12 +274,13 @@ void GameClient::do_new_entity(const EntityType type, const Position& pos, const
   this->camera.on_new_entity(entity);
 }
 
-void GameClient::tick()
+bool GameClient::tick()
 {
   this->turn_handler.tick();
   if (this->turn_handler.is_paused())
-    return;
+    return false;
   this->world.tick();
+  return true;
 }
 void GameClient::graphical_tick()
 {
