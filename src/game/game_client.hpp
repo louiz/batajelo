@@ -14,6 +14,7 @@
 #include <game/turn_handler.hpp>
 #include <gui/hud/debug_hud.hpp>
 #include <gui/hud/hud.hpp>
+#include <game/sounds_handler.hpp>
 
 #include <memory>
 
@@ -129,6 +130,7 @@ private:
   Hud hud;
   DebugHud debug_hud;
   uint16_t team;
+  SoundsHandler sounds_handler;
 
   GameClient(const GameClient&) = delete;
   GameClient(GameClient&&) = delete;

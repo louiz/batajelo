@@ -239,6 +239,7 @@ bool GameClient::action_move(const std::vector<EntityId>& ids, const Position& p
   for (const EntityId id: ids)
     srl.add_entity_id(id);
   this->send_message("MOVE", srl);
+  this->sounds_handler.play(SoundType::DefaultOk);
   return true;
 }
 

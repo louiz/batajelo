@@ -273,6 +273,8 @@ target_link_libraries(game
 #
 file(GLOB source_game_client
   src/game/game_client.[ch]pp
+  src/game/sounds_handler.[ch]pp
+  src/game/sound.[ch]pp
   )
 
 add_library(game_client STATIC ${source_game_client})
