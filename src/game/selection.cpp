@@ -34,18 +34,19 @@ void Selection::add_to_selection(const Entity* entity)
 
 void Selection::remove_from_selection(const Entity* entity)
 {
-    std::list<const Entity*>::iterator it;
-  for (it = this->entities.begin(); it != this->entities.end(); ++it)
+  auto it = std::find(this->entities.begin(),
+                      this->entities.end(),
+                      entity);
+  if (it != this->entities.end())
     {
-      if ((*it) == entity)
-        {
-          this->entities.erase(it);
-          this->on_modified();
-          return ;
-        }
+      this->entities.erase(it);
+      this->on_modified();
     }
-  log_error("Tried to remove an entity from a Selection that does'nt contain it.");
-  assert(false);
+  else
+    {
+      log_error("Tried to remove an entity from a Selection that does'nt contain it.");
+      assert(false);
+    }
 }
 
 void Selection::clear()

@@ -24,8 +24,7 @@ void SelectionPanel::draw()
 
   if (this->current_tab * square_per_tab >= this->selection->size())
     this->current_tab = 0;
-  const std::list<const Entity*> entities = this->selection->get_entities();
-  std::list<const Entity*>::const_iterator it;
+  auto entities = this->selection->get_entities();
   sf::Texture texture;
   texture.loadFromFile("data/images/unit50.png");
   sf::Sprite sprite;
@@ -34,7 +33,7 @@ void SelectionPanel::draw()
   uint y = PANEL_Y;
   int tab = -1;
   std::size_t n = 0;
-  for (it = entities.begin(); it != entities.end(); ++it)
+  for (auto it = entities.begin(); it != entities.end(); ++it)
     {
       if (n % (SQUARES_PER_LINE * LINES_PER_TAB) == 0)
         {
@@ -143,10 +142,9 @@ const Entity* SelectionPanel::get_entity_under_mouse() const
     y * SQUARES_PER_LINE + x;
   log_error(n);
 
-  const std::list<const Entity*> entities = this->selection->get_entities();
-  std::list<const Entity*>::const_iterator it;
+  const auto& entities = this->selection->get_entities();
   int nn = 0;
-    for (it = entities.begin(); it != entities.end(); ++it)
+    for (auto it = entities.begin(); it != entities.end(); ++it)
       {
         if (nn == n)
           return *it;
@@ -157,13 +155,12 @@ const Entity* SelectionPanel::get_entity_under_mouse() const
 
 bool SelectionPanel::is_entity_hovered(const Entity* entity) const
 {
-  const std::list<const Entity*> entities = this->selection->get_entities();
+  const auto& entities = this->selection->get_entities();
   const sf::Vector2i pos = this->screen->get_mouse_position();
 
-  std::list<const Entity*>::const_iterator it;
   int tab = -1;
   std::size_t n = 0;
-  for (it = entities.begin(); it != entities.end(); ++it)
+  for (auto it = entities.begin(); it != entities.end(); ++it)
     {
       if (n % (SQUARES_PER_LINE * LINES_PER_TAB) == 0)
         tab++;

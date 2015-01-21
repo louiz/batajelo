@@ -41,10 +41,13 @@ public:
   std::vector<t_selection_changed_callback> on_modified_callbacks;
 
 private:
+  std::list<const Entity*> entities;
+
   Selection(const Selection&);
   Selection& operator=(const Selection&);
+  Selection(Selection&&);
+  Selection& operator=(Selection&&);
 
-  std::list<const Entity*> entities;
 };
 
 #endif // __MOUSE_SELECTION_HPP__
