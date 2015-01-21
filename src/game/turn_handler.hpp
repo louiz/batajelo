@@ -59,6 +59,7 @@ public:
    */
   TurnNb get_current_turn() const;
   std::deque<Turn>& get_turns();
+  TurnNb get_last_ready_turn() const;
 
 private:
   TurnHandler(const TurnHandler&);
@@ -85,6 +86,7 @@ private:
   std::deque<Turn> turns;
   unsigned long current_turn;
   unsigned int turn_advancement;
+  TurnNb last_ready_turn;
 
   bool paused;
 

@@ -222,6 +222,7 @@ void GameClient::turn_callback(Message*)
 {
   log_debug("GameClient::turn_callback");
   this->turn_handler.mark_turn_as_ready();
+  this->hud.add_info_message("We are " + std::to_string(this->turn_handler.get_last_ready_turn() - this->turn_handler.get_current_turn()) + " turns late");
 }
 
 void GameClient::path_callback(Message* message)

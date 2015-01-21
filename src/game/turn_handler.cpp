@@ -128,12 +128,14 @@ void TurnHandler::mark_turn_as_ready()
   if (it == this->turns.end())
     it = this->turns.emplace(this->turns.end());
   it->mark_ready();
+  this->last_ready_turn++;
 }
 
 void TurnHandler::mark_as_ready_until(const TurnNb n)
 {
   log_debug("mark_as_ready_until(" << n << ")");
   this->insert_turn(n);
+  this->last_ready_turn = n;
   std::size_t t = this->current_turn;
 
   for (auto& turn: this->turns)
@@ -142,4 +144,9 @@ void TurnHandler::mark_as_ready_until(const TurnNb n)
       if (++t == n)
         return;
     }
+}
+
+TurnNb TurnHandler::get_last_ready_turn() const
+{
+  return this->last_ready_turn;
 }
