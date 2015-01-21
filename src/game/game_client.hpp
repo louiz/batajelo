@@ -78,10 +78,21 @@ public:
   void graphical_tick();
 
   /**
-   * Give the order to all selected and movable units to move to the given
-   * world coordinates.
+   * Send, to the server, a request to move the given entities to the given
+   * destination. Queue indicates whether or not this work should be queued.
    */
-  bool action_move(std::vector<EntityId> ids, const Position& pos,
+  bool action_move(const std::vector<EntityId>& ids, const Position& pos,
+                   const bool queue);
+  /**
+   * Send, to the server, a request to make the list of entities cast the
+   * given spell. There are three versions, each for each type of possible
+   * target (Position, Entity, nothing).
+   */
+  bool action_cast(const std::vector<EntityId>& ids, const Position& pos,
+                   const AbilityType& type, const bool queue);
+  bool action_cast(const std::vector<EntityId>& ids, const EntityId target,
+                   const AbilityType& type, const bool queue);
+  bool action_cast(const std::vector<EntityId>& ids, const AbilityType& type,
                    const bool queue);
   /**
    * Give the order to all selected and movable units to move to the given

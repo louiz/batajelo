@@ -94,48 +94,10 @@ bool Camera::handle_event(const sf::Event& event)
           log_debug("Mouse button not implemented.");
         }
     }
-  else if (event.type == sf::Event::KeyPressed)
-    this->handle_keypress(event);
   this->fixup_camera_position();
   if (this->mouse_selection.ongoing == true)
     return true;
   return false;
-}
-
-void Camera::activate_ability(const std::size_t nb)
-{
-  const Selection& selection = this->game->get_selection();
-  if (selection.is_empty())
-    this->game->get_hud().add_info_message("No entity selected");
-  else
-    {
-      const auto entity = selection.get_entities().front();
-      Abilities* abilities = entity->get<Abilities>();
-      if (!abilities)
-        this->game->get_hud().add_info_message("Selected entity has no ability.");
-      else
-        {
-          const Ability* ability = abilities->get(nb);
-          if (!ability)
-            this->game->get_hud().add_info_message("Selected entity has no ability number " + std::to_string(nb));
-          else
-            {
-              this->game->get_hud().add_info_message("Activating ability " + ability->get_name());
-            }
-        }
-    }
-  // TODO actually only look in the abilities of active entity TYPE, not the
-  // first one
-}
-
-void Camera::handle_keypress(const sf::Event& event)
-{
-  this->game->get_hud().add_info_message("Received key: " + std::to_string(event.key.code));
-  switch (event.key.code)
-    {
-      case sf::Keyboard::A:
-        this->activate_ability(0);
-    }
 }
 
 void Camera::handle_middle_click(const sf::Event&)

@@ -10,19 +10,23 @@ public:
   NamedAbility() = default;
   ~NamedAbility() = default;
   const std::string& get_name() const override final
-    {
-      return this->name;
-    }
+  {
+    return this->name;
+  }
+  AbilityType get_type() const override final
+  {
+    return this->ability_type;
+  }
 
 private:
-  const static std::string name;
+  static const std::string name;
+  static const AbilityType ability_type;
 
   NamedAbility(const NamedAbility&) = delete;
   NamedAbility(NamedAbility&&) = delete;
   NamedAbility& operator=(const NamedAbility&) = delete;
   NamedAbility& operator=(NamedAbility&&) = delete;
 };
-
 
 #endif /* NAMED_ABILITY_HPP_INCLUDED */
 

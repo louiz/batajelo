@@ -205,9 +205,47 @@ void GameServer::on_move_request(Message* message)
   for (const auto& id: srl.entity_id())
     ids.push_back(id);
   Position pos;
-  pos.x.raw() = srl.mutable_pos()->x();
-  pos.y.raw() = srl.mutable_pos()->y();
+  pos.x.raw() = srl.pos().x();
+  pos.y.raw() = srl.pos().y();
   this->send_move_order(ids, pos, srl.queue());
+}
+
+void GameServer::on_cast_request(Message* message)
+{
+  auto srl = message->parse_body_to_protobuf_object<ser::request::Cast>();
+  if (!srl.IsInitialized())
+    {
+      log_error("Invalid data received for Cast request: " << srl.InitializationErrorString());
+      return ;
+    }
+  std::vector<EntityId> ids;
+  for (const auto& id: srl.entity_id())
+    ids.push_back(id);
+  if (srl.has_pos())
+    {
+      Position pos;
+      pos.x.raw() = srl.pos().x();
+      pos.y.raw() = srl.pos().y();
+      this->send_cast_order(ids, pos, srl.type(), srl.queue());
+    }
+}
+
+void GameServer::send_cast_order(const std::vector<EntityId>& ids, const Position& pos,
+                                 const uint32_t type, const bool queue)
+{
+  ser::order::Cast srl;
+  srl.set_turn(this->turn_handler.get_current_turn() + 2);
+  if (queue)
+    srl.set_queue(queue);
+  for (const EntityId id: ids)
+    srl.add_entity_id(id);
+  srl.set_type(type);
+  srl.mutable_pos()->set_x(pos.x.raw());
+  srl.mutable_pos()->set_y(pos.y.raw());
+  this->send_order_to_all("CAST", srl);
+  this->turn_handler.insert_action(std::bind(&World::do_cast, &this->world, ids, pos,
+                                             static_cast<AbilityType>(type), queue),
+                                   srl.turn());
 }
 
 void GameServer::send_new_entity_order(const EntityType type, const Position& pos,

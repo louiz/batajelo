@@ -53,6 +53,31 @@ void Game::move_callback(Message* message)
                                    srl.turn());
 }
 
+void Game::cast_callback(Message* message)
+{
+  log_debug("Game::cast_callback");
+  auto srl = message->parse_body_to_protobuf_object<ser::order::Cast>();
+  if (!srl.IsInitialized())
+    {
+      log_error("Invalid data received for cast: " << srl.InitializationErrorString());
+      return ;
+    }
+
+  std::vector<EntityId> ids;
+  for (const auto& id: srl.entity_id())
+    ids.push_back(id);
+
+  Position pos;
+  pos.x.raw() = srl.pos().x();
+  pos.y.raw() = srl.pos().y();
+
+  uint32_t type = srl.type();
+
+  this->turn_handler.insert_action(std::bind(&World::do_cast, &this->world, ids, pos,
+                                             static_cast<AbilityType>(type), srl.queue()),
+                                   srl.turn());
+}
+
 void Game::do_new_entity(const EntityType type, const Position& pos, const uint16_t team)
 {
   log_debug("Game::do_new_entity");

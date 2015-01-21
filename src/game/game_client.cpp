@@ -29,6 +29,8 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
                          std::bind(&GameClient::turn_callback, this, std::placeholders::_1));
   this->install_callback("MOVE",
                          std::bind(&Game::move_callback, this, std::placeholders::_1));
+  this->install_callback("CAST",
+                         std::bind(&Game::cast_callback, this, std::placeholders::_1));
 
   this->screen->add_element(&this->camera, 0);
   this->screen->add_element(&this->hud, 1);
@@ -226,15 +228,31 @@ void GameClient::path_callback(Message* message)
 {
 }
 
-bool GameClient::action_move(std::vector<EntityId> ids, const Position& pos, const bool queue)
+bool GameClient::action_move(const std::vector<EntityId>& ids, const Position& pos, const bool queue)
 {
   ser::request::Move srl;
-  srl.set_queue(queue);
+  if (queue)
+    srl.set_queue(queue);
   srl.mutable_pos()->set_x(pos.x.raw());
   srl.mutable_pos()->set_y(pos.y.raw());
   for (const EntityId id: ids)
     srl.add_entity_id(id);
   this->send_message("MOVE", srl);
+  return true;
+}
+
+bool GameClient::action_cast(const std::vector<EntityId>& ids, const Position& pos,
+                             const AbilityType& type, const bool queue)
+{
+  ser::request::Cast srl;
+  if (queue)
+    srl.set_queue(queue);
+  srl.mutable_pos()->set_x(pos.x.raw());
+  srl.mutable_pos()->set_y(pos.y.raw());
+  for (const EntityId id: ids)
+    srl.add_entity_id(id);
+  srl.set_type(static_cast<uint32_t>(type));
+  this->send_message("CAST", srl);
   return true;
 }
 

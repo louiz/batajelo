@@ -7,8 +7,8 @@
 #include <memory>
 #include <list>
 
-using EntityType = uint16_t;
 using EntityId = uint16_t;
+using EntityType = uint16_t;
 
 class Camera;
 class World;
@@ -24,10 +24,12 @@ public:
   /**
    * This constructor is used when creating a model.
    */
-  Entity();
+  Entity(const EntityType& type);
   virtual ~Entity();
 
-  unsigned short get_id() const { return this->id; }
+  EntityId get_id() const { return this->id; }
+  virtual EntityType get_type() { return this->type; }
+
   /**
    * Regularly update the entity.
    */
@@ -62,16 +64,18 @@ private:
   Entity(Entity&&) = delete;
 
 public:
+  /**
+   * Incremented each type we create a new entity, and used as Entity::id.
+   */
   static EntityId current_id;
-  static EntityType current_type_id;
   /**
    * An uniq id for the entity.
    */
   EntityId id;
   /**
-   * A uniq id for the entity type.
+   * The type of the entity
    */
-  EntityType type_id;
+  EntityType type;
   /**
    * The entity name
    */

@@ -26,4 +26,5 @@ void RemoteGameClient::on_connection_closed()
 void RemoteGameClient::install_callbacks()
 {
   this->install_callback("MOVE", std::bind(&GameServer::on_move_request, this->server, std::placeholders::_1));
+  this->install_callback("CAST", std::bind(&GameServer::on_cast_request, this->server, std::placeholders::_1));
 }

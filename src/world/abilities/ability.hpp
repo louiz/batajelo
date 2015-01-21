@@ -5,15 +5,28 @@
 
 class World;
 class Entity;
+class Vec2;
+
+using Position = Vec2;
+
+
+enum class AbilityType
+{
+  Blink,
+
+  count
+};
 
 class Ability
 {
 public:
   Ability() = default;
   virtual ~Ability() = default;
-  virtual void tick(Entity* entity, World* world) {}
+  virtual void tick(Entity*, World*) {}
+  virtual void cast(Entity*, const Position&, const bool) {}
 
   virtual const std::string& get_name() const = 0;
+  virtual AbilityType get_type() const = 0;
 
 private:
   Ability(const Ability&) = delete;

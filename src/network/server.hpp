@@ -24,6 +24,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/steady_timer.hpp>
+#include <boost/chrono.hpp>
 
 #include <logging/logging.hpp>
 #include <network/base_ioservice.hpp>

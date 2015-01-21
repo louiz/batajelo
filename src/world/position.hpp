@@ -3,6 +3,6 @@
 
 #include <world/vec2.hpp>
 
-typedef Vec2 Position;
+using Position = Vec2;
 
 #endif // __POSITION_HPP__

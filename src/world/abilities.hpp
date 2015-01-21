@@ -3,7 +3,6 @@
 
 /**
  * Container for one or more abilities.
- * This is static
  */
 
 #include <world/components.hpp>
@@ -32,6 +31,10 @@ public:
 
   const std::vector<std::unique_ptr<Ability>>& get() const;
   const Ability* get(const std::size_t index) const;
+  /**
+   * Look for an Ability with that type.
+   */
+  Ability* find(const AbilityType& type) const;
 
 private:
   std::vector<std::unique_ptr<Ability>> abilities;
@@ -42,4 +45,8 @@ private:
   Abilities& operator=(Abilities&&) = delete;
 };
 
+template <typename T>
+T* get_ability(Entity* entity, const AbilityType& type);
+
+Ability* get_ability(Entity* entity, const AbilityType& type);
 #endif /* ABILITIES_HPP_INCLUDED */

@@ -14,7 +14,7 @@ class PathWork: public Work
 public:
   PathWork(Entity* entity, const Position& destination);
   ~PathWork();
-  virtual bool tick(World* world) override final;
+  bool tick(World* world) override final;
 
 private:
   PathWork(const PathWork&);
@@ -32,7 +32,7 @@ private:
    */
   const Position destination;
   /**
-   * The entity elemets that we need to execute the work.
+   * The entity elements that we need to execute the work on.
    */
   Mobility* mobility;
   Location* location;

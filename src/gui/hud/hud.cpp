@@ -7,6 +7,7 @@
 #include <world/abilities.hpp>
 #include <world/abilities/blink.hpp>
 
+#include <gui/hud/abilities_panel.hpp>
 
 #include <logging/logging.hpp>
 
@@ -16,7 +17,8 @@ Hud::Hud(GameClient* game, Screen* screen):
   // minimap(game, screen),
   // selection_panel(game, world->get_selection_ptr()),
   // action_panel(game, screen, world->get_selection_ptr(), mod),
-  game(game)
+  game(game),
+  abilities_panel(game)
 {
   const sf::Vector2u win_size = this->screen->get_window_size();
   // Install a callback on the selection that will reset the action_panel
@@ -87,12 +89,22 @@ void Hud::draw()
 
 bool Hud::handle_event(const sf::Event& event)
 {
-  // if (this->minimap.handle_event(event) == true)
-  //   return true;
-  // if (this->selection_panel.handle_event(event, this->world) == true)
-  //   return true;
-  // if (this->action_panel.handle_event(event) == true)
-  //   return true;
+  if (event.type == sf::Event::KeyPressed)
+    return this->handle_keypress(event);
+  return false;
+}
+
+bool Hud::handle_keypress(const sf::Event& event)
+{
+  this->game->get_hud().add_info_message("Received key: " + std::to_string(event.key.code));
+  switch (event.key.code)
+    {
+    case sf::Keyboard::A:
+      this->activate_ability(0);
+      return true;
+    default:
+      return false;
+    }
   return false;
 }
 
@@ -111,3 +123,34 @@ bool Hud::is_entity_hovered(const Entity* entity) const
   // return this->selection_panel.is_entity_hovered(entity);
   return false;
 }
+
+void Hud::activate_ability(const std::size_t nb)
+{
+  const Selection& selection = this->game->get_selection();
+  if (selection.is_empty())
+    this->game->get_hud().add_info_message("No entity selected");
+  else
+    {
+      const auto entity = selection.get_entities().front();
+      Abilities* abilities = entity->get<Abilities>();
+      if (!abilities)
+        this->game->get_hud().add_info_message("Selected entity has no ability.");
+      else
+        {
+          const Ability* ability = abilities->get(nb);
+          if (!ability)
+            this->game->get_hud().add_info_message("Selected entity has no ability number " + std::to_string(nb));
+          else
+            {
+              this->game->get_hud().add_info_message("Activating ability " + ability->get_name());
+              this->game->get_hud().add_info_message("The ability type is " + std::to_string(static_cast<int>(ability->get_type())));
+              const GuiAbility* gui_ab = this->abilities_panel.get(ability->get_type());
+              assert(gui_ab);
+              this->screen->set_left_click(gui_ab->left_click);
+            }
+        }
+    }
+  // TODO actually only look in the abilities of actiev entity TYPE, not the
+  // first one
+}
+

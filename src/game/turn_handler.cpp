@@ -33,7 +33,6 @@ void TurnHandler::tick()
     {
       if (this->is_next_turn_ready() == false)
         {
-          log_debug("Next turn is not validated");
           this->pause();
           return ;
         }

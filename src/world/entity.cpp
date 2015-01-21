@@ -6,10 +6,10 @@
 #include <world/work.hpp>
 
 EntityId Entity::current_id = 0;
-EntityType Entity::current_type_id = 0;
 
-Entity::Entity():
-  id(++Entity::current_id)
+Entity::Entity(const EntityType& type):
+  id(++Entity::current_id),
+  type(type)
 {
 }
 
@@ -43,7 +43,7 @@ void Entity::tick(World* world)
     }
   if (this->works.empty())
     return ;
-  auto it = this->works.begin();
-  if ((*it)->tick(world) == true)
+  auto& work = this->works.front();
+  if (work->tick(world) == true)
     this->works.pop_front();
 }

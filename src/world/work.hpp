@@ -1,7 +1,3 @@
-/**
- *
- */
-
 #ifndef __WORK_HPP__
 # define __WORK_HPP__
 
@@ -23,6 +19,8 @@ public:
 private:
   Work(const Work&);
   Work& operator=(const Work&);
+  Work(Work&&);
+  Work& operator=(Work&&);
 };
 
 #endif // __WORK_HPP__

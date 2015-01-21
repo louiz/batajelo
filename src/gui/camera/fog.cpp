@@ -24,7 +24,7 @@ Fog::Fog(const unsigned int width, const unsigned int height,
 void Fog::resize(const unsigned int width, const unsigned int height)
 {
   // TODO, have a fallback
-  assert(this->texture.create(width, height));
+  this->texture.create(width, height);
   this->texture.setSmooth(true);
   this->invalidate();
 }

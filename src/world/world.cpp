@@ -8,6 +8,7 @@
 #include <world/location.hpp>
 #include <world/team.hpp>
 #include <world/vision.hpp>
+#include <world/abilities.hpp>
 
 World::World()
 {
@@ -82,7 +83,31 @@ void World::do_move(const std::vector<EntityId>& ids, const Position& pos, const
     }
 }
 
-Entity* World::get_entity_by_id(unsigned short id)
+void World::do_cast(const std::vector<EntityId>& ids, const Position& pos, const AbilityType& type, const bool queue)
+{
+  for (const EntityId id: ids)
+    {
+      Entity* entity = this->get_entity_by_id(id);
+      if (entity)
+        {
+          Ability* ability = get_ability(entity, type);
+          if (ability)
+            {
+              ability->cast(entity, pos, queue);
+            }
+          else
+            {
+              log_warning("Received a cast order, but entity " << id << " does not have ability: " << static_cast<int>(type));
+            }
+        }
+      else
+        {
+          log_warning("Received a cast order for non existing entity: " << id);
+        }
+    }
+}
+
+Entity* World::get_entity_by_id(EntityId id)
 {
   // Should use something like this->entities[id], to optimize.
   // Entities should be placed directly in a vector, for fast access.
@@ -296,9 +321,7 @@ bool World::has_a_line_of_sight(const Position& start, const Position& end,
     {
       // Move the pointer forward.
       pointer += forward;
-      log_debug("pointer is at "<< pointer);
       std::tie(x, y) = this->get_cell_at_position(pointer);
-      log_debug("cell is: " << x << ":" << y);
       // If the cell changed, we check if we can walk from the previous to
       // the current one. If not, it's not walkable and we return false
       if ((prevx != x) || (prevy != y))
