@@ -53,11 +53,16 @@ public:
    * be executed.
    */
   void send_turn();
+  /**
+   * Send the seed value to one client.
+   **/
+  void send_seed_value(RemoteGameClient* client);
 
   void tick();
   // void pause_game();
   // void unpause_game();
   void start_game();
+  void seed_world();
   void send_message_to_all(const char* name, const std::string& data);
   void send_order_to_all(const char* name, const google::protobuf::Message& srl);
   /**

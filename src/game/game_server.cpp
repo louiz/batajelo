@@ -67,6 +67,7 @@ void GameServer::on_new_client(RemoteGameClient* new_client)
        new_client->send(message);
      }
     }
+  this->send_seed_value(new_client);
   // Send the replay to the new client.
   this->send_replay(new_client);
   // Send an action to indicate at what turn the replay ends
@@ -149,8 +150,14 @@ void GameServer::tick()
 //   this->started = true;
 // }
 
+void GameServer::seed_world()
+{
+  this->world.seed();
+}
+
 void GameServer::start_game()
 {
+  this->seed_world();
   this->send_new_entity_order(0, {300, 300}, 1);
   this->send_new_entity_order(0, {400, 800.12}, 1);
   this->send_new_entity_order(0, {500, 500}, 2);
@@ -260,6 +267,16 @@ void GameServer::send_new_entity_order(const EntityType type, const Position& po
   this->send_order_to_all("NEW_ENTITY", srl);
   this->turn_handler.insert_action(std::bind(&World::do_new_entity, &this->world, type, pos, team),
                                    srl.turn());
+}
+
+void GameServer::send_seed_value(RemoteGameClient* client)
+{
+  ser::order::Seed srl;
+  srl.set_value(this->world.get_seed());
+  Message* message = new Message;
+  message->set_name("SEED");
+  message->set_body(srl);
+  client->send(message);
 }
 
 void GameServer::send_move_order(const std::vector<EntityId> ids, const Position& pos, const bool queue)

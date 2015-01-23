@@ -46,6 +46,10 @@ public:
    */
   void occupant_left_callback(Message*);
   /**
+   * Seed the world with the value given by the server.
+   */
+  void handle_seed_message(Message* message);
+  /**
    * When we receive the message from the server telling us that
    * it is ready to start the game.
    */

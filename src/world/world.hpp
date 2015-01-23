@@ -26,6 +26,7 @@
 #include <world/entity.hpp>
 #include <world/entity_factory.hpp>
 
+#include <world/rng.hpp>
 #include <world/map.hpp>
 #include <world/position.hpp>
 #include <world/path.hpp>
@@ -59,6 +60,9 @@ public:
   void tick();
   void pause();
   void unpause();
+  void seed();
+  unsigned long get_seed() const;
+  void seed(unsigned long s);
   Path calculate_path(Position endpos, Location* location);
   Entity* do_new_entity(const EntityType type, const Position& pos, const uint16_t team);
   void do_move(const std::vector<EntityId>& ids, const Position& pos, const bool queue);
@@ -138,6 +142,7 @@ private:
 
   Map map;
   EntityFactory entity_factory;
+  Rng rng;
 
 public:
   // for debug

@@ -39,6 +39,21 @@ void World::tick()
     }
 }
 
+void World::seed()
+{
+  this->rng.seed();
+}
+
+unsigned long World::get_seed() const
+{
+  return this->rng.get_seed();
+}
+
+void World::seed(unsigned long s)
+{
+  this->rng.seed(s);
+}
+
 Path World::calculate_path(Position endpos, Location* location)
 {
   log_debug("Calculating path for entity. Starting at position: " << location->position() << " ending at pos: " << endpos);

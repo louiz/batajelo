@@ -50,7 +50,7 @@ private:
    * Random stuf, to choose random sounds among a list
    */
   std::random_device rd;
-  std::default_random_engine random_engine;
+  std::mt19937 random_engine;
 
   SoundsHandler(const SoundsHandler&) = delete;
   SoundsHandler(SoundsHandler&&) = delete;

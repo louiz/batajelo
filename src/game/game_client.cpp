@@ -21,6 +21,8 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
 
   this->install_callback("OCCUPANT_LEFT",
                          std::bind(&GameClient::occupant_left_callback, this, std::placeholders::_1));
+  this->install_callback("SEED",
+                         std::bind(&GameClient::handle_seed_message, this, std::placeholders::_1));
   this->install_callback("NEW_ENTITY",
                          std::bind(&Game::new_entity_callback, this, std::placeholders::_1));
   this->install_callback("START",
@@ -186,6 +188,18 @@ void GameClient::occupant_left_callback(Message* message)
   Occupant occupant(srl);
   log_debug("Occupant to remove: " << occupant.id);
   this->occupants_handler.remove(occupant);
+}
+
+void GameClient::handle_seed_message(Message* message)
+{
+  auto srl = message->parse_body_to_protobuf_object<ser::order::Seed>();
+  if (!srl.IsInitialized())
+    {
+      log_warning("Invalid data for SEED message " << srl.InitializationErrorString());
+      return ;
+    }
+  log_debug("Seed value received: " << srl.value());
+  this->world.seed(srl.value());
 }
 
 void GameClient::handle_start_message(Message* message)
