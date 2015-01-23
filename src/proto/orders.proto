@@ -1,0 +1,39 @@
+package ser.order;
+
+import "game.proto";
+
+message Start
+{
+  required uint32 turn = 1;
+}
+
+message Seed
+{
+  required uint32 value = 1;
+}
+
+message NewEntity
+{
+  required uint32 turn = 1;
+  optional bool queue = 2 [default = false];
+  required uint32 type_id = 3;
+  required ser.game.Position pos = 4;
+  required uint32 team = 5;
+}
+
+message Move
+{
+  required uint32 turn = 1;
+  optional bool queue = 2 [default = false];
+  repeated uint32 entity_id = 3;
+  required ser.game.Position pos = 4;
+}
+
+message Cast
+{
+  required uint32 turn = 1;
+  optional bool queue = 2 [default = false];
+  repeated uint32 entity_id = 3;
+  optional ser.game.Position pos = 4;
+  required uint32 type = 5;
+}

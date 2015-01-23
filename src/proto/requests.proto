@@ -1,0 +1,23 @@
+package ser.request;
+
+import "game.proto";
+
+// Requests are messages sent from the GameClient to the GameServer, to
+// request an action to the server.  For example if a player wants to move a
+// unit, the client sends a WorldRequestMove.
+// The counter-part is an Order, see orders.proto
+
+message Move
+{
+  repeated uint32 entity_id = 1;
+  optional bool queue = 2 [default = false];
+  required ser.game.Position pos = 3;
+}
+
+message Cast
+{
+  repeated uint32 entity_id = 1;
+  optional bool queue = 2 [default = false];
+  optional ser.game.Position pos = 3;
+  required uint32 type = 4;
+}
