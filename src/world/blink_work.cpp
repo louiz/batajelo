@@ -8,7 +8,10 @@
 
 #include <cassert>
 
+const Fix16 BlinkWork::cast_distance = 600;
+
 BlinkWork::BlinkWork(Entity* entity, const Position& position):
+  path_work(entity, position),
   destination(position)
 {
   this->mobility = entity->get<Mobility>();
@@ -19,6 +22,13 @@ BlinkWork::BlinkWork(Entity* entity, const Position& position):
 
 bool BlinkWork::tick(World* world)
 {
+  auto distance = Position::distance(this->location->position(), this->destination);
+  log_debug("Distance to destination: " << distance);
+  if (distance > this->cast_distance)
+    {
+      this->path_work.tick(world);
+      return false;
+    }
   log_debug("blinking right now");
   this->location->position() = this->destination;
   return true;

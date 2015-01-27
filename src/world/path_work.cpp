@@ -7,7 +7,6 @@
 #include <world/mobility.hpp>
 #include <world/location.hpp>
 
-
 PathWork::PathWork(Entity* entity, const Position& destination):
   path(),
   destination(destination),
