@@ -27,7 +27,7 @@ std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType type)
   res->add_component(std::make_unique<Team>());
   res->add_component(std::make_unique<Mobility>(2));
 
-  auto abilities = std::make_unique<Abilities>(2);
+  auto abilities = std::make_unique<Abilities>(2u, 20u, 20u);
   abilities->add(0, std::make_unique<Blink>());
 
   res->add_component(std::move(abilities));

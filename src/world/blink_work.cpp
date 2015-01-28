@@ -11,6 +11,7 @@
 const Fix16 BlinkWork::cast_distance = 600;
 
 BlinkWork::BlinkWork(Entity* entity, const Position& position):
+  AbilityWork(entity),
   path_work(entity, position),
   destination(position)
 {
@@ -22,14 +23,27 @@ BlinkWork::BlinkWork(Entity* entity, const Position& position):
 
 bool BlinkWork::tick(World* world)
 {
-  auto distance = Position::distance(this->location->position(), this->destination);
-  log_debug("Distance to destination: " << distance);
-  if (distance > this->cast_distance)
+  if (!this->cast_point_reached &&
+      Position::distance(this->location->position(), this->destination) > this->cast_distance)
     {
       this->path_work.tick(world);
       return false;
     }
-  log_debug("blinking right now");
-  this->location->position() = this->destination;
+  if (this->frontswing)
+    {
+      this->frontswing--;
+      return false;
+    }
+  if (!this->cast_point_reached)
+    {
+      log_debug("blinking right now");
+      this->location->position() = this->destination;
+      this->cast_point_reached = true;
+    }
+  if (this->backswing)
+    {
+      this->backswing--;
+      return false;
+    }
   return true;
 }

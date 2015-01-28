@@ -11,12 +11,17 @@
 #include <memory>
 #include <vector>
 
+#include <cstddef>
+
 class Abilities: public Component
 {
 public:
   static const ComponentType component_type = ComponentType::Abilities;
-  Abilities(const std::size_t size):
-    abilities(size)
+  Abilities(const std::size_t size,
+            const std::size_t fs, const std::size_t bs):
+    abilities(size),
+    frontswing(fs),
+    backswing(bs)
   {}
   ~Abilities() = default;
   void tick(Entity* entity, World* world) override final
@@ -36,8 +41,16 @@ public:
    */
   Ability* find(const AbilityType& type) const;
 
+  const std::size_t& frontswing_duration() const;
+  const std::size_t& backswing_duration() const;
+
 private:
   std::vector<std::unique_ptr<Ability>> abilities;
+  /**
+   * The duration, in ticks, of the two phases of a casted ability
+   */
+  const std::size_t frontswing;
+  const std::size_t backswing;
 
   Abilities(const Abilities&) = delete;
   Abilities(Abilities&&) = delete;

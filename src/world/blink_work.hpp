@@ -1,7 +1,7 @@
 #ifndef BLINK_WORK_HPP_INCLUDED
 #define BLINK_WORK_HPP_INCLUDED
 
-#include <world/work.hpp>
+#include <world/ability_work.hpp>
 #include <world/position.hpp>
 #include <world/path_work.hpp>
 
@@ -12,7 +12,7 @@ class Location;
 // TODO use an internal pathwork to walk towards the goal, and actually
 // blink when we are close enough.
 
-class BlinkWork: public Work
+class BlinkWork: public AbilityWork
 {
 public:
   BlinkWork(Entity* entity, const Position& position);
