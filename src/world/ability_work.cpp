@@ -6,6 +6,6 @@ AbilityWork::AbilityWork(Entity* entity):
   cast_point_reached(false)
 {
   Abilities* abilities = entity->get<Abilities>();
-  this->frontswing = abilities->frontswing_duration();
-  this->backswing = abilities->backswing_duration();
+  this->frontswing = abilities->cast_frontswing;
+  this->backswing = abilities->cast_backswing;
 }

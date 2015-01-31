@@ -242,7 +242,7 @@ void Map::generate_walking_map()
     }
 }
 
-int Map::get_max_level_for_cell(const uint cell) const
+int Map::get_max_level_for_cell(const unsigned int cell) const
 {
   std::vector<Layer*>::const_iterator it;
   int ret = -1;

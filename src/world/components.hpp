@@ -16,6 +16,7 @@ enum class ComponentType: std::size_t
     Vision,
     Team,
     Abilities,
+    Acquisition,
 
     count
 };
@@ -29,7 +30,7 @@ public:
 
   Component() = default;
   virtual ~Component() = default;
-  virtual void tick(Entity*, World*) = 0;
+  virtual void tick(Entity*, World*) {}
 
 private:
   Component(const Component&) = delete;

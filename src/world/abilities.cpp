@@ -50,13 +50,3 @@ Ability* get_ability(Entity* entity, const AbilityType& type)
     return nullptr;
   return abilities->find(type);
 }
-
-const std::size_t& Abilities::frontswing_duration() const
-{
-  return this->frontswing;
-}
-
-const std::size_t& Abilities::backswing_duration() const
-{
-  return this->backswing;
-}

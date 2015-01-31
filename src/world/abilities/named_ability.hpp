@@ -7,6 +7,9 @@ template<typename DerrivedClass>
 class NamedAbility: public Ability
 {
 public:
+  static const std::string name;
+  static const AbilityType ability_type;
+
   NamedAbility() = default;
   ~NamedAbility() = default;
   const std::string& get_name() const override final
@@ -19,9 +22,6 @@ public:
   }
 
 private:
-  static const std::string name;
-  static const AbilityType ability_type;
-
   NamedAbility(const NamedAbility&) = delete;
   NamedAbility(NamedAbility&&) = delete;
   NamedAbility& operator=(const NamedAbility&) = delete;

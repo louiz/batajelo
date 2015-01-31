@@ -1,6 +1,7 @@
 #ifndef ABILITIES_PANEL_HPP_INCLUDED
 #define ABILITIES_PANEL_HPP_INCLUDED
 
+#include <world/entity.hpp>
 #include <world/abilities.hpp>
 #include <gui/hud/gui_ability.hpp>
 
@@ -24,5 +25,11 @@ private:
   AbilitiesPanel& operator=(const AbilitiesPanel&) = delete;
   AbilitiesPanel& operator=(AbilitiesPanel&&) = delete;
 };
+
+/**
+ * Return all the selected entities with the given ability
+ */
+template <typename T>
+std::vector<EntityId> get_selected_entities_with_ability(const GameClient* game);
 
 #endif /* ABILITIES_PANEL_HPP_INCLUDED */

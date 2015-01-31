@@ -10,6 +10,7 @@ enum class TargetType
   Point,    // Target a specific world position, or an area (centered around
             // the point)
   Entity,   // Target an entity
+  Both,     // Can target both a Point or an Entity
   None,     // No target needs to be given (a global or a targetting the
             // casting entity itself)
 };
@@ -18,6 +19,8 @@ template<typename DerrivedClass>
 class ActiveAbility: public NamedAbility<DerrivedClass>
 {
 public:
+  TargetType target_type;
+
   ActiveAbility(const TargetType target_type):
     target_type(target_type)
     {}
@@ -25,7 +28,6 @@ public:
   void tick(Entity*, World*) override final {}
 
 private:
-  TargetType target_type;
   ActiveAbility(const ActiveAbility&) = delete;
   ActiveAbility(ActiveAbility&&) = delete;
   ActiveAbility& operator=(const ActiveAbility&) = delete;

@@ -6,8 +6,10 @@
 #include <world/location.hpp>
 #include <world/mobility.hpp>
 #include <world/abilities.hpp>
+#include <world/acquisition.hpp>
 
 #include <world/abilities/blink.hpp>
+#include <world/abilities/attack.hpp>
 
 EntityFactory::EntityFactory()
 {
@@ -26,9 +28,11 @@ std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType type)
   res->add_component(std::make_unique<Location>(10));
   res->add_component(std::make_unique<Team>());
   res->add_component(std::make_unique<Mobility>(2));
+  res->add_component(std::make_unique<Acquisition>(200_fix));
 
   auto abilities = std::make_unique<Abilities>(2u, 20u, 20u);
-  abilities->add(0, std::make_unique<Blink>());
+  abilities->add(0, std::make_unique<Attack>(20u, 20u));
+  abilities->add(1, std::make_unique<Blink>());
 
   res->add_component(std::move(abilities));
   return res;

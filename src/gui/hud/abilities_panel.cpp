@@ -7,35 +7,18 @@
 #include <world/entity.hpp>
 #include <world/abilities.hpp>
 #include <world/abilities/blink.hpp>
+#include <world/abilities/attack.hpp>
 
 #include <utility>
 
 AbilitiesPanel::AbilitiesPanel(GameClient* game)
 {
+  // Define the Blink button
   auto& blink = this->gui_abilities[AbilityType::Blink];
   blink.left_click = {
     [game](const Position& pos)
     {
-      std::vector<EntityId> ids;
-      const auto& selection = game->get_selection();
-      if (selection.is_empty())
-        return true;
-      // Find all entities with a blink ability
-      for (const auto& entity: selection.get_entities())
-        {
-          Abilities* abilities = entity->get<Abilities>();
-          if (abilities)
-            {
-              Ability* ability = abilities->find(AbilityType::Blink);
-              if (ability)
-                {
-                  Blink* blink = static_cast<Blink*>(ability);
-                  // Check cooldown, mana, etc etc etc
-                  Entity* e = const_cast<Entity*>(entity);
-                  ids.push_back(e->get_id());
-                }
-            }
-        }
+      auto ids = get_selected_entities_with_ability<Blink>(game);
       if (ids.empty())
         return true;
       const bool queue = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
@@ -47,6 +30,25 @@ AbilitiesPanel::AbilitiesPanel(GameClient* game)
       return cursor::Move;
     }
   };
+
+  // The auto-attack button
+  auto& atk = this->gui_abilities[AbilityType::Attack];
+  atk.left_click = {
+    [game](const Position& pos)
+    {
+      auto ids = get_selected_entities_with_ability<Attack>(game);
+      if (ids.empty())
+        return true;
+      const bool queue = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
+                          sf::Keyboard::isKeyPressed(sf::Keyboard::RShift));
+      log_debug("attacking with " << ids.size() << " entities");
+      return game->action_cast(ids, pos, AbilityType::Attack, queue);
+    },
+    [](const sf::Vector2i&)
+    {
+      return cursor::Build;
+    }
+  };
 }
 
 const GuiAbility* AbilitiesPanel::get(const AbilityType& type) const
@@ -55,4 +57,28 @@ const GuiAbility* AbilitiesPanel::get(const AbilityType& type) const
   if (it == this->gui_abilities.end())
     return nullptr;
   return &it->second;
+}
+
+template <typename T>
+std::vector<EntityId> get_selected_entities_with_ability(const GameClient* game)
+{
+  std::vector<EntityId> ids;
+  const auto& selection = game->get_selection();
+
+  for (const auto& entity: selection.get_entities())
+    {
+      Abilities* abilities = entity->get<Abilities>();
+      if (abilities)
+        {
+          Ability* ability = abilities->find(T::ability_type);
+          if (ability)
+            {
+              T* blink = static_cast<T*>(ability);
+              // Check cooldown, mana, etc etc
+              Entity* e = const_cast<Entity*>(entity);
+              ids.push_back(e->get_id());
+            }
+        }
+    }
+  return ids;
 }
