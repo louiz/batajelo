@@ -21,7 +21,7 @@ World::~World()
 
 void World::insert_entity(std::unique_ptr<Entity>&& entity)
 {
-  this->entities.push_back(std::move(entity));
+  this->entities.emplace_back(entity.release());
 }
 
 void World::tick()
@@ -362,7 +362,7 @@ bool World::can_be_seen_by_team(const Position& position, const uint16_t team)
 {
   auto res = std::find_if(this->entities.begin(),
                           this->entities.end(),
-                          [&position, team](const std::unique_ptr<Entity>& entity)
+                          [&position, team](const std::shared_ptr<Entity>& entity)
                           {
                             Team* entity_team = entity->get<Team>();
                             if (!entity_team || (entity_team->get() != team))

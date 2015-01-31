@@ -161,7 +161,7 @@ void Camera::set_mouse_selection_to_selection()
   // nothing
   auto number_of_entities = std::count_if(this->world().entities.begin(),
                                           this->world().entities.end(),
-                                          [this, &mouse_pos](const std::unique_ptr<Entity>& entity) -> bool
+                                          [this, &mouse_pos](const std::shared_ptr<Entity>& entity) -> bool
                                           {
                                             Location* location = entity->get<Location>();
                                             if (location)

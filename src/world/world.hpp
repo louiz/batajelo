@@ -130,7 +130,7 @@ public:
   /**
    * The list of all existing entities in the world.
    */
-  std::list<std::unique_ptr<Entity>> entities;
+  std::vector<std::shared_ptr<Entity>> entities;
 
 private:
   /**
