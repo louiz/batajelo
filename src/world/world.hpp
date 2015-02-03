@@ -21,6 +21,7 @@
 
 #include <list>
 #include <memory>
+#include <functional>
 
 #include <world/abilities/ability.hpp>
 #include <world/entity.hpp>
@@ -33,6 +34,7 @@
 
 class Team;
 class Location;
+class WorldCallbacks;
 
 /**
  * From left to right, and from top to bottom, a cell has this size, in the
@@ -127,6 +129,8 @@ public:
   Position get_nearest_corner(const Position&, const std::size_t, const Fix16 width) const;
   Position get_next_path_position(CellPath& path, const Position& current,
                                          const Position& end, const Fix16 width) const;
+
+  std::unique_ptr<WorldCallbacks> callbacks;
   /**
    * The list of all existing entities in the world.
    */

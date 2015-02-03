@@ -9,8 +9,10 @@
 #include <world/team.hpp>
 #include <world/vision.hpp>
 #include <world/abilities.hpp>
+#include <world/world_callbacks.hpp>
 
-World::World()
+World::World():
+  callbacks(std::make_unique<WorldCallbacks>())
 {
   this->map.load_from_file("test6.tmx");
 }

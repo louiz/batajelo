@@ -1,6 +1,7 @@
 #include <logging/logging.hpp>
 #include <game/game_client.hpp>
 #include <utils/time.hpp>
+#include <world/world_callbacks.hpp>
 
 #include "orders.pb.h"
 #include "requests.pb.h"
@@ -37,6 +38,13 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
   this->screen->add_element(&this->camera, 0);
   this->screen->add_element(&this->hud, 1);
   this->screen->add_element(&this->get_debug_hud(), 2);
+
+  /**
+   * Install world callbacks
+   */
+  this->world.callbacks->ability_casted = std::bind(
+      &GameClient::on_ability_casted, this, std::placeholders::_1,
+      std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
 }
 
 GameClient::~GameClient()
@@ -324,4 +332,14 @@ void GameClient::graphical_tick()
 void GameClient::on_connection_closed()
 {
   log_error("Connection closed by remote server");
+}
+
+void GameClient::on_ability_casted(const Entity* caster,
+                                   const AbilityType& type,
+                                   const Entity* target,
+                                   const Position& position)
+{
+  log_debug("on_ability_casted: " << static_cast<std::size_t>(type));
+  if (type == AbilityType::Blink)
+    this->sounds_handler.play(SoundType::BlinkStart, false, 20.f);
 }

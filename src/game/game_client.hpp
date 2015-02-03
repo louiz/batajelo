@@ -34,6 +34,12 @@ public:
   void send_message(const char* name, const google::protobuf::Message& msg);
   void send_message(const char* name, const std::string& archive);
 
+  /**
+   * Whenever an ability is casted, in the World.
+   */
+  void on_ability_casted(const Entity*, const AbilityType&, const Entity*,
+                         const Position&);
+
   World& get_world();
   Camera& get_camera();
   Screen& get_screen();
