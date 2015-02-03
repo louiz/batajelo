@@ -8,6 +8,7 @@
 #include <world/location.hpp>
 
 PathWork::PathWork(Entity* entity, const Position& destination):
+  Work(entity),
   path(),
   destination(destination),
   calculated(false)

@@ -3,6 +3,7 @@
 #include <world/entity.hpp>
 
 AbilityWork::AbilityWork(Entity* entity):
+  Work(entity),
   cast_point_reached(false)
 {
   Abilities* abilities = entity->get<Abilities>();

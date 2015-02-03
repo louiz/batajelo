@@ -3,6 +3,7 @@
 #include <world/location.hpp>
 #include <world/mobility.hpp>
 #include <world/position.hpp>
+#include <world/world.hpp>
 #include <world/world_callbacks.hpp>
 
 #include <logging/logging.hpp>

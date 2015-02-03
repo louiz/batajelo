@@ -2,6 +2,7 @@
 # define __WORK_HPP__
 
 class World;
+class Entity;
 
 /**
  * The function to call at each tick of the entity owning that work. It
@@ -12,15 +13,24 @@ class World;
 class Work
 {
 public:
-  Work() = default;
+  Work(Entity* entity):
+    entity(entity) {}
   virtual ~Work() {}
   virtual bool tick(World* world) = 0;
 
+protected:
+  /**
+   * Keep a pointer to the entity, so we can know which one it is. But do
+   * not use that pointer to do the actual work, get the individual
+   * components pointers in the subclasses.
+   */
+  const Entity* entity;
+
 private:
-  Work(const Work&);
-  Work& operator=(const Work&);
-  Work(Work&&);
-  Work& operator=(Work&&);
+  Work(const Work&) = delete;
+  Work& operator=(const Work&) = delete;
+  Work(Work&&) = delete;
+  Work& operator=(Work&&) = delete;
 };
 
 #endif // __WORK_HPP__

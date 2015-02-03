@@ -7,6 +7,7 @@
 #include <logging/logging.hpp>
 
 AttackWork::AttackWork(Entity* entity, const Position& position):
+  Work(entity),
   path_work(entity, position),
   location(entity->get<Location>()),
   entity(entity),
