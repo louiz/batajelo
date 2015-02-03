@@ -43,9 +43,9 @@ void SoundsHandler::load(const char* filename, const SoundType& type)
     }
 }
 
-void SoundsHandler::play(const SoundType& type)
+void SoundsHandler::play(const SoundType& type, const bool limit, const float volume)
 {
-  if (std::chrono::steady_clock::now() < this->timeouts[type])
+  if (limit && std::chrono::steady_clock::now() < this->timeouts[type])
     return;
   auto buffer_it = this->buffers.find(type);
   if (buffer_it == this->buffers.end())
@@ -66,7 +66,10 @@ void SoundsHandler::play(const SoundType& type)
       log_warning("Too many sounds already playing, ignoring that sound");
       return ;
     }
-  sound_it->play(buffer);
-  this->timeouts[type] = std::chrono::steady_clock::now() + 500ms +
-    std::chrono::microseconds(buffer.getDuration().asMicroseconds());
+  sound_it->play(buffer, volume);
+  if (limit)
+    {
+      this->timeouts[type] = std::chrono::steady_clock::now() + 500ms +
+        std::chrono::microseconds(buffer.getDuration().asMicroseconds());
+    }
 }

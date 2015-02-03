@@ -8,8 +8,9 @@ bool Sound::is_playing() const
   return false;
 }
 
-void Sound::play(const sf::SoundBuffer& buffer)
+void Sound::play(const sf::SoundBuffer& buffer, const float volume)
 {
   this->sound.setBuffer(buffer);
+  this->sound.setVolume(volume);
   this->sound.play();
 }

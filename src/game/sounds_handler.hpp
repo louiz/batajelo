@@ -29,7 +29,7 @@ public:
   /**
    * Spawns a Sound, and play it immediately. Keep it in the sounds buffer.
    */
-  void play(const SoundType& type);
+  void play(const SoundType& type, const bool limit=false, const float volume=100.f);
 
 private:
   void load(const char* filename, const SoundType& type);

@@ -18,7 +18,7 @@ public:
   /**
    * Start playing the sound using the given buffer.
    */
-  void play(const sf::SoundBuffer& buffer);
+  void play(const sf::SoundBuffer& buffer, const float volume);
 
 private:
   sf::Sound sound;
