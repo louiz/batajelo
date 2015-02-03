@@ -78,11 +78,11 @@ public:
   Map();
   virtual ~Map();
   bool load_from_file(const std::string&);
-  uint get_height_in_pixels() const;
-  uint get_width_in_pixels() const;
-  uint get_height_in_tiles() const;
-  uint get_width_in_tiles() const;
-  int get_max_level_for_cell(const uint cell) const;
+  unsigned int get_height_in_pixels() const;
+  unsigned int get_width_in_pixels() const;
+  unsigned int get_height_in_tiles() const;
+  unsigned int get_width_in_tiles() const;
+  int get_max_level_for_cell(const unsigned int cell) const;
   /**
    * Generates the walking map. This structure is used to know the height of
    * an entity, based on its position, and to do the path finding (it

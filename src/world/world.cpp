@@ -362,22 +362,23 @@ bool World::has_a_line_of_sight(const Position& start, const Position& end,
 
 bool World::can_be_seen_by_team(const Position& position, const uint16_t team)
 {
-  auto res = std::find_if(this->entities.begin(),
-                          this->entities.end(),
-                          [&position, team](const std::shared_ptr<Entity>& entity)
-                          {
-                            Team* entity_team = entity->get<Team>();
-                            if (!entity_team || (entity_team->get() != team))
-                              return false;
-                            Location* entity_location = entity->get<Location>();
-                            Vision* entity_vision = entity->get<Vision>();
-                            if (!entity_vision || !entity_location)
-                              return false;
-                            Fix16 distance = Position::distance(position, entity_location->position());
-                            if (distance > entity_vision->get_range())
-                              return false;
-                            return true;
-                          });
+  auto res =
+      std::find_if(this->entities.begin(), this->entities.end(),
+                   [&position, team](const std::shared_ptr<Entity>& entity)
+                   {
+        Team* entity_team = entity->get<Team>();
+        if (!entity_team || (entity_team->get() != team))
+          return false;
+        Location* entity_location = entity->get<Location>();
+        Vision* entity_vision = entity->get<Vision>();
+        if (!entity_vision || !entity_location)
+          return false;
+        Fix16 distance =
+            Position::distance(position, entity_location->position());
+        if (distance > entity_vision->get_range())
+          return false;
+        return true;
+      });
   return res != this->entities.end();
 }
 
@@ -556,8 +557,8 @@ Position World::get_nearest_corner(const Position& pos, const CellIndex cell, co
 {
   log_debug("get_nearest_corner of final Cell. In cell " << this->map.index_to_cell(cell) <<
             " find the nearest corner of pos " << pos);
-  const uint x = cell % this->map.get_width_in_tiles();
-  const uint y = cell / this->map.get_width_in_tiles();
+  const unsigned int x = cell % this->map.get_width_in_tiles();
+  const unsigned int y = cell / this->map.get_width_in_tiles();
   Position nearest_position(x * 100 + width, y * 100 + width);
   Fix16 shorter_distance = Position::distance(pos, nearest_position);
   Position other_position(x * 100 + width, (y + 1) * 100 - width);
