@@ -339,7 +339,6 @@ void Camera::draw_mouse_selection()
   if (this->mouse_selection.ongoing == false)
     return ;
   sf::Vector2i mouse_pos = this->get_mouse_position();
-
   sf::RectangleShape rect(sf::Vector2f(::abs(mouse_pos.x - this->mouse_selection.start_pos.x),
                                        ::abs(mouse_pos.y- this->mouse_selection.start_pos.y)));
   rect.setOutlineThickness(1);

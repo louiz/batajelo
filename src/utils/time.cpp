@@ -26,4 +26,9 @@ namespace utils
     return std::chrono::duration_cast<FloatingSeconds>(dt);
   }
 
+  FloatingSeconds passed_time()
+  {
+    Duration t = now() - start_time;
+    return sec(t);
+  }
 }

@@ -14,7 +14,7 @@ namespace utils
   using Time = std::chrono::time_point<std::chrono::steady_clock>;
 
   // A duration is expressed in microseconds.
-  using Duration = std::chrono::microseconds;
+  using Duration = std::chrono::steady_clock::duration;
 
   using FloatingSeconds = decltype(0.1s);
 
@@ -40,6 +40,9 @@ namespace utils
    * e.g 2'500'000 is converted into 2.5 seconds
    */
   FloatingSeconds sec(const Duration&);
+
+  static Time start_time = now();
+  FloatingSeconds passed_time();
 }
 
 #endif // UTILS_TIME_HPP_INCLUDED
