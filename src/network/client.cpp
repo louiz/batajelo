@@ -12,7 +12,8 @@ Client::~Client()
 
 void Client::install_callbacks()
 {
-  this->install_callback("TRANSFER", std::bind(&Client::transfer_init_callback, this, std::placeholders::_1));
+  this->install_callback("TRANSFER", std::bind(&Client::transfer_init_callback,
+                                               this, std::placeholders::_1));
 }
 
 void Client::transfer_init_callback(Message* received_message)

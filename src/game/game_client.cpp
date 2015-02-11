@@ -6,6 +6,8 @@
 #include "orders.pb.h"
 #include "requests.pb.h"
 
+namespace ph = std::placeholders;
+
 GameClient::GameClient(const std::shared_ptr<Screen>& screen):
   Game(),
   ClientBase(),
@@ -16,24 +18,21 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
   debug_hud(this, this->screen.get())
 {
   this->turn_handler.set_next_turn_callback(std::bind(&GameClient::on_next_turn,
-                                               this, std::placeholders::_1));
+                                               this, ph::_1));
 
   this->connect("127.0.0.1", 7879);
 
-  this->install_callback("OCCUPANT_LEFT",
-                         std::bind(&GameClient::occupant_left_callback, this, std::placeholders::_1));
+  this->install_callback(
+      "OCCUPANT_LEFT",
+      std::bind(&GameClient::occupant_left_callback, this, ph::_1));
   this->install_callback("SEED",
-                         std::bind(&GameClient::handle_seed_message, this, std::placeholders::_1));
+                         std::bind(&GameClient::handle_seed_message, this, ph::_1));
   this->install_callback("NEW_ENTITY",
-                         std::bind(&Game::new_entity_callback, this, std::placeholders::_1));
-  this->install_callback("START",
-                         std::bind(&GameClient::handle_start_message, this, std::placeholders::_1));
-  this->install_callback("T",
-                         std::bind(&GameClient::turn_callback, this, std::placeholders::_1));
-  this->install_callback("MOVE",
-                         std::bind(&Game::move_callback, this, std::placeholders::_1));
-  this->install_callback("CAST",
-                         std::bind(&Game::cast_callback, this, std::placeholders::_1));
+                         std::bind(&Game::new_entity_callback, this, ph::_1));
+  this->install_callback("START", std::bind(&GameClient::handle_start_message, this, ph::_1));
+  this->install_callback("T", std::bind(&GameClient::turn_callback, this, ph::_1));
+  this->install_callback("MOVE", std::bind(&Game::move_callback, this, ph::_1));
+  this->install_callback("CAST", std::bind(&Game::cast_callback, this, ph::_1));
 
   this->screen->add_element(&this->camera, 0);
   this->screen->add_element(&this->hud, 1);
@@ -42,9 +41,12 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
   /**
    * Install world callbacks
    */
-  this->world.callbacks->ability_casted = std::bind(
-      &GameClient::on_ability_casted, this, std::placeholders::_1,
-      std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
+  this->world.callbacks->entity_created =
+      std::bind(&GameClient::on_entity_created, this, ph::_1);
+  this->world.callbacks->entity_deleted =
+      std::bind(&GameClient::on_entity_deleted, this, ph::_1);
+  this->world.callbacks->ability_casted =
+      std::bind(&GameClient::on_ability_casted, this, ph::_1, ph::_2, ph::_3, ph::_4);
 }
 
 GameClient::~GameClient()
@@ -107,9 +109,8 @@ void GameClient::run()
 
 void GameClient::install_callbacks()
 {
-  this->install_callback("NEW_OCCUPANT",
-                         std::bind(&GameClient::new_occupant_callback,
-                                   this, std::placeholders::_1));
+  this->install_callback(
+      "NEW_OCCUPANT", std::bind(&GameClient::new_occupant_callback, this, ph::_1));
 }
 
 void GameClient::add_new_occupant(std::unique_ptr<Occupant>&& occupant)
