@@ -35,9 +35,8 @@ bool AttackTask::tick(World* world)
       // Do the actual attack
       auto target = this->target.lock();
       this->attack_point_reached = true;
-      if (world->callbacks->ability_casted)
-        world->callbacks->ability_casted(this->entity, AbilityType::Attack,
-                                         target.get(), Position::zero);
+      world->callbacks->ability_casted(this->entity, AbilityType::Attack,
+                                       target.get(), Position::zero);
       // Only if ranged entity
       Entity* projectile = world->do_new_entity(1, this->location->position(), 1);
       projectile->set_work(

@@ -23,13 +23,31 @@
 class WorldCallbacks
 {
 public:
-  WorldCallbacks() = default;
+  WorldCallbacks():
+    entity_created([](const Entity*){}),
+    entity_deleted([](const Entity*){}),
+    ability_casted([](const Entity*, const AbilityType&, const Entity*, const Position&){}),
+    task_changed([](const Entity*, const TaskType&){})
+  {
+  }
   ~WorldCallbacks() = default;
 
+  /**
+   * Called when a new Entity is created and added to the world
+   */
+  std::function<void(const Entity*)> entity_created;
+  /**
+   * Called when an entity is about to be removed from the world
+   */
+  std::function<void(const Entity*)> entity_deleted;
   /**
    * Called when an ability has been casted (the actual effect starts).
    */
   std::function<void(const Entity*, const AbilityType&, const Entity*, const Position&)> ability_casted;
+  /**
+   * Called whenever the current task of a unit has changed.
+   */
+  std::function<void(const Entity*, const TaskType&)> task_changed;
 
 private:
   WorldCallbacks(const WorldCallbacks&) = delete;

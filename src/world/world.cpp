@@ -36,7 +36,7 @@ void World::tick()
   // Remove entities that were killed
   for (const auto& entity: this->entities)
     {
-      if (entity->is_dead() && this->callbacks->entity_deleted)
+      if (entity->is_dead())
         this->callbacks->entity_deleted(entity.get());
     }
   this->entities.erase(std::remove_if(this->entities.begin(), this->entities.end(),
@@ -129,8 +129,7 @@ Entity* World::do_new_entity(const EntityType type, const Position& pos, const u
 
   auto res = entity.get();
   this->insert_entity(std::move(entity));
-  if (this->callbacks->entity_created)
-    this->callbacks->entity_created(res);
+  this->callbacks->entity_created(res);
   return res;
 }
 

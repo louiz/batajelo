@@ -5,8 +5,7 @@
 
 void Work::set_task(World* world, std::unique_ptr<Task> task)
 {
-  if (world->callbacks->task_changed)
-    world->callbacks->task_changed(this->entity, task->get_type());
+  world->callbacks->task_changed(this->entity, task->get_type());
   this->task = std::move(task);
 }
 

@@ -29,11 +29,8 @@ bool BlinkTask::tick(World* world)
   if (!this->cast_point_reached)
     {
       log_debug("blinking right now");
-      if (world->callbacks->ability_casted)
-        {
-          world->callbacks->ability_casted(this->entity, AbilityType::Blink,
-                                           nullptr, this->destination);
-        }
+      world->callbacks->ability_casted(this->entity, AbilityType::Blink,
+                                       nullptr, this->destination);
       this->location->position() = this->destination;
       this->cast_point_reached = true;
     }
