@@ -347,4 +347,6 @@ void GameClient::on_ability_casted(const Entity* caster,
   log_debug("on_ability_casted: " << static_cast<std::size_t>(type));
   if (type == AbilityType::Blink)
     this->sounds_handler.play(SoundType::BlinkStart, false, 20.f);
+  else if (type == AbilityType::Attack)
+    this->sounds_handler.play(SoundType::ProjectileLaunch, false, 20.f);
 }

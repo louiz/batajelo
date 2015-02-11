@@ -13,6 +13,9 @@
 enum class SoundType
 {
   DefaultOk,
+  ProjectileLaunch,
+  ProjectileImpact,
+  BlinkStart,
 
   count,
 };

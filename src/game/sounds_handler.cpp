@@ -30,6 +30,17 @@ SoundsHandler::SoundsHandler():
   this->load("data/sounds/gyro/Gyro_move_30.wav", SoundType::DefaultOk);
   this->load("data/sounds/gyro/Gyro_move_31.wav", SoundType::DefaultOk);
   this->load("data/sounds/gyro/Gyro_move_32.wav", SoundType::DefaultOk);
+
+  this->load("data/sounds/drow/Drow_Ranger_projectile_impact1.wav", SoundType::ProjectileImpact);
+  this->load("data/sounds/drow/Drow_Ranger_projectile_impact2.wav", SoundType::ProjectileImpact);
+  this->load("data/sounds/drow/Drow_Ranger_projectile_impact3.wav", SoundType::ProjectileImpact);
+
+  this->load("data/sounds/drow/Drow_Ranger_projectile_launch1.wav", SoundType::ProjectileLaunch);
+  this->load("data/sounds/drow/Drow_Ranger_projectile_launch2.wav", SoundType::ProjectileLaunch);
+  this->load("data/sounds/drow/Drow_Ranger_projectile_launch3.wav", SoundType::ProjectileLaunch);
+  this->load("data/sounds/drow/Drow_Ranger_projectile_launch4.wav", SoundType::ProjectileLaunch);
+
+  this->load("data/sounds/items/Blink_start_(AM).wav", SoundType::BlinkStart);
 }
 
 void SoundsHandler::load(const char* filename, const SoundType& type)
