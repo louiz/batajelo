@@ -95,6 +95,10 @@ public:
     this->y = (this->x * s) + (this->y * c);
     this->set_length(l);
   }
+  Fix16 angle() const
+  {
+    return this->y.atan2(this->x) * 180 / 3.14159265359;
+  }
   Fix16 length() const
   {
     return std::hypot(this->x, this->y);

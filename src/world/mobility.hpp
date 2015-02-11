@@ -19,10 +19,27 @@ public:
   ~Mobility() = default;
   void tick(Entity*, World*) override final;
   Fix16 get_speed() const;
+  /**
+   * Given a path, change the location and cut down the path (if we moved
+   * enough) to follow that path
+   */
   void follow_path(Path& path, World* world, Location* location);
+  /**
+   * Move the location towards the given goal. Doesn't do any pathfinding or
+   * collision handling, just moves unconditionally in the right direction.
+   *
+   * The goal is reached if after this function, the location's position == goal.
+   */
+  void move_towards(const Position& goal, Location* location);
+  /**
+   * Get the angle of the entity that has this mobility, based on the latest
+   * movement done.
+   */
+  Fix16 get_angle() const;
 
 private:
   Fix16 speed;
+  Vec2 last_movement;
 
   Mobility(const Mobility&) = delete;
   Mobility(Mobility&&) = delete;

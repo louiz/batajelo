@@ -87,6 +87,12 @@ TEST(Vec2, Length)
   ASSERT_EQ(v.y, 12);
 }
 
+TEST(Vec2, Angle)
+{
+  Vec2 v(-1, 1);
+  ASSERT_EQ(v.angle(), 0_fix);
+}
+
 TEST(World, CellAtPosition)
 {
   World world;

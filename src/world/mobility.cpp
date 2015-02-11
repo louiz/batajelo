@@ -32,9 +32,27 @@ void Mobility::follow_path(Path& path, World*, Location* location)
       return ;
     }
 
+  this->move_towards(goal, location);
+}
+
+void Mobility::move_towards(const Position& goal, Location* location)
+{
+  Vec2 movement(goal - location->position());
+  if (movement.length() == 0)
+    {
+      location->position() = goal;
+      return;
+    }
+
   if (Position::distance(goal, location->position()) < this->speed)
     movement.set_length(Position::distance(goal, location->position()));
   else
     movement.set_length(this->speed);
   location->position() += movement;
+  this->last_movement = movement;
+}
+
+Fix16 Mobility::get_angle() const
+{
+  return this->last_movement.angle();
 }

@@ -7,8 +7,6 @@
 #include <string>
 #include <cmath>
 
-static constexpr unsigned int Fix16Max = 32768;
-
 class Fix16
  {
  public:
