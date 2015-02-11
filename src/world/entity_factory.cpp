@@ -21,19 +21,28 @@ EntityFactory::~EntityFactory()
 
 std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType type)
 {
-  auto res = std::make_unique<Entity>(type);
-  res->add_component(std::make_unique<Health>(100));
-  res->add_component(std::make_unique<ManaPool>(300));
-  res->add_component(std::make_unique<Vision>(700, false));
-  res->add_component(std::make_unique<Location>(10));
-  res->add_component(std::make_unique<Team>());
-  res->add_component(std::make_unique<Mobility>(2));
-  res->add_component(std::make_unique<Acquisition>(200_fix));
+  auto entity = std::make_unique<Entity>(type);
+  if (type == 0)
+    { // Default unit
+      entity->add_component(std::make_unique<Health>(100));
+      entity->add_component(std::make_unique<ManaPool>(300));
+      entity->add_component(std::make_unique<Vision>(700, false));
+      entity->add_component(std::make_unique<Location>(10));
+      entity->add_component(std::make_unique<Team>());
+      entity->add_component(std::make_unique<Mobility>(2));
+      entity->add_component(std::make_unique<Acquisition>(200_fix));
 
-  auto abilities = std::make_unique<Abilities>(2u, 20u, 20u);
-  abilities->add(0, std::make_unique<Attack>(20u, 20u));
-  abilities->add(1, std::make_unique<Blink>());
+      auto abilities = std::make_unique<Abilities>(2u, 20u, 20u);
+      abilities->add(0, std::make_unique<Attack>(20u, 20u));
+      abilities->add(1, std::make_unique<Blink>());
 
-  res->add_component(std::move(abilities));
-  return res;
+      entity->add_component(std::move(abilities));
+    }
+  else if (type == 1)
+    { // Some test projectile
+      entity->add_component(std::make_unique<Location>(2));
+      entity->add_component(std::make_unique<Mobility>(2));
+      entity->add_component(std::make_unique<Team>());
+    }
+  return entity;
 }
