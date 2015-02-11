@@ -1,5 +1,5 @@
 #include <world/abilities/blink.hpp>
-#include <world/blink_work.hpp>
+#include <world/works/blink_work.hpp>
 #include <world/entity.hpp>
 
 #include <logging/logging.hpp>

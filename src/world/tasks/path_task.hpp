@@ -1,24 +1,25 @@
-#ifndef PATH_WORK_HPP_INCLUDED
-#define PATH_WORK_HPP_INCLUDED
+#ifndef PATH_TASK_HPP_INCLUDED
+#define PATH_TASK_HPP_INCLUDED
 
-#include <world/work.hpp>
+#include <world/task.hpp>
+
 #include <world/position.hpp>
 #include <world/path.hpp>
 
-class Entity;
 class Mobility;
 class Location;
+class Entity;
 
-class PathWork: public Work
+class PathTask: public Task
 {
 public:
-  PathWork(Entity* entity, const Position& destination);
-  ~PathWork();
+  PathTask(Entity* entity, const Position& destination);
+  ~PathTask() = default;
   bool tick(World* world) override final;
+  TaskType get_type() const override final
+  { return TaskType::Path; }
 
 private:
-  PathWork(const PathWork&);
-  PathWork& operator=(const PathWork&);
   /**
    * The path to follow. If it’s empty and the calculated bool is at false,
    * we calculate the path.  If it’s not empty, the unit needs to follow it
@@ -42,7 +43,12 @@ private:
    * path yet.
    */
   bool calculated;
+
+  PathTask(const PathTask&) = delete;
+  PathTask(PathTask&&) = delete;
+  PathTask& operator=(const PathTask&) = delete;
+  PathTask& operator=(PathTask&&) = delete;
 };
 
-#endif /* PATH_WORK_HPP_INCLUDED */
 
+#endif /* PATH_TASK_HPP_INCLUDED */

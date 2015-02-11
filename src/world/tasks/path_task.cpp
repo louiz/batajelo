@@ -1,29 +1,28 @@
-#include <logging/logging.hpp>
+#include <world/tasks/path_task.hpp>
 
-#include <world/path_work.hpp>
 #include <world/world.hpp>
 #include <world/entity.hpp>
-
+#include <world/path.hpp>
 #include <world/mobility.hpp>
 #include <world/location.hpp>
 
-PathWork::PathWork(Entity* entity, const Position& destination):
-  Work(entity),
+#include <logging/logging.hpp>
+
+#include <cassert>
+
+PathTask::PathTask(Entity* entity, const Position& destination):
+  Task(entity),
   path(),
   destination(destination),
-  calculated(false)
+  calculated(false),
+  mobility(entity->get<Mobility>()),
+  location(entity->get<Location>())
 {
-  this->mobility = entity->get<Mobility>();
   assert(this->mobility);
-  this->location = entity->get<Location>();
   assert(this->location);
 }
 
-PathWork::~PathWork()
-{
-}
-
-bool PathWork::tick(World* world)
+bool PathTask::tick(World* world)
 {
   if (!this->calculated)
     {

@@ -174,6 +174,8 @@ endif()
 file(GLOB source_world
   src/world/*.[hc]pp
   src/world/abilities/*.[hc]pp
+  src/world/tasks/*.[hc]pp
+  src/world/works/*.[hc]pp
   )
 
 add_library(world STATIC ${source_world})

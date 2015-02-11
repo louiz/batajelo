@@ -1,36 +1,26 @@
-#include <world/blink_work.hpp>
+#include <world/tasks/blink_task.hpp>
+
+#include <world/world.hpp>
+#include <world/world_callbacks.hpp>
 #include <world/entity.hpp>
 #include <world/location.hpp>
 #include <world/mobility.hpp>
-#include <world/position.hpp>
-#include <world/world.hpp>
-#include <world/world_callbacks.hpp>
 
 #include <logging/logging.hpp>
-
 #include <cassert>
 
-const Fix16 BlinkWork::cast_distance = 600;
-
-BlinkWork::BlinkWork(Entity* entity, const Position& position):
-  AbilityWork(entity),
-  path_work(entity, position),
-  destination(position)
+BlinkTask::BlinkTask(Entity* entity, const Position& destination):
+  AbilityTask(entity),
+  destination(destination),
+  mobility(entity->get<Mobility>()),
+  location(entity->get<Location>())
 {
-  this->mobility = entity->get<Mobility>();
   assert(this->mobility);
-  this->location = entity->get<Location>();
   assert(this->location);
 }
 
-bool BlinkWork::tick(World* world)
+bool BlinkTask::tick(World* world)
 {
-  if (!this->cast_point_reached &&
-      Position::distance(this->location->position(), this->destination) > this->cast_distance)
-    {
-      this->path_work.tick(world);
-      return false;
-    }
   if (this->frontswing)
     {
       this->frontswing--;

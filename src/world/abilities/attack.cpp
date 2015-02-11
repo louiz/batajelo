@@ -3,7 +3,7 @@
 #include <world/position.hpp>
 #include <logging/logging.hpp>
 
-#include <world/attack_work.hpp>
+#include <world/works/attack_work.hpp>
 
 template<>
 const std::string NamedAbility<Attack>::name = "Attack";
