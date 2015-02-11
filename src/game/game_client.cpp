@@ -310,9 +310,8 @@ void GameClient::add_selection_change_callback(const t_selection_changed_callbac
   this->current_selection.on_modified_callbacks.push_back(callback);
 }
 
-void GameClient::do_new_entity(const EntityType type, const Position& pos, const uint16_t team)
+void GameClient::on_entity_created(const Entity* entity)
 {
-  Entity* entity = this->world.do_new_entity(type, pos, team);
   this->camera.on_new_entity(entity);
 }
 

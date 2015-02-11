@@ -27,7 +27,7 @@ void Game::new_entity_callback(Message* message)
   Position pos;
   pos.x.raw() = srl.pos().x();
   pos.y.raw() = srl.pos().y();
-  this->turn_handler.insert_action(std::bind(&Game::do_new_entity, this, srl.type_id(), pos, srl.team()),
+  this->turn_handler.insert_action(std::bind(&World::do_new_entity, &this->world, srl.type_id(), pos, srl.team()),
                                    srl.turn());
 }
 
@@ -76,10 +76,4 @@ void Game::cast_callback(Message* message)
   this->turn_handler.insert_action(std::bind(&World::do_cast, &this->world, ids, pos,
                                              static_cast<AbilityType>(type), srl.queue()),
                                    srl.turn());
-}
-
-void Game::do_new_entity(const EntityType type, const Position& pos, const uint16_t team)
-{
-  log_debug("Game::do_new_entity");
-  this->world.do_new_entity(type, pos, team);
 }

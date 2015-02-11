@@ -29,14 +29,13 @@ public:
 
   void add_new_occupant(std::unique_ptr<Occupant>&& occupant);
 
-  void do_new_entity(const EntityType type, const Position& pos, const uint16_t team) override final;
-
   void send_message(const char* name, const google::protobuf::Message& msg);
   void send_message(const char* name, const std::string& archive);
 
   /**
    * Whenever an ability is casted, in the World.
    */
+  void on_entity_created(const Entity*);
   void on_ability_casted(const Entity*, const AbilityType&, const Entity*,
                          const Position&);
 
