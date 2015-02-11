@@ -28,7 +28,12 @@ public:
    * Returns whether or not the mouse selection contains that point.
    */
   bool contains(const sf::Vector2i&,
-                const sf::Vector2i&, const uint width = 1) const;
+                const sf::Vector2i&, const uint width = 50) const;
+  /**
+   * Returns true if we consider that we are doing a rectangular selection
+   * (the left click must be pressed, and the mouse must have moved)
+   */
+  bool is_rectangular_selection_ongoing(const sf::Vector2i& mouse_pos) const;
 
 private:
   MouseSelection(const MouseSelection&);

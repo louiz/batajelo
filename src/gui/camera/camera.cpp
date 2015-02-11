@@ -166,9 +166,10 @@ void Camera::set_mouse_selection_to_selection()
                                           {
                                             Location* location = entity->get<Location>();
                                             if (location)
-                                              return this->mouse_selection.contains(mouse_pos,
-                                                                                    this->world_to_camera_position(location->position()),
-                                                                                    location->get_width().to_int());
+                                              return this->mouse_selection.contains(
+                                                  mouse_pos,
+                                                  this->world_to_camera_position(
+                                                      location->position()));
                                             return false;
                                           });
   auto number_of_buildings = 0;
@@ -182,8 +183,7 @@ void Camera::set_mouse_selection_to_selection()
           if (!location)
             continue;
           if (this->mouse_selection.contains(mouse_pos,
-                                             this->world_to_camera_position(location->position()),
-                                             location->get_width().to_int() + 4))
+                                             this->world_to_camera_position(location->position())))
             {
               if (this->game->is_entity_selected(entity.get()) == false)
                 {
@@ -211,8 +211,7 @@ void Camera::add_mouse_selection_to_selection()
       if (!location)
         continue;
       if (this->mouse_selection.contains(mouse_pos,
-                                         this->world_to_camera_position(location->position()),
-                                         location->get_width().to_int() + 4))
+                                         this->world_to_camera_position(location->position())))
         {
           if (this->game->is_entity_selected(entity.get()) == false)
             this->game->select_entity(entity.get());

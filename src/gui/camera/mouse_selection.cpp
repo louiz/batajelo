@@ -17,12 +17,18 @@ void MouseSelection::end()
   this->ongoing = false;
 }
 
+bool MouseSelection::is_rectangular_selection_ongoing(const sf::Vector2i& mouse_pos) const
+{
+  return this->ongoing && this->start_pos != mouse_pos;
+}
+
 bool MouseSelection::contains(const sf::Vector2i& mouse_pos,
                               const sf::Vector2i& pos,
                               const uint width) const
 {
   sf::Rect<uint> mouse_selection;
-  if (this->ongoing)
+
+  if (this->is_rectangular_selection_ongoing(mouse_pos))
     {
       if ((this->start_pos.x < mouse_pos.x))
         mouse_selection.left = this->start_pos.x;
