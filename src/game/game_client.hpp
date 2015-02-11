@@ -33,9 +33,11 @@ public:
   void send_message(const char* name, const std::string& archive);
 
   /**
-   * Whenever an ability is casted, in the World.
+   * Callbacks set in the WorldCallbacks objects. See over there for
+   * comments.
    */
   void on_entity_created(const Entity*);
+  void on_entity_deleted(const Entity*);
   void on_ability_casted(const Entity*, const AbilityType&, const Entity*,
                          const Position&);
 

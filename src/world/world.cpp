@@ -4,12 +4,15 @@
 #include <world/work.hpp>
 #include <world/health.hpp>
 #include <world/team.hpp>
-#include <world/path_work.hpp>
+#include <world/works/path_work.hpp>
 #include <world/location.hpp>
 #include <world/team.hpp>
 #include <world/vision.hpp>
 #include <world/abilities.hpp>
 #include <world/world_callbacks.hpp>
+#include <utils/time.hpp>
+#include <algorithm>
+#include <iterator>
 
 World::World():
   callbacks(std::make_unique<WorldCallbacks>())
@@ -23,22 +26,65 @@ World::~World()
 
 void World::insert_entity(std::unique_ptr<Entity>&& entity)
 {
-  this->entities.emplace_back(entity.release());
+  this->new_entities.emplace_back(std::move(entity));
 }
 
 void World::tick()
 {
-  bool first = true;
+  for (const auto& entity: this->entities)
+    entity->tick(this);
+  // Remove entities that were killed
   for (const auto& entity: this->entities)
     {
-      entity->tick(this);
-      Health* health = entity->get<Health>();
-      if (health && first)
-        {
-          health->add(-0.01);
-          first = false;
-        }
+      if (entity->is_dead() && this->callbacks->entity_deleted)
+        this->callbacks->entity_deleted(entity.get());
     }
+  this->entities.erase(std::remove_if(this->entities.begin(), this->entities.end(),
+                                      [](const std::shared_ptr<Entity>& entity) -> bool
+                                      {
+                                        return entity->is_dead();
+                                      }),
+                       this->entities.end());
+
+  // Insert new entities
+  if (!this->new_entities.empty())
+    {
+      log_debug("Inserting " << this->new_entities.size() << " entities");
+      log_debug("Before: " << this->entities.size());
+      this->entities.reserve(this->entities.size() + this->new_entities.size());
+      for (std::unique_ptr<Entity>& new_entity: this->new_entities)
+        this->entities.emplace_back(new_entity.release());
+      this->new_entities.clear();
+      // std::move(this->new_entities.begin(), this->new_entities.end(),
+      //           std::back_inserter(this->entities));
+      log_debug("After: " << this->entities.size());
+    }
+
+  // Mark all entity with a Health == 0 as dead
+  for (const auto& entity: this->entities)
+    {
+      Health* health = entity->get<Health>();
+      if (health && health->get() == 0)
+        entity->kill();
+    }
+
+  // Regroup all entities marked as dead at the begining of the vector
+  auto end_dead = std::partition(this->entities.begin(), this->entities.end(),
+                                 [](const std::shared_ptr<Entity>& entity)
+                                 {
+    return entity->is_dead();
+  });
+
+  // On each entity marked as dead, call entity_deleted()
+  std::for_each(this->entities.begin(), end_dead,
+               [this](const std::shared_ptr<Entity>& entity)
+               {
+                 this->callbacks->entity_deleted(entity.get());
+               });
+  // and remove from the list of world entities. Note that the entity shared
+  // pointer may still be alive somewhere else, so the object may not be
+  // destroyed here.
+  this->entities.erase(this->entities.begin(), end_dead);
 }
 
 void World::seed()
@@ -83,6 +129,8 @@ Entity* World::do_new_entity(const EntityType type, const Position& pos, const u
 
   auto res = entity.get();
   this->insert_entity(std::move(entity));
+  if (this->callbacks->entity_created)
+    this->callbacks->entity_created(res);
   return res;
 }
 

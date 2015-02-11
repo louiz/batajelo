@@ -9,13 +9,15 @@ EntityId Entity::current_id = 0;
 
 Entity::Entity(const EntityType& type):
   id(++Entity::current_id),
-  type(type)
+  type(type),
+  to_be_deleted(false)
 {
 }
 
 Entity::~Entity()
 {
   this->clear_works();
+  log_debug("destroyed entity: " << this->get_id());
 }
 
 void Entity::set_work(std::unique_ptr<Work>&& work)
@@ -36,7 +38,7 @@ void Entity::clear_works()
 
 void Entity::tick(World* world)
 {
-  for (const auto& ptr: this->components)
+  for (const std::unique_ptr<Component>& ptr: this->components)
     {
       if (ptr)
         ptr->tick(this, world);
@@ -46,4 +48,14 @@ void Entity::tick(World* world)
   auto& work = this->works.front();
   if (work->tick(world) == true)
     this->works.pop_front();
+}
+
+void Entity::kill()
+{
+  this->to_be_deleted = true;
+}
+
+bool Entity::is_dead() const
+{
+  return this->to_be_deleted;
 }

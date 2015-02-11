@@ -131,6 +131,7 @@ public:
   bool is_mouse_selection_ongoing() const;
   void draw(const sf::Drawable&, const sf::RenderStates& states = sf::RenderStates::Default);
   void on_new_entity(const Entity*);
+  void on_entity_deleted(const Entity*);
   void graphical_tick();
 
   const sf::Vector2u get_win_size() const;

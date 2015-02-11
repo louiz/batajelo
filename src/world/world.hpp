@@ -66,7 +66,8 @@ public:
   unsigned long get_seed() const;
   void seed(unsigned long s);
   Path calculate_path(Position endpos, Location* location);
-  Entity* do_new_entity(const EntityType type, const Position& pos, const uint16_t team);
+  Entity* do_new_entity(const EntityType type, const Position& pos,
+                        const uint16_t team);
   void do_move(const std::vector<EntityId>& ids, const Position& pos, const bool queue);
   void do_cast(const std::vector<EntityId>& ids, const Position& pos, const AbilityType& type, const bool queue);
   Entity* get_entity_by_id(EntityId id);
@@ -135,6 +136,10 @@ public:
    * The list of all existing entities in the world.
    */
   std::vector<std::shared_ptr<Entity>> entities;
+  /**
+   * List of newly created entities that needs to be added to the entities list at the end of the current tick();
+   */
+  std::vector<std::unique_ptr<Entity>> new_entities;
 
 private:
   /**

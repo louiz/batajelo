@@ -25,10 +25,10 @@ public:
    * This constructor is used when creating a model.
    */
   Entity(const EntityType& type);
-  virtual ~Entity();
+  ~Entity();
 
   EntityId get_id() const { return this->id; }
-  virtual EntityType get_type() { return this->type; }
+  EntityType get_type() const { return this->type; }
 
   /**
    * Regularly update the entity.
@@ -56,6 +56,11 @@ public:
     auto index = static_cast<std::size_t>(ComponentClass::element_type::component_type);
     this->components[index] = std::move(pointer);
   }
+  /**
+   * Mark this entity to be removed from the world.
+   */
+  void kill();
+  bool is_dead() const;
 
 private:
   Entity& operator=(const Entity&) = delete;
@@ -76,6 +81,11 @@ public:
    * The type of the entity
    */
   EntityType type;
+  /**
+   * Whether or not the entity should be deleted from the World on the next
+   * cleanup.
+   */
+  bool to_be_deleted;
   /**
    * The entity name
    */

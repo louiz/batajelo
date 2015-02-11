@@ -316,6 +316,11 @@ void GameClient::on_entity_created(const Entity* entity)
   this->camera.on_new_entity(entity);
 }
 
+void GameClient::on_entity_deleted(const Entity* entity)
+{
+  this->camera.on_entity_deleted(entity);
+}
+
 bool GameClient::tick()
 {
   this->turn_handler.tick();

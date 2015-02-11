@@ -5,6 +5,7 @@
 #include <world/abilities/ability.hpp>
 #include <world/position.hpp>
 #include <world/entity.hpp>
+#include <world/work.hpp>
 
 /**
  * A list of callbacks that are called on various world events. For example

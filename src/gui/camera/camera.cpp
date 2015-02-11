@@ -650,6 +650,22 @@ void Camera::on_new_entity(const Entity* entity)
   this->sprites.push_back(std::make_unique<PicpicSprite>(entity));
 }
 
+void Camera::on_entity_deleted(const Entity* entity)
+{
+  // Look for an EntitySprite using this entity pointer, and remove it
+  auto it = std::find_if(this->sprites.begin(),
+                         this->sprites.end(),
+                         [entity](const auto& s)
+                         {
+                           return s->get_entity() == entity;
+                         });
+  if (it != this->sprites.end())
+    {
+      log_debug("removing sprite.");
+      this->sprites.erase(it);
+    }
+}
+
 const sf::Vector2u Camera::get_win_size() const
 {
   return this->win().getSize();
