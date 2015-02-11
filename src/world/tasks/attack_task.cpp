@@ -4,7 +4,7 @@
 #include <world/world_callbacks.hpp>
 #include <world/location.hpp>
 #include <world/entity.hpp>
-#include <world/projectile_work.hpp>
+#include <world/works/projectile_work.hpp>
 
 AttackTask::AttackTask(Entity* entity, std::weak_ptr<Entity> target):
   Task(entity),

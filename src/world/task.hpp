@@ -7,6 +7,7 @@ enum class TaskType
   Path,
   Attack,
   Blink,
+  Projectile,
 
   count
 };
