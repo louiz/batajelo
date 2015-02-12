@@ -40,6 +40,7 @@ public:
   void on_entity_deleted(const Entity*);
   void on_ability_casted(const Entity*, const AbilityType&, const Entity*,
                          const Position&);
+  void on_impact(const Entity* entity, const Entity* target);
 
   World& get_world();
   Camera& get_camera();

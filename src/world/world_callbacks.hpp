@@ -27,7 +27,8 @@ public:
     entity_created([](const Entity*){}),
     entity_deleted([](const Entity*){}),
     ability_casted([](const Entity*, const AbilityType&, const Entity*, const Position&){}),
-    task_changed([](const Entity*, const TaskType&){})
+    task_changed([](const Entity*, const TaskType&){}),
+    impact([](const Entity*, const Entity*){})
   {
   }
   ~WorldCallbacks() = default;
@@ -48,6 +49,10 @@ public:
    * Called whenever the current task of a unit has changed.
    */
   std::function<void(const Entity*, const TaskType&)> task_changed;
+  /**
+   * Called whenever a projectile-like entity creates an impact.
+   */
+  std::function<void(const Entity*, const Entity*)> impact;
 
 private:
   WorldCallbacks(const WorldCallbacks&) = delete;

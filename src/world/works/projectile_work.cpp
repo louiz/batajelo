@@ -5,6 +5,7 @@
 #include <world/location.hpp>
 #include <world/mobility.hpp>
 #include <world/health.hpp>
+#include <world/world_callbacks.hpp>
 
 ProjectileWork::ProjectileWork(Entity* entity, std::weak_ptr<Entity> target,
                                const int dmg):
@@ -24,6 +25,8 @@ bool ProjectileWork::tick(World* world)
       this->entity->kill();
       if (!this->target.expired())
         {
+          // impact
+          world->callbacks->impact(this->entity, this->target.lock().get());
           Health* health = target.lock()->get<Health>();
           assert(health);
           health->add(-this->dmg);

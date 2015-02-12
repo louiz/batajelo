@@ -10,8 +10,8 @@ AttackTask::AttackTask(Entity* entity, std::weak_ptr<Entity> target):
   Task(entity),
   target(target),
   location(entity->get<Location>()),
-  frontswing(30u),
-  backswing(30u),
+  frontswing(80u),
+  backswing(80u),
   attack_point_reached(false)
 {
   assert(location);

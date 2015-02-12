@@ -41,7 +41,7 @@ std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType type)
   else if (type == 1)
     { // Some test projectile
       entity->add_component(std::make_unique<Location>(2));
-      entity->add_component(std::make_unique<Mobility>(2));
+      entity->add_component(std::make_unique<Mobility>(7));
       entity->add_component(std::make_unique<Team>());
     }
   return entity;

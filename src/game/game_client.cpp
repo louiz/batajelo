@@ -47,6 +47,9 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
       std::bind(&GameClient::on_entity_deleted, this, ph::_1);
   this->world.callbacks->ability_casted =
       std::bind(&GameClient::on_ability_casted, this, ph::_1, ph::_2, ph::_3, ph::_4);
+  this->world.callbacks->impact =
+      std::bind(&GameClient::on_impact, this, ph::_1, ph::_2);
+
 }
 
 GameClient::~GameClient()
@@ -308,6 +311,15 @@ const Selection& GameClient::get_selection() const
 void GameClient::add_selection_change_callback(const t_selection_changed_callback callback)
 {
   this->current_selection.on_modified_callbacks.push_back(callback);
+}
+
+void GameClient::on_impact(const Entity* entity, const Entity* target)
+{
+  // Map of EntityType:SoundType?
+  if (target)
+    {
+      this->sounds_handler.play(SoundType::ProjectileImpact, false, 20.f);
+    }
 }
 
 void GameClient::on_entity_created(const Entity* entity)
