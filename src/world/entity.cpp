@@ -38,6 +38,11 @@ void Entity::clear_works()
 
 void Entity::tick(World* world)
 {
+  for (const auto& stat: this->status)
+    {
+      stat->tick();
+    }
+
   for (const std::unique_ptr<Component>& ptr: this->components)
     {
       if (ptr)

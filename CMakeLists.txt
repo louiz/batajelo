@@ -176,6 +176,7 @@ file(GLOB source_world
   src/world/abilities/*.[hc]pp
   src/world/tasks/*.[hc]pp
   src/world/works/*.[hc]pp
+  src/world/status/*.[hc]pp
   )
 
 add_library(world STATIC ${source_world})

@@ -2,6 +2,7 @@
 # define __ENTITY_HPP__
 
 #include <world/components.hpp>
+#include <world/status.hpp>
 
 #include <cstdint>
 #include <memory>
@@ -55,6 +56,12 @@ public:
   {
     auto index = static_cast<std::size_t>(ComponentClass::element_type::component_type);
     this->components[index] = std::move(pointer);
+  }
+  template <typename StatusType, typename... ArgsType>
+  void add_status(World* world, ArgsType&&... args)
+  {
+    this->status.push_back(std::make_unique<StatusType>(this, world,
+                                                        std::forward<ArgsType>(args)...));
   }
   /**
    * Mark this entity to be removed from the world.
@@ -117,6 +124,10 @@ public:
    * methods to alter this position.
    */
   std::array<std::unique_ptr<Component>, ComponentTypeCount> components;
+  /**
+   * The list of Status that currently affect this entity.
+   */
+  std::vector<std::unique_ptr<Status>> status;
 };
 
 #endif // __ENTITY_HPP__
