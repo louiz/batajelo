@@ -303,6 +303,11 @@ bool GameClient::is_entity_selected(const Entity* entity) const
   return this->current_selection.is_in_selection(entity);
 }
 
+Selection& GameClient::get_selection()
+{
+  return this->current_selection;
+}
+
 const Selection& GameClient::get_selection() const
 {
   return this->current_selection;
@@ -330,6 +335,7 @@ void GameClient::on_entity_created(const Entity* entity)
 void GameClient::on_entity_deleted(const Entity* entity)
 {
   this->camera.on_entity_deleted(entity);
+  this->current_selection.remove_from_selection(entity);
 }
 
 bool GameClient::tick()

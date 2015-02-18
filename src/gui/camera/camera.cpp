@@ -6,6 +6,7 @@
 #include <world/world.hpp>
 #include <world/layer.hpp>
 #include <world/entity.hpp>
+#include <world/team.hpp>
 #include <gui/utils.hpp>
 #include <game/game_client.hpp>
 #include <climits>
@@ -158,46 +159,40 @@ void Camera::set_mouse_selection_to_selection()
 {
   sf::Vector2i mouse_pos = this->get_mouse_position();
 
-  // First check the number of entities inside the selection. If it's 0, do
-  // nothing
-  auto number_of_entities = std::count_if(this->world().entities.begin(),
-                                          this->world().entities.end(),
-                                          [this, &mouse_pos](const std::shared_ptr<Entity>& entity) -> bool
-                                          {
-                                            Location* location = entity->get<Location>();
-                                            if (location)
-                                              return this->mouse_selection.contains(
-                                                  mouse_pos,
-                                                  this->world_to_camera_position(
-                                                      location->position()));
-                                            return false;
-                                          });
-  auto number_of_buildings = 0;
-  log_warning("in mouse selection: Number of entities: " << number_of_entities << " and buildings: " << number_of_buildings);
-  if (number_of_buildings + number_of_entities > 0)
+  // Only the manipulable entities are considered
+  std::vector<const Entity*> entities_in_mouse_selection;
+
+  for (const auto& entity: this->world().entities)
     {
-      bool new_unit_was_selected = false;
-      for (const auto& entity: this->world().entities)
-        {
-          Location* location = entity->get<Location>();
-          if (!location)
-            continue;
-          if (this->mouse_selection.contains(mouse_pos,
-                                             this->world_to_camera_position(location->position())))
-            {
-              if (this->game->is_entity_selected(entity.get()) == false)
-                {
-                  new_unit_was_selected = true;
-                  this->game->select_entity(entity.get());
-                }
-            }
-          else
-            {
-              if (this->game->is_entity_selected(entity.get()) == true)
-                this->game->unselect_entity(entity.get());
-            }
-        }
+      Location* location = entity->get<Location>();
+      Team* team = entity->get<Team>();
+      if (!team || !location || !entity->is_manipulable())
+        continue;
+      if (this->mouse_selection.contains(mouse_pos,
+                                         this->world_to_camera_position(location->position())))
+        entities_in_mouse_selection.push_back(entity.get());
     }
+
+  auto end_own_entities = std::partition(entities_in_mouse_selection.begin(),
+                                         entities_in_mouse_selection.end(),
+                                         [this](const Entity* entity) -> bool
+                                         {
+                                           Team* team = entity->get<Team>();
+                                           if (team->get() == this->game->get_self_team())
+                                             return true;
+                                           return false;
+                                         });
+  if (end_own_entities == entities_in_mouse_selection.begin())
+    { // 0 of the selected entities are the player's
+      this->game->get_selection().assign(entities_in_mouse_selection.begin(),
+                                         entities_in_mouse_selection.end());
+    }
+  else
+    { // Only select entities owned by the player
+      this->game->get_selection().assign(entities_in_mouse_selection.begin(),
+                                         end_own_entities);
+    }
+
   this->mouse_selection.end();
 }
 
@@ -208,7 +203,7 @@ void Camera::add_mouse_selection_to_selection()
   for (const auto& entity: this->world().entities)
     {
       Location* location = entity->get<Location>();
-      if (!location)
+      if (!location || !entity->is_manipulable())
         continue;
       if (this->mouse_selection.contains(mouse_pos,
                                          this->world_to_camera_position(location->position())))
@@ -310,8 +305,18 @@ void Camera::draw()
           if (y == row &&
               this->world().can_be_seen_by_team(sprite_world_position, this->game->get_self_team()))
             {
-              if (this->mouse_selection.contains(mouse_pos, this->world_to_camera_position(sprite_world_position)))
-                this->draw_hover_indicator(this->world_to_camera_position(sprite_world_position), 80);
+              const Entity* entity = sprite->get_entity();
+              Team* team = entity->get<Team>();
+
+              if (entity->is_manipulable() &&
+                  this->mouse_selection.contains(mouse_pos,
+                                                 this->world_to_camera_position(sprite_world_position)))
+                {
+                  this->draw_hover_indicator(
+                      this->world_to_camera_position(sprite_world_position),
+                      80);
+                }
+
               if (this->get_game_client()->is_entity_selected(sprite->get_entity()))
                 this->draw_selected_indicator(this->world_to_camera_position(sprite_world_position), 80);
               sprite->draw(this->game);

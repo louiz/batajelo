@@ -34,14 +34,19 @@ public:
   void remove_from_selection(const Entity*);
   void clear();
   bool is_empty() const;
-  const std::list<const Entity*>& get_entities() const;
+  const std::vector<const Entity*>& get_entities() const;
   std::size_t size() const;
   void on_modified() const;
+  template <typename InputIt>
+  void assign(InputIt first, InputIt last)
+    {
+      this->entities.assign(first, last);
+    }
 
   std::vector<t_selection_changed_callback> on_modified_callbacks;
 
 private:
-  std::list<const Entity*> entities;
+  std::vector<const Entity*> entities;
 
   Selection(const Selection&);
   Selection& operator=(const Selection&);

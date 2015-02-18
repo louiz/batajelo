@@ -117,6 +117,7 @@ public:
   void unselect_entity(const Entity*);
   void clear_selection();
   bool is_entity_selected(const Entity*) const;
+  Selection& get_selection();
   const Selection& get_selection() const;
   const Selection* get_selection_ptr() const
   {

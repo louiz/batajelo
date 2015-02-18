@@ -42,11 +42,6 @@ void Selection::remove_from_selection(const Entity* entity)
       this->entities.erase(it);
       this->on_modified();
     }
-  else
-    {
-      log_error("Tried to remove an entity from a Selection that does'nt contain it.");
-      assert(false);
-    }
 }
 
 void Selection::clear()
@@ -60,7 +55,7 @@ bool Selection::is_empty() const
   return this->entities.empty();
 }
 
-const std::list<const Entity*>& Selection::get_entities() const
+const std::vector<const Entity*>& Selection::get_entities() const
 {
   return this->entities;
 }

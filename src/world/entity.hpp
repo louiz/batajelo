@@ -68,6 +68,12 @@ public:
    */
   void kill();
   bool is_dead() const;
+  /**
+   * Unless this is called, the entity can not be selected or given orders
+   * by any player (for example projectiles, ground AOEs etc)
+   */
+  void make_manipulable();
+  bool is_manipulable() const;
 
 private:
   Entity& operator=(const Entity&) = delete;
@@ -97,6 +103,11 @@ public:
    * The entity name
    */
   std::string name;
+  /**
+   * Whether or not this entity can be manipulated by a player (and thus
+   * selected)
+   */
+  bool manipulable;
   /**
    * A serie of works that the entity has to execute.  For example
    * World::do_path will add a PathWork to the entity, which contains a path

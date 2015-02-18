@@ -10,7 +10,8 @@ EntityId Entity::current_id = 0;
 Entity::Entity(const EntityType& type):
   id(++Entity::current_id),
   type(type),
-  to_be_deleted(false)
+  to_be_deleted(false),
+  manipulable(false)
 {
 }
 
@@ -63,4 +64,14 @@ void Entity::kill()
 bool Entity::is_dead() const
 {
   return this->to_be_deleted;
+}
+
+void Entity::make_manipulable()
+{
+  this->manipulable = true;
+}
+
+bool Entity::is_manipulable() const
+{
+  return this->manipulable;
 }

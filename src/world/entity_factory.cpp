@@ -24,6 +24,7 @@ std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType type)
   auto entity = std::make_unique<Entity>(type);
   if (type == 0)
     { // Default unit
+      entity->make_manipulable();
       entity->add_component(std::make_unique<Health>(100));
       entity->add_component(std::make_unique<ManaPool>(300));
       entity->add_component(std::make_unique<Vision>(700, false));
