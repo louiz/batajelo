@@ -7,7 +7,6 @@ install.* files.
 
 The following libraries, that may or may not be packaged for your system,
 are also required:
-- yaml-cpp >= 0.5.0     http://code.google.com/p/yaml-cpp/
 - litesql               https://dev.louiz.org/projects/litesql/
 - SFML 2.1              http://www.sfml-dev.org/
 

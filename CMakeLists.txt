@@ -42,7 +42,6 @@ option(BUILD_CLIENT "build the server" ${BUILD_CLIENT})
 
 find_package(Boost 1.48.0 COMPONENTS filesystem system iostreams locale serialization chrono REQUIRED)
 find_package(Cryptopp REQUIRED)
-find_package(YamlCpp REQUIRED)
 find_package(Protobuf REQUIRED)
 
 if(BUILD_CLIENT)
@@ -59,7 +58,6 @@ include_directories("src/")
 
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${CRYPTO++_INCLUDE_DIR})
-include_directories(${YAML_CPP_INCLUDE_DIRS})
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 if(GTEST_FOUND)
   include_directories(${GTEST_INCLUDE_DIRS})
