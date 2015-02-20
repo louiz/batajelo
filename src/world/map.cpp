@@ -259,7 +259,7 @@ TileHeights Map::get_cell_heights(const unsigned int col, const unsigned int row
   assert(col >= 0);
   assert(row >= 0);
   assert(col < this->get_width_in_tiles());
-  assert(row < this->get_height_in_tiles());
+  assert(row < this->get_height_in_tiles() * 2);
   std::size_t index = (this->get_width_in_tiles() * row) + col;
   return this->walking_map[index];
 }
