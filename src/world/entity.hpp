@@ -37,8 +37,8 @@ public:
   void tick(World*);
 
   void clear_works();
-  void set_work(std::unique_ptr<Work>&&);
-  void queue_work(std::unique_ptr<Work>&&);
+  void set_work(std::unique_ptr<Work>);
+  void queue_work(std::unique_ptr<Work>);
 
   template <typename ComponentClass>
   ComponentClass* get() const

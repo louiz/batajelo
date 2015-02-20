@@ -21,13 +21,13 @@ Entity::~Entity()
   log_debug("destroyed entity: " << this->get_id());
 }
 
-void Entity::set_work(std::unique_ptr<Work>&& work)
+void Entity::set_work(std::unique_ptr<Work> work)
 {
   this->clear_works();
   this->works.push_back(std::move(work));
 }
 
-void Entity::queue_work(std::unique_ptr<Work>&& work)
+void Entity::queue_work(std::unique_ptr<Work> work)
 {
   this->works.push_back(std::move(work));
 }
