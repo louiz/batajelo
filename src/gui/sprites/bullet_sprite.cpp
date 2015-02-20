@@ -14,6 +14,7 @@ BulletSprite::BulletSprite(const Entity* const entity):
     {
       if (!this->texture.loadFromFile("data/images/bullet.png"))
         exit(1);
+      this->texture.setSmooth(true);
       this->init = true;
     }
 }

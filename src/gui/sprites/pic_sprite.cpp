@@ -17,6 +17,8 @@ PicpicSprite::PicpicSprite(const Entity* const entity):
         exit(1);
       if (!PicpicSprite::eye_texture.loadFromFile("data/images/units/picpic_eye.svg.png"))
         exit(1);
+      PicpicSprite::body_texture.setSmooth(true);
+      PicpicSprite::eye_texture.setSmooth(true);
       PicpicSprite::init = true;
     }
   this->height = -5 + (7 * random() / RAND_MAX);
