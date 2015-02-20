@@ -9,6 +9,7 @@
  */
 
 #include <gui/screen/left_click.hpp>
+#include <functional>
 
 class GuiAbility
 {
@@ -17,6 +18,7 @@ public:
   ~GuiAbility() = default;
 
   LeftClick left_click;
+  std::function<void()> callback;
 
 private:
   GuiAbility(const GuiAbility&) = delete;

@@ -152,21 +152,14 @@ void World::do_cast(const std::vector<EntityId>& ids, const Position& pos, const
   for (const EntityId id: ids)
     {
       Entity* entity = this->get_entity_by_id(id);
-      if (entity)
-        {
-          Ability* ability = get_ability(entity, type);
-          if (ability)
-            {
-              ability->cast(entity, pos, queue);
-            }
-          else
-            {
-              log_warning("Received a cast order, but entity " << id << " does not have ability: " << static_cast<int>(type));
-            }
-        }
+      if (!entity)
+        continue;
+      Ability* ability = get_ability(entity, type);
+      if (ability)
+        ability->cast(entity, this, pos, queue);
       else
         {
-          log_warning("Received a cast order for non existing entity: " << id);
+          log_warning("Received a cast order, but entity " << id << " does not have ability: " << static_cast<int>(type));
         }
     }
 }

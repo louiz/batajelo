@@ -155,7 +155,10 @@ void Hud::activate_ability(const std::size_t nb)
               this->game->get_hud().add_info_message("The ability type is " + std::to_string(static_cast<int>(ability->get_type())));
               const GuiAbility* gui_ab = this->abilities_panel.get(ability->get_type());
               assert(gui_ab);
-              this->screen->set_left_click(gui_ab->left_click);
+              if (gui_ab->callback)
+                gui_ab->callback();
+              else
+                this->screen->set_left_click(gui_ab->left_click);
             }
         }
     }
