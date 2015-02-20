@@ -18,7 +18,7 @@ Attack::Attack(const std::size_t fs, const std::size_t bs):
 {
 }
 
-void Attack::cast(Entity* entity, const Position& pos, const bool queue)
+void Attack::cast(Entity* entity, World*, const Position& pos, const bool queue)
 {
   log_debug("Attacking with entity " << entity->get_id() << " until position " << pos);
   auto work = std::make_unique<AttackWork>(entity, pos);
@@ -28,6 +28,6 @@ void Attack::cast(Entity* entity, const Position& pos, const bool queue)
     entity->set_work(std::move(work));
 }
 
-void Attack::cast(Entity* entity, Entity* target, const bool queue)
+void Attack::cast(Entity* entity, World *, Entity* target, const bool queue)
 {
 }

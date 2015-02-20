@@ -17,7 +17,7 @@ Blink::Blink():
 {
 }
 
-void Blink::cast(Entity* entity, const Position& position, const bool queue)
+void Blink::cast(Entity* entity, World*, const Position& position, const bool queue)
 {
   // Check mana, cooldown etc etc
   log_debug("CASTING blink for entity" << entity->get_id() << " to pos " << position);

@@ -8,7 +8,7 @@ class Blink: public ActiveAbility<Blink>
 public:
   Blink();
   ~Blink() = default;
-  void cast(Entity* entity, const Position& pos, const bool queue) override final;
+  void cast(Entity* entity, World*, const Position& pos, const bool queue) override final;
 
 private:
   Blink(const Blink&) = delete;

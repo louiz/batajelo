@@ -25,8 +25,8 @@ public:
   Ability() = default;
   virtual ~Ability() = default;
   virtual void tick(Entity*, World*) {}
-  virtual void cast(Entity*, const Position&, const bool) {}
-  virtual void cast(Entity*, Entity*, const bool) {}
+  virtual void cast(Entity*, World*, const Position&, const bool) {}
+  virtual void cast(Entity*, World*, Entity*, const bool) {}
 
   virtual const std::string& get_name() const = 0;
   virtual AbilityType get_type() const = 0;
