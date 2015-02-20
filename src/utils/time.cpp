@@ -4,7 +4,7 @@ namespace utils
 {
 
   // The duration of a world tick, in microseconds
-  constexpr Duration tick_duration{10000us};
+  constexpr Duration tick_duration{15000us};
 
   Time now()
   {
