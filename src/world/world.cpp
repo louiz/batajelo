@@ -140,6 +140,8 @@ void World::do_move(const std::vector<EntityId>& ids, const Position& pos, const
     {
       log_debug("Moving entity " << id << " to pos " << pos);
       entity = this->get_entity_by_id(id);
+      if (!entity)
+        continue;
       if (queue)
         entity->queue_work(std::make_unique<PathWork>(entity, pos));
       else
