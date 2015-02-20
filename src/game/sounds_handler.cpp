@@ -41,6 +41,9 @@ SoundsHandler::SoundsHandler():
   this->load("data/sounds/drow/Drow_Ranger_projectile_launch4.wav", SoundType::ProjectileLaunch);
 
   this->load("data/sounds/items/Blink_start_(AM).wav", SoundType::BlinkStart);
+
+  this->load("data/sounds/invoker/EMP_target.wav", SoundType::EmpStart);
+  this->load("data/sounds/invoker/EMP_effect.wav", SoundType::EmpExplode);
 }
 
 void SoundsHandler::load(const char* filename, const SoundType& type)

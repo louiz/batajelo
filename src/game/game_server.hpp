@@ -32,6 +32,8 @@ public:
 
   virtual void on_new_client(RemoteGameClient*) override final;
   virtual void on_client_left(RemoteGameClient*) override final;
+
+  void on_entity_created(const Entity* entity);
   /**
    * Send the complete content of the replay contained in the World
    * to the client.
@@ -96,6 +98,10 @@ public:
    * actions.
    */
   void init();
+  /**
+   * Spawn two waves of entities
+   */
+  void spawn_waves();
   /**
    * Called whenever we receive a MOVE message from one client.
    * We try to generate a path, if the move is valid, and then

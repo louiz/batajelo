@@ -16,6 +16,8 @@ enum class SoundType
   ProjectileLaunch,
   ProjectileImpact,
   BlinkStart,
+  EmpStart,
+  EmpExplode,
 
   count,
 };

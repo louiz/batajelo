@@ -3,6 +3,7 @@
 #include <gui/screen/screen.hpp>
 #include <gui/sprites/pic_sprite.hpp>
 #include <gui/sprites/bullet_sprite.hpp>
+#include <gui/sprites/emp_sprite.hpp>
 #include <world/world.hpp>
 #include <world/layer.hpp>
 #include <world/entity.hpp>
@@ -655,6 +656,8 @@ void Camera::on_new_entity(const Entity* entity)
     this->sprites.push_back(std::make_unique<PicpicSprite>(entity));
   else if (entity->get_type() == 1)
     this->sprites.push_back(std::make_unique<BulletSprite>(entity));
+  else if (entity->get_type() == 2)
+    this->sprites.push_back(std::make_unique<EmpSprite>(entity));
 }
 
 void Camera::on_entity_deleted(const Entity* entity)

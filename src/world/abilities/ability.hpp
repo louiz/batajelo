@@ -13,6 +13,8 @@ enum class AbilityType
 {
   Attack,
   Blink,
+  Phase,
+  Emp,
 
   count
 };

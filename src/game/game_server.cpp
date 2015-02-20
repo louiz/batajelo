@@ -2,9 +2,15 @@
 #include <game/turn.hpp>
 #include <algorithm>
 
+#include <world/world_callbacks.hpp>
+#include <world/entity.hpp>
+#include <world/team.hpp>
+
 #include "game.pb.h"
 #include "orders.pb.h"
 #include "requests.pb.h"
+
+namespace ph = std::placeholders;
 
 GameServer::GameServer(short port):
   Game(),
@@ -12,12 +18,27 @@ GameServer::GameServer(short port):
   replay()
 {
   this->turn_handler.set_next_turn_callback(std::bind(&GameServer::on_next_turn, this,
-                                                      std::placeholders::_1));
+                                                      ph::_1));
+
+  this->world.callbacks->entity_created = std::bind(&GameServer::on_entity_created, this, ph::_1);
+
   this->start_game();
 }
 
 GameServer::~GameServer()
 {
+}
+
+void GameServer::on_entity_created(const Entity* entity)
+{
+  Team* team = entity->get<Team>();
+  if (team && entity->get_type() == 0)
+    {
+      if (team->get() == 1)
+        this->send_cast_order({entity->get_id()}, {3000, 1000}, 0, false);
+      else
+        this->send_cast_order({entity->get_id()}, {500, 1000}, 0, false);
+    }
 }
 
 void GameServer::on_new_client(RemoteGameClient* new_client)
@@ -158,18 +179,33 @@ void GameServer::seed_world()
 void GameServer::start_game()
 {
   this->seed_world();
-  this->send_new_entity_order(0, {300, 300}, 1);
-  this->send_new_entity_order(0, {400, 800.12}, 1);
-  this->send_new_entity_order(0, {500, 500}, 2);
-  this->send_new_entity_order(0, {320, 610}, 2);
+
+  this->spawn_waves();
+
   this->turn_handler.mark_turn_as_ready();
+}
+
+void GameServer::spawn_waves()
+{
+  this->send_new_entity_order(0, {500, 1000}, 1);
+  this->send_new_entity_order(0, {500, 900}, 1);
+  this->send_new_entity_order(0, {500, 800}, 1);
+  this->send_new_entity_order(0, {400, 850}, 1);
+  this->send_new_entity_order(0, {400, 950}, 1);
+
+  this->send_new_entity_order(0, {2800, 1000}, 2);
+  this->send_new_entity_order(0, {2800, 900}, 2);
+  this->send_new_entity_order(0, {2800, 800}, 2);
+  this->send_new_entity_order(0, {2900, 850}, 2);
+  this->send_new_entity_order(0, {2900, 950}, 2);
 }
 
 void GameServer::on_next_turn(const TurnNb n)
 {
-  log_debug("GameServer::on_next_turn(" << n << ")");
   this->turn_handler.mark_turn_as_ready();
   this->send_message_to_all("T", {});
+  if (n % 400 == 0)
+    this->spawn_waves();
 }
 
 void GameServer::send_order_to_all(const char* name, const google::protobuf::Message& srl)

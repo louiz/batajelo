@@ -336,6 +336,8 @@ void GameClient::on_entity_deleted(const Entity* entity)
 {
   this->camera.on_entity_deleted(entity);
   this->current_selection.remove_from_selection(entity);
+  if (entity->get_type() == 2)
+    this->sounds_handler.play(SoundType::EmpExplode, false, 100.f);
 }
 
 bool GameClient::tick()
@@ -366,4 +368,6 @@ void GameClient::on_ability_casted(const Entity* caster,
     this->sounds_handler.play(SoundType::BlinkStart, false, 20.f);
   else if (type == AbilityType::Attack)
     this->sounds_handler.play(SoundType::ProjectileLaunch, false, 20.f);
+  else if (type == AbilityType::Emp)
+    this->sounds_handler.play(SoundType::EmpStart, false, 100.f);
 }

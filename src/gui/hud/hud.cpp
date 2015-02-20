@@ -105,6 +105,12 @@ bool Hud::handle_keypress(const sf::Event& event)
     case sf::Keyboard::U:
       this->activate_ability(1);
       return true;
+    case sf::Keyboard::I:
+      this->activate_ability(2);
+      return true;
+    case sf::Keyboard::E:
+      this->activate_ability(3);
+      return true;
     default:
       return false;
     }
