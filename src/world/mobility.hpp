@@ -19,6 +19,7 @@ public:
   ~Mobility() = default;
   void tick(Entity*, World*) override final;
   Fix16 get_speed() const;
+  void set_speed(const Fix16& speed);
   /**
    * Given a path, change the location and cut down the path (if we moved
    * enough) to follow that path

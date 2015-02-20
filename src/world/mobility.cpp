@@ -4,6 +4,8 @@
 #include <world/mobility.hpp>
 #include <world/location.hpp>
 
+#include <logging/logging.hpp>
+
 const ComponentType Mobility::component_type;
 
 Mobility::Mobility(const Fix16& speed):
@@ -20,7 +22,12 @@ Fix16 Mobility::get_speed() const
   return this->speed;
 }
 
-void Mobility::follow_path(Path& path, World*, Location* location)
+void Mobility::set_speed(const Fix16& speed)
+{
+  this->speed = speed;
+}
+
+void Mobility::follow_path(Path& path, World* world, Location* location)
 {
   Position goal = path.front();
   Vec2 movement(goal - location->position());
@@ -32,7 +39,27 @@ void Mobility::follow_path(Path& path, World*, Location* location)
       return ;
     }
 
-  this->move_towards(goal, location);
+  if (Position::distance(goal, location->position()) < this->speed)
+    movement.set_length(Position::distance(goal, location->position()));
+  else
+    movement.set_length(this->speed);
+  auto after_movement = location->position() + movement;
+
+  // check for collision with other blocking entities
+  auto number_of_rotations = 0;
+  auto angle = 36;
+  while (!location->is_position_valid(world, after_movement) && number_of_rotations < 360)
+    {
+      movement.rotate(angle);
+      number_of_rotations += angle;
+      after_movement = location->position() + movement;
+    }
+  if (number_of_rotations == 360)
+    {
+      log_debug("blocked");
+      return;
+    }
+  location->position() = after_movement;
 }
 
 void Mobility::move_towards(const Position& goal, Location* location)
