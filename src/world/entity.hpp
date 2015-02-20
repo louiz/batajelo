@@ -60,8 +60,10 @@ public:
   template <typename StatusType, typename... ArgsType>
   void add_status(World* world, ArgsType&&... args)
   {
-    this->status.push_back(std::make_unique<StatusType>(this, world,
-                                                        std::forward<ArgsType>(args)...));
+    auto status = std::make_unique<StatusType>(this, world,
+                                               std::forward<ArgsType>(args)...);
+    status->apply();
+    this->status.push_back(std::move(status));
   }
   /**
    * Mark this entity to be removed from the world.

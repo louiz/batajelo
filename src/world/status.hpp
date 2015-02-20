@@ -19,7 +19,6 @@ public:
     entity(entity),
     world(world)
   {
-    this->apply();
   }
   virtual ~Status()
   {
