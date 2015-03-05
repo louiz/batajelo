@@ -268,14 +268,30 @@ bool GameClient::action_move(const std::vector<EntityId>& ids, const Position& p
   return true;
 }
 
-bool GameClient::action_cast(const std::vector<EntityId>& ids, const Position& pos,
-                             const AbilityType& type, const bool queue)
+bool GameClient::action_cast(const std::vector<EntityId>& ids,
+                             const Position& pos, const AbilityType& type,
+                             const bool queue)
 {
   ser::request::Cast srl;
   if (queue)
     srl.set_queue(queue);
   srl.mutable_pos()->set_x(pos.x.raw());
   srl.mutable_pos()->set_y(pos.y.raw());
+  for (const EntityId id: ids)
+    srl.add_entity_id(id);
+  srl.set_type(static_cast<uint32_t>(type));
+  this->send_message("CAST", srl);
+  return true;
+}
+
+bool GameClient::action_cast(const std::vector<EntityId>& ids,
+                             const EntityId target_id, const AbilityType& type,
+                             const bool queue)
+{
+  ser::request::Cast srl;
+  if (queue)
+    srl.set_queue(queue);
+  srl.set_target(target_id);
   for (const EntityId id: ids)
     srl.add_entity_id(id);
   srl.set_type(static_cast<uint32_t>(type));

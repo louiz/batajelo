@@ -81,7 +81,7 @@ public:
    */
   void send_cast_order(const std::vector<EntityId>& ids, const Position& pos,
                        const uint32_t type, const bool queue);
-  void send_cast_order(const std::vector<EntityId>& ids, const EntityId pos,
+  void send_cast_order(const std::vector<EntityId>& ids, const EntityId target_id,
                        const uint32_t type, const bool queue);
   void send_cast_order(const std::vector<EntityId>& ids,
                        const uint32_t type, const bool queue);

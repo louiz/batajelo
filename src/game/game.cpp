@@ -67,13 +67,22 @@ void Game::cast_callback(Message* message)
   for (const auto& id: srl.entity_id())
     ids.push_back(id);
 
-  Position pos;
-  pos.x.raw() = srl.pos().x();
-  pos.y.raw() = srl.pos().y();
+  AbilityType type = static_cast<AbilityType>(srl.type());
 
-  uint32_t type = srl.type();
+  if (srl.has_target())
+    {
+      this->turn_handler.insert_action(
+          std::bind(&World::do_cast_on_target, &this->world, ids, srl.target(), type, srl.queue()),
+          srl.turn());
+    }
+  else if (srl.has_pos())
+    {
+      Position pos;
+      pos.x.raw() = srl.pos().x();
+      pos.y.raw() = srl.pos().y();
 
-  this->turn_handler.insert_action(std::bind(&World::do_cast, &this->world, ids, pos,
-                                             static_cast<AbilityType>(type), srl.queue()),
-                                   srl.turn());
+      this->turn_handler.insert_action(
+          std::bind(&World::do_cast_on_pos, &this->world, ids, pos, type, srl.queue()),
+          srl.turn());
+    }
 }

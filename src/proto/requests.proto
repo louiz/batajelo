@@ -19,5 +19,6 @@ message Cast
   repeated uint32 entity_id = 1;
   optional bool queue = 2 [default = false];
   optional ser.game.Position pos = 3;
-  required uint32 type = 4;
+  optional uint32 target = 4;
+  required uint32 type = 5;
 }

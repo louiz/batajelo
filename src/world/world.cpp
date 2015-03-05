@@ -149,7 +149,30 @@ void World::do_move(const std::vector<EntityId>& ids, const Position& pos, const
     }
 }
 
-void World::do_cast(const std::vector<EntityId>& ids, const Position& pos, const AbilityType& type, const bool queue)
+void World::do_cast_on_target(const std::vector<EntityId>& ids, const EntityId target_id, const AbilityType& type, const bool queue)
+{
+  std::shared_ptr<Entity> target = this->get_shared_entity_by_id(target_id);
+  if (!target)
+    {
+      log_warning("Could not cast ability on target " << target_id);
+      return ;
+    }
+  for (const EntityId id: ids)
+    {
+      Entity* entity = this->get_entity_by_id(id);
+      if (!entity)
+        continue;
+      Ability* ability = get_ability(entity, type);
+      if (ability)
+        ability->cast(entity, this, target, queue);
+      else
+        {
+          log_warning("Received a cast order, but entity " << id << " does not have ability: " << static_cast<int>(type));
+        }
+    }
+}
+
+void World::do_cast_on_pos(const std::vector<EntityId>& ids, const Position& pos, const AbilityType& type, const bool queue)
 {
   for (const EntityId id: ids)
     {
