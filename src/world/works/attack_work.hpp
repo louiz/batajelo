@@ -3,11 +3,12 @@
 
 #include <world/work.hpp>
 #include <world/position.hpp>
-#include <world/location.hpp>
 
 #include <memory>
 
 class Entity;
+class World;
+class Location;
 
 /**
  * Move until the destination is reached

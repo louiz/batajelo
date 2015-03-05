@@ -3,6 +3,7 @@
 #include <world/position.hpp>
 #include <world/world.hpp>
 #include <world/health.hpp>
+#include <world/location.hpp>
 #include <world/team.hpp>
 #include <world/tasks/attack_task.hpp>
 #include <world/tasks/path_task.hpp>
