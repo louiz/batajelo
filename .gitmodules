@@ -1,3 +1,0 @@
-[submodule "src/opensteer"]
-	path = src/opensteer
-	url = git@louiz.org:opensteer.git
