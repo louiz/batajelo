@@ -76,6 +76,7 @@ public:
                          const EntityId target_id, const AbilityType& type,
                          const bool queue);
   Entity* get_entity_by_id(EntityId id);
+  std::shared_ptr<Entity> get_shared_entity_by_id(EntityId id);
   /**
    * Sends a message to the server saying that we confirm that action.
    */

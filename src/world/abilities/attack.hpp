@@ -9,7 +9,7 @@ public:
   Attack(const std::size_t fs, const std::size_t bs);
   ~Attack() = default;
   void cast(Entity* entity, World *, const Position& pos, const bool queue) override final;
-  void cast(Entity* entity, World *, Entity* target, const bool queue) override final;
+  void cast(Entity* entity, World *, const std::shared_ptr<Entity>& target, const bool queue) override final;
 
 protected:
   std::size_t frontswing_duration;

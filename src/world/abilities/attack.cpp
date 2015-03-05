@@ -28,6 +28,12 @@ void Attack::cast(Entity* entity, World*, const Position& pos, const bool queue)
     entity->set_work(std::move(work));
 }
 
-void Attack::cast(Entity* entity, World *, Entity* target, const bool queue)
+void Attack::cast(Entity* entity, World *, const std::shared_ptr<Entity>& target, const bool queue)
 {
+  log_debug("Attacking with entity " << entity->get_id() << " the target " << target->get_id());
+  auto work = std::make_unique<AttackWork>(entity, target);
+  if (queue)
+    entity->queue_work(std::move(work));
+  else
+    entity->set_work(std::move(work));
 }

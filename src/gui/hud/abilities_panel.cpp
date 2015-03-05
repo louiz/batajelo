@@ -47,7 +47,10 @@ AbilitiesPanel::AbilitiesPanel(GameClient* game)
       const Entity* target = game->get_camera().get_entity_under_mouse();
 
       log_debug("attacking with " << ids.size() << " entities");
-      return game->action_cast(ids, pos, AbilityType::Attack, queue);
+      if (target)
+        return game->action_cast(ids, target->get_id(), AbilityType::Attack, queue);
+      else
+        return game->action_cast(ids, pos, AbilityType::Attack, queue);
     },
     [](const sf::Vector2i&)
     {

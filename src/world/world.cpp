@@ -189,6 +189,18 @@ void World::do_cast_on_pos(const std::vector<EntityId>& ids, const Position& pos
     }
 }
 
+std::shared_ptr<Entity> World::get_shared_entity_by_id(EntityId id)
+{
+  // Should use something like this->entities[id], to optimize.
+  // Entities should be placed directly in a vector, for fast access.
+  for (const auto& entity: this->entities)
+    {
+      if (entity->get_id() == id)
+        return entity;
+    }
+  return {};
+}
+
 Entity* World::get_entity_by_id(EntityId id)
 {
   // Should use something like this->entities[id], to optimize.

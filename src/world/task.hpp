@@ -5,6 +5,7 @@ enum class TaskType
 {
   None,
   Path,
+  Follow,
   Attack,
   Blink,
   Emp,
