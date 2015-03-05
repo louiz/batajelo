@@ -247,10 +247,15 @@ void GameServer::on_move_request(Message* message)
   std::vector<EntityId> ids;
   for (const auto& id: srl.entity_id())
     ids.push_back(id);
-  Position pos;
-  pos.x.raw() = srl.pos().x();
-  pos.y.raw() = srl.pos().y();
-  this->send_move_order(ids, pos, srl.queue());
+  if (srl.has_pos())
+    {
+      Position pos;
+      pos.x.raw() = srl.pos().x();
+      pos.y.raw() = srl.pos().y();
+      this->send_move_order(ids, pos, srl.queue());
+    }
+  else
+    this->send_follow_order(ids, srl.target(), srl.queue());
 }
 
 void GameServer::on_cast_request(Message* message)
@@ -345,5 +350,18 @@ void GameServer::send_move_order(const std::vector<EntityId> ids, const Position
   srl.mutable_pos()->set_y(pos.y.raw());
   this->send_order_to_all("MOVE", srl);
   this->turn_handler.insert_action(std::bind(&World::do_move, &this->world, ids, pos, queue),
+                                   srl.turn());
+}
+
+void GameServer::send_follow_order(const std::vector<EntityId> ids, const EntityId target, const bool queue)
+{
+  ser::order::Move srl;
+  srl.set_turn(this->turn_handler.get_current_turn() + 2);
+  for (const EntityId id: ids)
+    srl.add_entity_id(id);
+  srl.set_queue(queue);
+  srl.set_target(target);
+  this->send_order_to_all("MOVE", srl);
+  this->turn_handler.insert_action(std::bind(&World::do_follow, &this->world, ids, target, queue),
                                    srl.turn());
 }

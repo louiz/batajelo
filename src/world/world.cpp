@@ -5,6 +5,7 @@
 #include <world/health.hpp>
 #include <world/team.hpp>
 #include <world/works/path_work.hpp>
+#include <world/works/follow_work.hpp>
 #include <world/location.hpp>
 #include <world/team.hpp>
 #include <world/vision.hpp>
@@ -143,9 +144,32 @@ void World::do_move(const std::vector<EntityId>& ids, const Position& pos, const
       if (!entity)
         continue;
       if (queue)
-        entity->queue_work(std::make_unique<PathWork>(entity, pos));
+        entity->queue_work(std::make_unique<PathWork>(entity, this, pos));
       else
-        entity->set_work(std::make_unique<PathWork>(entity, pos));
+        entity->set_work(std::make_unique<PathWork>(entity, this, pos));
+    }
+}
+
+void World::do_follow(const std::vector<EntityId>& ids, const EntityId& target_id, const bool queue)
+{
+  Entity* entity;
+  std::shared_ptr<Entity> target = this->get_shared_entity_by_id(target_id);
+  if (!target)
+    {
+      log_debug("Could not follow entity " << target_id << ", it does not exist");
+      return;
+    }
+
+  for (const EntityId id: ids)
+    {
+      log_debug("Entity " << id << " follows entity " << target_id);
+      entity = this->get_entity_by_id(id);
+      if (!entity)
+        continue;
+      if (queue)
+        entity->queue_work(std::make_unique<FollowWork>(entity, this, target));
+      else
+        entity->set_work(std::make_unique<FollowWork>(entity, this, target));
     }
 }
 

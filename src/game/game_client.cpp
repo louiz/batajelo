@@ -268,6 +268,20 @@ bool GameClient::action_move(const std::vector<EntityId>& ids, const Position& p
   return true;
 }
 
+bool GameClient::action_follow(const std::vector<EntityId>& ids,
+                               const EntityId& target_id, const bool queue)
+{
+  ser::request::Move srl;
+  if (queue)
+    srl.set_queue(queue);
+  srl.set_target(target_id);
+  for (const EntityId id: ids)
+    srl.add_entity_id(id);
+  this->send_message("MOVE", srl);
+  this->sounds_handler.play(SoundType::DefaultOk, true);
+  return true;
+}
+
 bool GameClient::action_cast(const std::vector<EntityId>& ids,
                              const Position& pos, const AbilityType& type,
                              const bool queue)

@@ -124,7 +124,12 @@ void Camera::handle_right_click(const sf::Event& event)
       std::vector<EntityId> ids;
       for (const auto& entity: this->game->get_selection().get_entities())
         ids.push_back(entity->get_id());
-      if (!ids.empty())
+      if (ids.empty())
+        return ;
+      const Entity* entity_under_mouse = this->get_entity_under_mouse();
+      if (entity_under_mouse)
+        this->game->action_follow(ids, entity_under_mouse->get_id(), queue);
+      else
         this->game->action_move(ids, pos, queue);
     }
 }

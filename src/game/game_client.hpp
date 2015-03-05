@@ -96,6 +96,8 @@ public:
    */
   bool action_move(const std::vector<EntityId>& ids, const Position& pos,
                    const bool queue);
+  bool action_follow(const std::vector<EntityId>& ids,
+                     const EntityId& target_id, const bool queue);
   /**
    * Send, to the server, a request to make the list of entities cast the
    * given spell. There are three versions, each for each type of possible

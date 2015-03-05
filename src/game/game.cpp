@@ -45,12 +45,22 @@ void Game::move_callback(Message* message)
   for (const auto& id: srl.entity_id())
     ids.push_back(id);
 
-  Position pos;
-  pos.x.raw() = srl.mutable_pos()->x();
-  pos.y.raw() = srl.mutable_pos()->y();
+  if (srl.has_pos())
+    {
+      Position pos;
+      pos.x.raw() = srl.mutable_pos()->x();
+      pos.y.raw() = srl.mutable_pos()->y();
 
-  this->turn_handler.insert_action(std::bind(&World::do_move, &this->world, ids, pos, srl.queue()),
-                                   srl.turn());
+      this->turn_handler.insert_action(
+          std::bind(&World::do_move, &this->world, ids, pos, srl.queue()),
+          srl.turn());
+    }
+  else
+    {
+      this->turn_handler.insert_action(
+          std::bind(&World::do_follow, &this->world, ids, srl.target(), srl.queue()),
+          srl.turn());
+    }
 }
 
 void Game::cast_callback(Message* message)

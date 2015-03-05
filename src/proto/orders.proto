@@ -26,7 +26,8 @@ message Move
   required uint32 turn = 1;
   optional bool queue = 2 [default = false];
   repeated uint32 entity_id = 3;
-  required ser.game.Position pos = 4;
+  optional ser.game.Position pos = 4;
+  optional uint32 target = 5;
 }
 
 message Cast

@@ -70,6 +70,8 @@ public:
                         const uint16_t team);
   void do_move(const std::vector<EntityId>& ids, const Position& pos,
                const bool queue);
+  void do_follow(const std::vector<EntityId>& ids, const EntityId& target_id,
+                 const bool queue);
   void do_cast_on_pos(const std::vector<EntityId>& ids, const Position& pos,
                       const AbilityType& type, const bool queue);
   void do_cast_on_target(const std::vector<EntityId>& ids,

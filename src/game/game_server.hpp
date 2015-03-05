@@ -75,6 +75,7 @@ public:
 
   void send_new_entity_order(const EntityType type, const Position& pos, const uint16_t team);
   void send_move_order(const std::vector<EntityId> ids, const Position& pos, const bool queue);
+  void send_follow_order(const std::vector<EntityId> ids, const EntityId target, const bool queue);
   /**
    * Send an Order to each client, to make each of these entities cast the
    * given ability.
