@@ -109,16 +109,17 @@ void Camera::handle_middle_click(const sf::Event&)
 
 void Camera::handle_right_click(const sf::Event& event)
 {
-  const Position pos = this->camera_to_world_position(event.mouseButton.x,
+  const Position pos = this->screen_to_world_position(event.mouseButton.x,
                                                       event.mouseButton.y);
   bool queue = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
   log_debug("queue: " << queue);
 
   // A right click when there's an action associated with the left click
-  // just resets the default action of the right click.
+  // resets the default action of the right click.
   if (this->screen->get_left_click().callback)
     this->screen->reset_left_click();
-  else // otherwise it always does the move action.
+
+  // else // otherwise it always does the move action.
     {
       std::vector<EntityId> ids;
       for (const auto& entity: this->game->get_selection().get_entities())
@@ -140,7 +141,7 @@ void Camera::handle_left_click(const sf::Event& event)
     }
   else
     {
-      const Position pos = this->camera_to_world_position(event.mouseButton.x,
+      const Position pos = this->screen_to_world_position(event.mouseButton.x,
                                                           event.mouseButton.y);
       if (this->screen->get_left_click().callback(pos) == true)
         this->screen->reset_left_click();
@@ -173,6 +174,9 @@ void Camera::set_mouse_selection_to_selection()
                                          this->world_to_camera_position(location->position())))
         entities_in_mouse_selection.push_back(entity.get());
     }
+
+  if (entities_in_mouse_selection.empty())
+    return ;
 
   auto end_own_entities = std::partition(entities_in_mouse_selection.begin(),
                                          entities_in_mouse_selection.end(),
@@ -252,6 +256,7 @@ void Camera::update(const utils::Duration& dt)
 void Camera::draw()
 {
   const sf::Vector2i mouse_pos = this->get_mouse_position();
+  const Entity* entity_under_mouse = this->get_entity_under_mouse();
 
   // Sort the sprites by their vertical position
   this->sprites.sort([](const auto& a, const auto& b)
@@ -310,8 +315,9 @@ void Camera::draw()
               Team* team = entity->get<Team>();
 
               if (entity->is_manipulable() &&
-                  this->mouse_selection.contains(mouse_pos,
-                                                 this->world_to_camera_position(sprite_world_position)))
+                  this->mouse_selection.contains(this->get_mouse_position(),
+                                                 this->world_to_camera_position(sprite_world_position))
+                  )
                 {
                   this->draw_hover_indicator(
                       this->world_to_camera_position(sprite_world_position),
@@ -336,6 +342,11 @@ void Camera::draw()
   this->game->get_debug_hud().add_debug_line("Mouse world position: " +
                                                std::to_string(world_mouse_pos.x.to_double()) + ", " +
                                                std::to_string(world_mouse_pos.y.to_double()));
+
+  if (entity_under_mouse)
+    this->game->get_debug_hud().add_debug_line("Entity under mouse: " + std::to_string(entity_under_mouse->get_id()));
+  else
+    this->game->get_debug_hud().add_debug_line("No entity under mouse");
 
   this->draw(this->fog.get_sprite());
 }
@@ -450,6 +461,11 @@ sf::Vector2i Camera::get_mouse_position() const
 }
 
 Position Camera::camera_to_world_position(const int x, const int y) const
+{
+  return this->screen_to_world_position(x - this->x, y - this->y);
+}
+
+Position Camera::screen_to_world_position(const int x, const int y) const
 {
   // The empty space at the top of the world, due to tile size. In pixels
   static const unsigned int top_offset = TILE_TOP_OFFSET;
@@ -609,6 +625,18 @@ Position Camera::camera_to_world_position(const int x, const int y) const
 bool Camera::is_mouse_selection_ongoing() const
 {
   return this->mouse_selection.ongoing;
+}
+
+const Entity* Camera::get_entity_under_mouse() const
+{
+  auto mouse_pos = this->get_mouse_position();
+  for (auto it = this->sprites.crbegin(); it != this->sprites.crend(); ++it)
+    {
+      EntitySprite* sprite = it->get();
+      if (sprite->is_mouse_over(this) == true)
+        return sprite->get_entity();
+    }
+  return nullptr;
 }
 
 void Camera::draw(const sf::Drawable& drawable, const sf::RenderStates& states)

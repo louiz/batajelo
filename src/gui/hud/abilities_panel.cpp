@@ -43,6 +43,9 @@ AbilitiesPanel::AbilitiesPanel(GameClient* game)
         return true;
       const bool queue = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
                           sf::Keyboard::isKeyPressed(sf::Keyboard::RShift));
+
+      const Entity* target = game->get_camera().get_entity_under_mouse();
+
       log_debug("attacking with " << ids.size() << " entities");
       return game->action_cast(ids, pos, AbilityType::Attack, queue);
     },

@@ -15,6 +15,7 @@ public:
   ~EntitySprite() {}
   const Entity* get_entity() const;
   Position get_world_pos() const override final;
+  bool is_mouse_over(const Camera* camera) const;
 
 protected:
   const Entity* const entity;

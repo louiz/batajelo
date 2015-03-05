@@ -46,3 +46,21 @@ Position EntitySprite::get_world_pos() const
   assert(location);
   return location->position();
 }
+
+bool EntitySprite::is_mouse_over(const Camera* camera) const
+{
+  Location* location = this->entity->get<Location>();
+  if (!location)
+    return false;
+
+  const auto pos = camera->get_mouse_position();
+  Position mouse_pos = camera->camera_to_world_position(pos.x,
+                                                        pos.y);
+  Position ent_pos = location->position();
+
+  // TODO, use different values depending on the sprite's size
+  return (mouse_pos.x > ent_pos.x - 50 &&
+          mouse_pos.x < ent_pos.x + 50 &&
+          mouse_pos.y > ent_pos.y - 80 &&
+          mouse_pos.y < ent_pos.y + 20);
+}

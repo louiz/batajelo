@@ -92,6 +92,14 @@ public:
    */
   void update(const utils::Duration& dt);
   sf::Vector2i world_to_camera_position(const Position&) const;
+  /**
+   * Convert a mouse position, screen-related, into a world position
+   */
+  Position screen_to_world_position(const int, const int) const;
+  /**
+   * Like screen_to_world_position, but with a camera-related position of
+   * the mouse
+   */
   Position camera_to_world_position(const int, const int) const;
   /**
    * Return the mouse position, taking into account the position of the
@@ -129,6 +137,11 @@ public:
    * ongoing or not.
    */
   bool is_mouse_selection_ongoing() const;
+  /**
+   * Return a pointer to a selectable entity under the mouse, nullptr if there is none
+   */
+  const Entity* get_entity_under_mouse() const;
+
   void draw(const sf::Drawable&, const sf::RenderStates& states = sf::RenderStates::Default);
   void on_new_entity(const Entity*);
   void on_entity_deleted(const Entity*);
