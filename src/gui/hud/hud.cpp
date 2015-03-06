@@ -1,4 +1,5 @@
 #include <gui/screen/screen.hpp>
+#include <gui/camera/camera.hpp>
 #include <game/game_client.hpp>
 #include <functional>
 #include <gui/hud/hud.hpp>
@@ -91,6 +92,8 @@ bool Hud::handle_event(const sf::Event& event)
 {
   if (event.type == sf::Event::KeyPressed)
     return this->handle_keypress(event);
+  else if (event.type == sf::Event::KeyReleased)
+    return this->handle_keyrelease(event);
   return false;
 }
 
@@ -113,6 +116,20 @@ bool Hud::handle_keypress(const sf::Event& event)
       return true;
     default:
       return false;
+    }
+  return false;
+}
+
+bool Hud::handle_keyrelease(const sf::Event& event)
+{
+  if (this->screen->get_left_click().callback)
+    {
+      Camera& camera = this->game->get_camera();
+      const auto mouse_pos = camera.get_mouse_position();
+      const auto pos = camera.camera_to_world_position(mouse_pos.x, mouse_pos.y);
+      if (this->screen->get_left_click().callback(pos) == true)
+        this->screen->reset_left_click();
+      return true;
     }
   return false;
 }

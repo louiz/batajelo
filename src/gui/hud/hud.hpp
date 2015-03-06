@@ -36,6 +36,7 @@ public:
   void add_info_message(std::string&& text);
   void activate_ability(const std::size_t nb);
   bool handle_keypress(const sf::Event& event);
+  bool handle_keyrelease(const sf::Event& event);
 
 private:
   Hud(const Hud&);
