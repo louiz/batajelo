@@ -231,31 +231,64 @@ void Camera::handle_middle_release(const sf::Event&)
 
 void Camera::update(const utils::Duration& dt)
 {
-  sf::Vector2i pos = this->screen->get_mouse_position();
-
-  const sf::Vector2u win_size = this->get_win_size();
-  if (this->focused)
+  if (this->get_game_client()->get_selection().is_empty())
     {
-      if ((pos.x > 0) && (static_cast<uint>(pos.x) > (win_size.x - 2)))
-        pos.x = (win_size.x - 2);
-      if (pos.x < 1)
-        pos.x = 1;
-      if ((pos.y > 0) && (static_cast<uint>(pos.y) > (win_size.y - 2)))
-        pos.y = (win_size.y - 2);
-      if (pos.y < 1)
-        pos.y = 1;
-      // TODO
-      // sf::Mouse::setPosition(pos, *this->win);
-      if (pos.x < 20)
-        this->x -= this->movement_speed * utils::sec(dt).count();
-      if (pos.y < 20)
-        this->y -= this->movement_speed * utils::sec(dt).count();
-      if ((pos.y > 0) && static_cast<uint>(pos.y) > (win_size.y - 20))
-        this->y += this->movement_speed * utils::sec(dt).count();
-      if ((pos.x > 0) && static_cast<uint>(pos.x) > (win_size.x - 20))
-        this->x += this->movement_speed * utils::sec(dt).count();
+      sf::Vector2i pos = this->screen->get_mouse_position();
+
+      const sf::Vector2u win_size = this->get_win_size();
+      if (this->focused)
+        {
+          if ((pos.x > 0) && (static_cast<uint>(pos.x) > (win_size.x - 2)))
+            pos.x = (win_size.x - 2);
+          if (pos.x < 1)
+            pos.x = 1;
+          if ((pos.y > 0) && (static_cast<uint>(pos.y) > (win_size.y - 2)))
+            pos.y = (win_size.y - 2);
+          if (pos.y < 1)
+            pos.y = 1;
+          // TODO
+          // sf::Mouse::setPosition(pos, *this->win);
+          if (pos.x < 20)
+            this->x -= this->movement_speed * utils::sec(dt).count();
+          if (pos.y < 20)
+            this->y -= this->movement_speed * utils::sec(dt).count();
+          if ((pos.y > 0) && static_cast<uint>(pos.y) > (win_size.y - 20))
+            this->y += this->movement_speed * utils::sec(dt).count();
+          if ((pos.x > 0) && static_cast<uint>(pos.x) > (win_size.x - 20))
+            this->x += this->movement_speed * utils::sec(dt).count();
+        }
+      this->fixup_camera_position();
     }
-  this->fixup_camera_position();
+  else
+    {
+      const Entity* entity = this->get_game_client()->get_selection().get_entities()[0];
+      Location* location = entity->get<Location>();
+      if (!location)
+        return;
+      auto coord = this->world_to_camera_position(location->position());
+      log_debug("centering on position: " << coord.x << ":" << coord.y);
+      this->center(coord);
+      log_debug("Camera position: " << this->x << ": " << this->y);
+    }
+  log_debug("Camera position after fixup: " << this->x << ": " << this->y);
+}
+
+void Camera::center(const sf::Vector2i& center)
+{
+  auto size = this->win().getSize();
+  size.x /= 2;
+  size.y /= 2;
+  log_debug("width :"  << size.x);
+  log_debug("height:"  << size.y);
+  if (size.x < center.x)
+    this->x = center.x - size.x;
+  else
+    this->x = 0;
+
+  if (size.y < center.y)
+    this->y = center.y - size.y;
+  else
+    this->y = 0;
 }
 
 void Camera::draw()
