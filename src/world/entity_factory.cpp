@@ -12,6 +12,8 @@
 #include <world/abilities/attack.hpp>
 #include <world/abilities/phase.hpp>
 #include <world/abilities/emp.hpp>
+#include <world/abilities/dash.hpp>
+#include <world/abilities/concentrate.hpp>
 
 EntityFactory::EntityFactory()
 {
@@ -35,11 +37,14 @@ std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType type)
       entity->add_component(std::make_unique<Mobility>(2.2_fix));
       entity->add_component(std::make_unique<Acquisition>(200_fix));
 
-      auto abilities = std::make_unique<Abilities>(4u, 20u, 20u);
+      auto abilities = std::make_unique<Abilities>(6u, 0u, 0u);
       abilities->add(0, std::make_unique<Attack>(20u, 20u));
       abilities->add(1, std::make_unique<Blink>());
       abilities->add(2, std::make_unique<Phase>());
       abilities->add(3, std::make_unique<Emp>());
+      abilities->add(4, std::make_unique<Dash>());
+      abilities->add(5, std::make_unique<Concentrate>());
+
 
       entity->add_component(std::move(abilities));
     }

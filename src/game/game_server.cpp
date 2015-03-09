@@ -278,6 +278,8 @@ void GameServer::on_cast_request(Message* message)
     }
   else if (srl.has_target())
     this->send_cast_order(ids, srl.target(), srl.type(), srl.queue());
+  else
+    this->send_cast_order(ids, srl.type(), srl.queue());
 }
 
 void GameServer::send_cast_order(const std::vector<EntityId>& ids, const Position& pos,
@@ -311,6 +313,22 @@ void GameServer::send_cast_order(const std::vector<EntityId>& ids, const EntityI
   srl.set_type(type);
   this->send_order_to_all("CAST", srl);
   this->turn_handler.insert_action(std::bind(&World::do_cast_on_target, &this->world, ids, target_id,
+                                             static_cast<AbilityType>(type), queue),
+                                   srl.turn());
+}
+
+void GameServer::send_cast_order(const std::vector<EntityId>& ids,
+                                 const uint32_t type, const bool queue)
+{
+  ser::order::Cast srl;
+  srl.set_turn(this->turn_handler.get_current_turn() + 2);
+  if (queue)
+    srl.set_queue(queue);
+  for (const EntityId id: ids)
+    srl.add_entity_id(id);
+  srl.set_type(type);
+  this->send_order_to_all("CAST", srl);
+  this->turn_handler.insert_action(std::bind(&World::do_cast, &this->world, ids,
                                              static_cast<AbilityType>(type), queue),
                                    srl.turn());
 }

@@ -19,6 +19,7 @@ Screen::Screen():
   // this->building_textures = mod.get_building_textures();
   this->win.setPosition(sf::Vector2i(0, 0));
   // this->win.setMouseCursorVisible(false);
+  this->win.setKeyRepeatEnabled(false);
 }
 
 Screen::~Screen()

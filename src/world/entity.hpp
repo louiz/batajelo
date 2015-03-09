@@ -39,6 +39,8 @@ public:
   void clear_works();
   void set_work(std::unique_ptr<Work>);
   void queue_work(std::unique_ptr<Work>);
+  void interrupt();
+  Work* get_current_work();
 
   template <typename ComponentClass>
   ComponentClass* get() const

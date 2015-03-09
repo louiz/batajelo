@@ -10,6 +10,7 @@
 #include <world/abilities/attack.hpp>
 #include <world/abilities/phase.hpp>
 #include <world/abilities/emp.hpp>
+#include <world/abilities/dash.hpp>
 
 #include <utility>
 
@@ -90,7 +91,33 @@ AbilitiesPanel::AbilitiesPanel(GameClient* game)
     }
   };
 
-
+  // Dash button
+  auto& dash = this->gui_abilities[AbilityType::Dash];
+  dash.callback = [game]()
+    {
+      auto ids = get_selected_entities_with_ability<Dash>(game);
+      if (ids.empty())
+        return true;
+      const bool queue = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
+                          sf::Keyboard::isKeyPressed(sf::Keyboard::RShift));
+      log_debug("Starting dash concentrate on " << ids.size() << " entities");
+      return game->action_cast({ids[0]}, AbilityType::Concentrate, queue);
+    };
+  dash.left_click = {
+    [game](const Position& pos)
+    {
+      auto ids = get_selected_entities_with_ability<Dash>(game);
+      if (ids.empty())
+        return true;
+      log_debug("left_click to start dashing");
+      return game->action_cast({ids[0]}, pos, AbilityType::Dash, false);
+    },
+    [](const sf::Vector2i&)
+    {
+      // Draw the dash load thingy
+      return cursor::Cast;
+    }
+  };
 }
 
 const GuiAbility* AbilitiesPanel::get(const AbilityType& type) const

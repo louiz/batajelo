@@ -37,6 +37,20 @@ void Entity::clear_works()
   this->works.clear();
 }
 
+void Entity::interrupt()
+{
+  if (this->works.empty())
+    return;
+  this->works.front()->interrupt();
+}
+
+Work* Entity::get_current_work()
+{
+  if (this->works.empty())
+    return nullptr;
+  return this->works.front().get();
+}
+
 void Entity::tick(World* world)
 {
   for (const auto& stat: this->status)

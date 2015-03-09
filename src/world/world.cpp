@@ -213,6 +213,25 @@ void World::do_cast_on_pos(const std::vector<EntityId>& ids, const Position& pos
     }
 }
 
+void World::do_cast(const std::vector<EntityId>& ids, const AbilityType& type, const bool queue)
+{
+  for (const EntityId id: ids)
+    {
+      log_debug("do_cast: " << id);
+      Entity* entity = this->get_entity_by_id(id);
+      if (!entity)
+        continue;
+      log_debug("ok");
+      Ability* ability = get_ability(entity, type);
+      if (ability)
+        ability->cast(entity, this, queue);
+      else
+        {
+          log_warning("Received a cast order, but entity " << id << " does not have ability: " << static_cast<int>(type));
+        }
+    }
+}
+
 std::shared_ptr<Entity> World::get_shared_entity_by_id(EntityId id)
 {
   // Should use something like this->entities[id], to optimize.

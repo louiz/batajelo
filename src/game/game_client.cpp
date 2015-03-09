@@ -313,6 +313,19 @@ bool GameClient::action_cast(const std::vector<EntityId>& ids,
   return true;
 }
 
+bool GameClient::action_cast(const std::vector<EntityId>& ids,
+                             const AbilityType& type, const bool queue)
+{
+  ser::request::Cast srl;
+  if (queue)
+    srl.set_queue(queue);
+  for (const EntityId id: ids)
+    srl.add_entity_id(id);
+  srl.set_type(static_cast<uint32_t>(type));
+  this->send_message("CAST", srl);
+  return true;
+}
+
 void GameClient::select_entity(const Entity* entity)
 {
   this->current_selection.add_to_selection(entity);

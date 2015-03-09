@@ -114,6 +114,9 @@ bool Hud::handle_keypress(const sf::Event& event)
     case sf::Keyboard::E:
       this->activate_ability(3);
       return true;
+    case sf::Keyboard::P:
+      this->activate_ability(4);
+      return true;
     default:
       return false;
     }
@@ -174,7 +177,7 @@ void Hud::activate_ability(const std::size_t nb)
               assert(gui_ab);
               if (gui_ab->callback)
                 gui_ab->callback();
-              else
+              if (gui_ab->left_click.cursor_callback && gui_ab->left_click.callback)
                 this->screen->set_left_click(gui_ab->left_click);
             }
         }

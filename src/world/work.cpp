@@ -14,3 +14,8 @@ void Work::interrupt()
   this->on_interrupted();
   this->task.reset(nullptr);
 }
+
+Task* Work::get_task()
+{
+  return this->task.get();
+}

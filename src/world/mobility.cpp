@@ -79,6 +79,13 @@ void Mobility::move_towards(const Position& goal, Location* location)
   this->last_movement = movement;
 }
 
+void Mobility::move_towards(const Position& goal, Location* location, Fix16 speed)
+{
+  auto speed_backup = this->get_speed();
+  this->set_speed(speed);
+  this->move_towards(goal, location);
+  this->set_speed(speed_backup);
+}
 Fix16 Mobility::get_angle() const
 {
   return this->last_movement.angle();

@@ -95,4 +95,10 @@ void Game::cast_callback(Message* message)
           std::bind(&World::do_cast_on_pos, &this->world, ids, pos, type, srl.queue()),
           srl.turn());
     }
+  else
+    {
+      this->turn_handler.insert_action(
+             std::bind(&World::do_cast, &this->world, ids, type, srl.queue()),
+             srl.turn());
+    }
 }

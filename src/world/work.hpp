@@ -40,6 +40,7 @@ public:
    * Calls the on_interrupted method of the subclass
    */
   void interrupt();
+  Task* get_task();
 
   protected:
   /**

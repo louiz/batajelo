@@ -12,9 +12,11 @@ using Position = Vec2;
 
 enum class AbilityType
 {
+  Concentrate,
   Attack,
   Blink,
   Phase,
+  Dash,
   Emp,
 
   count
@@ -26,6 +28,7 @@ public:
   Ability() = default;
   virtual ~Ability() = default;
   virtual void tick(Entity*, World*) {}
+  virtual void cast(Entity*, World*, const bool) {}
   virtual void cast(Entity*, World*, const Position&, const bool) {}
   virtual void cast(Entity*, World*, const std::shared_ptr<Entity>&, const bool) {}
 

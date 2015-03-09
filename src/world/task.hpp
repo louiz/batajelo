@@ -4,12 +4,14 @@
 enum class TaskType
 {
   None,
+  Concentrate,
   Path,
   Follow,
   Attack,
   Blink,
   Emp,
   Projectile,
+  Dash,
 
   count
 };
