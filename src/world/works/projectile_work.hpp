@@ -1,9 +1,10 @@
 #ifndef PROJECTILE_WORK_HPP_INCLUDED
 #define PROJECTILE_WORK_HPP_INCLUDED
 
-#include <memory>
-
 #include <world/work.hpp>
+
+#include <functional>
+#include <memory>
 
 /**
  * Simple Work where the entity just follows (without path finding or
@@ -18,7 +19,7 @@ class ProjectileWork: public Work
 {
 public:
   ProjectileWork(Entity* entity, std::weak_ptr<Entity> target,
-                 const int dmg);
+                 std::function<void(Entity*)> callback);
   ~ProjectileWork() = default;
   bool tick(World* world) override final;
 
@@ -28,9 +29,9 @@ private:
    */
   std::weak_ptr<Entity> target;
   /**
-   * Info about the event when we reach our goal.
+   * Called when the entity hits the target, if there is one
    */
-  const int dmg;
+  std::function<void(Entity*)> callback;
 
   ProjectileWork(const ProjectileWork&) = delete;
   ProjectileWork(ProjectileWork&&) = delete;

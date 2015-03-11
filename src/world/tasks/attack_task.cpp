@@ -41,7 +41,12 @@ bool AttackTask::tick(World* world)
       // Only if ranged entity
       Entity* projectile = world->do_new_entity(1, this->location->position(), 1);
       projectile->set_work(
-          std::make_unique<ProjectileWork>(projectile, this->target, 7u));
+          std::make_unique<ProjectileWork>(projectile, this->target, [](Entity* target) -> void
+                                           {
+                                             Health* health = target->get<Health>();
+                                             assert(health);
+                                             health->add(-10);
+                                           }));
     }
   if (this->backswing)
     {

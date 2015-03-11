@@ -8,10 +8,10 @@
 #include <world/world_callbacks.hpp>
 
 ProjectileWork::ProjectileWork(Entity* entity, std::weak_ptr<Entity> target,
-                               const int dmg):
+                               std::function<void(Entity*)> callback):
   Work(entity),
   target(target),
-  dmg(dmg)
+  callback(callback)
 {
 }
 
@@ -26,11 +26,10 @@ bool ProjectileWork::tick(World* world)
       if (!this->target.expired())
         {
           // impact
-          world->callbacks->impact(this->entity, this->target.lock().get());
-          Health* health = target.lock()->get<Health>();
-          assert(health);
-          health->add(-this->dmg);
-          // callback
+          Entity* targetp = this->target.lock().get();
+          if (this->callback)
+            this->callback(targetp);
+          world->callbacks->impact(this->entity, targetp);
         }
       return true;
     }
