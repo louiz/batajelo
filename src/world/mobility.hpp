@@ -31,8 +31,8 @@ public:
    *
    * The goal is reached if after this function, the location's position == goal.
    */
-  void move_towards(const Position& goal, Location* location);
-  void move_towards(const Position& goal, Location* location, Fix16 speed);
+  Fix16 move_towards(const Position& goal, Location* location);
+  Fix16 move_towards(const Position& goal, Location* location, Fix16 speed);
   /**
    * Get the angle of the entity that has this mobility, based on the latest
    * movement done.

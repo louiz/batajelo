@@ -3,6 +3,7 @@
 #include <world/world.hpp>
 #include <world/world_callbacks.hpp>
 #include <world/location.hpp>
+#include <world/health.hpp>
 #include <world/entity.hpp>
 #include <world/works/projectile_work.hpp>
 

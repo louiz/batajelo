@@ -18,6 +18,8 @@
 
 #include <memory>
 
+class Task;
+
 class GameClient: public Game, public ClientBase
 {
 public:
@@ -41,6 +43,7 @@ public:
   void on_ability_casted(const Entity*, const AbilityType&, const Entity*,
                          const Position&);
   void on_impact(const Entity* entity, const Entity* target);
+  void on_entity_task_changed(const Entity* entity, const Task* task);
 
   World& get_world();
   Camera& get_camera();

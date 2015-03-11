@@ -33,7 +33,6 @@ Camera::Camera(GameClient* game, Screen* screen):
   fog(1920, 1080, this, &this->world())
 {
   this->tileset.load_from_file("test6.tmx");
-
 }
 
 Camera::~Camera()

@@ -44,6 +44,9 @@ SoundsHandler::SoundsHandler():
 
   this->load("data/sounds/invoker/EMP_target.wav", SoundType::EmpStart);
   this->load("data/sounds/invoker/EMP_effect.wav", SoundType::EmpExplode);
+
+  this->load("data/sounds/tusk/Walrus_Punch_cast.wav", SoundType::Concentrate);
+  this->load("data/sounds/sand_king/Burrowstrike.wav", SoundType::Dash);
 }
 
 void SoundsHandler::load(const char* filename, const SoundType& type)

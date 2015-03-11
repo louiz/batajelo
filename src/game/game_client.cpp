@@ -2,6 +2,7 @@
 #include <game/game_client.hpp>
 #include <utils/time.hpp>
 #include <world/world_callbacks.hpp>
+#include <world/task.hpp>
 
 #include "orders.pb.h"
 #include "requests.pb.h"
@@ -43,6 +44,8 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
    */
   this->world.callbacks->entity_created =
       std::bind(&GameClient::on_entity_created, this, ph::_1);
+  this->world.callbacks->task_changed =
+      std::bind(&GameClient::on_entity_task_changed, this, ph::_1, ph::_2);
   this->world.callbacks->entity_deleted =
       std::bind(&GameClient::on_entity_deleted, this, ph::_1);
   this->world.callbacks->ability_casted =
@@ -373,6 +376,19 @@ void GameClient::on_impact(const Entity* entity, const Entity* target)
 void GameClient::on_entity_created(const Entity* entity)
 {
   this->camera.on_new_entity(entity);
+}
+
+void GameClient::on_entity_task_changed(const Entity* entity, const Task* task)
+{
+  switch (task->get_type())
+    {
+      case TaskType::Concentrate:
+        this->sounds_handler.play(SoundType::Concentrate, false, 100.f);
+        break;
+      case TaskType::Dash:
+        this->sounds_handler.play(SoundType::Dash, false, 100.f);
+        break;
+    }
 }
 
 void GameClient::on_entity_deleted(const Entity* entity)

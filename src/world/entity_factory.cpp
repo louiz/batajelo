@@ -29,7 +29,7 @@ std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType type)
   if (type == 0)
     { // Default unit
       entity->make_manipulable();
-      entity->add_component(std::make_unique<Health>(100));
+      entity->add_component(std::make_unique<Health>(200));
       entity->add_component(std::make_unique<ManaPool>(300));
       entity->add_component(std::make_unique<Vision>(700, false));
       entity->add_component(std::make_unique<Location>(20, true));
@@ -42,9 +42,8 @@ std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType type)
       abilities->add(1, std::make_unique<Blink>());
       abilities->add(2, std::make_unique<Phase>());
       abilities->add(3, std::make_unique<Emp>());
-      abilities->add(4, std::make_unique<Dash>());
+      abilities->add(4, std::make_unique<Dash>(400));
       abilities->add(5, std::make_unique<Concentrate>());
-
 
       entity->add_component(std::move(abilities));
     }

@@ -18,6 +18,8 @@ enum class SoundType
   BlinkStart,
   EmpStart,
   EmpExplode,
+  Concentrate,
+  Dash,
 
   count,
 };
