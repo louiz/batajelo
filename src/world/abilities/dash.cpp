@@ -15,9 +15,10 @@ const std::string NamedAbility<Dash>::name = "Dash";
 template <>
 const AbilityType NamedAbility<Dash>::ability_type = AbilityType::Dash;
 
-Dash::Dash(const Fix16 max_distance):
+Dash::Dash(const Fix16 max_distance, const Fix16 max_concentration):
   ActiveAbility(TargetType::Point),
-  max_distance(max_distance)
+  max_distance(max_distance),
+  max_concentration(max_concentration)
 {
 }
 
@@ -33,12 +34,13 @@ void Dash::cast(Entity* entity, World* world, const Position& pos, const bool qu
       return;
     }
   // Otherwise, use its value for the DashWork
-  Task* task = concentrate->get_task();
-  if (!task)
+  auto concentrate_task = static_cast<ConcentrateTask*>(concentrate->get_task());
+  if (!concentrate_task)
     return;
-  auto concentrate_task = static_cast<ConcentrateTask*>(task);
   auto concentrate_value = concentrate_task->value();
   log_debug("The concentrate task value is: " << concentrate_value);
+  concentrate_value = std::min(concentrate_value, this->get_max_concentration());
+  log_debug("capped to " << concentrate_value);
 
   Team* own_team = entity->get<Team>();
   assert(own_team);
@@ -53,9 +55,19 @@ void Dash::cast(Entity* entity, World* world, const Position& pos, const bool qu
       if (!health)
         return;
       world->callbacks->impact(entity, impacted_entity);
-      health->add(-concentrate_value/2);
+      health->add(-concentrate_value);
     };
   auto work = std::make_unique<DashWork>(entity, world, pos, 35, this->max_distance, 50,
                                          on_impact, nullptr);
   entity->set_work(std::move(work));
+}
+
+const Fix16 Dash::get_max_distance() const
+{
+  return this->max_distance;
+}
+
+const Fix16 Dash::get_max_concentration() const
+{
+  return this->max_concentration;
 }

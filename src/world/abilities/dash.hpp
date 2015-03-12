@@ -7,13 +7,16 @@
 class Dash: public ActiveAbility<Dash>
 {
 public:
-  Dash(const Fix16 max_distance);
+  Dash(const Fix16 max_distance, const Fix16 max_concentration);
   ~Dash() = default;
   void cast(Entity* entity, World*, const Position& pos,
             const bool queue) override final;
+  const Fix16 get_max_distance() const;
+  const Fix16 get_max_concentration() const;
 
 private:
   const Fix16 max_distance;
+  const Fix16 max_concentration;
 
   Dash(const Dash&) = delete;
   Dash(Dash&&) = delete;

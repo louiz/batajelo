@@ -96,6 +96,7 @@ public:
    */
   void center(const sf::Vector2i& center);
   sf::Vector2i world_to_camera_position(const Position&) const;
+  sf::Vector2i world_to_screen_position(const Position&) const;
   /**
    * Convert a mouse position, screen-related, into a world position
    */

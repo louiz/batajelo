@@ -42,7 +42,7 @@ std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType type)
       abilities->add(1, std::make_unique<Blink>());
       abilities->add(2, std::make_unique<Phase>());
       abilities->add(3, std::make_unique<Emp>());
-      abilities->add(4, std::make_unique<Dash>(400));
+      abilities->add(4, std::make_unique<Dash>(400, 50));
       abilities->add(5, std::make_unique<Concentrate>());
 
       entity->add_component(std::move(abilities));

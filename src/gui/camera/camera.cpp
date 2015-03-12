@@ -450,6 +450,14 @@ void Camera::fixup_camera_position()
     this->y = this->map().get_height_in_pixels() - win_size.y;
 }
 
+sf::Vector2i Camera::world_to_screen_position(const Position& pos) const
+{
+  auto res = this->world_to_camera_position(pos);
+  res.x -= this->x;
+  res.y -= this->y;
+  return res;
+}
+
 sf::Vector2i Camera::world_to_camera_position(const Position& pos) const
 {
   sf::Vector2i res;

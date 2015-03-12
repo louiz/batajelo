@@ -12,6 +12,8 @@
 #include <world/abilities/emp.hpp>
 #include <world/abilities/dash.hpp>
 
+#include <gui/dash_cursor.hpp>
+
 #include <utility>
 
 AbilitiesPanel::AbilitiesPanel(GameClient* game)
@@ -112,10 +114,9 @@ AbilitiesPanel::AbilitiesPanel(GameClient* game)
       log_debug("left_click to start dashing");
       return game->action_cast({ids[0]}, pos, AbilityType::Dash, false);
     },
-    [](const sf::Vector2i&)
+    [game](const sf::Vector2i& mouse_pos)
     {
-      // Draw the dash load thingy
-      return cursor::Cast;
+      return draw_dash_concentrate_cursor(mouse_pos, game);
     }
   };
 }
