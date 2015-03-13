@@ -3,9 +3,6 @@
 namespace utils
 {
 
-  // The duration of a world tick, in microseconds
-  constexpr Duration tick_duration{15000us};
-
   Time now()
   {
     return std::chrono::steady_clock::now();

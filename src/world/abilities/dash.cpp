@@ -30,7 +30,7 @@ void Dash::cast(Entity* entity, World* world, const Position& pos, const bool qu
   if (concentrate == nullptr)
     {
       // If none is found, that's weird, but do nothing
-      log_debug("Work is not a ConcentrateWork, doing nothing.");
+      log_warning("Work is not a ConcentrateWork, doing nothing.");
       return;
     }
   // Otherwise, use its value for the DashWork
@@ -57,7 +57,7 @@ void Dash::cast(Entity* entity, World* world, const Position& pos, const bool qu
       world->callbacks->impact(entity, impacted_entity);
       health->add(-concentrate_value);
     };
-  auto work = std::make_unique<DashWork>(entity, world, pos, 35, this->max_distance, 50,
+  auto work = std::make_unique<DashWork>(entity, world, pos, 50, this->max_distance, 50,
                                          on_impact, nullptr);
   entity->set_work(std::move(work));
 }

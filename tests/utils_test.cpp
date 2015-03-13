@@ -81,7 +81,7 @@ TEST(Time, BasicTick)
 
   utils::Duration dt = 1s;
   auto ticks = utils::get_number_of_ticks(dt);
-  ASSERT_EQ(ticks, 100);
+  ASSERT_EQ(ticks, 50);
   ASSERT_EQ(dt, 0s);
 }
 
@@ -89,9 +89,9 @@ TEST(Time, BasicTick2)
 {
   using namespace std::chrono_literals;
 
-  utils::Duration dt = 380000us;
+  utils::Duration dt = 500000us;
   auto ticks = utils::get_number_of_ticks(dt);
-  ASSERT_EQ(ticks, 38);
+  ASSERT_EQ(ticks, 25);
   ASSERT_EQ(dt, 0s);
 }
 
@@ -99,10 +99,10 @@ TEST(Time, Ticks)
 {
   using namespace std::chrono_literals;
 
-  utils::Duration dt = 385600us;
+  utils::Duration dt = 420000us;
   auto ticks = utils::get_number_of_ticks(dt);
-  ASSERT_EQ(ticks, 38);
-  ASSERT_EQ(dt, 5600us);
+  ASSERT_EQ(ticks, 21);
+  ASSERT_EQ(dt, 0us);
 }
 
 TEST(Time, ConvertToFloatingSeconds)
