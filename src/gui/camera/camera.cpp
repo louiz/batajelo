@@ -159,6 +159,7 @@ void Camera::handle_left_release(const sf::Event&)
     this->add_mouse_selection_to_selection();
   else
     this->set_mouse_selection_to_selection();
+  this->mouse_selection.end();
 }
 
 void Camera::set_mouse_selection_to_selection()
@@ -201,8 +202,6 @@ void Camera::set_mouse_selection_to_selection()
       this->game->get_selection().assign(entities_in_mouse_selection.begin(),
                                          end_own_entities);
     }
-
-  this->mouse_selection.end();
 }
 
 void Camera::add_mouse_selection_to_selection()
