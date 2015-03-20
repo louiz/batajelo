@@ -9,6 +9,7 @@
 class Entity;
 class World;
 class Location;
+class Attack;
 
 /**
  * Move until the destination is reached
@@ -17,8 +18,8 @@ class Location;
 class AttackWork: public Work
 {
 public:
-  AttackWork(Entity* entity, const Position& destination);
-  AttackWork(Entity* entity, std::weak_ptr<Entity> target,
+  AttackWork(Entity* entity, const Position& destination, const Fix16 range);
+  AttackWork(Entity* entity, std::weak_ptr<Entity> target, const Fix16 range,
              const Position& destination = Position::invalid);
   ~AttackWork() = default;
   bool tick(World* world) override final;
@@ -26,9 +27,10 @@ public:
 private:
   void try_acquire_target(World* world);
 
-  // The entity position, to do the acquire-target thing
+  /**
+   * The entity position, to do the acquire-target thing
+   */
   Location* location;
-  Fix16 acquire_distance;
   /**
    * Only used when attacking a position, if we attack a target, it's set to
    * Position::invalid.
@@ -38,6 +40,17 @@ private:
    * Only used when attacking a specific target
    */
   const std::weak_ptr<Entity> target;
+  /**
+   * Pointer on the ability of the attacking entity.  We need it to get the
+   * attack's attributes of this entity (for example the backswing,
+   * frontswing, damage, etc)
+   */
+  Attack* attack;
+  /**
+   * The range of the attack. If it's 0, it's a melee attack (we do not
+   * spawn any projectile)
+   */
+  const Fix16 range;
 
   AttackWork(const AttackWork&) = delete;
   AttackWork(AttackWork&&) = delete;

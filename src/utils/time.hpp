@@ -26,6 +26,8 @@ namespace utils
   // The duration of a world tick, in microseconds
   constexpr Duration tick_duration = std::chrono::duration_cast<Duration>(ticks(1));
 
+  std::size_t duration_to_ticks(const Duration& duration);
+
   /**
    * Returns the current time, from a steady clock
    */

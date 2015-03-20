@@ -28,4 +28,9 @@ namespace utils
     Duration t = now() - start_time;
     return sec(t);
   }
+
+  std::size_t duration_to_ticks(const Duration& duration)
+  {
+    return std::chrono::duration_cast<ticks>(duration).count();
+  }
 }

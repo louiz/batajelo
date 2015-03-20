@@ -41,7 +41,7 @@ bool EmpTask::tick(World* world)
           ManaPool* mana = entity->get<ManaPool>();
           if (!health || !mana)
             continue;
-          health->add(-500);
+          health->add(-120);
           mana->add(-500);
         }
       this->entity->kill();

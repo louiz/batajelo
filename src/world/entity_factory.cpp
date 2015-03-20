@@ -15,6 +15,10 @@
 #include <world/abilities/dash.hpp>
 #include <world/abilities/concentrate.hpp>
 
+#include <utils/time.hpp>
+
+using namespace std::chrono_literals;
+
 EntityFactory::EntityFactory()
 {
 }
@@ -35,10 +39,9 @@ std::unique_ptr<Entity> EntityFactory::make_entity(const EntityType type)
       entity->add_component(std::make_unique<Location>(20, true));
       entity->add_component(std::make_unique<Team>());
       entity->add_component(std::make_unique<Mobility>(3.8_fix));
-      entity->add_component(std::make_unique<Acquisition>(200_fix));
 
       auto abilities = std::make_unique<Abilities>(6u, 0u, 0u);
-      abilities->add(0, std::make_unique<Attack>(5u, 2u));
+      abilities->add(0, std::make_unique<Attack>(300ms, 500ms, 400_fix));
       abilities->add(1, std::make_unique<Blink>());
       abilities->add(2, std::make_unique<Phase>());
       abilities->add(3, std::make_unique<Emp>());
