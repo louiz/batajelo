@@ -15,7 +15,8 @@ cursor::type draw_dash_concentrate_cursor(const sf::Vector2i& mouse_position, Ga
 {
   log_debug("dash cursor position: " << mouse_position.x << "." << mouse_position.y);
   auto ids = get_selected_entities_with_ability<Dash>(game);
-  assert(!ids.empty());
+  if (ids.empty())
+    return cursor::Build;
   Entity* dashing_entity = game->get_world().get_entity_by_id(ids[0]);
   auto abilities = dashing_entity->get<Abilities>();
   auto dash = static_cast<Dash*>(abilities->find(AbilityType::Dash));
