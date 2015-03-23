@@ -4,7 +4,6 @@
 #include <world/world.hpp>
 #include <world/health.hpp>
 #include <world/location.hpp>
-#include <world/acquisition.hpp>
 #include <world/team.hpp>
 #include <world/tasks/attack_task.hpp>
 #include <world/tasks/path_task.hpp>
@@ -52,9 +51,11 @@ void AttackWork::try_acquire_target(World* world)
       Health* health = (*it)->get<Health>();
       if (!health)
         continue;
-      Fix16 distance = Position::distance(location->position(),
-                                          this->location->position());
-      if (distance < this->range &&
+      Fix16 distance =
+          Position::distance(location->position(), this->location->position()) -
+          this->location->get_width() - location->get_width() - 20;
+      log_debug("try_acquire_target: " << distance << "(" << this->location->get_width() << "," << location->get_width() << " < " << this->range << "?");
+      if (distance <= this->range &&
           (res == world->entities.end() || distance < best_distance))
         {
           best_distance = distance;
@@ -98,8 +99,10 @@ bool AttackWork::tick(World* world)
       // Find out if the target is in our reach
       Location* target_location = this->target.lock()->get<Location>();
       assert(target_location);
-      if (Position::distance(target_location->position(),
-                             this->location->position()) < this->range)
+      Fix16 distance =
+          Position::distance(target_location->position(), this->location->position()) -
+          this->location->get_width() - location->get_width() - 20;
+      if (distance < this->range)
         this->set_task(world, std::make_unique<AttackTask>(this->entity, this->target,
                                                            this->attack->get_frontswing_duration(),
                                                            this->attack->get_backswing_duration(),

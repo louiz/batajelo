@@ -6,7 +6,6 @@
 #include <world/location.hpp>
 #include <world/mobility.hpp>
 #include <world/abilities.hpp>
-#include <world/acquisition.hpp>
 
 #include <world/abilities/blink.hpp>
 #include <world/abilities/attack.hpp>

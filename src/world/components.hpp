@@ -16,7 +16,6 @@ enum class ComponentType: std::size_t
     Vision,
     Team,
     Abilities,
-    Acquisition,
 
     count
 };
