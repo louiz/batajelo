@@ -29,6 +29,7 @@ public:
   bool is_obstructing_position(const Position& pos,
                                const Fix16& width) const;
   bool is_position_valid(World* world, const Position& pos) const;
+  Position find_nearest_free_position(World* world, const Position& pos) const;
 
 private:
   Fix16 width;
