@@ -106,9 +106,11 @@ public:
   // Change the vector's length but keep the same direction.
   void set_length(Fix16 new_length)
   {
-    Fix16 mult = this->length() / new_length;
-    this->x /= mult;
-    this->y /= mult;
+    if (this->length() == 0)
+      return;
+    Fix16 mult = new_length / this->length();
+    this->x *= mult;
+    this->y *= mult;
   }
   // Returns one of the two perpendicular vectors.
   Vec2 perpendicular1() const
