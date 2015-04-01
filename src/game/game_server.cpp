@@ -239,11 +239,6 @@ void GameServer::init()
 void GameServer::on_move_request(Message* message)
 {
   auto srl = message->parse_body_to_protobuf_object<ser::request::Move>();
-  if (!srl.IsInitialized())
-    {
-      log_error("Invalid data received for Move request : " << srl.InitializationErrorString());
-      return ;
-    }
   std::vector<EntityId> ids;
   for (const auto& id: srl.entity_id())
     ids.push_back(id);
@@ -261,11 +256,6 @@ void GameServer::on_move_request(Message* message)
 void GameServer::on_cast_request(Message* message)
 {
   auto srl = message->parse_body_to_protobuf_object<ser::request::Cast>();
-  if (!srl.IsInitialized())
-    {
-      log_error("Invalid data received for Cast request: " << srl.InitializationErrorString());
-      return ;
-    }
   std::vector<EntityId> ids;
   for (const auto& id: srl.entity_id())
     ids.push_back(id);

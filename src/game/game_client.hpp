@@ -31,9 +31,6 @@ public:
 
   void add_new_occupant(std::unique_ptr<Occupant>&& occupant);
 
-  void send_message(const char* name, const google::protobuf::Message& msg);
-  void send_message(const char* name, const std::string& archive);
-
   /**
    * Callbacks set in the WorldCallbacks objects. See over there for
    * comments.

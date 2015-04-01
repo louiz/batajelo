@@ -18,11 +18,6 @@ void Game::new_entity_callback(Message* message)
 {
   log_debug("Game::new_entity_callback");
   auto srl = message->parse_body_to_protobuf_object<ser::order::NewEntity>();
-  if (!srl.IsInitialized())
-    {
-      log_error("Invalid data received for new entity: " << srl.InitializationErrorString());
-      return ;
-    }
 
   Position pos;
   pos.x.raw() = srl.pos().x();
@@ -35,11 +30,6 @@ void Game::move_callback(Message* message)
 {
   log_debug("Game::move_callback");
   auto srl = message->parse_body_to_protobuf_object<ser::order::Move>();
-  if (!srl.IsInitialized())
-    {
-      log_error("Invalid data received for move: " << srl.InitializationErrorString());
-      return ;
-    }
 
   std::vector<EntityId> ids;
   for (const auto& id: srl.entity_id())
@@ -67,11 +57,6 @@ void Game::cast_callback(Message* message)
 {
   log_debug("Game::cast_callback");
   auto srl = message->parse_body_to_protobuf_object<ser::order::Cast>();
-  if (!srl.IsInitialized())
-    {
-      log_error("Invalid data received for cast: " << srl.InitializationErrorString());
-      return ;
-    }
 
   std::vector<EntityId> ids;
   for (const auto& id: srl.entity_id())

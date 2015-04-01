@@ -127,7 +127,15 @@ void MessageHandler::binary_read_handler(const boost::system::error_code& error,
   else
     {
       for (const auto& cb: callbacks)
-        cb(message);
+        {
+          try {
+            cb(message);
+          }
+          catch (const SerializationException& error)
+            {
+              log_error("Invalid message received.");
+            }
+        }
     }
   delete message;
   this->install_read_handler();
@@ -158,6 +166,22 @@ void MessageHandler::send(Message* message, std::function< void(void) > on_sent)
   log_debug("Sending message: " << message->get_name());
   this->messages_to_send.push_front(message);
   this->check_messages_to_send();
+}
+
+void MessageHandler::send_message(const char* name, const google::protobuf::Message& msg)
+{
+  Message* message = new Message;
+  message->set_name(name);
+  message->set_body(msg);
+  this->send(message);
+}
+
+void MessageHandler::send_message(const char* name, const std::string& archive)
+{
+  Message* message = new Message;
+  message->set_name(name);
+  message->set_body(archive.data(), archive.length());
+  this->send(message);
 }
 
 bool MessageHandler::check_messages_to_send()

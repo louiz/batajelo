@@ -149,22 +149,6 @@ Screen& GameClient::get_screen()
   return *this->screen;
 }
 
-void GameClient::send_message(const char* name, const google::protobuf::Message& msg)
-{
-  Message* message = new Message;
-  message->set_name(name);
-  message->set_body(msg);
-  this->send(message);
-}
-
-void GameClient::send_message(const char* name, const std::string& archive)
-{
-  Message* message = new Message;
-  message->set_name(name);
-  message->set_body(archive.data(), archive.length());
-  this->send(message);
-}
-
 void GameClient::on_next_turn(TurnNb turn)
 {
 }
@@ -174,11 +158,6 @@ void GameClient::new_occupant_callback(Message* message)
   log_debug("new_occupant_callback");
 
   auto srl = message->parse_body_to_protobuf_object<ser::game::Occupant>();
-  if (!srl.IsInitialized())
-    {
-      log_error("Invalid data received for the occupant: " << srl.InitializationErrorString());
-      return ;
-    }
 
   auto occupant = std::make_unique<Occupant>(srl);
 
@@ -194,11 +173,6 @@ void GameClient::new_occupant_callback(Message* message)
 void GameClient::occupant_left_callback(Message* message)
 {
   auto srl = message->parse_body_to_protobuf_object<ser::game::Occupant>();
-  if (!srl.IsInitialized())
-    {
-      log_error("Invalid data received for the leaving occupant." << srl.InitializationErrorString());
-      return ;
-    }
 
   Occupant occupant(srl);
   log_debug("Occupant to remove: " << occupant.id);
@@ -208,11 +182,6 @@ void GameClient::occupant_left_callback(Message* message)
 void GameClient::handle_seed_message(Message* message)
 {
   auto srl = message->parse_body_to_protobuf_object<ser::order::Seed>();
-  if (!srl.IsInitialized())
-    {
-      log_warning("Invalid data for SEED message " << srl.InitializationErrorString());
-      return ;
-    }
   log_debug("Seed value received: " << srl.value());
   this->world.seed(srl.value());
 }
@@ -220,11 +189,6 @@ void GameClient::handle_seed_message(Message* message)
 void GameClient::handle_start_message(Message* message)
 {
   auto srl = message->parse_body_to_protobuf_object<ser::order::Start>();
-  if (!srl.IsInitialized())
-    {
-      log_warning("Invalid data for START message " << srl.InitializationErrorString());
-      return ;
-    }
   log_debug("The first turn to start is " << srl.turn());
   if (srl.turn() != 0)
     this->turn_handler.mark_as_ready_until(srl.turn());

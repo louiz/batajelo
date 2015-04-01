@@ -70,6 +70,8 @@ public:
    * It does not necessarily actually send the message on the socket.
    */
   void send(Message* message, std::function< void(void) > on_sent = 0);
+  void send_message(const char* name, const google::protobuf::Message& msg);
+  void send_message(const char* name, const std::string& archive);
 
 protected:
   /**

@@ -26,6 +26,7 @@
 # define MESSAGE_HPP
 
 #include <google/protobuf/message.h>
+#include <serialization/exception.hpp>
 
 #include "logging/logging.hpp"
 
@@ -89,6 +90,8 @@ public:
     ProtobufClass res;
     res.ParseFromArray(this->body, this->body_size);
     log_debug("parse_body_to_protobuf_object: " << res.ShortDebugString());
+    if (!res.IsInitialized())
+      throw SerializationException{res.InitializationErrorString()};
     return res;
   }
 
