@@ -43,6 +43,7 @@ option(BUILD_CLIENT "build the server" ${BUILD_CLIENT})
 find_package(Boost 1.48.0 COMPONENTS filesystem system iostreams locale serialization chrono REQUIRED)
 find_package(Cryptopp REQUIRED)
 find_package(Protobuf REQUIRED)
+find_package(LITESQL REQUIRED)
 
 if(BUILD_CLIENT)
   find_package(SFML 2 REQUIRED system window graphics audio)
@@ -141,6 +142,17 @@ target_link_libraries(
   utils
   ${Boost_LIBRARIES}
   )
+
+#
+## Database
+#
+LITESQL_GENERATE_CPP("src/database/database.xml"
+  "batadb"
+  LITESQL_GENERATED_SOURCES)
+
+add_library(database STATIC src/database/database.cpp
+  ${LITESQL_GENERATED_SOURCES})
+target_link_libraries(database ${LITESQL_LIBRARIES})
 
 #
 ## Gui

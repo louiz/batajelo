@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE database SYSTEM "litesql.dtd">
+<database name="BataDB" namespace="db">
+  <object name="User">
+    <field name="login" type="string" length="256"/>
+    <field name="password" type="string" lenght="256"/>
+    <index unique="true">
+      <indexfield name="login"/>
+    </index>
+  </object>
+</database>
