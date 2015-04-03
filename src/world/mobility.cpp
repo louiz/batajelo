@@ -29,6 +29,9 @@ void Mobility::set_speed(const Fix16& speed)
 
 void Mobility::follow_path(Path& path, World* world, Location* location)
 {
+  if (path.empty())
+    return;
+
   Position goal = path.front();
   Vec2 movement(goal - location->position());
   if (movement.length() == 0)
