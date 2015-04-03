@@ -37,7 +37,10 @@ bool FollowTask::tick(World* world)
       this->current_destination = target_location->position();
       this->path = world->calculate_path(this->current_destination, this->location);
     }
-  this->mobility->follow_path(this->path, world, this->location);
+  // Stop trying to move further, when we are at very close distance
+  // (touching the followed entity).
+  if (Position::distance(this->location->position(), this->current_destination) > 40)
+    this->mobility->follow_path(this->path, world, this->location);
   return false;
 }
 
