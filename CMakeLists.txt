@@ -41,7 +41,7 @@ option(BUILD_CLIENT "build the server" ${BUILD_CLIENT})
 ##########################
 
 find_package(Boost 1.48.0 COMPONENTS filesystem system iostreams locale serialization chrono REQUIRED)
-find_package(Cryptopp REQUIRED)
+find_package(BOTAN REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(LITESQL REQUIRED)
 
@@ -58,14 +58,13 @@ find_package(GTest)
 include_directories("src/")
 
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(${CRYPTO++_INCLUDE_DIR})
+include_directories(${BOTAN_INCLUDE_DIRS})
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 if(GTEST_FOUND)
   include_directories(${GTEST_INCLUDE_DIRS})
 endif()
 
 link_directories(${Boost_LIBRARY_DIRS})
-link_directories(${CRYPTO++_LIBRARIES})
 
 ##########################
 # Targets
@@ -152,7 +151,7 @@ LITESQL_GENERATE_CPP("src/database/database.xml"
 
 add_library(database STATIC src/database/database.cpp
   ${LITESQL_GENERATED_SOURCES})
-target_link_libraries(database ${LITESQL_LIBRARIES})
+target_link_libraries(database ${LITESQL_LIBRARIES} ${BOTAN_LIBRARIES})
 
 #
 ## Gui

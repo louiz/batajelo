@@ -13,17 +13,21 @@
 
 #include <boost/asio.hpp>
 #include <functional>
+#include "batadb.hpp"
 
 #include <network/remote_client_base.hpp>
-#include <network/transfer_sender.hpp>
-#include <network/server.hpp>
+
+class MasterServer;
+class Message;
+class TransferSender;
 
 class RemoteClient: public RemoteClientBase
 {
 public:
-  explicit RemoteClient(boost::asio::io_service&, Server<RemoteClient>*);
+  explicit RemoteClient(boost::asio::io_service&);
   ~RemoteClient();
-  virtual void on_connection_closed();
+  void on_connection_closed() override final;
+  void set_server(MasterServer* server);
 
   /**
    * Sends a file to the remote client.
@@ -49,8 +53,16 @@ public:
    * For example, checks if there are news to send, or offline messages, etc
    */
   void on_auth_success();
+  const db::User* get_user() const;
 
 private:
+  /**
+   * Keep track of which user is associated with this client. Used to get
+   * various other information from the database (the contact list, account
+   * informations, etc).
+   * If it's nullptr, the user did not successfully log in (yet)
+   */
+  std::unique_ptr<db::User> user;
   /**
    * Creates the default callbacks associated with a network message.
    * It is executed whenever that message is received.
@@ -59,11 +71,11 @@ private:
   virtual void install_callbacks();
   void auth_callback(Message*);
   void transfer_callback(Message*);
+  void on_user_logged_in();
   /**
-   * A pointer to the server, to call its method when the RemoteClient
-   * has to be deleted.
+   * A pointer to the server owning use
    */
-  Server<RemoteClient>* server;
+  MasterServer* server;
   /**
    * A list of all the current file transfers with the client.
    */

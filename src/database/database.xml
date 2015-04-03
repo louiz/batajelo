@@ -3,7 +3,7 @@
 <database name="BataDB" namespace="db">
   <object name="User">
     <field name="login" type="string" length="256"/>
-    <field name="password" type="string" lenght="256"/>
+    <field name="hash" type="string" length="256"/>
     <index unique="true">
       <indexfield name="login"/>
     </index>
