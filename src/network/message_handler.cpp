@@ -2,8 +2,7 @@
 #include <network/message_handler.hpp>
 #include <network/message.hpp>
 
-MessageHandler::MessageHandler(boost::asio::io_service& io_service):
-  BaseSocket(io_service),
+MessageHandler::MessageHandler():
   writing(false)
 {
 }
@@ -96,7 +95,7 @@ void MessageHandler::read_handler(const boost::system::error_code& error, const 
   // We check what we need to read on the socket to have the rest of the binary datas
   const std::size_t length_to_read = this->data.size() >= size ? 0 : size - this->data.size();
 
-  boost::asio::async_read(this->socket,
+  boost::asio::async_read(this->get_socket(),
                           this->data,
                           boost::asio::transfer_at_least(length_to_read),
                           std::bind(&MessageHandler::binary_read_handler, this,
@@ -143,7 +142,7 @@ void MessageHandler::binary_read_handler(const boost::system::error_code& error,
 
 void MessageHandler::install_read_handler(void)
 {
-  boost::asio::async_read_until(this->socket,
+  boost::asio::async_read_until(this->get_socket(),
                     this->data,
                     ':',
                     std::bind(&MessageHandler::read_handler, this,
@@ -201,7 +200,7 @@ void MessageHandler::actually_send(Message* message)
   std::vector<boost::asio::const_buffer> buffs;
   buffs.push_back(boost::asio::buffer(message->header.data(), message->header.length()));
   buffs.push_back(boost::asio::buffer(message->body, message->body_size));
-  async_write(this->socket,
+  async_write(this->get_socket(),
               buffs,
               std::bind(&MessageHandler::send_handler, this,
                         std::placeholders::_1,

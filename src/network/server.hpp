@@ -27,13 +27,12 @@
 #include <boost/chrono.hpp>
 
 #include <logging/logging.hpp>
-#include <network/base_ioservice.hpp>
 #include <network/base_socket.hpp>
 #include <network/message.hpp>
 #include <utils/time.hpp>
 
 template <class T>
-class Server: public BaseIoservice, public BaseSocket
+class Server: public BaseSocket
 {
 public:
   /**
@@ -41,12 +40,11 @@ public:
    * @param port The port on which the servers accepts new connections.
    */
   Server(short port):
-    BaseIoservice(),
-    BaseSocket(io_service),
+    BaseSocket(),
     port(port),
-    timeout(io_service),
-    acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
-    stop_signal_set(io_service),
+    timeout(IoService::get()),
+    acceptor(IoService::get(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
+    stop_signal_set(IoService::get()),
     started(false)
   {
   }
@@ -90,7 +88,7 @@ public:
   {
     if (t == 0)
       {
-        while (this->io_service.poll())
+        while (IoService::get().poll())
           ;
         return ;
       }
@@ -103,8 +101,8 @@ public:
       this->timeout.async_wait([](const boost::system::error_code&){});
     // Wait for one event to happen (either a timeout or something
     // on the socket).
-    this->io_service.run_one();
-    while (this->io_service.poll() != 0)
+    IoService::get().run_one();
+    while (IoService::get().poll() != 0)
       ; // Execute all other available handlers, if any
   }
   /**
@@ -209,7 +207,7 @@ public:
 private:
   void install_accept_handler(void)
   {
-    T* new_client = new T(this->io_service);
+    T* new_client = new T();
 
     this->acceptor.async_accept(new_client->get_socket(),
                                 std::bind(&Server<T>::handle_accept,

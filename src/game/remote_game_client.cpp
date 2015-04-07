@@ -3,8 +3,7 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <world/world.hpp>
 
-RemoteGameClient::RemoteGameClient(boost::asio::io_service& io_service):
-  RemoteClientBase(io_service),
+RemoteGameClient::RemoteGameClient():
   server(nullptr)
 {
 }

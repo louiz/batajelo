@@ -17,7 +17,6 @@
 #ifndef __CLIENT_BASE_HPP__
 # define __CLIENT_BASE_HPP__
 
-#include <network/base_ioservice.hpp>
 #include <network/message_handler.hpp>
 #include <network/ping_handler.hpp>
 #include <network/timed_event_handler.hpp>
@@ -26,8 +25,8 @@
 
 #include <utils/time.hpp>
 
-class ClientBase: public BaseIoservice, public MessageHandler,
-                  public TimedEventHandler, public PingHandler
+class ClientBase:public MessageHandler, public TimedEventHandler,
+                 public PingHandler
 {
 public:
   ClientBase();

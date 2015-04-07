@@ -23,7 +23,7 @@ public:
   /**
    * Install a timed event to be executed in the futur at the specified date.
    */
-  void install_timed_event(boost::asio::io_service&, const timed_callback_t, const int);
+  void install_timed_event(const timed_callback_t, const int);
   /**
    * Remove the event from the list. It is deleted and canceled (if it was
    * not already called, it'll never be).

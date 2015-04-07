@@ -24,7 +24,7 @@ class TransferSender;
 class RemoteClient: public RemoteClientBase
 {
 public:
-  explicit RemoteClient(boost::asio::io_service&);
+  RemoteClient();
   ~RemoteClient();
   void on_connection_closed() override final;
   void set_server(MasterServer* server);

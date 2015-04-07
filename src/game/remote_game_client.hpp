@@ -14,7 +14,7 @@ class GameServer;
 class RemoteGameClient: public RemoteClientBase
 {
 public:
-  RemoteGameClient(boost::asio::io_service& io_service);
+  RemoteGameClient();
   ~RemoteGameClient();
   void on_connection_closed() override final;
   void set_game_server(GameServer* server);

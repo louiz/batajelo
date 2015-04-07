@@ -2,8 +2,7 @@
 #include <master_server/master_server.hpp>
 #include "master.pb.h"
 
-RemoteClient::RemoteClient(boost::asio::io_service& io_service):
-  RemoteClientBase(io_service),
+RemoteClient::RemoteClient():
   user(nullptr),
   server(nullptr),
   senders{}

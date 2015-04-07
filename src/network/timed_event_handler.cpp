@@ -1,5 +1,6 @@
 #include <logging/logging.hpp>
 #include <network/timed_event_handler.hpp>
+#include <network/ioservice.hpp>
 
 TimedEventHandler::TimedEventHandler()
 {
@@ -16,12 +17,12 @@ TimedEventHandler::~TimedEventHandler()
     }
 }
 
-void TimedEventHandler::install_timed_event(boost::asio::io_service& io_service,
-                                            const timed_callback_t callback,
+void TimedEventHandler::install_timed_event(const timed_callback_t callback,
                                             const int delay)
 {
   log_debug("installing timed_event");
-  boost::asio::deadline_timer* timer = new boost::asio::deadline_timer(io_service, boost::posix_time::seconds(delay));
+  boost::asio::deadline_timer* timer = new boost::asio::deadline_timer(
+      IoService::get(), boost::posix_time::seconds(delay));
   TimedEvent* event = new TimedEvent(this, timer, callback);
   this->events.push_back(event);
 }

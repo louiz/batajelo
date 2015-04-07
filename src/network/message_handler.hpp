@@ -27,7 +27,7 @@ typedef std::function<void(Message*)> t_read_callback;
 class MessageHandler: public BaseSocket
 {
 public:
-  explicit MessageHandler(boost::asio::io_service&);
+  explicit MessageHandler();
   virtual ~MessageHandler();
 
   void install_read_handler();

@@ -2,18 +2,16 @@
 #include <network/client_base.hpp>
 #include <boost/algorithm/string.hpp>
 
-ClientBase::ClientBase():
-  BaseIoservice(),
-  MessageHandler(io_service)
+ClientBase::ClientBase()
 {
 }
 
 ClientBase::~ClientBase()
 {
-  if (this->socket.is_open())
+  if (this->get_socket().is_open())
     {
       log_debug("Closing connection");
-      this->socket.close();
+      this->get_socket().close();
     }
 }
 
@@ -25,7 +23,7 @@ void ClientBase::connect(const std::string& host,
 {
   // TODO use resolve and DNS
   boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(host), port);
-  this->socket.async_connect(endpoint,
+  this->get_socket().async_connect(endpoint,
                               std::bind(&ClientBase::connect_handler, this,
                                         on_success, on_failure,
                                         std::placeholders::_1));
@@ -64,7 +62,7 @@ void ClientBase::ping_callback(Message*)
 
 void ClientBase::poll()
 {
-  while (this->io_service.poll() != 0)
+  while (IoService::get().poll() != 0)
     ;
 }
 
