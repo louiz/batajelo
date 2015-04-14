@@ -1,5 +1,7 @@
 #include <master_server/remote_client.hpp>
-#include <master_server/master_server.hpp>
+#include <master_server/master_to_client_server.hpp>
+
+#include <database/database.hpp>
 #include "master.pb.h"
 
 RemoteClient::RemoteClient():
@@ -14,7 +16,7 @@ RemoteClient::~RemoteClient()
   log_info("Deleting remote client " << this->id);
 }
 
-void RemoteClient::set_server(MasterServer* server)
+void RemoteClient::set_server(MasterToClientServer* server)
 {
   this->server = server;
 }

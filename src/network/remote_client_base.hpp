@@ -30,8 +30,8 @@
 class RemoteClientBase: public MessageHandler, public TimedEventHandler, public PingHandler
 {
 public:
-  explicit RemoteClientBase(boost::asio::io_service&);
-  ~RemoteClientBase();
+  RemoteClientBase();
+  virtual ~RemoteClientBase();
   /**
    * starts the client (install the read handler, etc)
    */
@@ -56,6 +56,11 @@ public:
 
   virtual void on_connection_closed() = 0;
 
+  boost::asio::ip::tcp::endpoint& get_endpoint()
+  {
+    return this->endpoint;
+  }
+
 protected:
   /**
    * The client number (aka id).
@@ -70,10 +75,11 @@ protected:
   void install_read_handler(void);
 private:
   /**
-   * We keep a reference on the io_service that was passed to us by the
-   * Server, for convenience.
+   * A endpoint containing the information of the remote peer.  It is set by
+   * asio, when async_accept succeeds, just before the accept handler is
+   * called.
    */
-  boost::asio::io_service& io_service;
+  boost::asio::ip::tcp::endpoint endpoint;
 };
 
 #endif // REMOTE_CLIENT_BASE

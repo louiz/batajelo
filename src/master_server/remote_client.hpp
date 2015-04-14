@@ -17,7 +17,7 @@
 
 #include <network/remote_client_base.hpp>
 
-class MasterServer;
+class MasterToClientServer;
 class Message;
 class TransferSender;
 
@@ -27,7 +27,7 @@ public:
   RemoteClient();
   ~RemoteClient();
   void on_connection_closed() override final;
-  void set_server(MasterServer* server);
+  void set_server(MasterToClientServer* server);
 
   /**
    * Sends a file to the remote client.
@@ -75,7 +75,7 @@ private:
   /**
    * A pointer to the server owning use
    */
-  MasterServer* server;
+  MasterToClientServer* server;
   /**
    * A list of all the current file transfers with the client.
    */
