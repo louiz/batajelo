@@ -1,0 +1,35 @@
+// Object used only by the MenuClient and the MasterServer.  It includes
+// things like authentication, social (friends list, messages, user info,
+// etc), game info and negociation, etc
+
+package ser.master;
+
+message User
+{
+  required fixed64 bataid = 1;
+  optional string login = 2;
+}
+
+message Authenticate
+{
+  required string login = 1;
+  required string password = 2;
+}
+
+message AuthResponse
+{
+  enum Result {
+    SUCCESS = 0;
+    ERROR_INVALID_LOGIN = 1;
+    ERROR_INVALID_PASSWORD = 2;
+    ERROR_BANNED = 3;
+  }
+  optional AuthResponse.Result result = 1 [default = ERROR_INVALID_LOGIN];
+}
+
+message GameConnectionInfo
+{
+  required uint32 port = 1;
+  required uint32 ip = 2;
+  required string password = 3;
+}

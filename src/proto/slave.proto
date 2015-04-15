@@ -1,0 +1,25 @@
+// Object used between a Master and a Slave.  It is used to negociate a
+// game, get some information about the Slave, send informations about the
+// running games (mainly the result) etc
+
+import "game.proto";
+
+package ser.slave;
+
+message InfoRequest
+{
+}
+
+message StartGameRequest
+{
+  required uint64 game_id = 1;
+  // TODO: Ability to spawn a game from an existing replay
+  // optional Replay;
+  // optional StartTurn;
+}
+
+message SlaveInfo
+{
+  repeated ser.game.GameInfo games_info = 1;
+  optional uint32 free_slots = 2;
+}

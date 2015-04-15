@@ -1,7 +1,7 @@
 #include <iostream>
 #include <logging/logging.hpp>
 #include <network/transfer_sender.hpp>
-#include <network/remote_client.hpp>
+#include <master_server/remote_client.hpp>
 
 using namespace std::string_literals;
 
