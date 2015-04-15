@@ -2,6 +2,8 @@
 #include <game/turn.hpp>
 #include <algorithm>
 
+#include <network/ipc_endpoint.hpp>
+
 #include <world/world_callbacks.hpp>
 #include <world/entity.hpp>
 #include <world/team.hpp>
@@ -12,11 +14,17 @@
 
 namespace ph = std::placeholders;
 
-GameServer::GameServer(short port):
+GameServer::GameServer(short port, const std::string& ipc_path):
   Game(),
   Server<RemoteGameClient>(port),
-  replay()
+  replay(),
+  ipc(nullptr)
 {
+  if (!ipc_path.empty())
+    {
+      this->ipc = std::make_unique<IPCEndpoint>(ipc_path);
+      this->install_parent_stats_timed_event();
+    }
   this->turn_handler.set_next_turn_callback(std::bind(&GameServer::on_next_turn, this,
                                                       ph::_1));
 
@@ -27,6 +35,17 @@ GameServer::GameServer(short port):
 
 GameServer::~GameServer()
 {
+}
+
+void GameServer::install_parent_stats_timed_event()
+{
+  auto cb = [this]()
+    {
+      log_debug("Sending things in the IPC thing");
+      this->ipc->send("coucou");
+      this->install_parent_stats_timed_event();
+    };
+  this->timed_event_handler.install_timed_event(cb, 5);
 }
 
 void GameServer::on_entity_created(const Entity* entity)

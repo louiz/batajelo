@@ -19,19 +19,21 @@
 #include <game/remote_game_client.hpp>
 #include <game/occupants_handler.hpp>
 #include <network/server.hpp>
+#include <network/timed_event_handler.hpp>
 #include <world/world.hpp>
 #include <game/replay.hpp>
 #include <game/turn_handler.hpp>
 
+class IPCEndpoint;
+
 class GameServer: public Game, public Server<RemoteGameClient>
 {
 public:
-  GameServer(short port);
+  GameServer(short port, const std::string& ipc_path);
   ~GameServer();
-  // World* get_world();
 
-  virtual void on_new_client(RemoteGameClient*) override final;
-  virtual void on_client_left(RemoteGameClient*) override final;
+  void on_new_client(RemoteGameClient*) override final;
+  void on_client_left(RemoteGameClient*) override final;
 
   void on_entity_created(const Entity* entity);
   /**
@@ -126,13 +128,17 @@ public:
   void spawn_callback(Message*);
 
 private:
+  void install_parent_stats_timed_event();
+
   GameServer(const GameServer&);
   GameServer& operator=(const GameServer&);
   /**
    * Store the already executed Actions, to pass them to save them in a
    * file, and send them to the new occupants when they join a running game.
    */
+  TimedEventHandler timed_event_handler;
   Replay replay;
+  std::unique_ptr<IPCEndpoint> ipc;
 };
 
 #endif // __GAME_SERVER_HPP__
