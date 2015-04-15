@@ -43,9 +43,7 @@ public:
     BaseSocket(),
     port(port),
     timeout(IoService::get()),
-    acceptor(IoService::get(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
-    stop_signal_set(IoService::get()),
-    started(false)
+    acceptor(IoService::get(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
   {
   }
   virtual ~Server()
@@ -58,26 +56,7 @@ public:
   void start()
   {
     this->accept();
-    this->stop_signal_set.add(SIGINT);
-    this->install_stop_signal_handler();
-    this->started = true;
   }
-  void install_stop_signal_handler()
-    {
-      this->stop_signal_set.async_wait([this](const boost::system::error_code& error, int signal_number)
-                                       {
-                                         if (error)
-                                           {
-                                             log_error("Error of the stop signal handler: " << error.message());
-                                             this->install_stop_signal_handler();
-                                           }
-                                         else
-                                           {
-                                             log_info("Received signal: " << signal_number);
-                                             this->started = false;
-                                           }
-                                       });
-    }
 
   /**
    * Checks for network or timed events readiness.
@@ -236,8 +215,6 @@ private:
   const short port;
   boost::asio::steady_timer timeout;
   boost::asio::ip::tcp::acceptor acceptor;
-  boost::asio::signal_set stop_signal_set;
-  bool started;
 };
 
 #endif /*__SERVER_HPP__ */
