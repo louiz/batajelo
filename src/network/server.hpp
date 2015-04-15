@@ -111,15 +111,15 @@ public:
    */
   void remove_client(T* client)
   {
-    typename std::vector<T*>::iterator it;
-    for (it = this->clients.begin(); it < this->clients.end(); ++it)
-      if (*it == client)
-	{
-	  this->clients.erase(it);
-	  break ;
-	}
     this->on_client_left(client);
-    delete client;
+
+    auto it = std::find_if(this->clients.begin(), this->clients.end(),
+                        [client](const std::unique_ptr<T>& c) -> bool
+                        {
+                          return c.get() == client;
+                        });
+    assert(it != this->clients.end());
+    this->clients.erase(it);
   }
   /**
    * Search for a connected client with this login
@@ -127,10 +127,9 @@ public:
    */
   T* find_client_by_login(const std::string& login)
   {
-    typename std::vector<T*>::iterator it;
-    for (it = this->clients.begin(); it < this->clients.end(); ++it)
-      if ((*it)->get_user() && (*it)->get_user()->get("login") == login)
-	return *it;
+    for (const auto& client: this->clients)
+      if (client->get_user() && client->get_user()->get("login") == login)
+	return client.get();
     return nullptr;
   }
 
@@ -155,14 +154,11 @@ public:
   void send_to_list_of_clients(Message* message,
 			       std::vector<unsigned long int> ids)
   {
-    typename std::vector<unsigned long int>::iterator it;
-    for (it = ids.begin(); it < ids.end(); ++it)
-      {
-	this->send_to_client(new Message(*message), *it);
-      }
+    for (const auto& id: ids)
+      this->send_to_client(new Message(*message), id);
     // delete the message ourself, because we made a copy for each
     // client, and the original is still there and will not be deleted
-    // by a client sending it (because it will not be sent).
+    // by a client sending it.
     delete message;
   }
 
@@ -171,11 +167,8 @@ public:
    */
   void send_to_all_clients(Message* message)
   {
-    typename std::vector<T*>::iterator it;
-    for (it = this->clients.begin(); it < this->clients.end(); ++it)
-      {
-	(*it)->send(new Message(*message));
-      }
+    for (const auto& client: this->clients)
+      client->send(new Message(*message));
     delete message;
   }
 
@@ -184,15 +177,12 @@ public:
    */
   void send_to_client(Message* message, unsigned long int id)
   {
-    typename std::vector<T*>::iterator it;
-    for (it = this->clients.begin(); it < this->clients.end(); ++it)
-      {
-    	if ((*it)->number == id)
-	  {
-	    (*it)->send(message);
-	    return ;
-	  }
-      }
+    for (const auto& client: this->clients)
+      if (client->number == id)
+        {
+          client->send(message);
+          return ;
+        }
     // The message MUST be sent by now. If the corresponding client
     // was not in the list, something was wrong before calling this
     // function.
@@ -222,7 +212,7 @@ private:
 	log_error("handle_accept failed: " << error);
 	exit(1);
       }
-    this->clients.push_back(client);
+    this->clients.emplace_back(client);
     this->on_new_client(client);
     this->install_accept_handler();
     client->start();
@@ -240,7 +230,9 @@ private:
     this->install_accept_handler();
   }
 
-  std::vector<T*> clients;
+protected:
+  std::vector<std::unique_ptr<T>> clients;
+private:
   const short port;
   boost::asio::steady_timer timeout;
   boost::asio::ip::tcp::acceptor acceptor;
