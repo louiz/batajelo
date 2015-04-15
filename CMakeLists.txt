@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-
 ##########################
 # Project definition
 ##########################
@@ -40,7 +39,7 @@ option(BUILD_CLIENT "build the server" ${BUILD_CLIENT})
 # Libraries look up
 ##########################
 
-find_package(Boost 1.48.0 COMPONENTS filesystem system iostreams locale serialization chrono REQUIRED)
+find_package(Boost 1.48.0 COMPONENTS filesystem system iostreams locale serialization chrono program_options REQUIRED)
 find_package(BOTAN REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(LITESQL REQUIRED)
@@ -74,15 +73,32 @@ if(BUILD_CLIENT)
   add_executable(batajelo_client src/main/batajelo_client.cpp)
   target_link_libraries(batajelo_client
     game_client
-    client
+    network
     gui
+    )
+
+  add_executable(batajelo_menu_client src/main/batajelo_menu_client.cpp)
+  target_link_libraries(batajelo_menu_client
+    menu_client
     )
 endif()
 
 if(BUILD_SERVER)
-  add_executable(batajelo_server src/main/batajelo_server.cpp)
-  target_link_libraries(batajelo_server
-    server
+  add_executable(batajelo_game_server src/main/batajelo_game_server.cpp)
+  target_link_libraries(batajelo_game_server
+    network
+    game_server
+    )
+
+  add_executable(batajelo_master_server src/main/batajelo_master_server.cpp)
+  target_link_libraries(batajelo_master_server
+    network
+    master_server
+    )
+
+  add_executable(batajelo_slave src/main/batajelo_slave.cpp)
+  target_link_libraries(batajelo_slave
+    slave
     )
 endif(BUILD_SERVER)
 
@@ -210,60 +226,84 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_library(serialization STATIC ${PROTO_SRC})
 target_link_libraries(serialization ${PROTOBUF_LIBRARIES})
 
-
 #
-## Network server
+## Network
 #
-
-file(GLOB source_server
-  src/network/*.[hc]pp
+file(GLOB source_network
+  src/network/*.[ch]pp
   )
 
-add_library(server STATIC ${source_server})
+add_library(network STATIC ${source_network})
 
-target_link_libraries(server
-  logging
-  config
-  game
-  world
+target_link_libraries(network
   ${Boost_LIBRARIES}
-  )
-
-#
-## Network client
-#
-file(GLOB source_client
-  src/network/client.*
-  src/network/game_client.*
-  src/network/client_base.*
-  src/network/command_handler.*
-  src/network/transfer_receiver.*
-  src/network/command.*
-  src/network/timed_event.*
-  src/network/timed_event_handler.*
-  src/network/ping_handler.*
-  )
-
-add_library(client STATIC ${source_client})
-
-target_link_libraries(client
   logging
   config
   )
 
-add_library(network STATIC ${source_server} ${source_client})
+#
+## Master Server
+#
+file(GLOB source_master_server
+  src/master_server/*.[ch]pp
+  )
+
+add_library(master_server STATIC ${source_master_server})
+
+target_link_libraries(master_server
+  serialization
+  utils
+  logging
+  network
+  config
+  database
+  )
+
+#
+## Slave
+#
+file(GLOB source_slave
+  src/slave/*.[ch]pp
+  )
+
+add_library(slave STATIC ${source_slave})
+
+target_link_libraries(slave
+  serialization
+  utils
+  logging
+  network
+  config
+  "rt"                          #for mq_*
+  )
+
+#
+## Menu Client
+#
+file(GLOB source_menu_client
+  src/menu_client/*.[ch]pp
+  )
+
+add_library(menu_client STATIC ${source_menu_client})
+
+target_link_libraries(menu_client
+  network
+  utils
+  logging
+  config
+  serialization
+  gui
+  )
 
 #
 ## Game
 #
 file(GLOB source_game
   src/game/game.[ch]pp
-  src/game/game_server.[ch]pp
   src/game/occupant.[ch]pp
   src/game/occupants_handler.[ch]pp
   src/game/remote_game_client.[ch]pp
   src/game/replay.[ch]pp
-  src/game/selection.[ch]pp
   src/game/time.[ch]pp
   src/game/turn.[ch]pp
   src/game/turn_handler.[ch]pp
@@ -273,8 +313,6 @@ add_library(game STATIC ${source_game})
 
 target_link_libraries(game
   serialization
-  network
-  client
   logging
   config
   world
@@ -287,6 +325,7 @@ file(GLOB source_game_client
   src/game/game_client.[ch]pp
   src/game/sounds_handler.[ch]pp
   src/game/sound.[ch]pp
+  src/game/selection.[ch]pp
   )
 
 add_library(game_client STATIC ${source_game_client})
@@ -294,30 +333,23 @@ add_library(game_client STATIC ${source_game_client})
 target_link_libraries(game_client
   game
   gui
+  network
   )
 
 #
-## Menu client
+## Game server
 #
-add_library(menu_client STATIC ${source_game})
+file(GLOB source_game_server
+  src/game/game_server.[ch]pp
+  )
 
-target_link_libraries(menu_client
+add_library(game_server STATIC ${source_game_server})
+
+target_link_libraries(game_server
   game
+  network
+  "rt"
   )
-
-#
-## Server
-#
-if(BUILD_SERVER)
-  add_library(game_server STATIC ${source_server})
-
-  target_link_libraries(game_server
-    logging
-    config
-    world
-    ${Boost_LIBRARIES}
-    )
-endif()
 
 ####################
 # Tests
