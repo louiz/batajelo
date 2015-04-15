@@ -2,6 +2,8 @@
 #include <network/message_handler.hpp>
 #include <network/message.hpp>
 
+#include <utils/scopeguard.hpp>
+
 MessageHandler::MessageHandler():
   writing(false)
 {
@@ -11,24 +13,24 @@ MessageHandler::~MessageHandler()
 {
 }
 
-void MessageHandler::install_callback(const std::string& message,
+void MessageHandler::install_callback(const std::string& name,
                                       t_read_callback callback)
 {
-  log_debug("installing callback for message " << message);
-  this->callbacks.emplace(message, callback);
+  log_debug("installing callback for message " << name);
+  this->callbacks.emplace(name, callback);
 }
 
-void MessageHandler::install_callback_once(const std::string& message,
+void MessageHandler::install_callback_once(const std::string& name,
                                            t_read_callback callback)
 {
-  log_debug("installing ONCE callback for message " << message);
-  this->callbacks_once.emplace(message, callback);
+  log_debug("installing ONCE callback for message " << name);
+  this->callbacks_once.emplace(name, callback);
 }
 
-void MessageHandler::remove_callback(const std::string& message)
+void MessageHandler::remove_callback(const std::string& name)
 {
-  log_debug("remove_callback: " << message);
-  auto res = this->callbacks.erase(message);
+  log_debug("remove_callback: " << name);
+  auto res = this->callbacks.erase(name);
   log_warning("Removed " << res << " callbacks");
 }
 
@@ -62,8 +64,12 @@ void MessageHandler::read_handler(const boost::system::error_code& error, const 
       return ;
     }
 
-  // Extract the needed data from the buffer
   char *c = new char[bytes_transferred+1];
+
+  // Make sure c will ALWAYS be deleted
+  utils::ScopeGuard guard([c](){ delete[] c;});
+
+  // Extract the needed data from the buffer
   this->data.sgetn(c, bytes_transferred);
   c[bytes_transferred] = 0;
 
@@ -88,7 +94,6 @@ void MessageHandler::read_handler(const boost::system::error_code& error, const 
   Message* message = new Message;
   message->set_name(message_name);
 
-  delete[] c;
 
   // Find out if a callback was registered for that message.
   auto callbacks = this->get_callbacks(message_name);
@@ -119,21 +124,14 @@ void MessageHandler::binary_read_handler(const boost::system::error_code& error,
   this->data.sgetn(message->body, bytes_transferred);
   message->set_body_size(bytes_transferred);
 
-  if (callbacks.empty())
+  for (const auto& cb: callbacks)
     {
-      log_debug("no callback");
-    }
-  else
-    {
-      for (const auto& cb: callbacks)
+      try {
+        cb(message);
+      }
+      catch (const SerializationException& error)
         {
-          try {
-            cb(message);
-          }
-          catch (const SerializationException& error)
-            {
-              log_error("Invalid message received.");
-            }
+          log_error("Invalid message received.");
         }
     }
   delete message;
@@ -185,7 +183,6 @@ void MessageHandler::send_message(const char* name, const std::string& archive)
 
 bool MessageHandler::check_messages_to_send()
 {
-  log_debug("Length of the queue: " << this->messages_to_send.size());
   if (this->writing || this->messages_to_send.empty())
     return false;
   this->actually_send(this->messages_to_send.back());
