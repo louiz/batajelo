@@ -19,6 +19,8 @@
 
 #include <iostream>
 
+using namespace std::string_literals;
+
 Camera::Camera(GameClient* game, Screen* screen):
   ScreenElement(screen),
   x(0),
@@ -384,6 +386,8 @@ void Camera::draw()
     this->game->get_debug_hud().add_debug_line("Entity under mouse: " + std::to_string(entity_under_mouse->get_id()));
   else
     this->game->get_debug_hud().add_debug_line("No entity under mouse");
+
+  this->game->get_debug_hud().add_debug_line("Current world time: "s + std::to_string(this->get_game_client()->current_world_time().count()));
 
   this->draw(this->fog.get_sprite());
 }

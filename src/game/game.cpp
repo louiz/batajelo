@@ -87,3 +87,8 @@ void Game::cast_callback(Message* message)
              srl.turn());
     }
 }
+
+utils::FloatingSeconds Game::current_world_time() const
+{
+  return this->turn_handler.get_current_time();
+}

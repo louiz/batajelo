@@ -8,6 +8,7 @@
 #include <world/world.hpp>
 #include <world/entity.hpp>
 
+#include <utils/time.hpp>
 #include <game/turn_handler.hpp>
 #include <game/occupants_handler.hpp>
 
@@ -22,6 +23,7 @@ public:
   void new_entity_callback(Message* msg);
   void move_callback(Message* msg);
   void cast_callback(Message* msg);
+  utils::FloatingSeconds current_world_time() const;
 
 protected:
   World world;

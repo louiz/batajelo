@@ -11,10 +11,11 @@
 #include <functional>
 
 #include <game/turn.hpp>
+#include <utils/time.hpp>
 #include <world/action.hpp>
 
 using TurnNb = std::size_t;
-using t_next_turn_callback = std::function< void(const TurnNb)>;
+using t_next_turn_callback = std::function<void(const TurnNb)>;
 
 /**
  * The number of ticks contained in a turn
@@ -60,6 +61,10 @@ public:
   TurnNb get_current_turn() const;
   std::deque<Turn>& get_turns();
   TurnNb get_last_ready_turn() const;
+  /**
+   * Returns the time in seconds, spent so far in this TurnHandler
+   */
+  utils::FloatingSeconds get_current_time() const;
 
 private:
   TurnHandler(const TurnHandler&);

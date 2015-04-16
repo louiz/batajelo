@@ -103,6 +103,14 @@ unsigned long TurnHandler::get_current_turn() const
   return this->current_turn;
 }
 
+utils::FloatingSeconds TurnHandler::get_current_time() const
+{
+  auto total_ticks = this->get_current_turn() * TURN_TICKS +\
+    this->turn_advancement;
+  auto ticks_duration = utils::ticks(total_ticks);
+  return std::chrono::duration_cast<utils::FloatingSeconds>(ticks_duration);
+}
+
 std::deque<Turn>& TurnHandler::get_turns()
 {
   return this->turns;
