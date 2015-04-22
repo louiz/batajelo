@@ -31,7 +31,7 @@
 # define log_debug(text)
 #else
 # define log_debug(text)\
-  Logger::inst()->stream(debug_lvl) << "[DEBUG]:" << WHERE << ":\t\t" << text << std::endl;
+  Logger::inst()->stream(debug_lvl) << "[DEBUG]:" << WHERE << ":\t\t" << text << std::endl
 #endif
 
 /**
@@ -39,19 +39,19 @@
  * Log an info message
  */
 #define log_info(text)\
-  Logger::inst()->stream(info_lvl) << "[INFO]:" << WHERE << ":\t\t" << text << std::endl;
+  Logger::inst()->stream(info_lvl) << "[INFO]:" << WHERE << ":\t\t" << text << std::endl
 /**
  * @def log_warning
  * Log a warning message
  */
 #define log_warning(text)\
-  Logger::inst()->stream(warning_lvl) << "[WARNING]:" << WHERE << ":\t\t" << text << std::endl;
+  Logger::inst()->stream(warning_lvl) << "[WARNING]:" << WHERE << ":\t\t" << text << std::endl
 /**
  * @def log_error
  * Log an error message
  */
 #define log_error(text)\
-  Logger::inst()->stream(error_lvl) << "[ERROR]:" << WHERE << ":\t\t" << text << std::endl;
+  Logger::inst()->stream(error_lvl) << "[ERROR]:" << WHERE << ":\t\t" << text << std::endl
 
 /**
  * Juste a structure representing a stream doing nothing with its input.
