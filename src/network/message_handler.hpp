@@ -19,7 +19,6 @@
 #include <boost/asio.hpp>
 
 #include <network/transfer_sender.hpp>
-#include <network/base_socket.hpp>
 #include <network/message.hpp>
 #include <utils/scopeguard.hpp>
 
@@ -27,7 +26,8 @@
 
 typedef std::function<void(Message*)> t_read_callback;
 
-class MessageHandler: public BaseSocket
+template <typename SocketType>
+class MessageHandler: public SocketType
 {
 public:
   MessageHandler():

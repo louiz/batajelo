@@ -16,12 +16,13 @@
 #include "batadb.hpp"
 
 #include <network/remote_client_base.hpp>
+#include <network/tcp_socket.hpp>
 
 class MasterToClientServer;
 class Message;
 class TransferSender;
 
-class RemoteClient: public RemoteClientBase
+class RemoteClient: public RemoteClientBase<TCPSocket>
 {
 public:
   RemoteClient();

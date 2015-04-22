@@ -1,22 +1,22 @@
 /**
  * A very simple base class that must be inherited by all network object
- * that needs a socket.
+ * that needs a simple TCP socket
  */
 
-#ifndef BASE_SOCKET
-# define BASE_SOCKET
+#ifndef TCP_SOCKET
+# define TCP_SOCKET
 
 #include <boost/asio.hpp>
 #include <network/ioservice.hpp>
 
-class BaseSocket
+class TCPSocket
 {
 public:
-  explicit BaseSocket():
+  explicit TCPSocket():
     socket(IoService::get())
   {
   }
-  ~BaseSocket() = default;
+  ~TCPSocket() = default;
   const boost::asio::ip::tcp::socket& get_socket() const
   {
     return this->socket;
@@ -29,10 +29,10 @@ public:
 private:
   boost::asio::ip::tcp::socket socket;
 
-  BaseSocket(const BaseSocket&) = delete;
-  BaseSocket(BaseSocket&&) = delete;
-  BaseSocket& operator=(const BaseSocket&) = delete;
-  BaseSocket& operator=(BaseSocket&&) = delete;
+  TCPSocket(const TCPSocket&) = delete;
+  TCPSocket(TCPSocket&&) = delete;
+  TCPSocket& operator=(const TCPSocket&) = delete;
+  TCPSocket& operator=(TCPSocket&&) = delete;
 };
 
-#endif // BASE_SOCKET
+#endif // TCP_SOCKET

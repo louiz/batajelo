@@ -33,13 +33,16 @@
 // In seconds
 static constexpr int ping_interval = 10;
 
-class RemoteClientBase: public MessageHandler, public TimedEventHandler, public PingHandler
+template <typename SocketType>
+class RemoteClientBase: public MessageHandler<SocketType>, public TimedEventHandler, public PingHandler
 {
 public:
   RemoteClientBase():
-    id(RemoteClientBase::clients_number++)
+    id(RemoteClientBase<SocketType>::clients_number++)
   { }
+
   virtual ~RemoteClientBase() = default;
+
   /**
    * starts the client (install the read handler, etc)
    */
@@ -83,8 +86,6 @@ public:
    */
   uint32_t get_id() const { return this->id; }
 
-  virtual void on_connection_closed() = 0;
-
   boost::asio::ip::tcp::endpoint& get_endpoint()
   {
     return this->endpoint;
@@ -100,8 +101,9 @@ protected:
    * It is executed whenever that message is received.
    * See MessageHandler for details
    */
-  virtual void install_callbacks() = 0;
 private:
+  virtual void on_connection_closed() = 0;
+  virtual void install_callbacks() = 0;
   /**
    * A endpoint containing the information of the remote peer.  It is set by
    * asio, when async_accept succeeds, just before the accept handler is

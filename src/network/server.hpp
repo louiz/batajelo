@@ -28,12 +28,12 @@
 #include <boost/chrono.hpp>
 
 #include <logging/logging.hpp>
-#include <network/base_socket.hpp>
+#include <network/tcp_socket.hpp>
 #include <network/message.hpp>
 #include <utils/time.hpp>
 
 template <class T>
-class Server: public BaseSocket
+class Server: public TCPSocket
 {
 public:
   /**
@@ -41,7 +41,7 @@ public:
    * @param port The port on which the servers accepts new connections.
    */
   Server(short port):
-    BaseSocket(),
+    TCPSocket(),
     port(port),
     timeout(IoService::get()),
     acceptor(IoService::get(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),

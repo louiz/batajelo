@@ -2,10 +2,11 @@
 #define REMOTE_SLAVE_CLIENT_HPP_INCLUDED
 
 #include <network/remote_client_base.hpp>
+#include <network/tcp_socket.hpp>
 
 class MasterToSlaveServer;
 
-class RemoteSlaveClient: public RemoteClientBase
+class RemoteSlaveClient: public RemoteClientBase<TCPSocket>
 {
 public:
   RemoteSlaveClient() = default;

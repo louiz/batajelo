@@ -9,6 +9,7 @@
 #include <game/game.hpp>
 #include <game/occupant.hpp>
 #include <network/client_base.hpp>
+#include <network/tcp_socket.hpp>
 #include <gui/screen/screen.hpp>
 #include <game/selection.hpp>
 #include <game/turn_handler.hpp>
@@ -20,7 +21,7 @@
 
 class Task;
 
-class GameClient: public Game, public ClientBase
+class GameClient: public Game, public ClientBase<TCPSocket>
 {
 public:
   explicit GameClient(const std::shared_ptr<Screen>& screen);

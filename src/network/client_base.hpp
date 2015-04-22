@@ -28,7 +28,8 @@
 #include <string>
 #include <cstdlib>
 
-class ClientBase: public MessageHandler, public TimedEventHandler,
+template <typename SocketType>
+class ClientBase: public MessageHandler<SocketType>, public TimedEventHandler,
                   public PingHandler
 {
 public:
