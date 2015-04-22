@@ -8,11 +8,11 @@
 
 #define CONF_DEFAULT_PATH "./batajelo.conf"
 
-Config* Config::instance = nullptr;
+std::unique_ptr<Config> Config::instance;
 
 bool Config::read_conf(const std::string& filename)
 {
-  if (instance == 0)
+  if (!instance)
     {
       std::ifstream file;
       file.open(filename.data());
@@ -22,7 +22,7 @@ bool Config::read_conf(const std::string& filename)
           return false;
         }
       utils::ScopeGuard guard([&file]() {file.close();});
-      instance = new Config();
+      instance = std::make_unique<Config>();
       instance->filename = filename;
 
       std::string line;
@@ -54,7 +54,7 @@ bool Config::read_conf(const std::string& filename)
 
 std::string Config::get(const std::string& option, const std::string& def)
 {
-  if (instance == nullptr)
+  if (!instance)
     {
       // We can use a default path, only for testing purpose, to avoid
       // the boring Config::read_conf() at the start of every test suite
@@ -86,7 +86,7 @@ void Config::set_int(const std::string& option, const int& value, bool save)
 
 void Config::set(const std::string& option, const std::string& value, bool save)
 {
-  if (instance == nullptr)
+  if (!instance)
     {
       std::cerr << "Error: Config::read_conf() has never been called" << std::endl;
       return ;
@@ -114,7 +114,7 @@ void Config::save_to_file() const
 
 void Config::connect(t_config_changed_callback callback)
 {
-  if (instance == nullptr)
+  if (!instance)
     {
       std::cerr << "Error: Config::read_conf() has never been called" << std::endl;
       return ;
@@ -129,8 +129,7 @@ void Config::close(bool save)
   if (save)
     instance->save_to_file();
   instance->values.clear();
-  delete instance;
-  instance = nullptr;
+  instance.reset(nullptr);
 }
 
 void Config::trigger_configuration_change()
