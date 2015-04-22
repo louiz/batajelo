@@ -18,6 +18,7 @@
 
 #include <istream>
 #include <vector>
+#include <memory>
 #include <functional>
 
 #include <signal.h>
@@ -43,7 +44,8 @@ public:
     BaseSocket(),
     port(port),
     timeout(IoService::get()),
-    acceptor(IoService::get(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
+    acceptor(IoService::get(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
+    accepting_client(nullptr)
   {
   }
   virtual ~Server()
@@ -176,25 +178,26 @@ public:
 private:
   void install_accept_handler(void)
   {
-    T* new_client = new T();
+    this->accepting_client = std::make_unique<T>();
 
-    this->acceptor.async_accept(new_client->get_socket(),
+    this->acceptor.async_accept(this->accepting_client->get_socket(),
                                 std::bind(&Server<T>::handle_accept,
-                                          this, new_client,
-                                          std::placeholders::_1));
+                                          this, std::placeholders::_1));
   }
 
-  void handle_accept(T* client, const boost::system::error_code& error)
+  void handle_accept(const boost::system::error_code& error)
   {
     if (error)
       {
 	log_error("handle_accept failed: " << error);
 	exit(1);
       }
-    this->clients.emplace_back(client);
-    this->on_new_client(client);
+    auto new_client = this->accepting_client.get();
+    this->clients.push_back(std::move(this->accepting_client));
+    this->on_new_client(new_client);
+    new_client->start();
+
     this->install_accept_handler();
-    client->start();
   }
 
   void accept(void)
@@ -215,6 +218,12 @@ private:
   const short port;
   boost::asio::steady_timer timeout;
   boost::asio::ip::tcp::acceptor acceptor;
+  /**
+   * This client is created BEFORE we accept a new connection. When a new
+   * client is accepted, the new socket is inserted in it, and we can then
+   * insert that client in the clients vector.
+   */
+  std::unique_ptr<T> accepting_client;
 };
 
 #endif /*__SERVER_HPP__ */
