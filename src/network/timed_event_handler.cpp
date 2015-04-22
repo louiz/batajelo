@@ -40,5 +40,4 @@ void TimedEventHandler::remove_event(TimedEvent* event)
        return ;
      }
     }
-
 }

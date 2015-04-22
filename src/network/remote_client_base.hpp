@@ -26,29 +26,58 @@
 #include <network/timed_event_handler.hpp>
 #include <network/timed_event.hpp>
 #include <network/ping_handler.hpp>
+#include <network/ioservice.hpp>
+
+#include <logging/logging.hpp>
+
+// In seconds
+static constexpr int ping_interval = 10;
 
 class RemoteClientBase: public MessageHandler, public TimedEventHandler, public PingHandler
 {
 public:
-  RemoteClientBase();
-  virtual ~RemoteClientBase();
+  RemoteClientBase():
+    id(RemoteClientBase::clients_number++)
+  { }
+  virtual ~RemoteClientBase() = default;
   /**
    * starts the client (install the read handler, etc)
    */
-  void start();
+  void start()
+  {
+    log_debug("Starting RemoteClientBase " << this->id);
+    this->install_callbacks();
+    this->install_timed_event(std::bind(&RemoteClientBase::send_ping, this), ping_interval);
+    this->install_read_handler();
+  }
+
   /**
    * Send a ping request to the remote client.
    */
-  void send_ping();
+  void send_ping()
+  {
+    Message* message = new Message;
+    message->set_name("PING");
+    this->request_answer(message, std::bind(&RemoteClientBase::on_pong, this, std::placeholders::_1), "PONG");
+    this->ping_sent();
+  }
+
   /**
    * Called when the response to our ping request is received.
    */
-  void on_pong(Message*);
+  void on_pong(Message*)
+  {
+    this->pong_received();
+    log_debug("Current ping: " << this->get_latency() << "micro seconds.");
+    this->install_timed_event(std::bind(&RemoteClientBase::send_ping, this), ping_interval);
+  }
+
   /**
    * The number of clients is incremented each time
    * a new client is accepted.
    */
   static unsigned long int clients_number;
+
   /**
    * Returns the client number (aka id).
    */
@@ -72,7 +101,6 @@ protected:
    * See MessageHandler for details
    */
   virtual void install_callbacks() = 0;
-  void install_read_handler(void);
 private:
   /**
    * A endpoint containing the information of the remote peer.  It is set by

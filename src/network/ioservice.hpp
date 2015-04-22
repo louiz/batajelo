@@ -22,5 +22,4 @@ private:
   IoService& operator=(IoService&&) = delete;
 };
 
-
 #endif /* IOSERVICE_HPP_INCLUDED */
