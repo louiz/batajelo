@@ -30,14 +30,16 @@ template <typename SocketType>
 class MessageHandler: public SocketType
 {
 public:
-  MessageHandler():
+  template <typename... SocketArgs>
+  MessageHandler(SocketArgs&&... socket_args):
+    SocketType(std::forward<SocketArgs>(socket_args)...),
     writing(false)
   { }
   virtual ~MessageHandler() = default;
 
   void install_read_handler()
   {
-    boost::asio::async_read_until(this->get_socket(),
+    boost::asio::async_read_until(this->get_stream(),
                                   this->data,
                                   ':',
                                   std::bind(&MessageHandler::read_handler, this,
@@ -102,7 +104,7 @@ public:
     // We check what we need to read on the socket to have the rest of the binary datas
     const std::size_t length_to_read = this->data.size() >= size ? 0 : size - this->data.size();
 
-    boost::asio::async_read(this->get_socket(),
+    boost::asio::async_read(this->get_stream(),
                             this->data,
                             boost::asio::transfer_at_least(length_to_read),
                             std::bind(&MessageHandler::binary_read_handler, this,
@@ -272,7 +274,7 @@ protected:
     std::vector<boost::asio::const_buffer> buffs;
     buffs.push_back(boost::asio::buffer(message->header.data(), message->header.length()));
     buffs.push_back(boost::asio::buffer(message->body, message->body_size));
-    async_write(this->get_socket(),
+    async_write(this->get_stream(),
                 buffs,
                 std::bind(&MessageHandler::send_handler, this,
                           std::placeholders::_1,

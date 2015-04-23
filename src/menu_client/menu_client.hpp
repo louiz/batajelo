@@ -2,10 +2,13 @@
 #define MENU_CLIENT_HPP_INCLUDED
 
 #include <network/client_base.hpp>
+#include <network/tls_socket.hpp>
 
-class MenuClient: public ClientBase
+class MenuClient: public ClientBase<TLSSocket>
 {
 public:
+  static boost::asio::ssl::context context;
+
   MenuClient();
   ~MenuClient() = default;
   void run();

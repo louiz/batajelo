@@ -6,6 +6,15 @@ MasterToClientServer::MasterToClientServer(MasterServer* master,
   Server<RemoteClient>(port),
   master(master)
 {
+  RemoteClient::context.set_options(  boost::asio::ssl::context::default_workarounds
+                                    | boost::asio::ssl::context::no_sslv2
+                                    | boost::asio::ssl::context::no_sslv3);
+
+  RemoteClient::context.set_verify_mode(boost::asio::ssl::verify_none);
+  RemoteClient::context.use_certificate_file("../bata_test.cert",
+                                             boost::asio::ssl::context::pem);
+  RemoteClient::context.use_private_key_file("../bata_test.key",
+                                             boost::asio::ssl::context::pem);
 }
 
 const RemoteClient* MasterToClientServer::find_client_by_login(const std::string& login) const

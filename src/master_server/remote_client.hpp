@@ -17,19 +17,22 @@
 
 #include <network/remote_client_base.hpp>
 #include <network/tcp_socket.hpp>
+#include <network/tls_socket.hpp>
 
 class MasterToClientServer;
 class Message;
 class TransferSender;
 
-class RemoteClient: public RemoteClientBase<TCPSocket>
+class RemoteClient: public RemoteClientBase<TLSSocket>
 {
 public:
+  static boost::asio::ssl::context context;
+
   RemoteClient();
   ~RemoteClient();
   void on_connection_closed() override final;
   void set_server(MasterToClientServer* server);
-
+  void start() override final;
   /**
    * Sends a file to the remote client.
    * @param filename The file to send.

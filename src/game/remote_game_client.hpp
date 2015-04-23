@@ -8,10 +8,11 @@
 
 #include <functional>
 #include <network/remote_client_base.hpp>
+#include <network/tcp_socket.hpp>
 
 class GameServer;
 
-class RemoteGameClient: public RemoteClientBase
+class RemoteGameClient: public RemoteClientBase<TCPSocket>
 {
 public:
   RemoteGameClient();

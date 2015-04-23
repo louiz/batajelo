@@ -86,7 +86,6 @@ endif()
 if(BUILD_SERVER)
   add_executable(batajelo_game_server src/main/batajelo_game_server.cpp)
   target_link_libraries(batajelo_game_server
-    network
     game_server
     )
 
@@ -237,6 +236,7 @@ add_library(network STATIC ${source_network})
 
 target_link_libraries(network
   ${Boost_LIBRARIES}
+  ${OPENSSL_LIBRARIES}
   logging
   config
   )

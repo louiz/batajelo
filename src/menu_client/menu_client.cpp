@@ -4,8 +4,10 @@
 
 #include "master.pb.h"
 
+boost::asio::ssl::context MenuClient::context(boost::asio::ssl::context::tlsv1);
+
 MenuClient::MenuClient():
-  ClientBase(),
+  ClientBase<TLSSocket>(MenuClient::context),
   connected(false)
 {
 }
@@ -21,14 +23,30 @@ void MenuClient::run()
 void MenuClient::connect()
 {
   ClientBase::connect("127.0.0.1", 7878,
-                [this]()
-                {
-                  this->on_connection_success();
-                },
-                [this](const boost::system::error_code& error)
-                {
-                  this->on_connection_failed(error);
-                });
+         [this](const boost::system::error_code& error)
+             {
+               if (error)
+                 this->on_connection_failed(error);
+               else
+                 {
+                   log_debug("Connected. Doing the handshake now");
+                   this->get_stream().async_handshake(TLSSocket::ssl_socket_type::client,
+                           [this](const boost::system::error_code& error)
+                               {
+                                 if (error)
+                                   {
+                                     log_error("Handshake failed: " << error);
+                                     this->get_stream().shutdown();
+                                   }
+                                 else
+                                   {
+                                     log_debug("Handshake successful");
+                                     this->when_connected();
+                                     this->on_connection_success();
+                                   }
+                               });
+                 }
+             });
 }
 
 void MenuClient::on_connection_success()

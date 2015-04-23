@@ -4,7 +4,10 @@
 #include <database/database.hpp>
 #include "master.pb.h"
 
+boost::asio::ssl::context RemoteClient::context(boost::asio::ssl::context::tlsv1);
+
 RemoteClient::RemoteClient():
+  RemoteClientBase<TLSSocket>(RemoteClient::context),
   user(nullptr),
   server(nullptr),
   senders{}
@@ -14,6 +17,22 @@ RemoteClient::RemoteClient():
 RemoteClient::~RemoteClient()
 {
   log_info("Deleting remote client " << this->id);
+}
+
+void RemoteClient::start()
+{
+  log_debug("Doing handshake now " << this->get_id());
+  this->get_stream().async_handshake(TLSSocket::ssl_socket_type::server,
+                     [this](const boost::system::error_code& error)
+                         {
+                           if (error)
+                             {
+                               log_error("Handshake failed: " << error << " (id)" << this->get_id());
+                               this->get_stream().shutdown();
+                             }
+                           else
+                             RemoteClientBase::start();
+                         });
 }
 
 void RemoteClient::set_server(MasterToClientServer* server)

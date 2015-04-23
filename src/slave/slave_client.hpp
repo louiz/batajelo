@@ -8,10 +8,11 @@
  */
 
 #include <network/client_base.hpp>
+#include <network/tcp_socket.hpp>
 
 class Slave;
 
-class SlaveClient: public ClientBase
+class SlaveClient: public ClientBase<TCPSocket>
 {
 public:
   SlaveClient(Slave* slave);

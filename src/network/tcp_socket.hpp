@@ -25,6 +25,10 @@ public:
   {
     return this->socket;
   }
+  boost::asio::ip::tcp::socket& get_stream()
+  {
+    return this->socket;
+  }
 
 private:
   boost::asio::ip::tcp::socket socket;

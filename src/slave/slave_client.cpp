@@ -13,13 +13,15 @@ SlaveClient::SlaveClient(Slave* slave):
 void SlaveClient::start()
 {
   this->connect("127.0.0.1", 7877,
-                [this]()
-                {
-                  this->on_connection_success();
-                },
                 [this](const boost::system::error_code& error)
                 {
-                  this->on_connection_failed(error);
+                  if (error)
+                    this->on_connection_failed(error);
+                  else
+                    {
+                      this->when_connected();
+                      this->on_connection_success();
+                    }
                 });
 }
 

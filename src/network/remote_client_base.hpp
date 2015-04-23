@@ -37,7 +37,9 @@ template <typename SocketType>
 class RemoteClientBase: public MessageHandler<SocketType>, public TimedEventHandler, public PingHandler
 {
 public:
-  RemoteClientBase():
+  template <typename... SocketArgs>
+  RemoteClientBase(SocketArgs&&... socket_args):
+    MessageHandler<SocketType>(std::forward<SocketArgs>(socket_args)...),
     id(RemoteClientBase<SocketType>::clients_number++)
   { }
 
@@ -46,7 +48,7 @@ public:
   /**
    * starts the client (install the read handler, etc)
    */
-  void start()
+  virtual void start()
   {
     log_debug("Starting RemoteClientBase " << this->id);
     this->install_callbacks();

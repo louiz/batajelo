@@ -20,6 +20,7 @@
 #include <network/timed_event_handler.hpp>
 #include <network/message.hpp>
 #include <network/timed_event.hpp>
+#include <network/ioservice.hpp>
 
 #include <logging/logging.hpp>
 #include <utils/time.hpp>
@@ -33,7 +34,10 @@ class ClientBase: public MessageHandler<SocketType>, public TimedEventHandler,
                   public PingHandler
 {
 public:
-  ClientBase() = default;
+  template <typename... SocketArgs>
+  ClientBase(SocketArgs&&... socket_args):
+    MessageHandler<SocketType>(std::forward<SocketArgs>(socket_args)...)
+  {}
   ~ClientBase()
   {
     if (this->get_socket().is_open())
@@ -50,15 +54,23 @@ public:
    */
   void connect(const std::string& host,
 	       const short& port,
-	       std::function<void(void)> on_success=nullptr,
-	       std::function<void(const boost::system::error_code&)> on_failure=nullptr)
+               std::function<void(const boost::system::error_code&)> handler=nullptr)
   {
     // TODO use resolve and DNS
     boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(host), port);
     this->get_socket().async_connect(endpoint,
-                                     std::bind(&ClientBase::connect_handler, this,
-                                               on_success, on_failure,
-                                               std::placeholders::_1));
+                                     [this, handler](const boost::system::error_code& error)
+                                     {
+                                       if (handler)
+                                         handler(error);
+                                       else
+                                         {
+                                           if (!error)
+                                             this->when_connected();
+                                           else
+                                             log_debug("Connection failed");
+                                         }
+                                     });
     log_info("Connecting to " << host << ":" << port);
   }
 
@@ -77,29 +89,16 @@ public:
 
   virtual void on_connection_closed() = 0;
 
-private:
-  void connect_handler(std::function<void(void)> on_success,
-		       std::function<void(const boost::system::error_code&)> on_failure,
-		       const boost::system::error_code& error)
+protected:
+  void when_connected()
   {
-    if (error)
-      {
-        log_info("Connection failed: " << error);
-        if (on_failure)
-          on_failure(error);
-      }
-    else
-      {
-        log_info("Connected.");
-        this->install_callback("PING", std::bind(&ClientBase::ping_callback,
-                                                 this, std::placeholders::_1));
-        this->install_callbacks();
-        this->install_read_handler();
-        if (on_success)
-          on_success();
-      }
+    log_info("Connected.");
+    this->install_callback("PING", std::bind(&ClientBase::ping_callback,
+                                             this, std::placeholders::_1));
+    this->install_callbacks();
+    this->install_read_handler();
   }
-
+private:
   /**
    * Called when the server sends us a PING request. Sends a PONG back.
    */
