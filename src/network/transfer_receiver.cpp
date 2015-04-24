@@ -1,20 +1,23 @@
 #include <logging/logging.hpp>
 #include <network/transfer_receiver.hpp>
-#include <network/client.hpp>
+#include <network/message_handler.hpp>
+#include <network/tls_socket.hpp>
 
 using namespace std::string_literals;
 
-static const fs::path FILES_TO_RECEIVE_DIRECTORY("./receive/");
+static const boost::filesystem::path FILES_TO_RECEIVE_DIRECTORY("./receive/");
 
-TransferReceiver::TransferReceiver(Client* client,
+TransferReceiver::TransferReceiver(MessageHandler<TLSSocket>* client,
                                    const std::string& sid,
                                    const std::string& filename,
-                                   int length):
+                                   int length,
+                                   std::function<void(const TransferReceiver*)>&& end_callback):
   client(client),
   id(sid),
   filename(FILES_TO_RECEIVE_DIRECTORY / filename),
   length(length),
-  received_length(0)
+  received_length(0),
+  end_callback(end_callback)
 {
   this->client->install_callback("TRANSFER_"s + sid, std::bind(&TransferReceiver::get_next_chunk, this, std::placeholders::_1));
   this->file.open(this->filename, std::ofstream::binary);
@@ -43,5 +46,5 @@ void TransferReceiver::get_next_chunk(Message* received_message)
 void TransferReceiver::stop()
 {
   this->client->remove_callback("TRANSFER_"s + this->id);
-  this->client->on_transfer_ended(this);
+  this->end_callback(this);
 }

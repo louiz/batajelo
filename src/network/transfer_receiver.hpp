@@ -7,23 +7,27 @@
  * @class TransferReceiver
  */
 
-#ifndef __TRANSFER_RECEIVER_HPP__
-# define __TRANSFER_RECEIVER_HPP__
+#ifndef TRANSFER_RECEIVER_HPP
+# define TRANSFER_RECEIVER_HPP
 
 #include <iostream>
 #include <string>
+#include <functional>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
-namespace fs = boost::filesystem;
 
 #include <network/message.hpp>
 
-class Client;
+class TLSSocket;
+
+template <typename SocketType>
+class MessageHandler;
 
 class TransferReceiver
 {
 public:
-  TransferReceiver(Client*, const std::string&, const std::string&, int);
+  TransferReceiver(MessageHandler<TLSSocket>*, const std::string&, const std::string&, int,
+                   std::function<void(const TransferReceiver*)>&&);
   ~TransferReceiver();
   void stop();
 
@@ -32,14 +36,16 @@ private:
   TransferReceiver& operator=(const TransferReceiver&);
 
   void get_next_chunk(Message*);
-  Client* client;
+
+  MessageHandler<TLSSocket>* client;
   std::string id;
-  fs::path filename;
+  boost::filesystem::path filename;
   int length;
   int received_length;
-  fs::ofstream file;
+  std::function<void(const TransferReceiver*)> end_callback;
+  boost::filesystem::ofstream file;
 };
 
-#endif // __TRANSFER_RECEIVER_HPP__
+#endif // TRANSFER_RECEIVER_HPP
 
 /**@}*/
