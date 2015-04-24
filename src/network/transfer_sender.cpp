@@ -9,11 +9,13 @@ static constexpr std::size_t CHUNK_SIZE = 262144u;
 
 unsigned long int TransferSender::current_id = 0;
 
-TransferSender::TransferSender(RemoteClient* client, const std::string& filename):
+TransferSender::TransferSender(MessageHandler<TLSSocket>* client, const std::string& filename,
+                               std::function<void(const TransferSender*)>&& end_callback):
   client(client),
-  filename(filename)
+  filename(filename),
+  end_callback(std::move(end_callback))
 {
-  fs::path file_name = FILES_TO_SEND_DIRECTORY / this->filename;
+  boost::filesystem::path file_name = FILES_TO_SEND_DIRECTORY / this->filename;
   this->file.open(file_name, std::ofstream::binary);
 
   this->id = std::to_string(TransferSender::current_id++);
@@ -69,5 +71,5 @@ void TransferSender::send_next_chunk()
       this->client->send(message, std::bind(&TransferSender::send_next_chunk, this));
     }
   else
-    this->client->send(message, std::bind(&RemoteClient::on_transfer_ended, this->client, this));
+    this->client->send(message, [this]() { this->end_callback(this); });
 }

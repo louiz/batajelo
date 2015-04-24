@@ -18,20 +18,23 @@
 #include <boost/asio.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
+
+class TLSSocket;
+
+template <typename SocketType>
+class MessageHandler;
 
 #ifndef __TRANSFER_SENDER_HPP__
 # define __TRANSFER_SENDER_HPP__
 
-static const fs::path FILES_TO_SEND_DIRECTORY("./send/");
-
-class RemoteClient;
+static const boost::filesystem::path FILES_TO_SEND_DIRECTORY("./send/");
 
 class TransferSender
 {
 public:
   static unsigned long int current_id;
-  TransferSender(RemoteClient*, const std::string&);
+  TransferSender(MessageHandler<TLSSocket>* client, const std::string&,
+                 std::function<void(const TransferSender*)>&& end_callback);
   ~TransferSender();
   /**
    * Try to start the file transfer, returns true if there was
@@ -46,9 +49,11 @@ private:
   TransferSender(const TransferSender&);
   TransferSender& operator=(const TransferSender&);
 
-  RemoteClient* client;
+  MessageHandler<TLSSocket>* client;
   const std::string filename;
-  fs::ifstream file;
+  std::function<void(const TransferSender*)> end_callback;
+
+  boost::filesystem::ifstream file;
   int length;
   std::string id;
 };

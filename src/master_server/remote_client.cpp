@@ -94,7 +94,11 @@ void RemoteClient::on_auth_success()
 
 void RemoteClient::send_file(const std::string& filename)
 {
-  TransferSender* sender = new TransferSender(this, filename);
+  TransferSender* sender = new TransferSender(this, filename,
+                                              [this](const TransferSender* ts)
+                                              {
+                                                this->on_transfer_ended(ts);
+                                              });
   if (sender->start() == true)
     {
       this->senders.push_back(sender);
