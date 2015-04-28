@@ -19,9 +19,9 @@ class Location;
 class BlinkWork: public Work
 {
 public:
-  BlinkWork(Entity* entity, const Position& position);
+  BlinkWork(World* world, Entity* entity, const Position& position);
   ~BlinkWork() = default;
-  bool tick(World* world) override final;
+  bool tick() override final;
 
 private:
   const Position destination;

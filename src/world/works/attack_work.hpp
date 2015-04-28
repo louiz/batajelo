@@ -11,18 +11,14 @@ class World;
 class Location;
 class Attack;
 
-/**
- * Move until the destination is reached
- */
-
 class AttackWork: public Work
 {
 public:
-  AttackWork(Entity* entity, const Position& destination, const Fix16 range);
-  AttackWork(Entity* entity, std::weak_ptr<Entity> target, const Fix16 range,
+  AttackWork(World* world, Entity* entity, const Position& destination, const Fix16 range);
+  AttackWork(World* world, Entity* entity, std::weak_ptr<Entity> target, const Fix16 range,
              const Position& destination = Position::invalid);
   ~AttackWork() = default;
-  bool tick(World* world) override final;
+  bool tick() override final;
 
 private:
   void try_acquire_target(World* world);

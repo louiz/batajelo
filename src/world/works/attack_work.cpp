@@ -13,14 +13,14 @@
 
 #include <logging/logging.hpp>
 
-AttackWork::AttackWork(Entity* entity, const Position& destination, const Fix16 range):
-  AttackWork(entity, {}, range, destination)
+AttackWork::AttackWork(World* world, Entity* entity, const Position& destination, const Fix16 range):
+  AttackWork(world, entity, {}, range, destination)
 {
 }
 
-AttackWork::AttackWork(Entity* entity, std::weak_ptr<Entity> target, const Fix16 range,
+AttackWork::AttackWork(World* world, Entity* entity, std::weak_ptr<Entity> target, const Fix16 range,
                        const Position& destination):
-  Work(entity),
+  Work(world, entity),
   location(entity->get<Location>()),
   destination(destination),
   target(target),
@@ -63,19 +63,18 @@ void AttackWork::try_acquire_target(World* world)
         }
     }
   if (res != world->entities.end())
-    this->set_task(world,
-                   std::make_unique<AttackTask>(this->entity, *res,
-                                                      this->attack->get_frontswing_duration(),
-                                                      this->attack->get_backswing_duration(),
-                                                      this->range > 0_fix));
+    this->set_task(std::make_unique<AttackTask>(this->entity, *res,
+                                                this->attack->get_frontswing_duration(),
+                                                this->attack->get_backswing_duration(),
+                                                this->range > 0_fix));
 }
 
-bool AttackWork::tick(World* world)
+bool AttackWork::tick()
 {
   // If we are attacking, execute the task until it's over
   if (this->task && this->task->get_type() == TaskType::Attack)
     {
-      if (this->task->tick(world) == true)
+      if (this->task->tick(this->world) == true)
         this->task.reset(nullptr);
       return false;
     }
@@ -85,14 +84,19 @@ bool AttackWork::tick(World* world)
     {
       // Try to acquire a target.  If we find one, we
       // set our task to an AttackTask
-      this->try_acquire_target(world);
+      this->try_acquire_target(this->world);
       // If we did not find any, just follow the path to destination
       if (!this->task)
-        this->set_task(world, std::make_unique<PathTask>(this->entity,
-                                                         this->destination));
+        this->set_task(std::make_unique<PathTask>(this->entity,
+                                                  this->destination));
     }
   else
     {
+      // If the target doesn’t exist anymore (has already been killed),
+      // the work is done
+      if (this->target.expired())
+        return true;
+
       // If we are follow-attacking a specific target, follow it until it is
       // within reach.
 
@@ -103,15 +107,15 @@ bool AttackWork::tick(World* world)
           Position::distance(target_location->position(), this->location->position()) -
           this->location->get_width() - location->get_width() - 20;
       if (distance < this->range)
-        this->set_task(world, std::make_unique<AttackTask>(this->entity, this->target,
-                                                           this->attack->get_frontswing_duration(),
-                                                           this->attack->get_backswing_duration(),
-                                                           this->range > 0_fix));
+        this->set_task(std::make_unique<AttackTask>(this->entity, this->target,
+                                                    this->attack->get_frontswing_duration(),
+                                                    this->attack->get_backswing_duration(),
+                                                    this->range > 0_fix));
       else if (!this->task)
-        this->set_task(world, std::make_unique<FollowTask>(this->entity, this->target));
+        this->set_task(std::make_unique<FollowTask>(this->entity, this->target));
     }
 
-  bool res = this->task->tick(world);
+  bool res = this->task->tick(this->world);
   if (this->task->get_type() == TaskType::Path ||
       this->task->get_type() == TaskType::Follow)
     return res;

@@ -1,7 +1,10 @@
 #include <gui/sprites/entity_sprite.hpp>
 #include <world/entity.hpp>
+#include <world/task.hpp>
 
 #include <world/location.hpp>
+
+#include <logging/logging.hpp>
 
 sf::Texture EntitySprite::shadow_texture;
 bool EntitySprite::init = false;
@@ -10,7 +13,8 @@ const std::vector<sf::Color> EntitySprite::team_colors = {sf::Color::White,
                                                         sf::Color::Blue};
 
 EntitySprite::EntitySprite(const Entity* const entity):
-  entity(entity)
+  entity(entity),
+  task_type(TaskType::None)
 {
   if (EntitySprite::init == false)
     {
@@ -63,4 +67,12 @@ bool EntitySprite::is_mouse_over(const Camera* camera) const
           mouse_pos.x < ent_pos.x + 50 &&
           mouse_pos.y > ent_pos.y - 80 &&
           mouse_pos.y < ent_pos.y + 20);
+}
+
+void EntitySprite::set_task(const Task* task)
+{
+  log_debug("EntitySprite::set_task" << static_cast<int>(task->get_type()));
+
+  this->task_type = task->get_type();
+  this->on_task_changed(task);
 }

@@ -6,10 +6,12 @@
 #include <world/manapool.hpp>
 #include <world/team.hpp>
 #include <world/location.hpp>
+#include <world/tasks/attack_task.hpp>
 
 PicpicSprite::PicpicSprite(const Entity* const entity):
   EntitySprite(entity),
-  float_direction(-0.0002)
+  float_direction(-0.0002),
+  animation(PicpicSprite::Animation::Idle)
 {
   if (PicpicSprite::init == false)
     {
@@ -50,7 +52,7 @@ void PicpicSprite::draw(GameClient* game) const
 
   EnergyBar bar = this->standard_health_bar;
 
-  Health* entity_health = entity->get<Health>();
+  Health* entity_health = this->entity->get<Health>();
   if (entity_health)
     {
       game->get_debug_hud().add_debug_line("Entity health: " + std::to_string(entity_health->get()) + "/" +std::to_string(entity_health->get_max()));
@@ -64,6 +66,16 @@ void PicpicSprite::draw(GameClient* game) const
       game->get_camera().draw_energy_bar({x, y - 80}, mana_bar, entity_mana->get_max().to_int(), entity_mana->get().to_int());
     }
 
+  switch (this->animation)
+    {
+    case Animation::Idle:
+      return;
+    case Animation::Move:
+      // TODO
+      break;
+    case Animation::Attack:
+      this->draw_attack_animation(this->entity->get_task<AttackTask>(), game, {x - 80, y});
+    }
 }
 
 void PicpicSprite::tick()
@@ -71,6 +83,62 @@ void PicpicSprite::tick()
   if (this->height > 2 || this->height < -5)
     this->float_direction = -this->float_direction;
   this->height += this->float_direction;
+}
+
+void PicpicSprite::on_task_changed(const Task* task)
+{
+  log_debug("on task change (init): " << static_cast<int>(task->get_type()));
+  switch (task->get_type())
+    {
+    case TaskType::None:
+      this->animation = PicpicSprite::Animation::Idle;
+      break;
+    case TaskType::Attack:
+      this->animation = PicpicSprite::Animation::Attack;
+      this->init_attack_animation(static_cast<const AttackTask*>(task));
+      break;
+    case TaskType::Follow:
+    case TaskType::Path:
+      this->animation = PicpicSprite::Animation::Move;
+      break;
+    }
+}
+
+void PicpicSprite::init_attack_animation(const AttackTask* task)
+{
+  log_debug("Init task anim with: fs=" << task->get_remaining_frontswing_duration() <<
+            " and bs=" << task->get_remaining_backswing_duration());
+  this->attack_animation = {task->get_remaining_frontswing_duration(),
+                            task->get_remaining_backswing_duration()};
+}
+
+void PicpicSprite::draw_attack_animation(const AttackTask* task, GameClient* game, sf::Vector2f pos) const
+{
+  std::size_t current_fs;
+  std::size_t current_bs;
+
+  if (task)
+    {
+      current_fs = task->get_remaining_frontswing_duration();
+      current_bs = task->get_remaining_backswing_duration();
+    }
+  else
+    {
+      current_fs = 0;
+      current_bs = this->attack_animation.bs;
+    }
+
+  auto current_value = (current_fs > 0 ? this->attack_animation.fs - current_fs: current_bs);
+  int max = (current_fs > 0 ? this->attack_animation.fs : this->attack_animation.bs);
+
+  EnergyBar bar = {
+    sf::Color::Red,
+    sf::Color::Red,
+    {8, 100},
+    2,
+    0
+  };
+  game->get_camera().draw_vertical_bar(pos, bar, max, current_value);
 }
 
 bool PicpicSprite::init = false;

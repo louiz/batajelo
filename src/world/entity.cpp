@@ -4,16 +4,10 @@
 #include <world/entity.hpp>
 #include <world/world.hpp>
 #include <world/work.hpp>
+#include <world/tasks/idle_task.hpp>
+#include <world/world_callbacks.hpp>
 
 EntityId Entity::current_id = 0;
-
-Entity::Entity(const EntityType& type):
-  id(++Entity::current_id),
-  type(type),
-  to_be_deleted(false),
-  manipulable(false)
-{
-}
 
 Entity::~Entity()
 {
@@ -51,6 +45,13 @@ Work* Entity::get_current_work()
   return this->works.front().get();
 }
 
+const Work* Entity::get_current_work() const
+{
+  if (this->works.empty())
+    return nullptr;
+  return this->works.front().get();
+}
+
 void Entity::tick(World* world)
 {
   for (const auto& stat: this->status)
@@ -66,8 +67,10 @@ void Entity::tick(World* world)
   if (this->works.empty())
     return ;
   auto& work = this->works.front();
-  if (work->tick(world) == true)
+  if (work->tick() == true)
     this->works.pop_front();
+  if (works.empty())
+    world->callbacks->task_changed(this, &IdleTask::that);
 }
 
 void Entity::kill()

@@ -57,7 +57,7 @@ void Dash::cast(Entity* entity, World* world, const Position& pos, const bool qu
       world->callbacks->impact(entity, impacted_entity);
       health->add(-concentrate_value);
     };
-  auto work = std::make_unique<DashWork>(entity, world, pos, 50, this->max_distance, 50,
+  auto work = std::make_unique<DashWork>(world, entity, pos, 50, this->max_distance, 50,
                                          on_impact, nullptr);
   entity->set_work(std::move(work));
 }

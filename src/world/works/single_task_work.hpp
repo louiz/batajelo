@@ -8,15 +8,14 @@ class SingleTaskWork: public Work
 {
 public:
   template<typename... ArgsType>
-  SingleTaskWork(Entity* entity, World* world, ArgsType&&... args):
-    Work(entity)
+  SingleTaskWork(World* world, Entity* entity, ArgsType&&... args):
+    Work(world, entity)
   {
-    this->set_task(world,
-                   std::make_unique<TaskClass>(entity,
+    this->set_task(std::make_unique<TaskClass>(entity,
                                                std::forward<ArgsType>(args)...));
   }
   ~SingleTaskWork() = default;
-  bool tick(World* world) override final
+  bool tick() override final
   {
     if (!this->task)
       {
@@ -24,7 +23,7 @@ public:
         // consider us finished
         return true;
       }
-    return this->task->tick(world);
+    return this->task->tick(this->world);
   }
 
 private:

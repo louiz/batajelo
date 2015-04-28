@@ -14,9 +14,9 @@ PathTask::PathTask(Entity* entity, const Position& destination):
   Task(entity),
   path(),
   destination(destination),
-  calculated(false),
   mobility(entity->get<Mobility>()),
-  location(entity->get<Location>())
+  location(entity->get<Location>()),
+  calculated(false)
 {
   assert(this->mobility);
   assert(this->location);

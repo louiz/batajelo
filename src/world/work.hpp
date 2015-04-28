@@ -22,13 +22,14 @@ class Entity;
 class Work
 {
 public:
-  Work(Entity* entity):
-    entity(entity) {}
-  virtual ~Work() {}
+  Work(World* world, Entity* entity):
+    entity(entity),
+    world(world) {}
+  virtual ~Work();
   /**
    * May set/change the current task. Then call tick() on that Task.
    */
-  virtual bool tick(World* world) = 0;
+  virtual bool tick() = 0;
   /**
    * Cancel the current Task. The work is not however canceled, just
    * interrupted.  The task may be recreated on the next call to tick.
@@ -41,19 +42,21 @@ public:
    */
   void interrupt();
   Task* get_task();
+  const Task* get_task() const;
 
-  protected:
+protected:
   /**
    * Set the current Task of this work. Also call
    * WorldCallbacks::task_changed() with the correct parameters
    */
-  void set_task(World* world, std::unique_ptr<Task> task);
+  void set_task(std::unique_ptr<Task> task);
   /**
    * Keep a pointer to the entity, so we can know which one it is. Pass that
    * pointer when creating a Task, which will in turn get() the needed
    * component for this Task.
    */
   Entity* entity;
+  World* world;
   /**
    * The current task being executed. May be nullptr at any moment.
    */

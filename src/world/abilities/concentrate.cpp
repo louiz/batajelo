@@ -19,6 +19,6 @@ void Concentrate::cast(Entity* entity, World* world, const bool queue)
 {
   log_debug("Concentrate::cast. Starting concentrate task");
   // TODO queue, or disable queue alltogether
-  auto work = std::make_unique<ConcentrateWork>(entity, world);
+  auto work = std::make_unique<ConcentrateWork>(world, entity);
   entity->set_work(std::move(work));
 }

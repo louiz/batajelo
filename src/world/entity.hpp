@@ -3,7 +3,10 @@
 
 #include <world/components.hpp>
 #include <world/status.hpp>
+#include <world/brain.hpp>
+#include <world/work.hpp>
 
+#include <cassert>
 #include <cstdint>
 #include <memory>
 #include <list>
@@ -22,10 +25,14 @@ class Entity
   friend class World;
 
 public:
-  /**
-   * This constructor is used when creating a model.
-   */
-  Entity(const EntityType& type);
+  Entity(const EntityType& type):
+    id(++Entity::current_id),
+    type(type),
+    to_be_deleted(false),
+    manipulable(false),
+    brain(std::make_unique<Brain>())
+  { }
+
   ~Entity();
 
   EntityId get_id() const { return this->id; }
@@ -41,6 +48,7 @@ public:
   void queue_work(std::unique_ptr<Work>);
   void interrupt();
   Work* get_current_work();
+  const Work* get_current_work() const;
 
   template <typename ComponentClass>
   ComponentClass* get() const
@@ -66,6 +74,27 @@ public:
                                                std::forward<ArgsType>(args)...);
     status->apply();
     this->status.push_back(std::move(status));
+  }
+  template <typename BrainType, typename... ArgsType>
+  void set_brain(World* world, ArgsType&&... args)
+  {
+    this->brain = std::make_unique<BrainType>(this, world,
+                                              std::forward<ArgsType>(args)...);
+  }
+  template <typename T>
+  const T* get_task() const
+  {
+    auto work = this->get_current_work();
+    if (!work)
+      return nullptr;
+    auto task = work->get_task();
+    if (!task)
+      return nullptr;
+    auto res = dynamic_cast<const T*>(task);
+    assert(res);
+    // TODO in non-debug build, do not use dynamic cast, use this instead:
+    // return static_cast<const T*>(task);
+    return res;
   }
   /**
    * Mark this entity to be removed from the world.

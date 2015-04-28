@@ -19,9 +19,9 @@ public:
   static const ComponentType component_type = ComponentType::Abilities;
   Abilities(const std::size_t size,
             const std::size_t fs, const std::size_t bs):
-    abilities(size),
     cast_frontswing(fs),
-    cast_backswing(bs)
+    cast_backswing(bs),
+    abilities(size)
   {}
   ~Abilities() = default;
   void tick(Entity* entity, World* world) override final
@@ -39,7 +39,16 @@ public:
   /**
    * Look for an Ability with that type.
    */
-  Ability* find(const AbilityType& type) const;
+  template <typename Type = Ability>
+  Type* find(const AbilityType& type) const
+  {
+    for (auto& ability: this->abilities)
+      {
+        if (ability->get_type() == type)
+          return static_cast<Type*>(ability.get());
+      }
+    return nullptr;
+  }
 
   /**
    * The duration, in ticks, of the two phases of a casted ability

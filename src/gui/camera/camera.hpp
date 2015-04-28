@@ -36,6 +36,7 @@ class WorldSprite;
 class GameClient;
 class Entity;
 class EntitySprite;
+class Task;
 
 class Camera: public ScreenElement
 {
@@ -58,6 +59,9 @@ public:
    */
   void draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar,
                        const std::size_t max_val, int current_val);
+  void draw_vertical_bar(sf::Vector2f screen_position, const EnergyBar& bar_specs,
+                         const std::size_t max_val, int current_val);
+
   /**
    * Draw an indicator, centered around `center`, the width is the diameter.
    */
@@ -150,6 +154,7 @@ public:
   void draw(const sf::Drawable&, const sf::RenderStates& states = sf::RenderStates::Default);
   void on_new_entity(const Entity*);
   void on_entity_deleted(const Entity*);
+  void on_entity_task_changed(const Entity* entity, const Task* task);
   void graphical_tick();
 
   const sf::Vector2u get_win_size() const;

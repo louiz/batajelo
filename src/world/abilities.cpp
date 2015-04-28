@@ -21,16 +21,6 @@ void Abilities::add(const std::size_t index,
   this->abilities[index] = std::move(ability);
 }
 
-Ability* Abilities::find(const AbilityType& type) const
-{
-  for (auto& ability: this->abilities)
-    {
-      if (ability->get_type() == type)
-        return ability.get();
-    }
-  return nullptr;
-}
-
 template <typename T>
 T* get_ability(Entity* entity)
 {

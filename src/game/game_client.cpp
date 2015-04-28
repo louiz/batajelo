@@ -353,6 +353,7 @@ void GameClient::on_entity_task_changed(const Entity* entity, const Task* task)
         this->sounds_handler.play(SoundType::Dash, false, 100.f);
         break;
     }
+  this->camera.on_entity_task_changed(entity, task);
 }
 
 void GameClient::on_entity_deleted(const Entity* entity)

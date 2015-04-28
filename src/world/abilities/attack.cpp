@@ -20,20 +20,20 @@ Attack::Attack(const utils::Duration fs_duration, const utils::Duration bs_durat
 {
 }
 
-void Attack::cast(Entity* entity, World*, const Position& pos, const bool queue)
+void Attack::cast(Entity* entity, World* world, const Position& pos, const bool queue)
 {
   log_debug("Attacking with entity " << entity->get_id() << " until position " << pos);
-  auto work = std::make_unique<AttackWork>(entity, pos, this->range);
+  auto work = std::make_unique<AttackWork>(world, entity, pos, this->range);
   if (queue)
     entity->queue_work(std::move(work));
   else
     entity->set_work(std::move(work));
 }
 
-void Attack::cast(Entity* entity, World *, const std::shared_ptr<Entity>& target, const bool queue)
+void Attack::cast(Entity* entity, World* world, const std::shared_ptr<Entity>& target, const bool queue)
 {
   log_debug("Attacking with entity " << entity->get_id() << " the target " << target->get_id());
-  auto work = std::make_unique<AttackWork>(entity, target, this->range);
+  auto work = std::make_unique<AttackWork>(world, entity, target, this->range);
   if (queue)
     entity->queue_work(std::move(work));
   else
@@ -48,4 +48,9 @@ std::size_t Attack::get_frontswing_duration() const
 std::size_t Attack::get_backswing_duration() const
 {
   return this->backswing_duration;
+}
+
+Fix16 Attack::get_range() const
+{
+  return this->range;
 }

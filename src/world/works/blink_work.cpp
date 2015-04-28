@@ -15,26 +15,26 @@
 
 const Fix16 BlinkWork::cast_distance = 600;
 
-BlinkWork::BlinkWork(Entity* entity, const Position& destination):
-  Work(entity),
+BlinkWork::BlinkWork(World* world, Entity* entity, const Position& destination):
+  Work(world, entity),
   destination(destination),
   location(entity->get<Location>())
 {
 }
 
-bool BlinkWork::tick(World* world)
+bool BlinkWork::tick()
 {
   if (Position::distance(this->location->position(), this->destination) > this->cast_distance)
     {
       if (!this->task)
-        this->set_task(world, std::make_unique<PathTask>(this->entity, this->destination));
+        this->set_task(std::make_unique<PathTask>(this->entity, this->destination));
     }
   else
     {
       if (!this->task || this->task->get_type() != TaskType::Blink)
-        this->set_task(world, std::make_unique<BlinkTask>(this->entity, this->destination));
+        this->set_task(std::make_unique<BlinkTask>(this->entity, this->destination));
     }
-  bool result = this->task->tick(world);
+  bool result = this->task->tick(this->world);
   // We only finish this work if the BlinkTask finished
   if (this->task->get_type() == TaskType::Blink)
     return result;

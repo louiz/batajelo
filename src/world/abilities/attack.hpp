@@ -16,6 +16,8 @@ public:
   std::size_t get_frontswing_duration() const;
   std::size_t get_backswing_duration() const;
 
+  Fix16 get_range() const;
+
 private:
   std::size_t frontswing_duration;
   std::size_t backswing_duration;

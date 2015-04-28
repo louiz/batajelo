@@ -16,8 +16,8 @@ DashTask::DashTask(Entity* entity, const Position& goal, Fix16 speed,
   impact_callback(impact_cb),
   goal_callback(goal_cb),
   impacted_entities{},
-  mobility(entity->get<Mobility>()),
-  location(entity->get<Location>())
+  location(entity->get<Location>()),
+  mobility(entity->get<Mobility>())
 {
   assert(this->mobility);
   assert(this->location);

@@ -57,11 +57,20 @@ void AttackTask::do_attack(World* world)
   if (this->ranged)
     {
       Entity* projectile = world->do_new_entity(1, this->location->position(), 1);
-      projectile->set_work(
-                           std::make_unique<ProjectileWork>(projectile,
+      projectile->set_work(std::make_unique<ProjectileWork>(world, projectile,
                                                             this->target,
                                                             std::move(cb)));
     }
   else
     cb(this->target.lock().get());
+}
+
+std::size_t AttackTask::get_remaining_frontswing_duration() const
+{
+  return this->frontswing;
+}
+
+std::size_t AttackTask::get_remaining_backswing_duration() const
+{
+  return this->backswing;
 }

@@ -18,10 +18,10 @@
 class ProjectileWork: public Work
 {
 public:
-  ProjectileWork(Entity* entity, std::weak_ptr<Entity> target,
+  ProjectileWork(World* world, Entity* entity, std::weak_ptr<Entity> target,
                  std::function<void(Entity*)> callback);
   ~ProjectileWork() = default;
-  bool tick(World* world) override final;
+  bool tick() override final;
 
 private:
   /**

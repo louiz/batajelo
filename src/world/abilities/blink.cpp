@@ -17,11 +17,11 @@ Blink::Blink():
 {
 }
 
-void Blink::cast(Entity* entity, World*, const Position& position, const bool queue)
+void Blink::cast(Entity* entity, World* world, const Position& position, const bool queue)
 {
   // Check mana, cooldown etc etc
   log_debug("CASTING blink for entity" << entity->get_id() << " to pos " << position);
-  auto work = std::make_unique<BlinkWork>(entity, position);
+  auto work = std::make_unique<BlinkWork>(world, entity, position);
   if (queue)
     entity->queue_work(std::move(work));
   else

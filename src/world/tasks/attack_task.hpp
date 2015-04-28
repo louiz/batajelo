@@ -16,6 +16,11 @@ public:
   bool tick(World* world) override final;
   TaskType get_type() const override final
   { return TaskType::Attack; }
+  /**
+   * in ticks
+   */
+  std::size_t get_remaining_frontswing_duration() const;
+  std::size_t get_remaining_backswing_duration() const;
 
 private:
   void do_attack(World* world);

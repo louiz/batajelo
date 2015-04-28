@@ -26,6 +26,6 @@ void Emp::cast(Entity* entity, World* world, const Position& position, const boo
     return;
 
   auto emp = world->do_new_entity(2, position, team->get());
-  emp->set_work(std::make_unique<EmpWork>(emp, world));
+  emp->set_work(std::make_unique<EmpWork>(world, emp));
   world->callbacks->ability_casted(entity, AbilityType::Emp, nullptr, position);
 }

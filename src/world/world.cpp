@@ -144,9 +144,9 @@ void World::do_move(const std::vector<EntityId>& ids, const Position& pos, const
       if (!entity)
         continue;
       if (queue)
-        entity->queue_work(std::make_unique<PathWork>(entity, this, pos));
+        entity->queue_work(std::make_unique<PathWork>(this, entity, pos));
       else
-        entity->set_work(std::make_unique<PathWork>(entity, this, pos));
+        entity->set_work(std::make_unique<PathWork>(this, entity, pos));
     }
 }
 
@@ -167,9 +167,9 @@ void World::do_follow(const std::vector<EntityId>& ids, const EntityId& target_i
       if (!entity)
         continue;
       if (queue)
-        entity->queue_work(std::make_unique<FollowWork>(entity, this, target));
+        entity->queue_work(std::make_unique<FollowWork>(this, entity, target));
       else
-        entity->set_work(std::make_unique<FollowWork>(entity, this, target));
+        entity->set_work(std::make_unique<FollowWork>(this, entity, target));
     }
 }
 

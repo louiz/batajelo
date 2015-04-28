@@ -9,6 +9,7 @@
 #include <world/layer.hpp>
 #include <world/entity.hpp>
 #include <world/team.hpp>
+#include <world/task.hpp>
 #include <gui/utils.hpp>
 #include <game/game_client.hpp>
 #include <climits>
@@ -727,6 +728,43 @@ void Camera::draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar_
     }
 }
 
+void Camera::draw_vertical_bar(sf::Vector2f screen_position, const EnergyBar& bar_specs,
+                               const std::size_t max_val, int current_val)
+{
+  sf::RectangleShape rect;
+  rect.setSize(bar_specs.size);
+  rect.setOutlineColor(sf::Color::Black);
+  rect.setOutlineThickness(1);
+  rect.setFillColor({25, 25, 25, 200});
+  screen_position.x -= bar_specs.size.x/2;
+  screen_position.y -= bar_specs.size.y/2;
+  rect.setPosition(screen_position);
+
+  float grad_width = bar_specs.size.x / (max_val / bar_specs.little_graduation);
+
+  this->draw(rect);
+
+  rect.setOutlineThickness(1);
+  float grad_height = bar_specs.size.y / (max_val / bar_specs.little_graduation);
+
+  sf::Color color = mix(bar_specs.min_color, bar_specs.max_color,
+                        static_cast<float>(current_val) / max_val);
+
+  rect.setSize({bar_specs.size.x, grad_height});
+  while (current_val > 0)
+    {
+      if (current_val >= bar_specs.little_graduation)
+        rect.setFillColor(color);
+      else
+        rect.setFillColor(color * sf::Color(255, 255, 255, 100));
+      rect.setPosition(screen_position);
+      this->draw(rect);
+
+      current_val -= bar_specs.little_graduation;
+      screen_position.y += grad_height;
+    }
+}
+
 void Camera::on_new_entity(const Entity* entity)
 {
   if (entity->get_type() == 0)
@@ -754,6 +792,19 @@ void Camera::on_entity_deleted(const Entity* entity)
       log_debug("removing sprite.");
       this->sprites.erase(it);
     }
+}
+
+void Camera::on_entity_task_changed(const Entity* entity, const Task* task)
+{
+  // Look for an EntitySprite using this entity pointer
+  auto it = std::find_if(this->sprites.begin(),
+                         this->sprites.end(),
+                         [entity](const auto& s)
+                         {
+                           return s->get_entity() == entity;
+                         });
+  assert(it != this->sprites.end());
+  (*it)->set_task(task);
 }
 
 const sf::Vector2u Camera::get_win_size() const
