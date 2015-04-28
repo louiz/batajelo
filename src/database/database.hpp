@@ -28,6 +28,8 @@ public:
   void change_user_password(db::User& user, const std::string& password);
   void set_user_password(db::User& user, const std::string& password);
 
+  db::Game create_new_game() const;
+
 private:
   Botan::AutoSeeded_RNG rng;
   db::BataDB db;
