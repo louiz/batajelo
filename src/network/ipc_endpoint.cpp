@@ -126,8 +126,8 @@ void IPCEndpoint::watch_read()
           log_debug("Ready to read");
           auto res = this->recv();
           this->read_cb(res);
+          this->watch_read();
         }
-      this->watch_read();
     };
   this->stream_descriptor.async_read_some(boost::asio::null_buffers(),
                                           cb);

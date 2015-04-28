@@ -1,7 +1,9 @@
 #include <iostream>
 #include <logging/logging.hpp>
 #include <network/transfer_sender.hpp>
-#include <master_server/remote_client.hpp>
+#include <network/message.hpp>
+#include <network/message_handler.hpp>
+#include <network/tls_socket.hpp>
 
 using namespace std::string_literals;
 

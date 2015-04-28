@@ -2,7 +2,7 @@
 #include <assert.h>
 
 Message::Message():
-  body(0),
+  body(nullptr),
   body_size(0),
   callback(nullptr)
 {
@@ -35,7 +35,7 @@ void Message::set_body(const google::protobuf::Message& msg)
   const int size = msg.ByteSize();
   this->body = new char[size];
   this->set_body_size(size);
-  const auto res = msg.SerializeToArray(this->body, size);
+  const auto&& res = msg.SerializeToArray(this->body, size);
   log_debug("Setting message body with protobuf: " << msg.ShortDebugString());
   assert(res);
 }

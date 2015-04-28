@@ -30,6 +30,7 @@ protected:
   OccupantsHandler occupants_handler;
   TurnHandler turn_handler;
 
+private:
   Game(const Game&) = delete;
   Game(Game&&) = delete;
   Game& operator=(const Game&) = delete;

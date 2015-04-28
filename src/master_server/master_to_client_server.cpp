@@ -19,11 +19,11 @@ MasterToClientServer::MasterToClientServer(MasterServer* master,
 
 const RemoteClient* MasterToClientServer::find_client_by_login(const std::string& login) const
 {
-  for (const RemoteClient* client: this->clients)
+  for (const auto& client: this->clients)
     {
       const auto user = client->get_user();
       if (user && user->login == login)
-        return client;
+        return client.get();
     }
   return nullptr;
 }

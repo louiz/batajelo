@@ -74,7 +74,7 @@ public:
         return ;
       }
 
-    if (this->timeout.expires_from_now(boost::chrono::milliseconds(t)) == 0)
+    if (this->timeout.expires_from_now(boost::asio::steady_timer::duration(t)) == 0)
       // The last run_one() call returned because the timeout expired, so
       // we reinstall it. If that's not the case
       // (something actually happened on the socket)

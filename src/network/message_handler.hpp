@@ -47,7 +47,6 @@ public:
                                             std::placeholders::_2));
   }
 
-
   /**
    * called when there's something to read on the socket. Reads the message
    * the size of the arguments, and then calls binary_read_handler to read
