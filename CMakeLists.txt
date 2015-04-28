@@ -43,6 +43,7 @@ find_package(Boost 1.48.0 COMPONENTS filesystem system iostreams locale serializ
 find_package(BOTAN REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(LITESQL REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 if(BUILD_CLIENT)
   find_package(SFML 2 REQUIRED system window graphics audio)
@@ -57,6 +58,7 @@ find_package(GTest)
 include_directories("src/")
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${BOTAN_INCLUDE_DIRS})
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 if(GTEST_FOUND)
@@ -239,6 +241,7 @@ target_link_libraries(network
   ${OPENSSL_LIBRARIES}
   logging
   config
+  ${OPENSSL_LIBRARIES}
   )
 
 #
