@@ -56,5 +56,6 @@ void SlaveClient::info_callback(Message* message)
 
 void SlaveClient::start_callback(Message* message)
 {
-  this->slave->start_game();
+  auto req = message->parse_body_to_protobuf_object<ser::slave::StartGameRequest>();
+  this->slave->start_game(req.game_id());
 }

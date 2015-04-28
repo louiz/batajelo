@@ -23,13 +23,12 @@ void Slave::run()
 {
   this->running = true;
   this->client.start();
-  while (this->running)
-    this->client.poll();
+  IoService::get().run();
 }
 
-void Slave::start_game()
+void Slave::start_game(const uint64_t game_id)
 {
-  this->children_handler.start_subprocess();
+  this->children_handler.start_subprocess(game_id);
 }
 
 void Slave::fill_info(ser::slave::SlaveInfo& info)

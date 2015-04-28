@@ -1,4 +1,5 @@
 #include <master_server/master_to_slave_server.hpp>
+#include <master_server/master_server.hpp>
 
 #include <logging/logging.hpp>
 
@@ -18,4 +19,9 @@ void MasterToSlaveServer::on_new_client(RemoteSlaveClient* client)
 void MasterToSlaveServer::on_client_left(RemoteSlaveClient* client)
 {
   log_debug("Ending RemoteSlaveClient");
+}
+
+Database* MasterToSlaveServer::get_database()
+{
+  return this->master->get_database();
 }

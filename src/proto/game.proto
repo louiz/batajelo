@@ -1,5 +1,12 @@
 package ser.game;
 
+message GameInfo
+{
+  required uint64 id = 1;
+  // Game time in seconds
+  optional uint32 time = 2;
+}
+
 message Position
 {
   required sint32 x = 1;

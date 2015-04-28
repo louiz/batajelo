@@ -5,6 +5,7 @@
 #include <master_server/remote_slave_client.hpp>
 
 class MasterServer;
+class Database;
 
 class MasterToSlaveServer: public Server<RemoteSlaveClient>
 {
@@ -15,6 +16,8 @@ public:
 
   void on_new_client(RemoteSlaveClient* client) override final;
   void on_client_left(RemoteSlaveClient* client) override final;
+
+  Database* get_database();
 
 private:
   MasterServer* master;

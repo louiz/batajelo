@@ -14,7 +14,7 @@ public:
   Slave();
   ~Slave() = default;
   void run();
-  void start_game();
+  void start_game(const uint64_t game_id);
   /**
    * Fill the given structure with the information about this slave.
    */

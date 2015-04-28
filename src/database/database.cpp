@@ -67,3 +67,10 @@ std::tuple<bool, std::string> Database::check_user_password(const db::User& user
     return std::make_tuple(true, "");
   return std::make_tuple(false, "Password mismatch.");
 }
+
+db::Game Database::create_new_game() const
+{
+  db::Game game(this->db);
+  game.update();
+  return game;
+}

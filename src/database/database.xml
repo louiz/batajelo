@@ -8,4 +8,8 @@
       <indexfield name="login"/>
     </index>
   </object>
+
+  <object name="Game">
+    <field name="start" type="datetime"/>
+  </object>
 </database>

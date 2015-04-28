@@ -26,7 +26,7 @@ class ChildrenHandler
 public:
   ChildrenHandler(Slave*);
   ~ChildrenHandler() = default;
-  void start_subprocess();
+  void start_subprocess(const uint64_t game_id);
   std::size_t size() const;
 
 private:

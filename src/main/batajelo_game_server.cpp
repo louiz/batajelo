@@ -14,6 +14,7 @@ int main(int ac, char** av)
   short port;
   std::string conf_filename;
   std::string ipc_path;
+  uint64_t game_id;
   boost::program_options::variables_map vm;
 
   boost::program_options::options_description desc("Allowed options");
@@ -27,6 +28,10 @@ int main(int ac, char** av)
     ("ipc,i", boost::program_options::value<std::string>(&ipc_path),
      "If a path is provided, will connect to that message queue and use it to communicate"
      "with some parent process.")
+
+    ("game_id,g", boost::program_options::value<uint64_t>(&game_id),
+     "Unique identifier for the game to be started.")
+
 
     ("config,c", boost::program_options::value<std::string>(&conf_filename)->default_value("./batajelo.conf"),
      "The filename of the configuration to use");
@@ -52,11 +57,11 @@ int main(int ac, char** av)
   if (!Config::read_conf("./batajelo.conf"))
     return 1;
 
-  log_debug("Starting game server. Port: " << port << " and config file: " << conf_filename
+  log_debug("Starting game server, id: " << game_id << ". Port: " << port << " and config file: " << conf_filename
             << " and ipc path [" << ipc_path << "]");
 
   srand(getpid());
-  GameServer s(port, ipc_path);
+  GameServer s(port, ipc_path, game_id);
   s.start();
 
   utils::Time last_update = utils::now();

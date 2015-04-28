@@ -14,11 +14,13 @@
 
 namespace ph = std::placeholders;
 
-GameServer::GameServer(short port, const std::string& ipc_path):
+GameServer::GameServer(short port, const std::string& ipc_path,
+                       const uint64_t game_id):
   Game(),
   Server<RemoteGameClient>(port),
   replay(),
-  ipc(nullptr)
+  ipc(nullptr),
+  game_id(game_id)
 {
   if (!ipc_path.empty())
     {
@@ -41,11 +43,27 @@ void GameServer::install_parent_stats_timed_event()
 {
   auto cb = [this]()
     {
-      log_debug("Sending things in the IPC thing");
-      this->ipc->send("coucou");
+      this->send_stats();
       this->install_parent_stats_timed_event();
     };
   this->timed_event_handler.install_timed_event(cb, 5);
+}
+
+void GameServer::send_stats()
+{
+  log_debug("Sending game stats on the IPC socket");
+  ser::game::GameInfo info;
+  info.set_id(this->game_id);
+  info.set_time(static_cast<uint32_t>(this->current_world_time().count()));
+  this->ipc_send(info);
+}
+
+void GameServer::ipc_send(const google::protobuf::Message& msg)
+{
+  std::string to_send;
+  msg.SerializeToString(&to_send);
+  log_debug("Sending, over IPC: " << msg.ShortDebugString());
+  this->ipc->send(to_send);
 }
 
 void GameServer::on_entity_created(const Entity* entity)

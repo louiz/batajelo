@@ -59,7 +59,7 @@ void ChildrenHandler::on_child_exit()
   this->install_signal_handler();
 }
 
-void ChildrenHandler::start_subprocess()
+void ChildrenHandler::start_subprocess(const uint64_t game_id)
 {
   auto child = std::make_unique<ChildGame>(this->slave);
 
@@ -67,10 +67,11 @@ void ChildrenHandler::start_subprocess()
   if (pid == 0)
     {
       const short port = 7879;
-      const char* argv[6] = {
+      const char* argv[8] = {
         "./batajelo_game_server",
         "-p", std::to_string(port).data(),
         "-i", child->get_ipc_endpoint_path().data(),
+        "-g", std::to_string(game_id).data(),
         nullptr
       };
       execv("./batajelo_game_server", const_cast<char* const*>(argv));

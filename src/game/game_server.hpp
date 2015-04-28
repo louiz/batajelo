@@ -23,13 +23,15 @@
 #include <world/world.hpp>
 #include <game/replay.hpp>
 #include <game/turn_handler.hpp>
+#include <google/protobuf/message.h>
 
 class IPCEndpoint;
 
 class GameServer: public Game, public Server<RemoteGameClient>
 {
 public:
-  GameServer(short port, const std::string& ipc_path);
+  GameServer(short port, const std::string& ipc_path,
+             const uint64_t game_id);
   ~GameServer();
 
   void on_new_client(RemoteGameClient*) override final;
@@ -129,6 +131,8 @@ public:
 
 private:
   void install_parent_stats_timed_event();
+  void ipc_send(const google::protobuf::Message&);
+  void send_stats();
 
   GameServer(const GameServer&);
   GameServer& operator=(const GameServer&);
@@ -139,6 +143,7 @@ private:
   TimedEventHandler timed_event_handler;
   Replay replay;
   std::unique_ptr<IPCEndpoint> ipc;
+  const uint64_t game_id;
 };
 
 #endif // __GAME_SERVER_HPP__
