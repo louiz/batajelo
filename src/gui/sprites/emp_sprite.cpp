@@ -1,7 +1,6 @@
 #include <gui/sprites/emp_sprite.hpp>
 #include <world/location.hpp>
 #include <world/entity.hpp>
-#include <game/game_client.hpp>
 
 constexpr unsigned int emp_radius = 300;
 
@@ -14,16 +13,10 @@ EmpSprite::EmpSprite(const Entity* const entity):
   this->circle.setFillColor({255, 0, 255, 123});
 }
 
-void EmpSprite::draw(GameClient* game) const
+void EmpSprite::draw(sf::RenderTarget& surface, const sf::RenderStates& states) const
 {
-  Location* location = this->entity->get<Location>();
-  assert(location);
-  const auto entpos = game->get_camera().world_to_camera_position(location->position());
-  const float x = entpos.x - game->get_camera().x;
-  const float y = entpos.y - game->get_camera().y;
-
-  this->circle.setPosition(x, y);
-  game->get_camera().draw(this->circle);
+  this->circle.setPosition(0, 0);
+  surface.draw(this->circle, states);
 }
 
 void EmpSprite::tick()

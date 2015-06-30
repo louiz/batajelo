@@ -55,9 +55,10 @@ cursor::type draw_dash_concentrate_cursor(const sf::Vector2i& mouse_position, Ga
       if (task)
         current_val = std::min(task->value().to_int(), dash->get_max_concentration().to_int());
     }
-  game->get_camera().draw_energy_bar(
-      {static_cast<float>(mouse_position.x - 8),
-       static_cast<float>(mouse_position.y - 75)},
-      bar, dash->get_max_concentration().to_int(), current_val);
+  sf::Transform transform;
+  transform.translate(mouse_position.x,
+                      mouse_position.y);
+  game->get_camera().draw_energy_bar(bar, dash->get_max_concentration().to_int(), current_val,
+                                     transform);
   return cursor::Build;
 }

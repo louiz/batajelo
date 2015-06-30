@@ -8,7 +8,7 @@ class BulletSprite: public EntitySprite
 public:
   BulletSprite(const Entity* const);
   ~BulletSprite() = default;
-  void draw(GameClient* game) const override final;
+  void draw(sf::RenderTarget& surface, const sf::RenderStates& states) const override final;
   void tick() override final;
   static bool init;
 

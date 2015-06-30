@@ -2,7 +2,6 @@
 # define __ENTITY_SPRITE_HPP__
 
 #include <gui/sprites/world_sprite.hpp>
-#include <gui/camera/camera.hpp>
 
 #include <vector>
 
@@ -17,7 +16,6 @@ public:
   ~EntitySprite() {}
   const Entity* get_entity() const;
   Position get_world_pos() const override final;
-  bool is_mouse_over(const Camera* camera) const;
   /**
    * Set our current animation based on the new task the entity is doing.
    * For example if our new task is TaskType::Move, the current animation we
@@ -27,7 +25,7 @@ public:
 
 protected:
   const Entity* const entity;
-  void draw_shadow(Camera& camera, const sf::Color color) const;
+  void draw_shadow(sf::RenderTarget& surface, const sf::RenderStates& states) const;
   virtual void on_task_changed(const Task*) {}
 
   static const std::vector<sf::Color> team_colors;

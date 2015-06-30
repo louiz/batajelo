@@ -19,7 +19,7 @@ class PicpicSprite: public EntitySprite
 public:
   PicpicSprite(const Entity* const);
 
-  void draw(GameClient* game) const override final;
+  void draw(sf::RenderTarget& surface, const sf::RenderStates& states) const override final;
   void tick() override final;
   static bool init;
 
@@ -32,7 +32,7 @@ private:
 
   void on_task_changed(const Task*) override final;
   void init_attack_animation(const AttackTask*);
-  void draw_attack_animation(const AttackTask* task, GameClient* game, sf::Vector2f pos) const;
+  void draw_attack_animation(sf::RenderTarget& surface, const AttackTask* task) const;
 
   PicpicSprite(const PicpicSprite&);
   PicpicSprite& operator=(const PicpicSprite&);

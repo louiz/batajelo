@@ -8,7 +8,7 @@ class EmpSprite: public EntitySprite
 public:
   EmpSprite(const Entity* const);
   ~EmpSprite() = default;
-  void draw(GameClient* game) const override final;
+  void draw(sf::RenderTarget& surface, const sf::RenderStates& states) const override final;
   void tick() override final;
 
 private:

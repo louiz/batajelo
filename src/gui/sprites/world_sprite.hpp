@@ -6,18 +6,15 @@
 #include <world/position.hpp>
 #include <gui/sprites/energy_bar.hpp>
 
-class GameClient;
-
 class WorldSprite
 {
 public:
   WorldSprite() {}
   virtual ~WorldSprite() {}
-  virtual void draw(GameClient* game) const = 0;
+  virtual void draw(sf::RenderTarget& surface, const sf::RenderStates& states) const = 0;
   virtual void tick() = 0;
   virtual Position get_world_pos() const = 0;
 
-protected:
   static const EnergyBar standard_health_bar;
   static const EnergyBar standard_mana_bar;
 

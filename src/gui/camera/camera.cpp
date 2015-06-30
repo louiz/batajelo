@@ -341,34 +341,51 @@ void Camera::draw()
           // the top
           y -= LEVEL_HEIGHT;
         }
+
       // Display all the sprites that are on this row
       for (const auto& sprite: this->sprites)
         {
           Position sprite_world_position = sprite->get_world_pos();
-          unsigned short x;
-          unsigned short y;
-          std::tie(x, y) = this->world().get_cell_at_position(sprite_world_position);
-          if (y == row &&
+          unsigned short x_cell;
+          unsigned short y_cell;
+          std::tie(x_cell, y_cell) = this->world().get_cell_at_position(sprite_world_position);
+          if (y_cell == row &&
               this->world().can_be_seen_by_team(sprite_world_position, this->game->get_self_team()))
             {
               const Entity* entity = sprite->get_entity();
-              Team* team = entity->get<Team>();
+              const auto entpos = this->world_to_camera_position(sprite_world_position);
 
               if (entity->is_manipulable() &&
-                  this->mouse_selection.contains(this->get_mouse_position(),
-                                                 this->world_to_camera_position(sprite_world_position))
-                  )
-                {
-                  this->draw_hover_indicator(
-                      this->world_to_camera_position(sprite_world_position),
-                      80);
-                }
+                  (this->mouse_selection.contains(this->get_mouse_position(), entpos)))
+                this->draw_hover_indicator(entpos, 80);
 
               if (this->get_game_client()->is_entity_selected(sprite->get_entity()))
-                this->draw_selected_indicator(this->world_to_camera_position(sprite_world_position), 80);
-              sprite->draw(this->game);
+                this->draw_selected_indicator(entpos, 80);
+
+              // The sprites draw themselves around the 0:0 coordinates. We
+              // just pass a RenderStates object to them, translating the
+              // whole drawing to the correct camera position.  This way the
+              // sprites class does not need to know anything about the
+              // world or camera coordinates.
+              sf::Transform transform;
+              transform.translate(entpos.x - this->x,
+                                  entpos.y - this->y);
+              sprite->draw(this->win(), transform);
+
+              auto health = entity->get<Health>();
+              auto team = entity->get<Team>();
+
+              if (health)
+                {
+                  auto bar = WorldSprite::standard_health_bar;
+                  if (team && team->get() == 1)
+                    bar.max_color = sf::Color::Blue;
+                  this->draw_energy_bar(bar, health->get_max().to_int(),
+                                        health->get().to_int(), transform);
+                }
             }
         }
+      this->win().setView(this->win().getDefaultView());
     }
 
   this->draw_mouse_selection();
@@ -683,10 +700,28 @@ const Entity* Camera::get_entity_under_mouse() const
   for (auto it = this->sprites.crbegin(); it != this->sprites.crend(); ++it)
     {
       EntitySprite* sprite = it->get();
-      if (sprite->is_mouse_over(this) == true)
+      if (this->is_mouse_over(sprite) == true)
         return sprite->get_entity();
     }
   return nullptr;
+}
+
+bool Camera::is_mouse_over(const EntitySprite* sprite) const
+{
+  auto location = sprite->get_entity()->get<Location>();
+  if (!location)
+    return false;
+
+  const auto pos = this->get_mouse_position();
+  Position mouse_pos = this->camera_to_world_position(pos.x,
+                                                        pos.y);
+  Position ent_pos = location->position();
+
+  // TODO, use different values depending on the sprite's size
+  return (mouse_pos.x > ent_pos.x - 50 &&
+          mouse_pos.x < ent_pos.x + 50 &&
+          mouse_pos.y > ent_pos.y - 80 &&
+          mouse_pos.y < ent_pos.y + 20);
 }
 
 void Camera::draw(const sf::Drawable& drawable, const sf::RenderStates& states)
@@ -694,24 +729,24 @@ void Camera::draw(const sf::Drawable& drawable, const sf::RenderStates& states)
   this->win().draw(drawable, states);
 }
 
-void Camera::draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar_specs,
-                             const std::size_t max_val, int current_val)
+void Camera::draw_energy_bar(const EnergyBar& bar_specs, const std::size_t max_val,
+                             int current_val, const sf::RenderStates& states)
 {
   sf::RectangleShape rect;
   rect.setSize(bar_specs.size);
+  rect.setOrigin(bar_specs.size.x/2, bar_specs.size.y/2);
   rect.setOutlineColor(sf::Color::Black);
   rect.setOutlineThickness(1);
   rect.setFillColor({25, 25, 25, 200});
-  screen_position.x -= bar_specs.size.x/2;
-  rect.setPosition(screen_position);
+  rect.setPosition(0, -70);
 
-  this->draw(rect);
+  this->draw(rect, states);
 
   rect.setOutlineThickness(1);
   float grad_width = bar_specs.size.x / (max_val / bar_specs.little_graduation);
 
   sf::Color color = mix(bar_specs.min_color, bar_specs.max_color,
-                        static_cast<float>(current_val) / max_val);
+                        0.3 + (static_cast<float>(current_val) / max_val) * 0.7);
 
   rect.setSize({grad_width, bar_specs.size.y});
   while (current_val > 0)
@@ -720,11 +755,10 @@ void Camera::draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar_
         rect.setFillColor(color);
       else
         rect.setFillColor(color * sf::Color(255, 255, 255, 100));
-      rect.setPosition(screen_position);
-      this->draw(rect);
+      this->draw(rect, states);
+      rect.move(grad_width, 0);
 
       current_val -= bar_specs.little_graduation;
-      screen_position.x += grad_width;
     }
 }
 

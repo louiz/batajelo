@@ -32,7 +32,6 @@
 
 class Minimap;
 class Screen;
-class WorldSprite;
 class GameClient;
 class Entity;
 class EntitySprite;
@@ -57,11 +56,11 @@ public:
   /**
    * Draw an energy bar, centered at the given screen position.
    */
-  void draw_energy_bar(sf::Vector2f screen_position, const EnergyBar& bar,
-                       const std::size_t max_val, int current_val);
+  void draw_energy_bar(const EnergyBar& bar, const std::size_t max_val,
+                       int current_val, const sf::RenderStates& states);
   void draw_vertical_bar(sf::Vector2f screen_position, const EnergyBar& bar_specs,
                          const std::size_t max_val, int current_val);
-
+  bool is_mouse_over(const EntitySprite* sprite) const;
   /**
    * Draw an indicator, centered around `center`, the width is the diameter.
    */

@@ -7,7 +7,7 @@ class TourbillonSprite: public EntitySprite
 {
 public:
   TourbillonSprite(const Entity* const);
-  void draw(GameClient* game) const override final;
+  void draw(sf::RenderTarget& surface, const sf::RenderStates& states) const override final;
   void tick() override final;
   ~TourbillonSprite() = default;
 

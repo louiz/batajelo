@@ -24,19 +24,12 @@ EntitySprite::EntitySprite(const Entity* const entity):
     }
 }
 
-void EntitySprite::draw_shadow(Camera& camera, const sf::Color color) const
+void EntitySprite::draw_shadow(sf::RenderTarget& surface, const sf::RenderStates& states) const
 {
-  Location* location = this->entity->get<Location>();
-  assert(location);
-  const auto entpos = camera.world_to_camera_position(location->position());
-  const int x = entpos.x - camera.x;
-  const int y = entpos.y - camera.y;
   const sf::Vector2u size = EntitySprite::shadow_texture.getSize();
   sf::Sprite sprite(EntitySprite::shadow_texture);
-  sprite.setPosition(x - size.x/2, y - size.y/2);
-
-  sprite.setColor(color);
-  camera.draw(sprite);
+  sprite.setOrigin(size.x/2, size.y/2);
+  surface.draw(sprite, states);
 }
 
 const Entity* EntitySprite::get_entity() const
@@ -49,24 +42,6 @@ Position EntitySprite::get_world_pos() const
   Location* location = this->entity->get<Location>();
   assert(location);
   return location->position();
-}
-
-bool EntitySprite::is_mouse_over(const Camera* camera) const
-{
-  Location* location = this->entity->get<Location>();
-  if (!location)
-    return false;
-
-  const auto pos = camera->get_mouse_position();
-  Position mouse_pos = camera->camera_to_world_position(pos.x,
-                                                        pos.y);
-  Position ent_pos = location->position();
-
-  // TODO, use different values depending on the sprite's size
-  return (mouse_pos.x > ent_pos.x - 50 &&
-          mouse_pos.x < ent_pos.x + 50 &&
-          mouse_pos.y > ent_pos.y - 80 &&
-          mouse_pos.y < ent_pos.y + 20);
 }
 
 void EntitySprite::set_task(const Task* task)

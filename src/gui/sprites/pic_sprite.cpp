@@ -26,45 +26,12 @@ PicpicSprite::PicpicSprite(const Entity* const entity):
   this->height = -5 + (7 * random() / RAND_MAX);
 }
 
-void PicpicSprite::draw(GameClient* game) const
+void PicpicSprite::draw(sf::RenderTarget& surface, const sf::RenderStates& states) const
 {
-  Team* team = this->entity->get<Team>();
-  assert(team);
-  Location* location = this->entity->get<Location>();
-  assert(location);
-  this->draw_shadow(game->get_camera(), this->team_colors[team->get()]);
-  const auto entpos = game->get_camera().world_to_camera_position(location->position());
-
-  const float x = entpos.x - game->get_camera().x;
-  const float y = entpos.y - game->get_camera().y;
-
   sf::Sprite sprite(PicpicSprite::body_texture);
   const sf::Vector2u size = PicpicSprite::body_texture.getSize();
-  sprite.setPosition(x - size.x/2, y - size.y - this->height);
-  game->get_camera().draw(sprite);
-
-  sf::Sprite eye_sprite(PicpicSprite::eye_texture);
-  const sf::Vector2u eye_size = PicpicSprite::eye_texture.getSize();
-  eye_sprite.setPosition(x - 10 - eye_size.x/2, y - size.y / 5 * 3 - this->height - eye_size.y/2 + 5);
-  game->get_camera().draw(eye_sprite);
-  eye_sprite.setPosition(x + 10 - eye_size.x/2, y - size.y / 5 * 3 - this->height - eye_size.y/2 + 5);
-  game->get_camera().draw(eye_sprite);
-
-  EnergyBar bar = this->standard_health_bar;
-
-  Health* entity_health = this->entity->get<Health>();
-  if (entity_health)
-    {
-      game->get_debug_hud().add_debug_line("Entity health: " + std::to_string(entity_health->get()) + "/" +std::to_string(entity_health->get_max()));
-      game->get_camera().draw_energy_bar({x, y - 90}, bar, entity_health->get_max().to_int(), entity_health->get().to_int());
-    }
-  EnergyBar mana_bar = this->standard_mana_bar;
-  ManaPool* entity_mana = entity->get<ManaPool>();
-  if (entity_mana)
-    {
-      game->get_debug_hud().add_debug_line("Entity mana: " + std::to_string(entity_mana->get()) + "/" +std::to_string(entity_mana->get_max()));
-      game->get_camera().draw_energy_bar({x, y - 80}, mana_bar, entity_mana->get_max().to_int(), entity_mana->get().to_int());
-    }
+  sprite.setOrigin(size.x/2, size.y);
+  surface.draw(sprite, states);
 
   switch (this->animation)
     {
@@ -74,7 +41,8 @@ void PicpicSprite::draw(GameClient* game) const
       // TODO
       break;
     case Animation::Attack:
-      this->draw_attack_animation(this->entity->get_task<AttackTask>(), game, {x - 80, y});
+      this->draw_attack_animation(surface, this->entity->get_task<AttackTask>());
+      break;
     }
 }
 
@@ -112,7 +80,7 @@ void PicpicSprite::init_attack_animation(const AttackTask* task)
                             task->get_remaining_backswing_duration()};
 }
 
-void PicpicSprite::draw_attack_animation(const AttackTask* task, GameClient* game, sf::Vector2f pos) const
+void PicpicSprite::draw_attack_animation(sf::RenderTarget& surface, const AttackTask* task) const
 {
   std::size_t current_fs;
   std::size_t current_bs;
@@ -138,7 +106,7 @@ void PicpicSprite::draw_attack_animation(const AttackTask* task, GameClient* gam
     2,
     0
   };
-  game->get_camera().draw_vertical_bar(pos, bar, max, current_value);
+  // game->get_camera().draw_vertical_bar({-80.f, 0.f}, bar, max, current_value);
 }
 
 bool PicpicSprite::init = false;
