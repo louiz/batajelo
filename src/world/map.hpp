@@ -100,9 +100,19 @@ public:
    * Returns the neighbour cells of the given one if it's walkable to it.
    * It's walkable if the two adjacent and corresponding heights are equal.
    * If one of them is different, it's not walkable.  The return vector can
-   * contain 2, 3 or 4 values.
+   * contain between 0 and 4 values.
    */
-  std::vector<CellIndex> get_neighbour_cells(const CellIndex);
+  std::vector<CellIndex> get_neighbour_walkable_cells(const CellIndex);
+  /**
+   * Returns the neighbour cells that are considered to “partially” hide the
+   * given one.
+   *
+   * A neighbour cell “a” can hide a cell “c” if a has a bigger column
+   * (biggest value on the y axis), and one of its adjacent corner from “a”
+   * is higher than “c”.
+   * The vector may contain between 0 and 3 values.
+   */
+  bool is_cell_in_neighbour_lower_cells(const CellIndex, const CellIndex);
 
   /**
    * Convert a cell from one representation to the other
@@ -156,7 +166,7 @@ struct AStarNode
   int f;
 };
 
-using AStarNodes = std::list<AStarNode>;
+using AStarNodes = std::vector<AStarNode>;
 
 /**
  * Insert a node in the given list, in the correct position as to have the

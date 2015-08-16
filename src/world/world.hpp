@@ -110,6 +110,10 @@ public:
 
   Path smooth_path(CellPath path, Position& start,
                    const Position& end, const Fix16 width) const;
+  CellPath::reverse_iterator get_farthest_walkable_cell(const Position& pos,
+                                                        const CellPath& path,
+                                                        const CellPath::reverse_iterator& current_cell,
+                                                        const Fix16 width) const;
   /**
    * Returns wheither or not we can walk from the start position to the end
    * position, following a single straight line.
@@ -120,7 +124,7 @@ public:
    * to another.  This is done by checking if two parallel lines of sight
    * exist, separated by the width of the entity.
    */
-  bool can_walk_in_straight_line(const Position& start, const Position& end, const Fix16 step, const Fix16 width) const;
+  bool can_walk_in_straight_line(const Position& start, const Position& end, const Fix16 width) const;
   /**
    * Returns whether or not we can move from one cell to another, according
    * to their respective heights.
@@ -128,18 +132,10 @@ public:
   bool can_traverse_cell(const short x, const short y,
                          const short x2, const short y2) const;
   /**
-   * Return the position of the nearest corner of the given cell, using the next
-   * cell to determine the optimal corner.
-   */
-  Position get_nearest_corner(const Position&, const CellIndex, const CellIndex,
-                              const Fix16 width) const;
-  /**
-  * Return the position of the nearest corner of the given cell, in the case
-  * where that is the last cell of the path.
+  * Return the position of the previous position in the path. It’s the
+  * latest to have a line of sight with the next position.
   */
-  Position get_nearest_corner(const Position&, const std::size_t, const Fix16 width) const;
-  Position get_next_path_position(CellPath& path, const Position& current,
-                                         const Position& end, const Fix16 width) const;
+  Position cell_center(const CellIndex index) const;
 
   std::unique_ptr<WorldCallbacks> callbacks;
   /**

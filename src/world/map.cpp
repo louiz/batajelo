@@ -27,8 +27,8 @@ Map::~Map()
   std::vector<Layer*>::iterator it;
   for (it = this->layers.begin(); it < this->layers.end(); ++it)
     delete *it;
-  if (walking_map)
-    delete[] walking_map;
+  if (this->walking_map)
+    delete[] this->walking_map;
 }
 
 bool Map::load_from_file(const std::string& map_name)
@@ -130,8 +130,7 @@ bool Map::get_layer_level(boost::property_tree::ptree& tree, unsigned int& level
       log_error("No properties for the layer");
       return false;
     }
-  BOOST_FOREACH(boost::property_tree::ptree::value_type &property,
-                tree.get_child("properties"))
+  for (const boost::property_tree::ptree::value_type &property: tree.get_child("properties"))
     if ((property.first == "property") &&
         (property.second.get<std::string>("<xmlattr>.name", "") == "level"))
       {
@@ -222,10 +221,6 @@ void Map::generate_walking_map()
         }
       else
         {
-          if (level != 0)
-            {
-              log_debug("max level for cell " << i << "=" << level);
-            }
           const unsigned int tile_value = this->layers[level]->get_cell(i);
           if (tile_value == 0)
             this->walking_map[i].value = ~0;
@@ -256,10 +251,6 @@ int Map::get_max_level_for_cell(const unsigned int cell) const
 
 TileHeights Map::get_cell_heights(const unsigned int col, const unsigned int row) const
 {
-  assert(col >= 0);
-  assert(row >= 0);
-  assert(col < this->get_width_in_tiles());
-  assert(row < this->get_height_in_tiles() * 2);
   std::size_t index = (this->get_width_in_tiles() * row) + col;
   return this->walking_map[index];
 }
@@ -303,12 +294,10 @@ CellPath Map::do_astar(const Cell start, const Cell goal)
     {
       current = open.front();
       if (current.index == end)
-        {
-          return reconstruct_path(came_from, current.index);
-        }
-      open.pop_front();
+        return reconstruct_path(came_from, current.index);
+      open.erase(open.begin());
       closed.push_back(current.index);
-      auto neighbours = this->get_neighbour_cells(current.index);
+      auto neighbours = this->get_neighbour_walkable_cells(current.index);
       for (const CellIndex& neighbour: neighbours)
         {
           if (is_in_set(neighbour, closed) == true)
@@ -319,16 +308,12 @@ CellPath Map::do_astar(const Cell start, const Cell goal)
               insert_node(open, neighbour, tentative_g, tentative_g);
               came_from[neighbour] = current.index;
             }
-          else
-            {
-              log_error("Is not better than the one already opened");
-            }
         }
     }
   return {};
 }
 
-std::vector<CellIndex> Map::get_neighbour_cells(const CellIndex index)
+std::vector<CellIndex> Map::get_neighbour_walkable_cells(const CellIndex index)
 {
   const Cell cell = this->index_to_cell(index);
 
@@ -338,6 +323,7 @@ std::vector<CellIndex> Map::get_neighbour_cells(const CellIndex index)
   const unsigned short y = std::get<1>(cell);
 
   std::vector<CellIndex> res;
+  res.reserve(4);
   if (y != 0 && x != 0)
     { // Try top left
       CellIndex neighbour;
@@ -393,6 +379,82 @@ std::vector<CellIndex> Map::get_neighbour_cells(const CellIndex index)
   return res;
 }
 
+bool Map::is_cell_in_neighbour_lower_cells(const CellIndex index, const CellIndex near)
+{
+  const Cell cell = this->index_to_cell(index);
+
+  const TileHeights heights = this->get_cell_heights(index);
+
+  const unsigned short x = std::get<0>(cell);
+  const unsigned short y = std::get<1>(cell);
+
+  if (x != this->get_width_in_tiles() - 1 && y != this->get_height_in_tiles() - 1)
+    { // Bottom right
+      CellIndex neighbour;
+      if (y % 2 == 0)
+        neighbour = this->cell_to_index(std::make_tuple(x, y + 1));
+      else
+        neighbour = this->cell_to_index(std::make_tuple(x + 1, y + 1));
+
+      if (neighbour == near)
+        {
+          const TileHeights neighbour_heights = this->get_cell_heights(neighbour);
+          if (heights.corners.right >= neighbour_heights.corners.top &&
+              heights.corners.bottom >= neighbour_heights.corners.left)
+            return true;
+        }
+    }
+  if (x != 0 && y != this->get_width_in_tiles() - 1)
+    { // Bottom left
+      CellIndex neighbour;
+      if (y % 2 == 0)
+        neighbour = this->cell_to_index(std::make_tuple(x - 1, y + 1));
+      else
+        neighbour = this->cell_to_index(std::make_tuple(x, y + 1));
+
+      if (neighbour == near)
+        {
+          const TileHeights neighbour_heights = this->get_cell_heights(neighbour);
+          if (heights.corners.left >= neighbour_heights.corners.top &&
+              heights.corners.bottom >= neighbour_heights.corners.right)
+            return true;
+        }
+    }
+  if (// res.size() == 2 && 
+      y != this->get_height_in_tiles() - 2)
+    { // Bottom
+      CellIndex neighbour = this->cell_to_index(std::make_tuple(x, y + 2));
+      if (neighbour == near)
+        {
+          const TileHeights neighbour_heights = this->get_cell_heights(neighbour);
+          if (heights.corners.bottom >= neighbour_heights.corners.top)
+            return true;
+        }
+    }
+  if (x != this->get_width_in_tiles() - 1)
+    {                           // Right
+      CellIndex neighbour = this->cell_to_index(std::make_tuple(x + 1, y));
+      if (neighbour == near)
+        {
+          const TileHeights neighbour_heights = this->get_cell_heights(neighbour);
+          if (heights.corners.right >= neighbour_heights.corners.left)
+            return true;
+        }
+    }
+  if (x != 0)
+    {                           // Left
+      CellIndex neighbour = this->cell_to_index(std::make_tuple(x - 1, y));
+      if (neighbour == near)
+        {
+          const TileHeights neighbour_heights = this->get_cell_heights(neighbour);
+          if (heights.corners.left >= neighbour_heights.corners.right)
+            return true;
+        }
+    }
+
+  return false;
+}
+
 int heuristic()
 {
   return 0;
@@ -427,13 +489,7 @@ void insert_node(AStarNodes& nodes, CellIndex index, int g, int f)
 
 bool is_in_set(std::size_t index, const std::vector<CellIndex>& nodes)
 {
-  std::vector<std::size_t>::const_iterator it;
-  for (it = nodes.begin(); it != nodes.end(); ++it)
-    {
-      if ((*it) == index)
-        return true;
-    }
-  return false;
+  return std::find(nodes.begin(), nodes.end(), index) != nodes.end();
 }
 
 bool is_better_than_previously_open(const CellIndex index, const int score, const AStarNodes& open)
@@ -460,8 +516,10 @@ CellPath reconstruct_path(const std::map<std::size_t, std::size_t>& came_from,
   it = came_from.find(end);
   while (it != came_from.end())
     {
-      res.push_back((*it).second);
-      it = came_from.find((*it).second);
+      auto next = came_from.find((*it).second);
+      if (next != came_from.end())
+        res.push_back((*it).second);
+      it = next;
     }
   return res;
 }

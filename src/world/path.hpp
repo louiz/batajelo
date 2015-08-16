@@ -8,8 +8,8 @@
 # define __PATH_HPP__
 
 #include <world/position.hpp>
-#include <list>
+#include <vector>
 
-using Path = std::list<Position>;
+using Path = std::vector<Position>;
 
 #endif // __PATH_HPP__

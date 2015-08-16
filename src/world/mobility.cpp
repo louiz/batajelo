@@ -38,7 +38,7 @@ void Mobility::follow_path(Path& path, World* world, Location* location)
     {
       // Movement is too short to have something != 0 because of the Fix16 precision.
       // We consider to be at the goal.
-      path.pop_front();
+      path.erase(path.begin());
       return ;
     }
 
