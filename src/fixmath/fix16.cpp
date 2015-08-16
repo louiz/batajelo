@@ -111,21 +111,15 @@ namespace std
 
   Fix16 hypot(Fix16 x, Fix16 y)
   {
-    // Avoid overflow by dividing everything by m during the intermediate
-    // steps. Then multiply the result by m before returning.  If m is too
-    // big, we lose some precision, if it's too small we will overflow
-    // anyway.
-    // So, first find the ideal value of m.
-    static const Fix16 max(181); // sqrt(Fix16Max)
-    int m = 2;
+    static const Fix16 a = 0.96943387;
+    static const Fix16 b = 0.39782473;
 
-    while (std::abs(x)/m + std::abs(y)/m >= max)
-      m *= m;
-
-    x /= m;
-    y /= m;
-    Fix16 t = x*x + y*y;
-    return std::sqrt(t)*m;
+    x = std::abs(x);
+    y = std::abs(y);
+    if (x >= y)
+      return a*x + b*y;
+    else
+      return a*y + b*x;
   }
 
   Fix16 floor(Fix16 val)
