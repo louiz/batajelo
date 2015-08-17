@@ -67,6 +67,9 @@ void GameClient::run()
   long ticks = -5;
   std::chrono::steady_clock::duration dt{0};
 
+  utils::Duration timer = 0s;
+  std::size_t frames = 0;
+
   // window->setMouseCursorVisible(false);
   while (this->screen->window().isOpen())
     {
@@ -82,13 +85,22 @@ void GameClient::run()
       // recv/send from the network
       this->poll();
 
+      // Get the elapsed time
+      auto now = utils::now();
+      auto elapsed = now - last_update;
+      timer += elapsed;
+      frames++;
+      if (timer >= 1s)
+        {
+          std::cout << frames << " frames in " << utils::sec(timer).count() << "s." <<std::endl;
+          timer = 0s;
+          frames = 0;
+        }
+
       this->screen->window().clear(sf::Color(70, 80, 38));
       this->screen->draw();
       this->screen->window().display();
 
-      // Get the elapsed time
-      auto now = utils::now();
-      auto elapsed = now - last_update;
       // Call update with the elapsed time
       this->screen->update(std::chrono::duration_cast<utils::Duration>(elapsed));
 
