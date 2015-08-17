@@ -13,7 +13,7 @@ int main()
   log_debug(Config::get("db_login", ""));
 
   srand(getpid());
-  MasterServer s(7878, 7877);
+  MasterServer s(7878, 7877, 9002);
 
   s.run();
 
