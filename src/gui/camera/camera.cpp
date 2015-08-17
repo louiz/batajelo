@@ -5,6 +5,7 @@
 #include <gui/sprites/tourbillon_sprite.hpp>
 #include <gui/sprites/bullet_sprite.hpp>
 #include <gui/sprites/emp_sprite.hpp>
+#include <gui/effect.hpp>
 #include <world/world.hpp>
 #include <world/layer.hpp>
 #include <world/entity.hpp>
@@ -14,6 +15,7 @@
 #include <game/game_client.hpp>
 #include <climits>
 #include <cstdlib>
+#include <gui/effects/explosion.hpp>
 
 #include <world/abilities.hpp>
 #include <world/location.hpp>
@@ -856,4 +858,9 @@ void Camera::graphical_tick()
 const GameClient* Camera::get_game_client() const
 {
   return this->game;
+}
+
+void Camera::add_effect(std::unique_ptr<Effect>&& effect)
+{
+  this->effects.push_back(std::move(effect));
 }

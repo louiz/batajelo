@@ -11,6 +11,7 @@
 #include <network/client_base.hpp>
 #include <network/tcp_socket.hpp>
 #include <gui/screen/screen.hpp>
+#include <gui/camera/camera.hpp>
 #include <game/selection.hpp>
 #include <game/turn_handler.hpp>
 #include <gui/hud/debug_hud.hpp>

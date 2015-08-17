@@ -1,6 +1,9 @@
 #include <gui/utils.hpp>
+#include <utils/math.hpp>
 #include <cstdint>
 
+namespace gui
+{
 sf::Color mix(const sf::Color& first, const sf::Color& second,
               const float coef)
 {
@@ -14,3 +17,23 @@ sf::Color mix(const sf::Color& first, const sf::Color& second,
       static_cast<uint8_t>(a)};
 
 }
+
+std::mt19937& rng()
+{
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
+
+  return gen;
+}
+
+float frand()
+{
+  return std::uniform_real_distribution<float>(0, 1)(rng());
+}
+
+sf::Vector2<float> random_dir()
+{
+  return normalize(sf::Vector2<float>(frand() - 0.5f, frand() - 0.5f));
+}
+
+} // namespace gui

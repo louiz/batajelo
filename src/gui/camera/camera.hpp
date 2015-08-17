@@ -36,6 +36,7 @@ class GameClient;
 class Entity;
 class EntitySprite;
 class Task;
+class Effect;
 
 class Camera: public ScreenElement
 {
@@ -156,6 +157,8 @@ public:
   void on_entity_task_changed(const Entity* entity, const Task* task);
   void graphical_tick();
 
+  void add_effect(std::unique_ptr<Effect>&& effect);
+
   const sf::Vector2u get_win_size() const;
   /**
    * The left position of the camera
@@ -204,6 +207,10 @@ private:
   MouseSelection mouse_selection;
   Tileset tileset;
   Fog fog;
+
+
+public:
+  std::vector<std::unique_ptr<Effect>> effects;
 
   /**
    * Various accessors

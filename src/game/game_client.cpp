@@ -3,6 +3,8 @@
 #include <utils/time.hpp>
 #include <world/world_callbacks.hpp>
 #include <world/task.hpp>
+#include <gui/effects/explosion.hpp>
+#include <world/location.hpp>
 
 #include "orders.pb.h"
 #include "requests.pb.h"
@@ -374,6 +376,13 @@ void GameClient::on_entity_deleted(const Entity* entity)
   this->current_selection.remove_from_selection(entity);
   if (entity->get_type() == 2)
     this->sounds_handler.play(SoundType::EmpExplode, false, 100.f);
+  if (entity->get_type() == 0)
+    {
+      auto location = entity->get<Location>();
+      if (location)
+        this->camera.add_effect(std::make_unique<Explosion>(location->position(), 10.f));
+    }
+
 }
 
 bool GameClient::tick()
