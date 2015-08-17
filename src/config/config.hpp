@@ -19,13 +19,15 @@
 #include <iostream>
 #include <string>
 #include <functional>
+#include <memory>
 
 typedef std::function<void()> t_config_changed_callback;
 
 class Config
 {
 public:
-  ~Config(){};
+  Config() = default;
+  ~Config() = default;
   /**
    * returns a value from the config. If it doesn’t exist, use
    * the second argument as the default.
@@ -69,14 +71,12 @@ public:
   /**
    * The uniq config instance.
    */
-  static Config* instance;
+  static std::unique_ptr<Config> instance;
   /**
    * Close the config file, saving it to the file is save == true.
    */
   static void close(bool save = false);
 
-private:
-  Config(){};
   Config(const Config &){};
   /**
    * Write all the config values into the configuration file
