@@ -1,9 +1,13 @@
 #include <boost/property_tree/xml_parser.hpp>
 
+#include <assets/assets_manager.hpp>
+
 #include <gui/camera/tileset.hpp>
 #include <logging/logging.hpp>
 #include <utils/string.hpp>
 #include <boost/utility.hpp>
+
+using namespace std::string_literals;
 
 Tileset::Tileset()
 {
@@ -18,7 +22,7 @@ Tileset::~Tileset()
 
 bool Tileset::load_from_file(const std::string& map_name)
 {
-  std::string filename = MAPS_DIRECTORY + map_name;
+  const auto filename = AssetsManager::full_name("maps/"s + map_name);
 
   boost::property_tree::ptree tree;
   try
@@ -50,7 +54,7 @@ bool Tileset::read_tileset(const boost::property_tree::ptree& tileset_tree)
       return false;
     }
   const boost::property_tree::ptree image_tree = tileset_tree.get_child("image");
-  const std::string source = MAPS_DIRECTORY + image_tree.get<std::string>("<xmlattr>.source", "");
+  const std::string source = AssetsManager::full_name("maps/"s + image_tree.get<std::string>("<xmlattr>.source", ""));
   const uint32_t image_height = image_tree.get<uint32_t>("<xmlattr>.height", 0);
   const uint32_t image_width = image_tree.get<uint32_t>("<xmlattr>.width", 0);
   const uint32_t tile_height = tileset_tree.get<uint32_t>("<xmlattr>.tileheight", 0);

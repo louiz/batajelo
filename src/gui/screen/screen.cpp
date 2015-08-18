@@ -1,6 +1,9 @@
 #include <logging/logging.hpp>
 #include <gui/screen/screen.hpp>
 #include <gui/common.hpp>
+#include <assets/assets_manager.hpp>
+
+using namespace std::string_literals;
 
 LeftClick LeftClick::null = {nullptr, nullptr};
 
@@ -8,10 +11,9 @@ Screen::Screen():
   win{sf::VideoMode(1920, 1080), "Bata", sf::Style::Default, sf::ContextSettings{}},
   current_cursor_type(cursor::Normal)
 {
-  const std::string data_path("./data/images/");
   for (int i = 0; i < cursor::size; ++i)
     {
-      const std::string filename = data_path + cursor::filenames[i];
+      const std::string filename = AssetsManager::full_name("images/"s + cursor::filenames[i]);
       if (!this->cursor_textures[i].loadFromFile(filename.c_str()))
         throw GraphInitError();
     }

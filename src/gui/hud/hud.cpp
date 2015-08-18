@@ -5,6 +5,8 @@
 #include <gui/hud/hud.hpp>
 #include <world/entity.hpp>
 
+#include <assets/assets_manager.hpp>
+
 #include <world/abilities.hpp>
 #include <world/abilities/blink.hpp>
 
@@ -26,7 +28,7 @@ Hud::Hud(GameClient* game, Screen* screen):
   // whenever the selection is modified.
 
   // world->add_selection_change_callback(std::bind(&ActionPanel::reset_all_tables, &this->action_panel));
-  this->hud_texture.loadFromFile("./data/images/hud.png");
+  this->hud_texture.loadFromFile(AssetsManager::full_name("images/hud.png"));
   this->hud_sprite.setTexture(this->hud_texture);
   this->hud_sprite.setPosition(0, win_size.y - HUD_HEIGHT);
   if (!this->font.loadFromFile("/usr/share/fonts/dejavu/DejaVuSans.ttf"))

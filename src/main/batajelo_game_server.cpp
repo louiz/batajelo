@@ -3,6 +3,7 @@
 #include <network/server.hpp>
 #include <game/remote_game_client.hpp>
 #include <game/game_server.hpp>
+#include <assets/assets_manager.hpp>
 #include <utils/time.hpp>
 #include <iostream>
 
@@ -56,6 +57,8 @@ int main(int ac, char** av)
   std::ios_base::sync_with_stdio(false);
   if (!Config::read_conf("./batajelo.conf"))
     return 1;
+
+  AssetsManager::set_asset_directory("../data");
 
   log_debug("Starting game server, id: " << game_id << ". Port: " << port << " and config file: " << conf_filename
             << " and ipc path [" << ipc_path << "]");

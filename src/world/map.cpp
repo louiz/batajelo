@@ -5,11 +5,14 @@
 #include <boost/utility.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/trim_all.hpp>
+#include <assets/assets_manager.hpp>
 
 #include <logging/logging.hpp>
 #include <world/map.hpp>
 #include <utils/base64.hpp>
 #include <utils/zlib.hpp>
+
+using namespace std::string_literals;
 
 Map::Map():
   width(0),
@@ -33,8 +36,7 @@ Map::~Map()
 
 bool Map::load_from_file(const std::string& map_name)
 {
-  std::string filename(MAPS_DIRECTORY);
-  filename += map_name;
+  const std::string filename = AssetsManager::full_name("maps/"s + map_name);
   log_debug("Loading map: " << filename);
 
   boost::property_tree::ptree tree;

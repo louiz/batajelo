@@ -18,7 +18,7 @@ EntitySprite::EntitySprite(const Entity* const entity):
 {
   if (EntitySprite::init == false)
     {
-      if (!EntitySprite::shadow_texture.loadFromFile("data/images/units/shadow.png"))
+      if (!EntitySprite::shadow_texture.loadFromFile(AssetsManager::full_name("images/units/shadow.png")))
         exit(1);
       EntitySprite::init = true;
     }

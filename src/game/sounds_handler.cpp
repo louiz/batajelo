@@ -1,4 +1,5 @@
 #include <game/sounds_handler.hpp>
+#include <assets/assets_manager.hpp>
 #include <stdexcept>
 
 #include <string>
@@ -8,48 +9,50 @@
 using namespace std::string_literals;
 using namespace std::chrono_literals;
 
+using AM = AssetsManager;
+
 SoundsHandler::SoundsHandler():
   rd(),
   random_engine(rd())
 {
-  this->load("data/sounds/gyro/Gyro_move_01.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_02.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_03.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_05.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_06.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_07.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_08.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_10.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_11.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_12.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_13.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_16.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_19.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_25.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_27.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_30.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_31.wav", SoundType::DefaultOk);
-  this->load("data/sounds/gyro/Gyro_move_32.wav", SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_01.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_02.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_03.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_05.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_06.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_07.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_08.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_10.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_11.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_12.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_13.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_16.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_19.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_25.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_27.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_30.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_31.wav"), SoundType::DefaultOk);
+  this->load(AM::full_name("sounds/gyro/Gyro_move_32.wav"), SoundType::DefaultOk);
 
-  this->load("data/sounds/drow/Drow_Ranger_projectile_impact1.wav", SoundType::ProjectileImpact);
-  this->load("data/sounds/drow/Drow_Ranger_projectile_impact2.wav", SoundType::ProjectileImpact);
-  this->load("data/sounds/drow/Drow_Ranger_projectile_impact3.wav", SoundType::ProjectileImpact);
+  this->load(AM::full_name("sounds/drow/Drow_Ranger_projectile_impact1.wav"), SoundType::ProjectileImpact);
+  this->load(AM::full_name("sounds/drow/Drow_Ranger_projectile_impact2.wav"), SoundType::ProjectileImpact);
+  this->load(AM::full_name("sounds/drow/Drow_Ranger_projectile_impact3.wav"), SoundType::ProjectileImpact);
 
-  this->load("data/sounds/drow/Drow_Ranger_projectile_launch1.wav", SoundType::ProjectileLaunch);
-  this->load("data/sounds/drow/Drow_Ranger_projectile_launch2.wav", SoundType::ProjectileLaunch);
-  this->load("data/sounds/drow/Drow_Ranger_projectile_launch3.wav", SoundType::ProjectileLaunch);
-  this->load("data/sounds/drow/Drow_Ranger_projectile_launch4.wav", SoundType::ProjectileLaunch);
+  this->load(AM::full_name("sounds/drow/Drow_Ranger_projectile_launch1.wav"), SoundType::ProjectileLaunch);
+  this->load(AM::full_name("sounds/drow/Drow_Ranger_projectile_launch2.wav"), SoundType::ProjectileLaunch);
+  this->load(AM::full_name("sounds/drow/Drow_Ranger_projectile_launch3.wav"), SoundType::ProjectileLaunch);
+  this->load(AM::full_name("sounds/drow/Drow_Ranger_projectile_launch4.wav"), SoundType::ProjectileLaunch);
 
-  this->load("data/sounds/items/Blink_start_(AM).wav", SoundType::BlinkStart);
+  this->load(AM::full_name("sounds/items/Blink_start_(AM).wav"), SoundType::BlinkStart);
 
-  this->load("data/sounds/invoker/EMP_target.wav", SoundType::EmpStart);
-  this->load("data/sounds/invoker/EMP_effect.wav", SoundType::EmpExplode);
+  this->load(AM::full_name("sounds/invoker/EMP_target.wav"), SoundType::EmpStart);
+  this->load(AM::full_name("sounds/invoker/EMP_effect.wav"), SoundType::EmpExplode);
 
-  this->load("data/sounds/tusk/Walrus_Punch_cast.wav", SoundType::Concentrate);
-  this->load("data/sounds/sand_king/Burrowstrike.wav", SoundType::Dash);
+  this->load(AM::full_name("sounds/invoker/Alacrity.wav"), SoundType::Concentrate);
+  this->load(AM::full_name("sounds/sand_king/Burrowstrike.wav"), SoundType::Dash);
 }
 
-void SoundsHandler::load(const char* filename, const SoundType& type)
+void SoundsHandler::load(const std::string& filename, const SoundType& type)
 {
   this->buffers[type].push_back({});
   sf::SoundBuffer& buffer = this->buffers[type].back();

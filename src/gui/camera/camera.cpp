@@ -1,4 +1,5 @@
 #include <logging/logging.hpp>
+#include <assets/assets_manager.hpp>
 #include <gui/camera/camera.hpp>
 #include <gui/screen/screen.hpp>
 #include <gui/sprites/pic_sprite.hpp>

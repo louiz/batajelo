@@ -12,7 +12,7 @@ TourbillonSprite::TourbillonSprite(const Entity* const entity):
 {
   if (TourbillonSprite::init == false)
     {
-      if (!TourbillonSprite::body_texture.loadFromFile("data/images/units/tourbillon.png"))
+      if (!TourbillonSprite::body_texture.loadFromFile(AssetsManager::full_name("images/units/tourbillon.png")))
         exit(1);
       TourbillonSprite::body_texture.setSmooth(true);
       TourbillonSprite::init = true;

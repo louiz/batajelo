@@ -5,6 +5,7 @@
 
 #include <world/position.hpp>
 #include <gui/sprites/energy_bar.hpp>
+#include <assets/assets_manager.hpp>
 
 class WorldSprite
 {

@@ -39,7 +39,7 @@ public:
   void play(const SoundType& type, const bool limit=false, const float volume=100.f);
 
 private:
-  void load(const char* filename, const SoundType& type);
+  void load(const std::string& filename, const SoundType& type);
   std::map<SoundType, std::vector<sf::SoundBuffer>> buffers;
 
   /**

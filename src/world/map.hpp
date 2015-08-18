@@ -25,8 +25,6 @@ static constexpr unsigned int TILE_TOP_OFFSET = 56;
 #define TILESET_WIDTH 2
 #define TILESET_HEIGHT 6
 
-#define MAPS_DIRECTORY "./data/maps/"
-
 /**
  * Defines the heights of the four corners of various tiles based on where
  * they are positionned in the tile set.  For example a tile positionned on

@@ -162,6 +162,19 @@ target_link_libraries(
   )
 
 #
+## Assets
+#
+file(GLOB source_assets
+  src/assets/*.[hc]pp
+  )
+
+add_library(assets STATIC ${source_assets})
+
+target_link_libraries(assets
+  ${Boost_LIBRARIES}
+  )
+
+#
 ## Database
 #
 LITESQL_GENERATE_CPP("src/database/database.xml"
@@ -191,6 +204,7 @@ if(BUILD_CLIENT)
     config
     world
     utils
+    assets
     ${SFML_LIBRARIES}
     ${Boost_LIBRARIES}
     )
@@ -210,6 +224,7 @@ file(GLOB source_world
 add_library(world STATIC ${source_world})
 
 target_Link_libraries(world
+  assets
   logging
   serialization
   fixmath

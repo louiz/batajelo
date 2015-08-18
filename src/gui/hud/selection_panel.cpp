@@ -2,6 +2,7 @@
 #include <gui/hud/selection_panel.hpp>
 #include <game/game_client.hpp>
 #include <gui/screen/screen.hpp>
+#include <assets/assets_manager.hpp>
 
 SelectionPanel::SelectionPanel(GameClient* game, Screen* screen, const Selection* selection):
   ScreenElement(screen),
@@ -26,7 +27,7 @@ void SelectionPanel::draw()
     this->current_tab = 0;
   auto entities = this->selection->get_entities();
   sf::Texture texture;
-  texture.loadFromFile("data/images/unit50.png");
+  texture.loadFromFile(AssetsManager::full_name("images/unit50.png"));
   sf::Sprite sprite;
   sprite.setTexture(texture);
   uint x = PANEL_X;

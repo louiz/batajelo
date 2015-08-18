@@ -6,8 +6,7 @@
 #include <vector>
 #include <string>
 
-static const std::string MINIMAPS_DIRECTORY("./data/minimaps/");
-static const std::string TILESETS_DIRECTORY("./data/tilesets/");
+static const std::string TILESETS_DIRECTORY("tilesets/");
 
 #include <gui/camera/tile.hpp>
 #include <world/map.hpp>

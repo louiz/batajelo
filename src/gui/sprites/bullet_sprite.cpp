@@ -3,6 +3,8 @@
 #include <world/mobility.hpp>
 #include <world/entity.hpp>
 
+#include <gui/effects/smoke_trail.hpp>
+
 bool BulletSprite::init = false;
 sf::Texture BulletSprite::texture;
 
@@ -11,7 +13,7 @@ BulletSprite::BulletSprite(const Entity* const entity):
 {
   if (this->init == false)
     {
-      if (!this->texture.loadFromFile("data/images/bullet.png"))
+      if (!this->texture.loadFromFile(AssetsManager::full_name("images/bullet.png")))
         exit(1);
       this->texture.setSmooth(true);
       this->init = true;
