@@ -23,3 +23,5 @@ bin
 CMakeFiles
 output_lib
 Win32
+data/*
+build
