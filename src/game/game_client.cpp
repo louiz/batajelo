@@ -18,7 +18,8 @@ GameClient::GameClient(const std::shared_ptr<Screen>& screen):
   screen(screen),
   camera(this, this->screen.get()),
   hud(this, this->screen.get()),
-  debug_hud(this, this->screen.get())
+  debug_hud(this, this->screen.get()),
+  team(0)
 {
   this->turn_handler.set_next_turn_callback(std::bind(&GameClient::on_next_turn,
                                                this, ph::_1));
@@ -120,9 +121,9 @@ void GameClient::run()
       ticks += utils::get_number_of_ticks(dt);
       for (; ticks > 0; --ticks)
         {
+          this->graphical_tick();
           if (!this->tick())
             break ;
-          this->graphical_tick();
         }
     }
 }
