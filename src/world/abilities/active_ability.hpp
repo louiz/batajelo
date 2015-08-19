@@ -25,7 +25,10 @@ public:
     target_type(target_type)
     {}
   ~ActiveAbility() = default;
-  void tick(Entity*, World*) override final {}
+  void tick(Entity*, World*) override final
+  {
+    this->cooldown.tick();
+  }
 
 private:
   ActiveAbility(const ActiveAbility&) = delete;

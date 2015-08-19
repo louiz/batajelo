@@ -6,6 +6,8 @@
 
 #include <memory>
 
+using namespace std::chrono_literals;
+
 template<>
 const std::string NamedAbility<Blink>::name = "Blink";
 
@@ -15,6 +17,9 @@ const AbilityType NamedAbility<Blink>::ability_type = AbilityType::Blink;
 Blink::Blink():
   ActiveAbility(TargetType::Point)
 {
+  log_debug("Creating a blink instance");
+  this->cooldown.set_max(0s);
+  log_debug(this->cooldown.get_max_in_ticks());
 }
 
 void Blink::cast(Entity* entity, World* world, const Position& position, const bool queue)
@@ -26,4 +31,5 @@ void Blink::cast(Entity* entity, World* world, const Position& position, const b
     entity->queue_work(std::move(work));
   else
     entity->set_work(std::move(work));
+  this->cooldown.start();
 }

@@ -3,10 +3,10 @@
 
 #include <chrono>
 
+using namespace std::chrono_literals;
+
 namespace utils
 {
-  using namespace std::chrono_literals;
-
   // A timepoint, gotten from a steady_clock because we don't want time to
   // go backward during the game
   using Time = std::chrono::time_point<std::chrono::steady_clock>;

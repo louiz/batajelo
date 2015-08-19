@@ -16,7 +16,6 @@
 
 #define HUD_HEIGHT 323
 
-#include <gui/camera/camera.hpp>
 #include <gui/screen/screen_element.hpp>
 #include <gui/hud/info_hud.hpp>
 #include <gui/hud/abilities_panel.hpp>

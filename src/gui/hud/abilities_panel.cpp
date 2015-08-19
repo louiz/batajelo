@@ -141,11 +141,10 @@ std::vector<EntityId> get_selected_entities_with_ability(const GameClient* game)
       if (abilities)
         {
           Ability* ability = abilities->find(T::ability_type);
-          if (ability)
+          if (ability && ability->cooldown.is_ready())
             {
               // Check cooldown, mana, etc etc
-              Entity* e = const_cast<Entity*>(entity);
-              ids.push_back(e->get_id());
+              ids.push_back(entity->get_id());
             }
         }
     }

@@ -1,6 +1,8 @@
 #ifndef ABILITY_HPP_INCLUDED
 #define ABILITY_HPP_INCLUDED
 
+#include <world/cooldown.hpp>
+
 #include <memory>
 #include <string>
 
@@ -34,6 +36,8 @@ public:
 
   virtual const std::string& get_name() const = 0;
   virtual AbilityType get_type() const = 0;
+
+  Cooldown cooldown;
 
 private:
   Ability(const Ability&) = delete;

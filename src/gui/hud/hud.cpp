@@ -53,10 +53,27 @@ void Hud::draw()
       this->game->get_debug_hud().add_debug_line("One (or more) unit selected. Abilities: ", debug_color);
       auto entity = *it;
       auto abilities = entity->get<Abilities>();
-      for (const auto& ability: abilities->get())
+      for (const std::unique_ptr<Ability>& ability: abilities->get())
         {
           if (ability)
-            this->game->get_debug_hud().add_debug_line(ability->get_name(), debug_color);
+            {
+              std::string s = ability->get_name();
+              s += std::to_string(ability->cooldown.get_max_in_ticks());
+              if (ability->cooldown.get_max_in_ticks() > 0)
+                {
+                  Cooldown& cd = ability->cooldown;
+                  if (cd.is_ready())
+                    s += " (ready)";
+                  else
+                    {
+                      auto max = utils::sec(cd.get_max_duration());
+                      auto remaining = utils::sec(cd.get_remaining_duration());
+                      s += " (on cooldown: " + std::to_string(remaining.count()) + "/" + \
+                        std::to_string(max.count()) + ")";
+                    }
+                }
+              this->game->get_debug_hud().add_debug_line(s, debug_color);
+            }
         }
     }
 
