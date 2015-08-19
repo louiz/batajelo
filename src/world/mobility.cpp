@@ -10,6 +10,7 @@ const ComponentType Mobility::component_type;
 
 Mobility::Mobility(const Fix16& speed):
   speed(speed)
+  last_movement{},
 {
 }
 
@@ -62,6 +63,7 @@ void Mobility::follow_path(Path& path, World* world, Location* location)
       log_debug("blocked");
       return;
     }
+  this->last_movement = movement;
   location->position() = after_movement;
 }
 
@@ -94,5 +96,40 @@ Fix16 Mobility::move_towards(const Position& goal, Location* location, Fix16 spe
 
 Fix16 Mobility::get_angle() const
 {
-  return this->last_movement.angle();
+  auto res = this->last_movement.angle();
+  if (res >= 0)
+    return res;
+  else
+    return 360 + res;
+}
+
+Direction Mobility::get_direction() const
+{
+  auto angle = this->get_angle();
+  static const auto wide = 22.5_fix;
+  if (angle >= (360 - wide) ||
+      angle < (0 + wide))
+    return Direction::E;
+  else if (angle >= (45 - wide) &&
+      angle < (45 + wide))
+    return Direction::SE;
+  else if (angle >= (90 - wide) &&
+      angle < (90 + wide))
+    return Direction::S;
+  else if (angle >= (135 - wide) &&
+      angle < (135 + wide))
+    return Direction::SW;
+  else if (angle >= (180 - wide) &&
+      angle < (180 + wide))
+    return Direction::W;
+  else if (angle >= (225 - wide) &&
+      angle < (225 + wide))
+    return Direction::NW;
+  else if (angle >= (270 - wide) &&
+      angle < (270 + wide))
+    return Direction::N;
+  else if (angle >= (315 - wide) &&
+      angle < (315 + wide))
+    return Direction::NE;
+  assert(false);
 }

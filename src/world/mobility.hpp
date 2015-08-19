@@ -1,6 +1,7 @@
 #ifndef MOBILITY_COMPONENT_HPP_INCLUDED
 #define MOBILITY_COMPONENT_HPP_INCLUDED
 
+#include <world/direction.hpp>
 #include <world/components.hpp>
 #include <fixmath/fix16.hpp>
 #include <world/path.hpp>
@@ -38,7 +39,11 @@ public:
    * movement done.
    */
   Fix16 get_angle() const;
-
+  /**
+   * Get the one of the 8 cardinal directions, based on the last movement’s
+   * angle
+   */
+  Direction get_direction() const;
 private:
   Fix16 speed;
   Vec2 last_movement;
