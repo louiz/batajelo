@@ -83,8 +83,7 @@ public:
    */
   void poll()
   {
-    while (IoService::get().poll() != 0)
-      ;
+    IoService::get().poll();
   }
 
   virtual void on_connection_closed() = 0;

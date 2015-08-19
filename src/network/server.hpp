@@ -65,26 +65,13 @@ public:
    * The timeout argument makes this call block for that amount
    * of milliseconds.
    */
-  void poll(long t)
+  void poll()
   {
-    if (t == 0)
-      {
-        while (IoService::get().poll())
-          ;
-        return ;
-      }
-
-    if (this->timeout.expires_from_now(boost::asio::steady_timer::duration(t)) == 0)
-      // The last run_one() call returned because the timeout expired, so
-      // we reinstall it. If that's not the case
-      // (something actually happened on the socket)
-      // we just need to reset the time of expiration, but not reinstall it.
-      this->timeout.async_wait([](const boost::system::error_code&){});
-    // Wait for one event to happen (either a timeout or something
-    // on the socket).
-    IoService::get().run_one();
-    while (IoService::get().poll() != 0)
-      ; // Execute all other available handlers, if any
+    IoService::get().poll();
+  }
+  void run()
+  {
+    IoService::get().run();
   }
   /**
    * To be called by the a RemoteClient instance, to delete itself from

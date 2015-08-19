@@ -7,6 +7,8 @@
 #include <utils/time.hpp>
 #include <iostream>
 
+#include <network/repetitive_task.hpp>
+
 #include <boost/program_options.hpp>
 
 int main(int ac, char** av)
@@ -70,17 +72,21 @@ int main(int ac, char** av)
   utils::Time last_update = utils::now();
   std::chrono::steady_clock::duration dt{0};
 
-  while (true)
-    {
-      auto now = utils::now();
-      dt += now - last_update;
-      last_update = now;
+  Repeater ticks_doer([&last_update, &dt, &s]()
+                 {
+                   auto now = utils::now();
+                   dt += now - last_update;
+                   last_update = now;
 
-      auto ticks = utils::get_number_of_ticks(dt);
-      for (; ticks > 0; --ticks)
-        s.tick();
-      s.poll(10);
-    }
+                   auto ticks = utils::get_number_of_ticks(dt);
+                   for (; ticks > 0; --ticks)
+                     s.tick();
+                   return true;
+                 },
+                 75ms);
+
+  s.run();
+
   log_debug("Exiting...");
   return 0;
 }
