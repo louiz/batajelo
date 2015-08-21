@@ -1,4 +1,6 @@
 #include <gui/camera/mouse_selection.hpp>
+#include <utils/math.hpp>
+
 
 MouseSelection::MouseSelection():
   ongoing(false)
@@ -19,7 +21,7 @@ void MouseSelection::end()
 
 bool MouseSelection::is_rectangular_selection_ongoing(const sf::Vector2i& mouse_pos) const
 {
-  return this->ongoing && this->start_pos != mouse_pos;
+  return this->ongoing && (vect_distance(this->start_pos, mouse_pos) > 5);
 }
 
 bool MouseSelection::contains(const sf::Vector2i& mouse_pos,

@@ -157,7 +157,7 @@ void Camera::handle_right_click(const sf::Event& event)
       if (ids.empty())
         return ;
       const Entity* entity_under_mouse = this->get_entity_under_mouse();
-      if (entity_under_mouse)
+      if (entity_under_mouse && std::find(ids.begin(), ids.end(), entity_under_mouse->get_id()) == ids.end())
         this->game->action_follow(ids, entity_under_mouse->get_id(), queue);
       else
         this->game->action_move(ids, pos, queue);
@@ -200,7 +200,9 @@ void Camera::set_mouse_selection_to_selection()
   // Only the manipulable entities are considered
   std::vector<const Entity*> entities_in_mouse_selection;
 
-  for (const auto& entity: this->world().entities)
+  const auto sorted_entities = this->world().sorted_entities();
+
+  for (const auto& entity: sorted_entities)
     {
       Location* location = entity->get<Location>();
       Team* team = entity->get<Team>();
@@ -208,7 +210,13 @@ void Camera::set_mouse_selection_to_selection()
         continue;
       if (this->mouse_selection.contains(mouse_pos,
                                          this->world_to_camera_position(location->position())))
-        entities_in_mouse_selection.push_back(entity.get());
+        {
+          entities_in_mouse_selection.push_back(entity);
+          if (!this->mouse_selection.is_rectangular_selection_ongoing(mouse_pos))
+            // Only select one entity, because we are not doing a
+            // rectangular selection.
+            break;
+        }
     }
 
   if (entities_in_mouse_selection.empty())
