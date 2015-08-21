@@ -50,6 +50,17 @@ public:
   Work* get_current_work();
   const Work* get_current_work() const;
 
+  template <typename WorkType>
+  WorkType* get_current_work()
+  {
+    return dynamic_cast<WorkType*>(this->get_current_work());
+  }
+  template <typename WorkType>
+  const WorkType* get_current_work() const
+  {
+    return dynamic_cast<const WorkType*>(this->get_current_work());
+  }
+
   template <typename ComponentClass>
   ComponentClass* get() const
   {
@@ -172,6 +183,7 @@ public:
    * The list of Status that currently affect this entity.
    */
   std::vector<std::unique_ptr<Status>> status;
+  std::unique_ptr<Brain> brain;
 };
 
 #endif // __ENTITY_HPP__

@@ -18,6 +18,8 @@ public:
   bool tick(World* world) override final;
   TaskType get_type() const override final
   { return TaskType::Path; }
+  const Path& get_path() const
+  { return this->path; }
 
 private:
   /**

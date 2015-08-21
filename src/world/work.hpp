@@ -9,10 +9,6 @@ class World;
 class Entity;
 
 /**
- * The function to call at each tick of the entity owning that work. It
- * returns true if that work is complete and must be removed from the queue,
- * false otherwise.
- *
  * A work is composed of one or more Task. Each Work::tick(), we call
  * task.tick(). We may also change the value of the current work, depending
  * on some world condition, or if the current task finished (tick() returned
@@ -27,6 +23,10 @@ public:
     world(world) {}
   virtual ~Work();
   /**
+   * The function to call at each tick of the entity owning that work. It
+   * returns true if that work is complete and must be removed from the queue,
+   * false otherwise.
+   *
    * May set/change the current task. Then call tick() on that Task.
    */
   virtual bool tick() = 0;
@@ -43,6 +43,17 @@ public:
   void interrupt();
   Task* get_task();
   const Task* get_task() const;
+
+  template <typename TaskType>
+  TaskType* get_task()
+  {
+    return dynamic_cast<TaskType*>(this->get_task());
+  }
+  template <typename TaskType>
+  const TaskType* get_task() const
+  {
+    return dynamic_cast<const TaskType*>(this->get_task());
+  }
 
 protected:
   /**

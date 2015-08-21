@@ -7,6 +7,8 @@
 
 #include <world/entity.hpp>
 
+class World;
+
 static constexpr std::size_t MaxEntityModels = 32;
 
 class EntityFactory
@@ -14,7 +16,7 @@ class EntityFactory
 public:
   EntityFactory();
   ~EntityFactory();
-  std::unique_ptr<Entity> make_entity(const EntityType type);
+  std::unique_ptr<Entity> make_entity(World* world, const EntityType type);
 
 private:
   std::vector<Entity> entity_models;

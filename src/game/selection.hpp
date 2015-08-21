@@ -39,9 +39,9 @@ public:
   void on_modified() const;
   template <typename InputIt>
   void assign(InputIt first, InputIt last)
-    {
-      this->entities.assign(first, last);
-    }
+  {
+    this->entities.assign(first, last);
+  }
 
   std::vector<t_selection_changed_callback> on_modified_callbacks;
 

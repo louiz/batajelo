@@ -36,4 +36,3 @@ ser::game::Occupant Occupant::serialize() const
   srlzed.set_team(this->team);
   return srlzed;
 }
-
