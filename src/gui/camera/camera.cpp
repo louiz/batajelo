@@ -3,6 +3,7 @@
 #include <gui/camera/camera.hpp>
 #include <gui/screen/screen.hpp>
 #include <gui/sprites/pic_sprite.hpp>
+#include <gui/sprites/orange_blob.hpp>
 #include <gui/sprites/tourbillon_sprite.hpp>
 #include <gui/sprites/bullet_sprite.hpp>
 #include <gui/sprites/emp_sprite.hpp>
@@ -17,10 +18,17 @@
 #include <climits>
 #include <cstdlib>
 #include <gui/effects/explosion.hpp>
+#include <gui/camera/mobility_sprites.hpp>
+
+#include <world/works/path_work.hpp>
+
+#include <gui/sprites/decoration_sprite.hpp>
 
 #include <world/abilities.hpp>
 #include <world/location.hpp>
+#include <world/health.hpp>
 
+#include <algorithm>
 #include <iostream>
 
 using namespace std::string_literals;
@@ -40,6 +48,22 @@ Camera::Camera(GameClient* game, Screen* screen):
   fog(1920, 1080, this, &this->world())
 {
   this->tileset.load_from_file("test6.tmx");
+
+  if (!ParticleEffect::texture.loadFromFile(AssetsManager::full_name("images/particles.png")))
+    {
+      log_debug("Failed to load particle.png");
+      exit(1);
+    }
+
+  this->decoration_sprites.push_back(std::make_unique<DecorationSprite<49>>(Position{800, 800},
+                           AssetsManager::full_name("images/test/tree.png"),
+                           sf::Vector2<int>{256, 400}, 35ms));
+  this->decoration_sprites.push_back(std::make_unique<DecorationSprite<49>>(Position{900, 850},
+                           AssetsManager::full_name("images/test/tree.png"),
+                           sf::Vector2<int>{256, 400}, 35ms));
+
+  MobilitySprites::init();
+  OrangeBlob::init();
 }
 
 Camera::~Camera()
@@ -264,18 +288,19 @@ void Camera::update(const utils::Duration& dt)
         }
       this->fixup_camera_position();
     }
-  else
-    {
-      const Entity* entity = this->get_game_client()->get_selection().get_entities()[0];
-      Location* location = entity->get<Location>();
-      if (!location)
-        return;
-      auto coord = this->world_to_camera_position(location->position());
-      log_debug("centering on position: " << coord.x << ":" << coord.y);
-      this->center(coord);
-      log_debug("Camera position: " << this->x << ": " << this->y);
-    }
-  log_debug("Camera position after fixup: " << this->x << ": " << this->y);
+    for (auto& effect: this->effects)
+      effect->update(dt);
+    for (auto& sprite: this->sprites)
+      sprite->update(dt);
+    for (auto& sprite: this->decoration_sprites)
+      sprite->update(dt);
+
+    this->effects.erase(std::remove_if(this->effects.begin(), this->effects.end(),
+                                       [](const std::unique_ptr<Effect>& effect)
+                                       {
+                                         return effect->current_life() <= 0s;
+                                       }),
+                        this->effects.end());
 }
 
 void Camera::center(const sf::Vector2i& center)
@@ -296,85 +321,152 @@ void Camera::center(const sf::Vector2i& center)
     this->y = 0;
 }
 
+bool Camera::tile_before_sprite(const CellIndex cell, const WorldSprite* sprite,
+                                const Cell sprite_cell) const
+{
+  unsigned short x, y;
+  std::tie(x, y) = this->map().index_to_cell(cell);
+  unsigned short sprite_x, sprite_y;
+  std::tie(sprite_x, sprite_y) = sprite_cell;
+  CellIndex sprite_cell_index = this->map().cell_to_index(std::make_pair(sprite_x, sprite_y));
+  // Same tile
+  if (sprite_cell_index == cell)
+    return true;
+  if (sprite_y > y)
+    return true;
+  return this->map().is_cell_in_neighbour_lower_cells(sprite_cell_index, cell);
 void Camera::draw()
 {
   const sf::Vector2i mouse_pos = this->get_mouse_position();
   const Entity* entity_under_mouse = this->get_entity_under_mouse();
 
-  // Sort the sprites by their vertical position
-  this->sprites.sort([](const auto& a, const auto& b)
-                     {
-                       return a->get_world_pos().y < b->get_world_pos().y;
-                     });
+  std::vector<const WorldSprite*> sorted_sprites;
+  sorted_sprites.reserve(this->sprites.size() +
+                         this->effects.size() +
+                         this->decoration_sprites.size());
 
-  // Draw all tiles even the ones that are not visible for the camera.
-  GraphTile* tile;
-  // Iterate all the rows, from top to bottom
-  for (unsigned short row = 0; row < this->map().get_height_in_tiles(); row++)
+  for (auto& sprite: this->sprites)
     {
-      // Position where we will draw, in pixels
-      unsigned int y = row * (TILE_HEIGHT / 2);
-      unsigned int x;
-      // Draw the current row of all layers, from bottom to top
-      for (Layer* layer: this->map().layers)
-        {
-          if (layer && layer->cells)
-            for (unsigned short col = 0; col < this->map().get_width_in_tiles(); col++)
-              {
-                x = col * TILE_WIDTH;
-                if (row % 2 != 0)
-                  x += HALF_TILE_W;
-                std::size_t cell = col + (row * this->map().get_height_in_tiles());
-                std::size_t gid = layer->cells[cell];
-                tile = this->tileset.tiles[gid].get();
-                if (tile)
-                  {
-                    constexpr char tile_opacity = 180;
-                    tile->sprite.setColor(sf::Color(255, 255, 255, tile_opacity));
-                    if (std::find(this->world().current_path.begin(), this->world().current_path.end(),
-                                  this->map().cell_to_index(std::make_tuple(col, row)))
-                        != this->world().current_path.end())
-                      tile->sprite.setColor(sf::Color(0, 120, 255, 255));
+      if (this->world().can_be_seen_by_team(sprite->get_world_pos(),
+                                            this->game->get_self_team()))
+        sorted_sprites.push_back(sprite.get());
+    }
+  for (auto& effect: this->effects)
+    sorted_sprites.push_back(effect.get());
+  for (auto& sprite: this->decoration_sprites)
+    sorted_sprites.push_back(sprite.get());
 
-                    tile->sprite.setPosition(x - this->x, y - this->y);
-                    this->win().draw(tile->sprite);
-                  }
-              }
-          // The row for the next layer must be shifted from a few pixel to
-          // the top
-          y -= LEVEL_HEIGHT;
-        }
+  std::vector<std::unique_ptr<SimpleWorldSprite>> flag_sprites;
 
-      // Display all the sprites that are on this row
-      for (const auto& sprite: this->sprites)
-        {
-          Position sprite_world_position = sprite->get_world_pos();
-          unsigned short x_cell;
-          unsigned short y_cell;
-          std::tie(x_cell, y_cell) = this->world().get_cell_at_position(sprite_world_position);
-          if (y_cell == row &&
-              this->world().can_be_seen_by_team(sprite_world_position, this->game->get_self_team()))
+  for (const std::shared_ptr<Entity>& entity: this->world().entities)
+    {
+      const PathWork* path_work = entity->get_current_work<PathWork>();
+      if (!path_work)
+        continue;
+      const PathTask* path_task = path_work->get_task<PathTask>();
+      if (!path_task)
+        continue;
+      const Path& path = path_task->get_path();
+      MobilitySprites::insert_flag_sprites(path, flag_sprites);
+    }
+
+  for (const std::unique_ptr<SimpleWorldSprite>& flag_sprite: flag_sprites)
+    sorted_sprites.push_back(flag_sprite.get());
+
+  std::sort(sorted_sprites.begin(),
+            sorted_sprites.end(),
+            [](const WorldSprite* a, const WorldSprite* b)
             {
-              const Entity* entity = sprite->get_entity();
-              const auto entpos = this->world_to_camera_position(sprite_world_position);
+              return a->get_world_pos().y < b->get_world_pos().y;
+            });
 
-              if (entity->is_manipulable() &&
-                  (this->mouse_selection.contains(this->get_mouse_position(), entpos)))
-                this->draw_hover_indicator(entpos, 80);
+  std::vector<Cell> sprite_cells;
+  sprite_cells.reserve(this->sprites.size() + this->effects.size());
+  for (const auto& sprite: sorted_sprites)
+    sprite_cells.push_back(this->world().get_cell_at_position(sprite->get_world_pos()));
 
-              if (this->get_game_client()->is_entity_selected(sprite->get_entity()))
-                this->draw_selected_indicator(entpos, 80);
+  std::vector<std::vector<CellIndex>> tiles_before_sprite;
+  // We have one more vector, in which we put cells that are to be drawn
+  // after all the tiles
+  tiles_before_sprite.resize(sorted_sprites.size() + 1);
 
-              // The sprites draw themselves around the 0:0 coordinates. We
-              // just pass a RenderStates object to them, translating the
-              // whole drawing to the correct camera position.  This way the
-              // sprites class does not need to know anything about the
-              // world or camera coordinates.
-              sf::Transform transform;
-              transform.translate(entpos.x - this->x,
-                                  entpos.y - this->y);
-              sprite->draw(this->win(), transform);
+  unsigned short start_x = std::max(0, static_cast<int>((this->x / TILE_WIDTH)) - 1);
+  unsigned short start_y = std::max(0, static_cast<int>(this->y / (TILE_HEIGHT / 2)) - 3);
+  for (auto y = start_y; y < start_y + 30; y++)
+    for (auto x = start_x; x < start_x + 25; x++)
+      {
+        CellIndex cell = this->map().cell_to_index(std::make_pair(x, y));
+        for (std::size_t i = 0; i < sorted_sprites.size(); i++)
+          {
+            const WorldSprite* sprite = sorted_sprites[i];
+            const Cell sprite_cell = sprite_cells[i];
+            if (this->tile_before_sprite(cell, sprite, sprite_cell))
+              {
+                tiles_before_sprite[i].push_back(cell);
+                goto break_outerloop;
+              }
+          }
+        // We con only get here if the cell was added in no vector at all
+        tiles_before_sprite[tiles_before_sprite.size()-1].push_back(cell);
+      break_outerloop:
+        continue;
+      }
 
+  for (std::size_t i = 0; i < tiles_before_sprite.size(); ++i)
+    {
+      for (const CellIndex index: tiles_before_sprite[i])
+        {
+          unsigned short col;
+          unsigned short row;
+          std::tie(col, row) = this->map().index_to_cell(index);
+          auto x = col * TILE_WIDTH;
+          if (row % 2 != 0)
+            x += HALF_TILE_W;
+          auto y = row * (TILE_HEIGHT / 2);
+          for (Layer* layer: this->map().layers)
+            {
+              if (layer && layer->cells)
+                {
+                  std::size_t gid = layer->cells[index];
+                  GraphTile* tile = this->tileset.tiles[gid].get();
+                  if (tile)
+                    {
+                      if (std::find(this->world().current_path.begin(),
+                                    this->world().current_path.end(),
+                                    index) != this->world().current_path.end())
+                        tile->sprite.setColor(sf::Color::Red);
+                      else
+                        tile->sprite.setColor(sf::Color::White);
+                      tile->sprite.setPosition(x - this->x, y - this->y);
+                      this->win().draw(tile->sprite);
+                    }
+                }
+              y -= LEVEL_HEIGHT;
+            }
+        }
+      // Draw the WorldSprite that is above all these tiles
+      if (i < sorted_sprites.size())
+        { // Unless we were at the last queue of tiles, which have no tile above them
+          const WorldSprite* sprite = sorted_sprites[i];
+          auto entity_sprite = dynamic_cast<const EntitySprite*>(sprite);
+          const auto camera_pos = this->world_to_camera_position(sprite->get_world_pos());
+          sf::Transform transform;
+
+          if (entity_sprite &&
+              entity_sprite->get_entity()->is_manipulable() &&
+              (this->mouse_selection.contains(this->get_mouse_position(), camera_pos)))
+            this->draw_hover_indicator(camera_pos, 80);
+
+          if (entity_sprite &&
+              this->get_game_client()->is_entity_selected(entity_sprite->get_entity()))
+            this->draw_selected_indicator(camera_pos, 80);
+
+          transform.translate(camera_pos.x - this->x,
+                              camera_pos.y - this->y);
+          sprite->draw(this->win(), transform);
+          if (entity_sprite)
+            {
+              auto entity = entity_sprite->get_entity();
               auto health = entity->get<Health>();
               auto team = entity->get<Team>();
 
@@ -388,10 +480,10 @@ void Camera::draw()
                 }
             }
         }
-      this->win().setView(this->win().getDefaultView());
     }
 
   this->draw_mouse_selection();
+  this->draw(this->fog.get_sprite());
 
   // Debug
   const std::string cam_pos = "Camera position: " + std::to_string(this->x) + ", " + std::to_string(this->y);
@@ -400,8 +492,8 @@ void Camera::draw()
 
   Position world_mouse_pos = this->camera_to_world_position(mouse_pos.x, mouse_pos.y);
   this->game->get_debug_hud().add_debug_line("Mouse world position: " +
-                                               std::to_string(world_mouse_pos.x.to_double()) + ", " +
-                                               std::to_string(world_mouse_pos.y.to_double()));
+                                             std::to_string(world_mouse_pos.x.to_double()) + ", " +
+                                             std::to_string(world_mouse_pos.y.to_double()));
 
   if (entity_under_mouse)
     this->game->get_debug_hud().add_debug_line("Entity under mouse: " + std::to_string(entity_under_mouse->get_id()));
@@ -410,7 +502,8 @@ void Camera::draw()
 
   this->game->get_debug_hud().add_debug_line("Current world time: "s + std::to_string(this->get_game_client()->current_world_time().count()));
 
-  this->draw(this->fog.get_sprite());
+  Cell cell_under_mouse = this->world().get_cell_at_position(world_mouse_pos);
+  this->game->get_debug_hud().add_debug_line("Cell under mouse: "s + std::to_string(std::get<0>(cell_under_mouse)) + ":" + std::to_string(std::get<1>(cell_under_mouse)));
 }
 
 void Camera::draw_mouse_selection()
@@ -811,7 +904,7 @@ void Camera::on_new_entity(const Entity* entity)
   else if (entity->get_type() == 2)
     this->sprites.push_back(std::make_unique<EmpSprite>(entity));
   else if (entity->get_type() == 4)
-    this->sprites.push_back(std::make_unique<TourbillonSprite>(entity));
+    this->sprites.push_back(std::make_unique<OrangeBlob>(entity));
 
 }
 

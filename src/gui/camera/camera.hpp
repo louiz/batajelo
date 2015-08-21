@@ -37,6 +37,7 @@ class Entity;
 class EntitySprite;
 class Task;
 class Effect;
+class WorldSprite;
 
 class Camera: public ScreenElement
 {
@@ -199,11 +200,10 @@ private:
    * The position of the cursor when the user started dragging the camera.
    */
   sf::Vector2i start_drag_position;
-  /**
-   * A pointer to the world object used to display stuff on the screen.
-   */
+
   GameClient* game;
   std::list<std::unique_ptr<EntitySprite>> sprites;
+  std::list<std::unique_ptr<WorldSprite>> decoration_sprites;
   MouseSelection mouse_selection;
   Tileset tileset;
   Fog fog;
@@ -212,6 +212,12 @@ private:
 public:
   std::vector<std::unique_ptr<Effect>> effects;
 
+private:
+  /**
+   * Returns true if the tile for the given cell must be drawn before the
+   * sprite (and thus returns false if it must be drawn after)
+   */
+  bool tile_before_sprite(const CellIndex cell, const WorldSprite* sprite, const Cell sprite_cell) const;
   /**
    * Various accessors
    */
