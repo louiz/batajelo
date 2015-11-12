@@ -50,8 +50,6 @@ if(BUILD_CLIENT)
   find_package(SFML 2 REQUIRED system window graphics audio)
 endif()
 
-find_package(GTest)
-
 ##########################
 # Includes and Linkage
 ##########################
@@ -63,9 +61,6 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${BOTAN_INCLUDE_DIRS})
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 include_directories(${WEBSOCKETPP_INCLUDE_DIRS})
-if(GTEST_FOUND)
-  include_directories(${GTEST_INCLUDE_DIRS})
-endif()
 
 link_directories(${Boost_LIBRARY_DIRS})
 
@@ -375,30 +370,37 @@ target_link_libraries(game_server
 # Tests
 ####################
 
-if(GTEST_FOUND)
-  enable_testing()
-  add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} -V)
+find_package(CATCH REQUIRED)
 
-  file(GLOB tests_srcs
-    tests/*test.cpp
-    )
+if(CATCH_FOUND)
+  file(GLOB source_tests
+      tests/*.cpp)
 
-  foreach(test_src ${tests_srcs})
-    get_filename_component(lib ${test_src} NAME_WE)
+  add_executable(test_suite EXCLUDE_FROM_ALL
+      ${source_tests})
+  target_link_libraries(test_suite
+      config
+      network
+      fixmath
+      world
+      master_server
+      game)
 
-    string(REGEX REPLACE "(.*)_test$" "\\1" lib ${lib})
+  target_include_directories(test_suite
+      PUBLIC ${CATCH_INCLUDE_DIRS})
+  target_include_directories(test_suite
+      PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
-    if(TARGET ${lib})
-      add_executable(${lib}_test  EXCLUDE_FROM_ALL ${test_src})
+  add_custom_target(check COMMAND "test_suite"
+      DEPENDS test_suite)
 
-      target_link_libraries(${lib}_test
-        ${lib}
-        ${GTEST_BOTH_LIBRARIES}
-        )
-      add_test(${lib}_test ${lib}_test)
-      add_dependencies(check ${lib}_test)
-    else()
-      message("Library ${lib} does not exist, ${lib}_test.cpp will not be enabled.")
-    endif()
-  endforeach(test_src)
-endif()
+  #
+  ## Code coverage
+  #
+  if(CMAKE_BUILD_TYPE MATCHES Debug)
+    include(CodeCoverage)
+    setup_target_for_coverage(coverage
+        test_suite
+        coverage)
+  endif()
+endif(CATCH_FOUND)
