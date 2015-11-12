@@ -369,8 +369,7 @@ target_link_libraries(game_server
 ####################
 # Tests
 ####################
-
-find_package(CATCH REQUIRED)
+find_package(CATCH)
 
 if(CATCH_FOUND)
   file(GLOB source_tests
